@@ -72,7 +72,7 @@
     .hist-icon svg{width:18px;height:18px}
     .hist-info{flex:1}
     .hist-amount{font-size:15px;font-weight:600}
-    .hist-details{display:flex;gap:12px;margin-top:4px;font-size:11px;color:var(--gray-soft)}
+    .hist-details{display:flex;gap:12px;margin-top:4px;font-size:11px;color:var(--gray-soft);flex-wrap:wrap}
     .hist-details span{display:flex;align-items:center;gap:4px}
     .hist-badge{font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;letter-spacing:.06em}
     .hist-badge.pending{background:rgba(245,158,11,.1);color:#D97706}
@@ -164,18 +164,26 @@
   import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import{getFirestore,doc,getDoc,collection,query,where,orderBy,getDocs,serverTimestamp,runTransaction}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
   
-  const cfg={apiKey:"AIzaSyBp8X1PPp3FqiQ6OXErr8Mu11GEp6MZ2-U",authDomain:"ascend-34bf0.firebaseapp.com",projectId:"ascend-34bf0",storageBucket:"ascend-34bf0.firebasestorage.app",messagingSenderId:"592623076677",appId:"1:592623076677:web:c5615719870aefdabf6a2c"};
-  const app=initializeApp(cfg);
-  const auth=getAuth(app);
-  const db=getFirestore(app);
+  const cfg={
+    apiKey: "AIzaSyBp8X1PPp3FqiQ6OXErr8Mu11GEp6MZ2-U",
+    authDomain: "ascend-34bf0.firebaseapp.com",
+    projectId: "ascend-34bf0",
+    storageBucket: "ascend-34bf0.firebasestorage.app",
+    messagingSenderId: "592623076677",
+    appId: "1:592623076677:web:c5615719870aefdabf6a2c"
+  };
   
-  let uid='';
-  let userBalance=0;
+  const app = initializeApp(cfg);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  
+  let uid = '';
+  let userBalance = 0;
   let userDocRef = null;
   
   // Formatar número
   function fmtNumber(n) {
-    return Number(n).toLocaleString('pt-AO');
+    return Number(n).toLocaleString('pt-AO', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
   }
   
   // Formatar status
@@ -199,14 +207,18 @@
   // Formatar data
   function formatDate(timestamp) {
     if (!timestamp || !timestamp.toDate) return '—';
-    const date = timestamp.toDate();
-    return date.toLocaleDateString('pt-AO', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    try {
+      const date = timestamp.toDate();
+      return date.toLocaleDateString('pt-AO', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch (e) {
+      return '—';
+    }
   }
   
   // Atualizar saldo
@@ -227,7 +239,11 @@
   async function loadFullHistory() {
     if (!uid) return;
     
+    const list = document.getElementById('histList');
+    const countSpan = document.getElementById('histCount');
+    
     try {
+      // Consulta com índice composto (uid + createdAt descendente)
       const q = query(
         collection(db, 'withdrawals'), 
         where('uid', '==', uid), 
@@ -235,8 +251,6 @@
       );
       
       const snaps = await getDocs(q);
-      const list = document.getElementById('histList');
-      const countSpan = document.getElementById('histCount');
       
       countSpan.textContent = snaps.size;
       
@@ -251,8 +265,11 @@
         const statusClass = getStatusClass(w.status);
         const statusText = formatStatus(w.status);
         const dateStr = formatDate(w.createdAt);
-        const feeAmount = w.fee || Math.round(w.amount * 0.15);
-        const netAmount = w.netAmount || (w.amount - feeAmount);
+        
+        // Calcular valores se não existirem
+        const amount = w.amount || 0;
+        const feeAmount = w.fee || Math.round(amount * 0.15);
+        const netAmount = w.netAmount || (amount - feeAmount);
         
         html += `
           <div class="hist-item">
@@ -264,11 +281,11 @@
               </svg>
             </div>
             <div class="hist-info">
-              <div class="hist-amount">${fmtNumber(w.amount)} Kz</div>
+              <div class="hist-amount">${fmtNumber(amount)} Kz</div>
               <div class="hist-details">
-                <span>📅 ${dateStr}</span>
-                <span>💰 Recebe: ${fmtNumber(netAmount)} Kz</span>
-                <span>📊 Taxa: ${fmtNumber(feeAmount)} Kz</span>
+                <span> ${dateStr}</span>
+                <span> Recebe: ${fmtNumber(netAmount)} Kz</span>
+                <span> Taxa: ${fmtNumber(feeAmount)} Kz</span>
               </div>
             </div>
             <span class="hist-badge ${statusClass}">${statusText}</span>
@@ -280,18 +297,28 @@
       
     } catch (error) {
       console.error('Erro detalhado ao carregar histórico:', error);
-      document.getElementById('histList').innerHTML = `
+      
+      // Mensagem de erro mais amigável
+      let errorMessage = 'Erro ao carregar histórico. ';
+      
+      if (error.code === 'failed-precondition') {
+        errorMessage = 'O índice do Firestore ainda está sendo criado. Aguarde alguns minutos e tente novamente.';
+      } else {
+        errorMessage += error.message;
+      }
+      
+      list.innerHTML = `
         <div class="hist-empty">
-          Erro ao carregar histórico: ${error.message}
+          ${errorMessage}
           <br><br>
-          <button onclick="location.reload()" style="padding:8px 16px;background:var(--red);color:white;border:none;border-radius:8px;cursor:pointer">Tentar novamente</button>
+          <button onclick="location.reload()" style="padding:8px 16px;background:var(--red);color:white;border:none;border-radius:8px;cursor:pointer;margin-top:10px">Tentar novamente</button>
         </div>
       `;
     }
   }
   
   // Auth state
-  onAuthStateChanged(auth, async user => {
+  onAuthStateChanged(auth, async (user) => {
     if (!user) {
       window.location.href = 'auth.html';
       return;
@@ -316,6 +343,7 @@
     const amount = parseInt(amountInput.value) || 0;
     const btn = document.getElementById('wBtn');
     
+    // Validações
     if (amount < 800) {
       window.toast('O valor mínimo é 800 Kz.', 'error');
       return;
@@ -325,34 +353,39 @@
       return;
     }
     
-    // Verificar saldo
-    const currentBalance = await getDoc(userDocRef);
-    if (!currentBalance.exists()) {
-      window.toast('Erro ao verificar saldo.', 'error');
-      return;
-    }
-    
-    const availableBalance = currentBalance.data().balance || 0;
-    if (amount > availableBalance) {
-      window.toast('Saldo insuficiente.', 'error');
-      return;
-    }
-    
-    // Processar
+    // Mostrar spinner
     document.getElementById('spinner').classList.add('show');
     btn.disabled = true;
     
     try {
+      // Verificar saldo atual
+      const balanceSnap = await getDoc(userDocRef);
+      if (!balanceSnap.exists()) {
+        throw new Error('Usuário não encontrado');
+      }
+      
+      const availableBalance = balanceSnap.data().balance || 0;
+      
+      if (amount > availableBalance) {
+        window.toast('Saldo insuficiente.', 'error');
+        document.getElementById('spinner').classList.remove('show');
+        btn.disabled = false;
+        return;
+      }
+      
+      // Processar transação
       const fee = Math.round(amount * 0.15);
-      const netAmount = Math.round(amount * 0.85);
+      const netAmount = amount - fee;
       const newBalance = availableBalance - amount;
       
       await runTransaction(db, async (transaction) => {
+        // Atualizar saldo do usuário
         transaction.update(userDocRef, {
           balance: newBalance,
           updatedAt: serverTimestamp()
         });
         
+        // Criar registro de levantamento
         const withdrawalRef = doc(collection(db, 'withdrawals'));
         transaction.set(withdrawalRef, {
           uid: uid,
@@ -378,7 +411,7 @@
       await loadFullHistory();
       
     } catch (error) {
-      console.error('Erro:', error);
+      console.error('Erro no levantamento:', error);
       window.toast('Erro ao processar. Tente novamente.', 'error');
     } finally {
       document.getElementById('spinner').classList.remove('show');
@@ -390,7 +423,7 @@
 <script>
   // Funções globais
   function fmt(n) {
-    return Number(n).toLocaleString('pt-AO');
+    return Number(n).toLocaleString('pt-AO', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
   }
   
   function calcFee(val) {
@@ -418,9 +451,10 @@
     const t = document.getElementById('toast');
     const m = document.getElementById('toastMsg');
     
+    // Reset
     t.className = 'toast';
     m.textContent = '';
-    void t.offsetHeight;
+    void t.offsetHeight; // Force reflow
     
     m.textContent = msg;
     t.className = 'toast ' + (type || 'success') + ' show';
