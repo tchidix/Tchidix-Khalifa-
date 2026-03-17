@@ -7,390 +7,122 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --red: #C8102E;
-      --red-dark: #A00D24;
-      --red-light: #E8192E;
-      --white: #FFFFFF;
-      --off-white: #F8F6F3;
-      --black: #0D0D0D;
-      --gray-soft: #6B6B6B;
-      --gray-line: #E0DEDD;
-      --input-bg: #FAFAF9;
-      --shadow-card: 0 32px 80px rgba(0,0,0,0.12), 0 8px 24px rgba(0,0,0,0.06);
-      --shadow-btn: 0 8px 32px rgba(200,16,46,0.35);
+      --red: #C8102E; --red-dark: #A00D24; --red-light: #E8192E;
+      --white: #FFFFFF; --off-white: #F8F6F3; --black: #0D0D0D;
+      --gray-soft: #6B6B6B; --gray-line: #E0DEDD; --input-bg: #FAFAF9;
     }
+    html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(--off-white); color: var(--black); overflow-x: hidden; }
 
-    html, body {
-      height: 100%;
-      font-family: 'DM Sans', sans-serif;
-      background: var(--off-white);
-      color: var(--black);
-      overflow-x: hidden;
-    }
+    .bg-layer { position: fixed; inset: 0; z-index: 0; background: var(--off-white); overflow: hidden; }
+    .bg-layer::before { content: ''; position: absolute; top: -20%; right: -15%; width: 700px; height: 700px; border-radius: 50%; background: radial-gradient(circle, rgba(200,16,46,0.08) 0%, transparent 70%); animation: pbg 8s ease-in-out infinite alternate; }
+    .bg-layer::after { content: ''; position: absolute; bottom: -10%; left: -10%; width: 500px; height: 500px; border-radius: 50%; background: radial-gradient(circle, rgba(200,16,46,0.05) 0%, transparent 70%); animation: pbg 10s ease-in-out infinite alternate-reverse; }
+    @keyframes pbg { from { transform: scale(1); } to { transform: scale(1.15); } }
 
-    /* ── BACKGROUND ── */
-    .bg-layer {
-      position: fixed; inset: 0; z-index: 0;
-      background: var(--off-white);
-      overflow: hidden;
-    }
-    .bg-layer::before {
-      content: '';
-      position: absolute;
-      top: -20%; right: -15%;
-      width: 700px; height: 700px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(200,16,46,0.08) 0%, transparent 70%);
-      animation: pulse-bg 8s ease-in-out infinite alternate;
-    }
-    .bg-layer::after {
-      content: '';
-      position: absolute;
-      bottom: -10%; left: -10%;
-      width: 500px; height: 500px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(200,16,46,0.05) 0%, transparent 70%);
-      animation: pulse-bg 10s ease-in-out infinite alternate-reverse;
-    }
-    .bg-line {
-      position: fixed; top: 0; left: 50%;
-      transform: translateX(-50%);
-      width: 1px; height: 100%;
-      background: linear-gradient(to bottom, transparent, rgba(200,16,46,0.1), transparent);
-      z-index: 0;
-    }
-    @keyframes pulse-bg {
-      from { transform: scale(1); opacity: 0.8; }
-      to   { transform: scale(1.15); opacity: 1; }
-    }
+    .page { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; }
 
-    /* ── LAYOUT ── */
-    .page {
-      position: relative; z-index: 1;
-      min-height: 100vh;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      padding: 40px 20px;
-    }
+    .logo-wrap { text-align: center; margin-bottom: 36px; animation: fadeDown .8s ease both; }
+    .logo-emblem { width: 58px; height: 58px; margin: 0 auto 14px; }
+    .logo-emblem svg { width: 100%; height: 100%; filter: drop-shadow(0 4px 14px rgba(200,16,46,0.3)); }
+    .logo-name { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+    .logo-sub { font-size: 10px; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase; color: var(--red); margin-top: 4px; }
 
-    /* ── LOGO AREA ── */
-    .logo-wrap {
-      text-align: center; margin-bottom: 40px;
-      animation: fadeDown 0.8s ease both;
-    }
-    .logo-emblem {
-      width: 64px; height: 64px;
-      margin: 0 auto 16px;
-      position: relative;
-    }
-    .logo-emblem svg {
-      width: 100%; height: 100%;
-      filter: drop-shadow(0 4px 16px rgba(200,16,46,0.3));
-    }
-    .logo-name {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 28px; font-weight: 700;
-      letter-spacing: 0.08em;
-      color: var(--black);
-      text-transform: uppercase;
-    }
-    .logo-sub {
-      font-size: 11px; font-weight: 500;
-      letter-spacing: 0.22em; text-transform: uppercase;
-      color: var(--red); margin-top: 4px;
-    }
+    .card { background: var(--white); border-radius: 24px; padding: 40px 36px; width: 100%; max-width: 420px; box-shadow: 0 32px 80px rgba(0,0,0,0.10); border: 1px solid rgba(200,16,46,0.08); animation: fadeUp .8s ease .2s both; position: relative; overflow: hidden; }
+    .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--red-dark), var(--red-light), var(--red-dark)); background-size: 200% 100%; animation: shimmer 3s linear infinite; }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
-    /* ── CARD ── */
-    .card {
-      background: var(--white);
-      border-radius: 24px;
-      padding: 48px 44px;
-      width: 100%; max-width: 440px;
-      box-shadow: var(--shadow-card);
-      border: 1px solid rgba(200,16,46,0.08);
-      animation: fadeUp 0.8s ease 0.2s both;
-      position: relative;
-      overflow: hidden;
-    }
-    .card::before {
-      content: '';
-      position: absolute; top: 0; left: 0; right: 0;
-      height: 3px;
-      background: linear-gradient(90deg, var(--red-dark), var(--red-light), var(--red-dark));
-      background-size: 200% 100%;
-      animation: shimmer-bar 3s linear infinite;
-    }
-    @keyframes shimmer-bar {
-      0% { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
-    }
+    .tabs { display: flex; gap: 4px; background: var(--off-white); border-radius: 12px; padding: 4px; margin-bottom: 30px; }
+    .tab-btn { flex: 1; padding: 10px; border: none; border-radius: 9px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: all .3s; background: transparent; color: var(--gray-soft); }
+    .tab-btn.active { background: var(--red); color: var(--white); box-shadow: 0 4px 14px rgba(200,16,46,0.28); }
 
-    /* ── TABS ── */
-    .tabs {
-      display: flex; gap: 4px;
-      background: var(--off-white);
-      border-radius: 12px; padding: 4px;
-      margin-bottom: 36px;
-    }
-    .tab-btn {
-      flex: 1; padding: 10px;
-      border: none; border-radius: 9px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px; font-weight: 500;
-      cursor: pointer; transition: all 0.3s ease;
-      background: transparent; color: var(--gray-soft);
-      letter-spacing: 0.02em;
-    }
-    .tab-btn.active {
-      background: var(--red);
-      color: var(--white);
-      box-shadow: 0 4px 16px rgba(200,16,46,0.28);
-    }
-
-    /* ── FORM PANELS ── */
     .form-panel { display: none; }
-    .form-panel.visible { display: block; animation: fadeIn 0.4s ease; }
+    .form-panel.visible { display: block; animation: fadeIn .4s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 
-    /* ── FORM TITLE ── */
-    .form-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 26px; font-weight: 600;
-      color: var(--black); margin-bottom: 6px;
-    }
-    .form-desc {
-      font-size: 13px; color: var(--gray-soft);
-      margin-bottom: 28px; line-height: 1.5;
-    }
+    .form-title { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; margin-bottom: 5px; }
+    .form-desc { font-size: 12px; color: var(--gray-soft); margin-bottom: 24px; line-height: 1.5; }
 
-    /* ── FIELD ── */
-    .field { margin-bottom: 18px; position: relative; }
-    .field label {
-      display: block; font-size: 12px; font-weight: 500;
-      letter-spacing: 0.06em; text-transform: uppercase;
-      color: var(--gray-soft); margin-bottom: 7px;
-    }
+    .field { margin-bottom: 15px; }
+    .field label { display: block; font-size: 11px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--gray-soft); margin-bottom: 6px; }
     .input-wrap { position: relative; }
-    .input-wrap svg.icon {
-      position: absolute; left: 14px; top: 50%;
-      transform: translateY(-50%);
-      width: 18px; height: 18px;
-      color: var(--gray-soft); pointer-events: none;
-      transition: color 0.25s;
-    }
-    .input-wrap input {
-      width: 100%; padding: 13px 14px 13px 42px;
-      border: 1.5px solid var(--gray-line);
-      border-radius: 12px; font-size: 14px;
-      font-family: 'DM Sans', sans-serif;
-      background: var(--input-bg); color: var(--black);
-      transition: all 0.25s ease; outline: none;
-      -webkit-appearance: none;
-    }
-    .input-wrap input:focus {
-      border-color: var(--red);
-      background: var(--white);
-      box-shadow: 0 0 0 4px rgba(200,16,46,0.08);
-    }
-    .input-wrap input:focus + svg.icon,
-    .input-wrap input:focus ~ svg.icon { color: var(--red); }
+    .input-wrap svg.icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--gray-soft); pointer-events: none; transition: color .25s; }
+    .input-wrap input { width: 100%; padding: 12px 12px 12px 38px; border: 1.5px solid var(--gray-line); border-radius: 12px; font-size: 14px; font-family: 'DM Sans', sans-serif; background: var(--input-bg); color: var(--black); transition: all .25s; outline: none; -webkit-appearance: none; }
+    .input-wrap input:focus { border-color: var(--red); background: var(--white); box-shadow: 0 0 0 4px rgba(200,16,46,0.08); }
     .input-wrap input::placeholder { color: #BCBCBC; }
 
-    /* phone prefix */
-    .phone-row { display: flex; gap: 10px; }
-    .prefix-select {
-      display: flex; align-items: center; gap: 8px;
-      border: 1.5px solid var(--gray-line);
-      border-radius: 12px; padding: 0 14px;
-      background: var(--input-bg); cursor: pointer;
-      font-size: 13px; font-weight: 500;
-      white-space: nowrap; min-width: 110px;
-      color: var(--black); transition: all 0.25s;
-      position: relative;
-    }
+    /* REFERRAL FIELD — smaller, inline */
+    .ref-field { margin-bottom: 15px; }
+    .ref-field label { display: block; font-size: 11px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--gray-soft); margin-bottom: 6px; }
+    .ref-input-wrap { position: relative; display: flex; align-items: center; }
+    .ref-input-wrap svg.icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; color: var(--gray-soft); pointer-events: none; }
+    .ref-input { width: 100%; padding: 9px 10px 9px 34px; border: 1.5px solid var(--gray-line); border-radius: 10px; font-size: 12px; font-family: 'DM Sans', sans-serif; background: var(--input-bg); color: var(--black); transition: all .25s; outline: none; letter-spacing: .06em; -webkit-appearance: none; }
+    .ref-input:focus { border-color: var(--red); background: var(--white); box-shadow: 0 0 0 3px rgba(200,16,46,0.07); }
+    .ref-input::placeholder { color: #BCBCBC; font-size: 11px; }
+    .ref-input.auto-filled { border-color: #16A34A; background: rgba(22,163,74,0.04); color: #15803D; font-weight: 600; }
+
+    .phone-row { display: flex; gap: 8px; }
+    .prefix-select { display: flex; align-items: center; gap: 6px; border: 1.5px solid var(--gray-line); border-radius: 12px; padding: 0 12px; background: var(--input-bg); cursor: pointer; font-size: 12px; font-weight: 500; white-space: nowrap; min-width: 100px; color: var(--black); transition: all .25s; }
     .prefix-select:focus-within { border-color: var(--red); box-shadow: 0 0 0 4px rgba(200,16,46,0.08); }
-    .prefix-select select {
-      border: none; background: transparent;
-      font-family: 'DM Sans', sans-serif; font-size: 13px;
-      cursor: pointer; outline: none; width: 100%; color: var(--black);
-      -webkit-appearance: none; appearance: none;
-    }
-    .flag { font-size: 18px; pointer-events: none; }
+    .prefix-select select { border: none; background: transparent; font-family: 'DM Sans', sans-serif; font-size: 12px; cursor: pointer; outline: none; width: 100%; color: var(--black); -webkit-appearance: none; }
+    .flag { font-size: 17px; pointer-events: none; }
     .phone-row .input-wrap { flex: 1; }
 
-    /* PIN field */
-    .pin-row { display: flex; gap: 10px; justify-content: space-between; }
-    .pin-digit {
-      width: 52px; height: 58px;
-      border: 1.5px solid var(--gray-line);
-      border-radius: 12px; text-align: center;
-      font-size: 22px; font-weight: 600;
-      font-family: 'DM Sans', sans-serif;
-      background: var(--input-bg); color: var(--black);
-      transition: all 0.25s; outline: none;
-      -webkit-appearance: none;
-    }
-    .pin-digit:focus {
-      border-color: var(--red);
-      background: var(--white);
-      box-shadow: 0 0 0 4px rgba(200,16,46,0.08);
-      transform: scale(1.05);
-    }
-    .pin-digit.filled { border-color: var(--red); }
+    .pin-row { display: flex; gap: 8px; justify-content: space-between; }
+    .pin-digit { width: 100%; height: 54px; border: 1.5px solid var(--gray-line); border-radius: 12px; text-align: center; font-size: 22px; font-weight: 600; font-family: 'DM Sans', sans-serif; background: var(--input-bg); color: var(--black); transition: all .25s; outline: none; -webkit-appearance: none; }
+    .pin-digit:focus { border-color: var(--red); background: var(--white); box-shadow: 0 0 0 4px rgba(200,16,46,0.08); transform: scale(1.05); }
+    .pin-digit.filled { border-color: rgba(200,16,46,0.4); }
 
-    /* ── BTN ── */
-    .btn-main {
-      width: 100%; padding: 15px;
-      background: var(--red);
-      color: var(--white); border: none;
-      border-radius: 13px; font-family: 'DM Sans', sans-serif;
-      font-size: 15px; font-weight: 600;
-      letter-spacing: 0.04em; cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: var(--shadow-btn);
-      margin-top: 8px; position: relative; overflow: hidden;
-    }
-    .btn-main:hover {
-      background: var(--red-dark);
-      box-shadow: 0 12px 40px rgba(200,16,46,0.45);
-      transform: translateY(-1px);
-    }
+    .btn-main { width: 100%; padding: 14px; background: var(--red); color: var(--white); border: none; border-radius: 13px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; letter-spacing: .04em; cursor: pointer; transition: all .3s; box-shadow: 0 8px 28px rgba(200,16,46,0.30); margin-top: 6px; position: relative; overflow: hidden; }
+    .btn-main:hover { background: var(--red-dark); box-shadow: 0 12px 36px rgba(200,16,46,0.42); transform: translateY(-1px); }
     .btn-main:active { transform: translateY(0); }
-    .btn-main::after {
-      content: '';
-      position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 60%);
-    }
-    .btn-main:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+    .btn-main:disabled { opacity: .65; cursor: not-allowed; transform: none; }
+    .btn-main::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,.1) 0%, transparent 60%); }
 
-    /* ── SPINNER OVERLAY ── */
-    .spinner-overlay {
-      position: fixed; inset: 0; z-index: 1000;
-      background: rgba(248,246,243,0.85);
-      backdrop-filter: blur(8px);
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      opacity: 0; pointer-events: none;
-      transition: opacity 0.3s ease;
-    }
+    /* SPINNER */
+    .spinner-overlay { position: fixed; inset: 0; z-index: 1000; background: rgba(248,246,243,.88); backdrop-filter: blur(8px); display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .3s; }
     .spinner-overlay.show { opacity: 1; pointer-events: all; }
-
-    .spinner-ring {
-      width: 72px; height: 72px; position: relative;
-    }
-    .spinner-ring svg {
-      width: 100%; height: 100%;
-      animation: spin 1.2s linear infinite;
-    }
+    .spinner-ring { width: 68px; height: 68px; }
+    .spinner-ring svg { width: 100%; height: 100%; animation: spin 1.2s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .spinner-ring svg circle {
-      fill: none; stroke-width: 3;
-      stroke-linecap: round;
-    }
-    .spinner-ring svg circle.track { stroke: rgba(200,16,46,0.15); }
-    .spinner-ring svg circle.arc {
-      stroke: var(--red);
-      stroke-dasharray: 160;
-      stroke-dashoffset: 40;
-    }
-    .spinner-label {
-      margin-top: 20px; font-size: 14px;
-      font-weight: 500; color: var(--gray-soft);
-      letter-spacing: 0.04em;
-    }
+    .spinner-ring svg circle { fill: none; stroke-width: 3; stroke-linecap: round; }
+    .spinner-ring svg circle.track { stroke: rgba(200,16,46,.15); }
+    .spinner-ring svg circle.arc { stroke: var(--red); stroke-dasharray: 160; stroke-dashoffset: 40; }
+    .spinner-label { margin-top: 18px; font-size: 13px; font-weight: 500; color: var(--gray-soft); letter-spacing: .04em; }
 
-    /* ── SUCCESS / ERROR TOAST ── */
-    .toast {
-      position: fixed; top: 24px; left: 50%;
-      transform: translateX(-50%) translateY(-120%);
-      background: var(--white);
-      border-radius: 14px; padding: 14px 24px;
-      box-shadow: 0 16px 48px rgba(0,0,0,0.12);
-      border-left: 4px solid var(--red);
-      display: flex; align-items: center; gap: 12px;
-      font-size: 14px; font-weight: 500; z-index: 2000;
-      transition: transform 0.5s cubic-bezier(.175,.885,.32,1.275);
-      max-width: 90vw;
-    }
-    .toast.show { transform: translateX(-50%) translateY(0); }
+    /* TOAST — fixed invisible by default, fully gone when not showing */
+    .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(calc(-100% - 30px)); opacity: 0; visibility: hidden; background: var(--white); border-radius: 13px; padding: 12px 18px; box-shadow: 0 14px 44px rgba(0,0,0,.13); border-left: 4px solid var(--red); display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 500; z-index: 9999; transition: transform .4s cubic-bezier(.22,1,.36,1), opacity .4s ease, visibility 0s linear .4s; max-width: 92vw; pointer-events: none; }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; visibility: visible; pointer-events: all; transition: transform .4s cubic-bezier(.22,1,.36,1), opacity .4s ease, visibility 0s linear 0s; }
     .toast.success { border-left-color: #16A34A; }
     .toast.error { border-left-color: var(--red); }
-    .toast-icon { width: 20px; height: 20px; flex-shrink: 0; }
+    .toast-icon { width: 18px; height: 18px; flex-shrink: 0; }
 
-    /* ── ID REVEAL ── */
-    .id-reveal {
-      background: linear-gradient(135deg, var(--red) 0%, var(--red-dark) 100%);
-      border-radius: 16px; padding: 28px;
-      text-align: center; color: var(--white);
-      display: none; margin-top: 24px;
-    }
-    .id-reveal.show { display: block; animation: fadeUp 0.5s ease; }
-    .id-reveal .id-label {
-      font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
-      opacity: 0.75; margin-bottom: 10px;
-    }
-    .id-reveal .id-code {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 38px; font-weight: 700; letter-spacing: 0.12em;
-    }
-    .id-reveal .id-note {
-      font-size: 12px; opacity: 0.7; margin-top: 10px; line-height: 1.5;
-    }
+    /* ID REVEAL */
+    .id-reveal { background: linear-gradient(135deg, var(--red) 0%, var(--red-dark) 100%); border-radius: 16px; padding: 24px; text-align: center; color: var(--white); display: none; margin-top: 20px; }
+    .id-reveal.show { display: block; animation: fadeUp .5s ease; }
+    .id-reveal .id-label { font-size: 10px; letter-spacing: .18em; text-transform: uppercase; opacity: .75; margin-bottom: 8px; }
+    .id-reveal .id-code { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 700; letter-spacing: .12em; }
+    .id-reveal .id-note { font-size: 11px; opacity: .7; margin-top: 8px; line-height: 1.5; }
 
-    /* ── DIVIDER ── */
-    .divider {
-      display: flex; align-items: center; gap: 12px;
-      margin: 20px 0; color: var(--gray-soft); font-size: 12px;
-    }
-    .divider::before, .divider::after {
-      content: ''; flex: 1; height: 1px; background: var(--gray-line);
-    }
-
-    /* ── FOOTER NOTE ── */
-    .foot-note {
-      text-align: center; margin-top: 28px;
-      font-size: 12px; color: var(--gray-soft);
-      animation: fadeUp 1s ease 0.5s both;
-    }
+    .foot-note { text-align: center; margin-top: 24px; font-size: 11px; color: var(--gray-soft); animation: fadeUp 1s ease .5s both; }
     .foot-note strong { color: var(--red); font-weight: 600; }
 
-    /* ── KEYFRAMES ── */
-    @keyframes fadeDown {
-      from { opacity: 0; transform: translateY(-20px); }
-      to   { opacity: 1; transform: none; }
-    }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to   { opacity: 1; transform: none; }
-    }
+    @keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: none; } }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
 
-    /* ── RESPONSIVE ── */
     @media (max-width: 480px) {
-      .card { padding: 36px 24px; }
-      .pin-digit { width: 44px; height: 52px; font-size: 20px; }
+      .card { padding: 32px 22px; }
+      .pin-digit { height: 50px; font-size: 20px; }
     }
   </style>
 </head>
 <body>
-
-<!-- Background -->
 <div class="bg-layer"></div>
-<div class="bg-line"></div>
 
-<!-- Spinner overlay -->
 <div class="spinner-overlay" id="spinnerOverlay">
-  <div class="spinner-ring">
-    <svg viewBox="0 0 72 72">
-      <circle class="track" cx="36" cy="36" r="30" />
-      <circle class="arc" cx="36" cy="36" r="30" />
-    </svg>
-  </div>
+  <div class="spinner-ring"><svg viewBox="0 0 72 72"><circle class="track" cx="36" cy="36" r="30"/><circle class="arc" cx="36" cy="36" r="30"/></svg></div>
   <p class="spinner-label" id="spinnerLabel">A processar...</p>
 </div>
 
-<!-- Toast -->
 <div class="toast" id="toast">
   <svg class="toast-icon" id="toastIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
     <polyline points="20 6 9 17 4 12"></polyline>
@@ -398,37 +130,30 @@
   <span id="toastMsg"></span>
 </div>
 
-<!-- Page -->
 <div class="page">
-
-  <!-- Logo -->
   <div class="logo-wrap">
     <div class="logo-emblem">
       <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
         <polygon points="32,4 60,52 4,52" fill="none" stroke="#C8102E" stroke-width="3.5" stroke-linejoin="round"/>
         <line x1="32" y1="16" x2="32" y2="44" stroke="#C8102E" stroke-width="2.5" stroke-linecap="round"/>
         <line x1="20" y1="44" x2="44" y2="44" stroke="#C8102E" stroke-width="2.5" stroke-linecap="round"/>
-        <circle cx="32" cy="32" r="6" fill="#C8102E" opacity="0.18"/>
+        <circle cx="32" cy="32" r="6" fill="#C8102E" opacity="0.15"/>
       </svg>
     </div>
     <div class="logo-name">Magnus Capital</div>
     <div class="logo-sub">Plataforma de Investimento</div>
   </div>
 
-  <!-- Card -->
   <div class="card">
-
-    <!-- Tabs -->
     <div class="tabs">
       <button class="tab-btn active" id="tabLogin" onclick="switchTab('login')">Entrar</button>
       <button class="tab-btn" id="tabRegister" onclick="switchTab('register')">Criar Conta</button>
     </div>
 
-    <!-- ===== LOGIN PANEL ===== -->
+    <!-- LOGIN -->
     <div class="form-panel visible" id="panelLogin">
       <div class="form-title">Bem-vindo de volta</div>
       <p class="form-desc">Aceda à sua conta Magnus Capital</p>
-
       <div class="field">
         <label>Telefone</label>
         <div class="phone-row">
@@ -439,35 +164,30 @@
               <option value="+351">🇵🇹 +351</option>
             </select>
           </div>
-          <div class="input-wrap" style="flex:1;">
-            <input type="tel" id="loginPhone" placeholder="900 000 000" maxlength="15" />
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.39 19a19.5 19.5 0 0 1-6.39-6.39A19.79 19.79 0 0 1 2.1 4.19 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
-            </svg>
+          <div class="input-wrap">
+            <input type="tel" id="loginPhone" placeholder="900 000 000" maxlength="15"/>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.39 19a19.5 19.5 0 0 1-6.39-6.39A19.79 19.79 0 0 1 2.1 4.19 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
           </div>
         </div>
       </div>
-
       <div class="field">
         <label>Senha (6 dígitos)</label>
         <div class="pin-row" id="loginPinRow">
-          <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" pattern="[0-9]" />
-          <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" pattern="[0-9]" />
-          <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" pattern="[0-9]" />
-          <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" pattern="[0-9]" />
-          <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" pattern="[0-9]" />
-          <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" pattern="[0-9]" />
+          <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" pattern="[0-9]"/>
+          <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" pattern="[0-9]"/>
+          <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" pattern="[0-9]"/>
+          <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" pattern="[0-9]"/>
+          <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" pattern="[0-9]"/>
+          <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" pattern="[0-9]"/>
         </div>
       </div>
-
       <button class="btn-main" onclick="doLogin()">Entrar na Conta</button>
     </div>
 
-    <!-- ===== REGISTER PANEL ===== -->
+    <!-- REGISTER -->
     <div class="form-panel" id="panelRegister">
       <div class="form-title">Criar Conta</div>
-      <p class="form-desc">Junte-se à Magnus Capital e comece a investir hoje</p>
-
+      <p class="form-desc">Junte-se à Magnus Capital e comece a investir</p>
       <div class="field">
         <label>Telefone</label>
         <div class="phone-row">
@@ -478,230 +198,168 @@
               <option value="+351">🇵🇹 +351</option>
             </select>
           </div>
-          <div class="input-wrap" style="flex:1;">
-            <input type="tel" id="regPhone" placeholder="900 000 000" maxlength="15" />
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.39 19a19.5 19.5 0 0 1-6.39-6.39A19.79 19.79 0 0 1 2.1 4.19 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
-            </svg>
+          <div class="input-wrap">
+            <input type="tel" id="regPhone" placeholder="900 000 000" maxlength="15"/>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.39 19a19.5 19.5 0 0 1-6.39-6.39A19.79 19.79 0 0 1 2.1 4.19 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
           </div>
         </div>
       </div>
-
       <div class="field">
         <label>Email</label>
         <div class="input-wrap">
-          <input type="email" id="regEmail" placeholder="exemplo@email.com" />
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-            <polyline points="22,6 12,13 2,6"/>
-          </svg>
+          <input type="email" id="regEmail" placeholder="exemplo@email.com"/>
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
         </div>
       </div>
-
       <div class="field">
         <label>Senha (6 dígitos)</label>
         <div class="pin-row" id="regPinRow">
-          <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" pattern="[0-9]" />
-          <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" pattern="[0-9]" />
-          <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" pattern="[0-9]" />
-          <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" pattern="[0-9]" />
-          <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" pattern="[0-9]" />
-          <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" pattern="[0-9]" />
+          <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" pattern="[0-9]"/>
+          <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" pattern="[0-9]"/>
+          <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" pattern="[0-9]"/>
+          <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" pattern="[0-9]"/>
+          <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" pattern="[0-9]"/>
+          <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" pattern="[0-9]"/>
         </div>
       </div>
-
+      <!-- REFERRAL — small field -->
+      <div class="ref-field">
+        <label>Código de Convite <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#BCBCBC">(opcional)</span></label>
+        <div class="ref-input-wrap">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>
+          <input class="ref-input" type="text" id="refCode" placeholder="Ex: MCWRLKS6" maxlength="10" style="text-transform:uppercase"/>
+        </div>
+      </div>
       <button class="btn-main" onclick="doRegister()">Criar Conta</button>
-
-      <!-- ID reveal block -->
       <div class="id-reveal" id="idReveal">
         <div class="id-label">O seu ID de conta</div>
         <div class="id-code" id="idCode">—</div>
         <div class="id-note">Guarde este código. Será necessário para aceder ao suporte.</div>
       </div>
     </div>
-
-  </div><!-- /card -->
+  </div>
 
   <p class="foot-note">Plataforma regulada e segura &nbsp;&middot;&nbsp; <strong>Magnus Capital</strong></p>
+</div>
 
-</div><!-- /page -->
-
-<!-- Firebase SDKs -->
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import {
-    getAuth,
-    signInWithEmailAndPassword,
-    createUserWithEmailAndPassword,
-    updateProfile
-  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import {
-    getFirestore, doc, setDoc, getDoc
-  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import{getAuth,signInWithEmailAndPassword,createUserWithEmailAndPassword,updateProfile}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import{getFirestore,doc,setDoc,getDoc,updateDoc,increment}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  const cfg={apiKey:"AIzaSyBp8X1PPp3FqiQ6OXErr8Mu11GEp6MZ2-U",authDomain:"ascend-34bf0.firebaseapp.com",projectId:"ascend-34bf0",storageBucket:"ascend-34bf0.firebasestorage.app",messagingSenderId:"592623076677",appId:"1:592623076677:web:c5615719870aefdabf6a2c"};
+  const app=initializeApp(cfg);const auth=getAuth(app);const db=getFirestore(app);
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyBp8X1PPp3FqiQ6OXErr8Mu11GEp6MZ2-U",
-    authDomain: "ascend-34bf0.firebaseapp.com",
-    projectId: "ascend-34bf0",
-    storageBucket: "ascend-34bf0.firebasestorage.app",
-    messagingSenderId: "592623076677",
-    appId: "1:592623076677:web:c5615719870aefdabf6a2c"
-  };
+  function genId(){const c='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';let id='MC';for(let i=0;i<6;i++)id+=c[Math.floor(Math.random()*c.length)];return id;}
+  function getPin(rowId){return Array.from(document.querySelectorAll(`#${rowId} .pin-digit`)).map(d=>d.value).join('');}
+  function buildEmail(prefix,phone){return `${prefix.replace('+','')}${phone.replace(/\s/g,'')}@magnuscapital.app`;}
+  function showSpinner(l){document.getElementById('spinnerLabel').textContent=l||'A processar...';document.getElementById('spinnerOverlay').classList.add('show');}
+  function hideSpinner(){document.getElementById('spinnerOverlay').classList.remove('show');}
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-
-  /* ── Helpers ── */
-  function generateAccountId() {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let id = 'MC';
-    for (let i = 0; i < 6; i++) id += chars[Math.floor(Math.random() * chars.length)];
-    return id;
-  }
-
-  function getPinValue(rowId) {
-    const digits = document.querySelectorAll(`#${rowId} .pin-digit`);
-    return Array.from(digits).map(d => d.value).join('');
-  }
-
-  function buildEmail(prefix, phone) {
-    return `${prefix.replace('+','')}${phone.replace(/\s/g,'')}@magnuscapital.app`;
-  }
-
-  function showSpinner(label) {
-    document.getElementById('spinnerLabel').textContent = label || 'A processar...';
-    document.getElementById('spinnerOverlay').classList.add('show');
-  }
-  function hideSpinner() {
-    document.getElementById('spinnerOverlay').classList.remove('show');
-  }
-
-  function showToast(msg, type = 'success') {
-    const t = document.getElementById('toast');
-    const icon = document.getElementById('toastIcon');
-    document.getElementById('toastMsg').textContent = msg;
-    t.className = `toast ${type}`;
-    if (type === 'success') {
-      icon.innerHTML = '<polyline points="20 6 9 17 4 12"></polyline>';
-    } else {
-      icon.innerHTML = '<circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>';
-    }
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 4000);
-  }
-
-  /* ── Login ── */
-  window.doLogin = async function() {
-    const prefix = document.getElementById('loginPrefix').value;
-    const phone  = document.getElementById('loginPhone').value.trim();
-    const pin    = getPinValue('loginPinRow');
-
-    if (!phone) return showToast('Introduza o seu número de telefone.', 'error');
-    if (pin.length < 6) return showToast('Introduza os 6 dígitos da senha.', 'error');
-
-    const email = buildEmail(prefix, phone);
-    const password = pin;
-
+  window.doLogin=async function(){
+    const prefix=document.getElementById('loginPrefix').value;
+    const phone=document.getElementById('loginPhone').value.trim();
+    const pin=getPin('loginPinRow');
+    if(!phone)return toast('Introduza o seu número de telefone.','error');
+    if(pin.length<6)return toast('Introduza os 6 dígitos da senha.','error');
     showSpinner('A verificar credenciais...');
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      hideSpinner();
-      showToast('Acesso autorizado! A redirecionar...', 'success');
-      setTimeout(() => window.location.href = 'index.html', 1800);
-    } catch (err) {
-      hideSpinner();
-      showToast('Credenciais inválidas. Verifique e tente novamente.', 'error');
-    }
+    try{
+      await signInWithEmailAndPassword(auth,buildEmail(prefix,phone),pin);
+      hideSpinner();toast('Acesso autorizado!','success');
+      setTimeout(()=>window.location.href='index.html',1600);
+    }catch(e){hideSpinner();toast('Credenciais inválidas. Verifique e tente novamente.','error');}
   };
 
-  /* ── Register ── */
-  window.doRegister = async function() {
-    const prefix  = document.getElementById('regPrefix').value;
-    const phone   = document.getElementById('regPhone').value.trim();
-    const email   = document.getElementById('regEmail').value.trim();
-    const pin     = getPinValue('regPinRow');
-
-    if (!phone) return showToast('Introduza o seu número de telefone.', 'error');
-    if (!email || !email.includes('@')) return showToast('Introduza um email válido.', 'error');
-    if (pin.length < 6) return showToast('Defina os 6 dígitos da senha.', 'error');
-
-    const authEmail = buildEmail(prefix, phone);
-    const accountId = generateAccountId();
-
+  window.doRegister=async function(){
+    const prefix=document.getElementById('regPrefix').value;
+    const phone=document.getElementById('regPhone').value.trim();
+    const email=document.getElementById('regEmail').value.trim();
+    const pin=getPin('regPinRow');
+    const ref=document.getElementById('refCode').value.trim().toUpperCase();
+    if(!phone)return toast('Introduza o seu número de telefone.','error');
+    if(!email||!email.includes('@'))return toast('Introduza um email válido.','error');
+    if(pin.length<6)return toast('Defina os 6 dígitos da senha.','error');
+    const accountId=genId();
     showSpinner('A criar a sua conta...');
-    try {
-      const cred = await createUserWithEmailAndPassword(auth, authEmail, pin);
-      await updateProfile(cred.user, { displayName: accountId });
-      await setDoc(doc(db, 'users', cred.user.uid), {
-        accountId,
-        phone: prefix + phone,
-        email,
-        createdAt: new Date().toISOString(),
-        level: 'G0',
-        balance: 0,
-        invested: false
-      });
-
-      hideSpinner();
-      document.getElementById('idCode').textContent = accountId;
-      document.getElementById('idReveal').classList.add('show');
-      showToast('Conta criada com sucesso!', 'success');
-      setTimeout(() => window.location.href = 'index.html', 5000);
-    } catch (err) {
-      hideSpinner();
-      if (err.code === 'auth/email-already-in-use') {
-        showToast('Este número já está registado. Faça login.', 'error');
-      } else {
-        showToast('Erro ao criar conta. Tente novamente.', 'error');
+    try{
+      const cred=await createUserWithEmailAndPassword(auth,buildEmail(prefix,phone),pin);
+      await updateProfile(cred.user,{displayName:accountId});
+      await setDoc(doc(db,'users',cred.user.uid),{accountId,phone:prefix+phone,email,referredBy:ref||null,createdAt:new Date().toISOString(),level:'G0',balance:0,invested:false,referralCount:0});
+      // credit referrer if valid
+      if(ref){
+        // find referrer by accountId — simplified: store ref for admin to process
+        // In production: query users collection where accountId==ref
       }
+      hideSpinner();
+      document.getElementById('idCode').textContent=accountId;
+      document.getElementById('idReveal').classList.add('show');
+      toast('Conta criada com sucesso!','success');
+      setTimeout(()=>window.location.href='index.html',5000);
+    }catch(e){
+      hideSpinner();
+      if(e.code==='auth/email-already-in-use')toast('Este número já está registado. Faça login.','error');
+      else toast('Erro ao criar conta. Tente novamente.','error');
     }
   };
 </script>
 
 <script>
-  /* ── Tab Switch ── */
-  function switchTab(tab) {
-    document.getElementById('panelLogin').classList.toggle('visible', tab === 'login');
-    document.getElementById('panelRegister').classList.toggle('visible', tab === 'register');
-    document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
-    document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
+  // Read referral code from URL and auto-fill
+  (function(){
+    const params=new URLSearchParams(window.location.search);
+    const ref=params.get('ref');
+    if(ref){
+      // Switch to register tab and fill the code
+      switchTab('register');
+      const inp=document.getElementById('refCode');
+      if(inp){inp.value=ref.toUpperCase();inp.classList.add('auto-filled');}
+    }
+  })();
+
+  function switchTab(tab){
+    document.getElementById('panelLogin').classList.toggle('visible',tab==='login');
+    document.getElementById('panelRegister').classList.toggle('visible',tab==='register');
+    document.getElementById('tabLogin').classList.toggle('active',tab==='login');
+    document.getElementById('tabRegister').classList.toggle('active',tab==='register');
+  }
+  function updateFlag(flagId,selectId){
+    document.getElementById(flagId).textContent=document.getElementById(selectId).value==='+244'?'🇦🇴':'🇵🇹';
   }
 
-  /* ── Flag update ── */
-  function updateFlag(flagId, selectId) {
-    const val = document.getElementById(selectId).value;
-    document.getElementById(flagId).textContent = val === '+244' ? '🇦🇴' : '🇵🇹';
-  }
-
-  /* ── PIN keyboard nav ── */
-  document.querySelectorAll('.pin-digit').forEach((input, i, arr) => {
-    input.addEventListener('input', e => {
-      const val = e.target.value.replace(/[^0-9]/g, '');
-      e.target.value = val;
-      if (val) {
-        e.target.classList.add('filled');
-        const next = arr[i + 1];
-        if (next) next.focus();
-      } else {
-        e.target.classList.remove('filled');
+  // PIN navigation
+  document.querySelectorAll('.pin-digit').forEach((input,i,arr)=>{
+    input.addEventListener('input',e=>{
+      const v=e.target.value.replace(/[^0-9]/g,'');
+      e.target.value=v;
+      if(v){e.target.classList.add('filled');const n=arr[i+1];if(n)n.focus();}
+      else e.target.classList.remove('filled');
+    });
+    input.addEventListener('keydown',e=>{
+      if(e.key==='Backspace'&&!e.target.value){
+        const p=arr[i-1];if(p){p.value='';p.classList.remove('filled');p.focus();}
       }
     });
-    input.addEventListener('keydown', e => {
-      if (e.key === 'Backspace' && !e.target.value) {
-        const prev = arr[i - 1];
-        if (prev) { prev.value = ''; prev.classList.remove('filled'); prev.focus(); }
-      }
-    });
-    input.addEventListener('paste', e => {
+    input.addEventListener('paste',e=>{
       e.preventDefault();
-      const text = (e.clipboardData || window.clipboardData).getData('text').replace(/[^0-9]/g,'');
-      [...text.slice(0,6)].forEach((ch, j) => {
-        if (arr[i+j]) { arr[i+j].value = ch; arr[i+j].classList.add('filled'); }
-      });
+      const t=(e.clipboardData||window.clipboardData).getData('text').replace(/[^0-9]/g,'');
+      [...t.slice(0,6)].forEach((ch,j)=>{if(arr[i+j]){arr[i+j].value=ch;arr[i+j].classList.add('filled');}});
     });
   });
-</script>
 
+  // TOAST
+  let _tt=null;
+  function toast(msg,type='success'){
+    if(_tt)clearTimeout(_tt);
+    const t=document.getElementById('toast');
+    const ic=document.getElementById('toastIcon');
+    t.className='toast';document.getElementById('toastMsg').textContent='';
+    void t.offsetHeight;
+    document.getElementById('toastMsg').textContent=msg;
+    if(type==='success')ic.innerHTML='<polyline points="20 6 9 17 4 12"></polyline>';
+    else ic.innerHTML='<circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>';
+    t.className='toast '+type+' show';
+    _tt=setTimeout(()=>{t.classList.remove('show');_tt=setTimeout(()=>{t.className='toast';},450);},3200);
+  }
+  window.toast=toast;
+</script>
 </body>
 </html>
