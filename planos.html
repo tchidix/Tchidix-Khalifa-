@@ -15,60 +15,51 @@
     .back-btn{width:36px;height:36px;border:1.5px solid var(--gray-line);border-radius:10px;background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;text-decoration:none;color:var(--black);transition:all .25s;flex-shrink:0}
     .back-btn:hover{border-color:var(--red);color:var(--red)}
     .h-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700}
-    .content{position:relative;z-index:1;padding:24px 20px 60px;max-width:500px;margin:0 auto}
-
-    /* HERO */
-    .hero{text-align:center;margin-bottom:28px;animation:fadeUp .6s ease both}
-    .hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(200,16,46,.08);color:var(--red);border:1px solid rgba(200,16,46,.2);border-radius:20px;padding:6px 14px;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px}
-    .hero-title{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:700;line-height:1.2;margin-bottom:10px}
-    .hero-desc{font-size:13px;color:var(--gray-soft);line-height:1.7;max-width:340px;margin:0 auto}
-
-    /* BENEFITS */
-    .benefits{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px;animation:fadeUp .6s ease .1s both}
-    .benefit{background:var(--white);border-radius:14px;padding:14px;display:flex;align-items:center;gap:10px;border:1px solid var(--gray-line);box-shadow:0 2px 10px rgba(0,0,0,.03)}
-    .benefit-icon{width:34px;height:34px;background:rgba(200,16,46,.08);border-radius:9px;display:flex;align-items:center;justify-content:center;color:var(--red);flex-shrink:0}
-    .benefit-icon svg{width:16px;height:16px}
-    .benefit-text{font-size:12px;font-weight:500;line-height:1.4}
-
-    /* PLANS GRID */
-    .section-label{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--gray-soft);margin-bottom:14px}
-    .plans-list{display:flex;flex-direction:column;gap:12px}
-    .plan-card{background:var(--white);border-radius:18px;padding:20px;border:1.5px solid var(--gray-line);box-shadow:0 4px 16px rgba(0,0,0,.04);transition:all .3s;animation:fadeUp .6s ease both;cursor:pointer}
-    .plan-card:hover{border-color:var(--red);transform:translateY(-2px);box-shadow:0 8px 28px rgba(200,16,46,.1)}
-    .plan-card.featured{border-color:var(--red);background:linear-gradient(135deg,rgba(200,16,46,.03) 0%,var(--white) 100%)}
-    .plan-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
-    .plan-name{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700}
-    .plan-rate-badge{background:var(--red);color:var(--white);font-size:13px;font-weight:700;padding:5px 12px;border-radius:8px}
-    .plan-stats{display:flex;gap:0;border-top:1px solid var(--gray-line);padding-top:14px}
+    .content{position:relative;z-index:1;padding:24px 20px 40px;max-width:500px;margin:0 auto}
+    .hero{text-align:center;margin-bottom:24px;animation:fadeUp .6s ease both}
+    .hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(200,16,46,.08);color:var(--red);border:1px solid rgba(200,16,46,.2);border-radius:20px;padding:5px 13px;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;margin-bottom:12px}
+    .hero-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;line-height:1.2;margin-bottom:8px}
+    .hero-desc{font-size:12px;color:var(--gray-soft);line-height:1.7;max-width:320px;margin:0 auto}
+    .benefits{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;animation:fadeUp .6s ease .08s both}
+    .benefit{background:var(--white);border-radius:13px;padding:13px;display:flex;align-items:center;gap:10px;border:1px solid var(--gray-line);box-shadow:0 2px 10px rgba(0,0,0,.03)}
+    .benefit-icon{width:32px;height:32px;background:rgba(200,16,46,.08);border-radius:9px;display:flex;align-items:center;justify-content:center;color:var(--red);flex-shrink:0}
+    .benefit-icon svg{width:15px;height:15px}
+    .benefit-text{font-size:11px;font-weight:500;line-height:1.4}
+    .section-label{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--gray-soft);margin-bottom:12px}
+    .plans-list{display:flex;flex-direction:column;gap:11px}
+    .plan-card{background:var(--white);border-radius:16px;padding:18px 20px;border:1.5px solid var(--gray-line);box-shadow:0 3px 14px rgba(0,0,0,.04);transition:all .3s;animation:fadeUp .5s ease both}
+    .plan-card:hover{border-color:var(--red);transform:translateY(-2px);box-shadow:0 8px 26px rgba(200,16,46,.1)}
+    .plan-card.featured{border-color:rgba(200,16,46,.35);background:linear-gradient(135deg,rgba(200,16,46,.03) 0%,var(--white) 100%)}
+    .plan-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+    .plan-name{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700}
+    .plan-rate-badge{background:var(--red);color:var(--white);font-size:12px;font-weight:700;padding:4px 11px;border-radius:8px}
+    .plan-stats{display:flex;gap:0;border-top:1px solid var(--gray-line);padding-top:12px}
     .plan-stat{flex:1;text-align:center;border-right:1px solid var(--gray-line)}
     .plan-stat:last-child{border-right:none}
-    .plan-stat-val{font-size:14px;font-weight:600;color:var(--black)}
-    .plan-stat-lbl{font-size:10px;color:var(--gray-soft);margin-top:2px;letter-spacing:.05em;text-transform:uppercase}
-    .plan-daily{font-size:12px;color:var(--gray-soft);margin-bottom:14px}
+    .plan-stat-val{font-size:13px;font-weight:600}
+    .plan-stat-lbl{font-size:10px;color:var(--gray-soft);margin-top:1px;letter-spacing:.04em;text-transform:uppercase}
+    .plan-daily{font-size:12px;color:var(--gray-soft);margin-bottom:12px}
     .plan-daily strong{color:var(--red)}
-    .btn-acquire{width:100%;padding:12px;background:var(--red);color:var(--white);border:none;border-radius:11px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .3s;box-shadow:0 6px 20px rgba(200,16,46,.25);margin-top:14px}
+    .btn-acquire{width:100%;padding:11px;background:var(--red);color:var(--white);border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .3s;box-shadow:0 5px 18px rgba(200,16,46,.22);margin-top:12px}
     .btn-acquire:hover{background:var(--red-dark);transform:translateY(-1px)}
-
-    /* MODAL */
+    .btn-acquire:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none;background:var(--gray-soft)}
     .modal-overlay{position:fixed;inset:0;z-index:200;opacity:0;pointer-events:none;transition:opacity .3s}
     .modal-overlay.open{opacity:1;pointer-events:all}
     .modal-backdrop{position:absolute;inset:0;background:rgba(13,13,13,.5);backdrop-filter:blur(6px)}
     .modal-box{position:absolute;bottom:0;left:0;right:0;background:var(--white);border-radius:24px 24px 0 0;padding:28px 24px 40px;transform:translateY(100%);transition:transform .4s cubic-bezier(.22,1,.36,1)}
     .modal-overlay.open .modal-box{transform:translateY(0)}
     .modal-handle{width:40px;height:4px;background:var(--gray-line);border-radius:2px;margin:0 auto 20px}
-    .modal-title{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;margin-bottom:6px}
-    .modal-sub{font-size:13px;color:var(--gray-soft);margin-bottom:20px;line-height:1.5}
-    .modal-summary{background:var(--off-white);border-radius:12px;padding:16px;margin-bottom:20px}
-    .ms-row{display:flex;justify-content:space-between;font-size:13px;padding:4px 0}
+    .modal-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;margin-bottom:5px}
+    .modal-sub{font-size:12px;color:var(--gray-soft);margin-bottom:18px;line-height:1.5}
+    .modal-summary{background:var(--off-white);border-radius:12px;padding:14px;margin-bottom:18px}
+    .ms-row{display:flex;justify-content:space-between;font-size:13px;padding:3px 0}
     .ms-row span:first-child{color:var(--gray-soft)}
     .ms-row.highlight span:last-child{color:var(--red);font-weight:700}
     .modal-btns{display:flex;gap:10px}
-    .btn-cancel{flex:1;padding:14px;border:1.5px solid var(--gray-line);border-radius:12px;background:transparent;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;color:var(--black);transition:all .2s}
+    .btn-cancel{flex:1;padding:13px;border:1.5px solid var(--gray-line);border-radius:12px;background:transparent;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;color:var(--black);transition:all .2s}
     .btn-cancel:hover{border-color:var(--red);color:var(--red)}
-    .btn-confirm{flex:2;padding:14px;background:var(--red);color:var(--white);border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .3s;box-shadow:0 6px 20px rgba(200,16,46,.25)}
+    .btn-confirm{flex:2;padding:13px;background:var(--red);color:var(--white);border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .3s;box-shadow:0 5px 18px rgba(200,16,46,.22)}
     .btn-confirm:hover{background:var(--red-dark)}
-
-    /* SPINNER */
     .spinner-overlay{position:fixed;inset:0;z-index:1000;background:rgba(248,246,243,.85);backdrop-filter:blur(8px);display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
     .spinner-overlay.show{opacity:1;pointer-events:all}
     .spinner-ring{width:72px;height:72px}
@@ -78,11 +69,10 @@
     .spinner-ring svg circle.track{stroke:rgba(200,16,46,.15)}
     .spinner-ring svg circle.arc{stroke:var(--red);stroke-dasharray:160;stroke-dashoffset:40}
     .spinner-label{margin-top:20px;font-size:14px;font-weight:500;color:var(--gray-soft)}
-
-    .toast{position:fixed;top:24px;left:50%;transform:translateX(-50%) translateY(-120%);background:var(--white);border-radius:14px;padding:14px 24px;box-shadow:0 16px 48px rgba(0,0,0,.12);border-left:4px solid var(--red);display:flex;align-items:center;gap:12px;font-size:14px;font-weight:500;z-index:2000;transition:transform .5s cubic-bezier(.175,.885,.32,1.275);max-width:90vw}
-    .toast.show{transform:translateX(-50%) translateY(0)}
+    .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(calc(-100% - 30px));opacity:0;visibility:hidden;background:var(--white);border-radius:13px;padding:12px 18px;box-shadow:0 14px 44px rgba(0,0,0,.13);border-left:4px solid var(--red);display:flex;align-items:center;gap:10px;font-size:13px;font-weight:500;z-index:9999;transition:transform .4s cubic-bezier(.22,1,.36,1),opacity .4s ease,visibility 0s linear .4s;max-width:92vw;pointer-events:none}
+    .toast.show{transform:translateX(-50%) translateY(0);opacity:1;visibility:visible;pointer-events:all;transition:transform .4s cubic-bezier(.22,1,.36,1),opacity .4s ease,visibility 0s linear 0s}
     .toast.success{border-left-color:#16A34A}
-
+    .toast.error{border-left-color:var(--red)}
     @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
   </style>
 </head>
@@ -94,7 +84,6 @@
 </div>
 <div class="toast" id="toast"><span id="toastMsg"></span></div>
 
-<!-- Confirm Modal -->
 <div class="modal-overlay" id="modal">
   <div class="modal-backdrop" onclick="closeModal()"></div>
   <div class="modal-box">
@@ -121,33 +110,16 @@
 
 <div class="content">
   <div class="hero">
-    <div class="hero-badge">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-      Rendimentos Diários
-    </div>
+    <div class="hero-badge"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>Rendimentos Diários</div>
     <div class="hero-title">Faça o seu dinheiro<br/>trabalhar por si</div>
-    <div class="hero-desc">Escolha um plano de investimento e receba rendimentos diários directamente na sua conta Magnus Capital.</div>
+    <div class="hero-desc">Escolha um plano e receba rendimentos diários directamente na sua conta Magnus Capital.</div>
   </div>
-
   <div class="benefits">
-    <div class="benefit">
-      <div class="benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-      <div class="benefit-text">Plataforma segura e regulada</div>
-    </div>
-    <div class="benefit">
-      <div class="benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
-      <div class="benefit-text">Rendimentos a cada 24 horas</div>
-    </div>
-    <div class="benefit">
-      <div class="benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
-      <div class="benefit-text">Acompanhe em tempo real</div>
-    </div>
-    <div class="benefit">
-      <div class="benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg></div>
-      <div class="benefit-text">Comissão de 10% por afiliado</div>
-    </div>
+    <div class="benefit"><div class="benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><div class="benefit-text">Plataforma segura e regulada</div></div>
+    <div class="benefit"><div class="benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="benefit-text">Rendimentos a cada 24 horas</div></div>
+    <div class="benefit"><div class="benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="benefit-text">Acompanhe em tempo real</div></div>
+    <div class="benefit"><div class="benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg></div><div class="benefit-text">10% de comissão por afiliado</div></div>
   </div>
-
   <div class="section-label">Selecionar Plano</div>
   <div class="plans-list" id="plansList"></div>
 </div>
@@ -159,57 +131,37 @@
   const cfg={apiKey:"AIzaSyBp8X1PPp3FqiQ6OXErr8Mu11GEp6MZ2-U",authDomain:"ascend-34bf0.firebaseapp.com",projectId:"ascend-34bf0",storageBucket:"ascend-34bf0.firebasestorage.app",messagingSenderId:"592623076677",appId:"1:592623076677:web:c5615719870aefdabf6a2c"};
   const app=initializeApp(cfg);const auth=getAuth(app);const db=getFirestore(app);
   let uid='',userBalance=0,hasInvestment=false,selectedPlan=null;
-
   function fmt(n){return Number(n).toLocaleString('pt-AO');}
-  function toast(msg,type='success'){const t=document.getElementById('toast');document.getElementById('toastMsg').textContent=msg;t.className='toast '+type;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
-
-  const plans=[
-    {id:'G1',min:4000,rate:5},{id:'G2',min:6000,rate:6},{id:'G3',min:10000,rate:5},
-    {id:'G4',min:15000,rate:5},{id:'G5',min:30000,rate:5},{id:'G6',min:55000,rate:5},
-    {id:'G7',min:99000,rate:5},{id:'G8',min:150000,rate:5},{id:'G9',min:250000,rate:5},
-    {id:'G10',min:500000,rate:5}
-  ];
-
+  const plans=[{id:'G1',min:4000,rate:5},{id:'G2',min:6000,rate:6},{id:'G3',min:10000,rate:5},{id:'G4',min:15000,rate:5},{id:'G5',min:30000,rate:5},{id:'G6',min:55000,rate:5},{id:'G7',min:99000,rate:5},{id:'G8',min:150000,rate:5},{id:'G9',min:250000,rate:5},{id:'G10',min:500000,rate:5}];
   onAuthStateChanged(auth,async user=>{
     if(!user){window.location.href='auth.html';return;}
     uid=user.uid;
     const snap=await getDoc(doc(db,'users',uid));
     if(!snap.exists())return;
-    const d=snap.data();
-    userBalance=d.balance||0;
-    hasInvestment=d.invested||false;
+    const d=snap.data();userBalance=d.balance||0;hasInvestment=d.invested||false;
     renderPlans();
   });
-
   function renderPlans(){
-    const list=document.getElementById('plansList');
-    list.innerHTML='';
+    const list=document.getElementById('plansList');list.innerHTML='';
     plans.forEach((p,i)=>{
       const daily=Math.round(p.min*(p.rate/100));
       const featured=p.id==='G3'||p.id==='G5';
-      const canAfford=userBalance>=p.min;
-      list.innerHTML+=`<div class="plan-card${featured?' featured':''}" style="animation-delay:${i*0.05}s">
-        <div class="plan-header">
-          <div class="plan-name">${p.id}</div>
-          <div class="plan-rate-badge">${p.rate}% / dia</div>
-        </div>
+      list.innerHTML+=`<div class="plan-card${featured?' featured':''}" style="animation-delay:${i*0.04}s">
+        <div class="plan-header"><div class="plan-name">${p.id}</div><div class="plan-rate-badge">${p.rate}% / dia</div></div>
         <div class="plan-daily">Rendimento mínimo diário: <strong>${fmt(daily)} Kz</strong></div>
         <div class="plan-stats">
           <div class="plan-stat"><div class="plan-stat-val">${fmt(p.min)} Kz</div><div class="plan-stat-lbl">Investimento</div></div>
           <div class="plan-stat"><div class="plan-stat-val">${p.rate}%</div><div class="plan-stat-lbl">Taxa diária</div></div>
           <div class="plan-stat"><div class="plan-stat-val">${fmt(daily)} Kz</div><div class="plan-stat-lbl">Por dia</div></div>
         </div>
-        <button class="btn-acquire" onclick="openModal('${p.id}',${p.min},${p.rate},${daily})" ${hasInvestment?'disabled title="Já possui um investimento activo"':''}>
-          ${hasInvestment?'Investimento Activo':'Adquirir Plano'}
-        </button>
+        <button class="btn-acquire" onclick="openModal('${p.id}',${p.min},${p.rate},${daily})" ${hasInvestment?'disabled':''}>${hasInvestment?'Investimento Activo':'Adquirir Plano'}</button>
       </div>`;
     });
   }
-
   window.openModal=function(id,min,rate,daily){
     selectedPlan={id,min,rate,daily};
     document.getElementById('mTitle').textContent='Confirmar — Plano '+id;
-    document.getElementById('mSub').textContent='Certifique-se que possui o saldo necessário antes de confirmar.';
+    document.getElementById('mSub').textContent='Certifique-se que possui o saldo necessário.';
     document.getElementById('mPlan').textContent=id;
     document.getElementById('mAmount').textContent=fmt(min)+' Kz';
     document.getElementById('mDaily').textContent=rate+'% ao dia';
@@ -217,29 +169,32 @@
     document.getElementById('modal').classList.add('open');
   };
   window.closeModal=function(){document.getElementById('modal').classList.remove('open');};
-
   window.confirmPlan=async function(){
     if(!selectedPlan)return;
-    if(userBalance<selectedPlan.min){closeModal();toast('Saldo insuficiente para este plano.','error');return;}
+    if(userBalance<selectedPlan.min){closeModal();window.toast('Saldo insuficiente para este plano.','error');return;}
     closeModal();
     document.getElementById('spinner').classList.add('show');
     try{
-      await updateDoc(doc(db,'users',uid),{
-        level:selectedPlan.id,invested:true,
-        investedAmount:selectedPlan.min,
-        investedAt:new Date().toISOString(),
-        dailyRate:selectedPlan.rate,
-        balance:userBalance-selectedPlan.min
-      });
+      await updateDoc(doc(db,'users',uid),{level:selectedPlan.id,invested:true,investedAmount:selectedPlan.min,investedAt:new Date().toISOString(),dailyRate:selectedPlan.rate,balance:userBalance-selectedPlan.min});
       document.getElementById('spinner').classList.remove('show');
-      toast('Plano '+selectedPlan.id+' activado com sucesso!','success');
-      hasInvestment=true;userBalance-=selectedPlan.min;
-      renderPlans();
+      window.toast('Plano '+selectedPlan.id+' activado com sucesso!','success');
+      hasInvestment=true;userBalance-=selectedPlan.min;renderPlans();
     }catch(e){
       document.getElementById('spinner').classList.remove('show');
-      toast('Erro ao activar plano. Tente novamente.','error');
+      window.toast('Erro ao activar plano. Tente novamente.','error');
     }
   };
+</script>
+<script>
+  let _tt=null;
+  function toast(msg,type){
+    if(_tt)clearTimeout(_tt);
+    const t=document.getElementById('toast'),m=document.getElementById('toastMsg');
+    t.className='toast';m.textContent='';void t.offsetHeight;
+    m.textContent=msg;t.className='toast '+(type||'success')+' show';
+    _tt=setTimeout(()=>{t.classList.remove('show');_tt=setTimeout(()=>{t.className='toast';},450);},3200);
+  }
+  window.toast=toast;
 </script>
 </body>
 </html>
