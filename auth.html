@@ -263,7 +263,15 @@
     if(pin.length<6)return toast('Introduza os 6 dígitos da senha.','error');
     showSpinner('A verificar credenciais...');
     try{
-      await signInWithEmailAndPassword(auth,buildEmail(prefix,phone),pin);
+      const cred=await signInWithEmailAndPassword(auth,buildEmail(prefix,phone),pin);
+      // Check if user is banned
+      const uSnap=await getDoc(doc(db,'users',cred.user.uid));
+      if(uSnap.exists()&&uSnap.data().banned){
+        await auth.signOut();
+        hideSpinner();
+        toast('A sua conta foi suspensa. Contacte o suporte.','error');
+        return;
+      }
       hideSpinner();toast('Acesso autorizado!','success');
       setTimeout(()=>window.location.href='index.html',1600);
     }catch(e){hideSpinner();toast('Credenciais inválidas. Verifique e tente novamente.','error');}
