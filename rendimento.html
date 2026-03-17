@@ -15,17 +15,19 @@
     .back-btn{width:36px;height:36px;border:1.5px solid var(--gray-line);border-radius:10px;background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;text-decoration:none;color:var(--black);transition:all .25s;flex-shrink:0}
     .back-btn:hover{border-color:var(--red);color:var(--red)}
     .h-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700}
-    .content{position:relative;z-index:1;padding:24px 20px 60px;max-width:500px;margin:0 auto}
+    .content{position:relative;z-index:1;padding:24px 20px 40px;max-width:500px;margin:0 auto}
 
-    .summary-card{background:linear-gradient(135deg,var(--red) 0%,var(--red-dark) 100%);border-radius:22px;padding:28px;color:var(--white);margin-bottom:20px;animation:fadeUp .6s ease both;position:relative;overflow:hidden}
-    .summary-card::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.06)}
-    .sc-label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;opacity:.75;margin-bottom:8px}
-    .sc-total{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:700;line-height:1}
-    .sc-row{display:flex;gap:0;margin-top:20px;padding-top:20px;border-top:1px solid rgba(255,255,255,.15)}
-    .sc-stat{flex:1;text-align:center}
-    .sc-stat-val{font-size:15px;font-weight:600}
-    .sc-stat-lbl{font-size:10px;opacity:.65;margin-top:2px;letter-spacing:.06em}
-    .sc-sep{width:1px;background:rgba(255,255,255,.2)}
+    /* MINI CARD — igual ao index.html */
+    .summary-card{background:var(--white);border-radius:18px;padding:14px 18px;margin-bottom:16px;border:1px solid var(--gray-line);box-shadow:0 4px 24px rgba(0,0,0,.06);animation:fadeUp .6s ease both;transition:transform .15s ease;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .sc-left{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
+    .sc-label{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--gray-soft);font-weight:600}
+    .sc-amount-row{display:flex;align-items:baseline;gap:5px}
+    .sc-total{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;color:var(--black);line-height:1;white-space:nowrap;letter-spacing:-.01em}
+    .sc-currency{font-size:13px;font-weight:600;color:var(--red);letter-spacing:.04em;text-transform:uppercase}
+    .sc-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
+    .sc-accent{background:var(--red);border-radius:10px;padding:6px 12px;display:flex;flex-direction:column;align-items:center;gap:1px}
+    .sc-accent-val{font-size:13px;font-weight:700;color:var(--white);line-height:1;white-space:nowrap}
+    .sc-accent-lbl{font-size:9px;color:rgba(255,255,255,.7);letter-spacing:.07em;text-transform:uppercase}
 
     .hist-card{background:var(--white);border-radius:18px;padding:0;border:1px solid var(--gray-line);box-shadow:0 4px 20px rgba(0,0,0,.04);overflow:hidden;animation:fadeUp .6s ease .1s both}
     .hc-header{padding:18px 20px;border-bottom:1px solid var(--gray-line);display:flex;align-items:center;justify-content:space-between}
@@ -57,14 +59,30 @@
 <div class="content">
 
   <div class="summary-card">
-    <div class="sc-label">Total Acumulado</div>
-    <div class="sc-total" id="grandTotal">0 Kz</div>
-    <div class="sc-row">
-      <div class="sc-stat"><div class="sc-stat-val" id="totalDays">0</div><div class="sc-stat-lbl">Conversões</div></div>
-      <div class="sc-sep"></div>
-      <div class="sc-stat"><div class="sc-stat-val" id="planLevel">—</div><div class="sc-stat-lbl">Plano Activo</div></div>
-      <div class="sc-sep"></div>
-      <div class="sc-stat"><div class="sc-stat-val" id="dailyRate">0%</div><div class="sc-stat-lbl">Taxa Diária</div></div>
+    <div class="sc-left">
+      <div class="sc-label">Total Acumulado</div>
+      <div class="sc-amount-row">
+        <div class="sc-total" id="grandTotal">0</div>
+        <div class="sc-currency">Kz</div>
+      </div>
+    </div>
+    <div class="sc-right">
+      <div class="sc-accent">
+        <div class="sc-accent-val" id="planLevel">—</div>
+        <div class="sc-accent-lbl">Plano</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- stats strip below card -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:16px;animation:fadeUp .6s ease .06s both">
+    <div style="background:var(--white);border-radius:13px;padding:14px 16px;border:1px solid var(--gray-line);box-shadow:0 2px 10px rgba(0,0,0,.04)">
+      <div style="font-size:10px;color:var(--gray-soft);letter-spacing:.07em;text-transform:uppercase;margin-bottom:5px">Conversões</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700" id="totalDays">0</div>
+    </div>
+    <div style="background:var(--white);border-radius:13px;padding:14px 16px;border:1px solid var(--gray-line);box-shadow:0 2px 10px rgba(0,0,0,.04)">
+      <div style="font-size:10px;color:var(--gray-soft);letter-spacing:.07em;text-transform:uppercase;margin-bottom:5px">Taxa Diária</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700" id="dailyRate">0%</div>
     </div>
   </div>
 
@@ -97,7 +115,7 @@
     const snap=await getDoc(doc(db,'users',user.uid));
     if(!snap.exists())return;
     const d=snap.data();
-    document.getElementById('grandTotal').textContent=fmt(d.totalEarned||0)+' Kz';
+    document.getElementById('grandTotal').textContent=fmt(d.totalEarned||0);
     document.getElementById('planLevel').textContent=d.level||'—';
     document.getElementById('dailyRate').textContent=(d.dailyRate||0)+'%';
 
