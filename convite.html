@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Magnus Capital — Convite</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--red:#C8102E;--red-dark:#A00D24;--white:#FFFFFF;--off-white:#F8F6F3;--black:#0D0D0D;--gray-soft:#6B6B6B;--gray-line:#E0DEDD;}
+    html,body{min-height:100%;font-family:'DM Sans',sans-serif;background:var(--off-white);color:var(--black)}
+    .bg-layer{position:fixed;inset:0;z-index:0;background:var(--off-white)}
+    .bg-layer::before{content:'';position:absolute;top:-20%;right:-10%;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(200,16,46,0.07) 0%,transparent 70%);animation:pbg 8s ease infinite alternate}
+    @keyframes pbg{from{transform:scale(1)}to{transform:scale(1.15)}}
+    .header{position:sticky;top:0;z-index:100;background:rgba(248,246,243,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--gray-line);padding:0 20px;height:60px;display:flex;align-items:center;gap:14px}
+    .back-btn{width:36px;height:36px;border:1.5px solid var(--gray-line);border-radius:10px;background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;text-decoration:none;color:var(--black);transition:all .25s;flex-shrink:0}
+    .back-btn:hover{border-color:var(--red);color:var(--red)}
+    .h-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700}
+    .content{position:relative;z-index:1;padding:24px 20px 60px;max-width:500px;margin:0 auto}
+
+    .hero-card{background:linear-gradient(135deg,var(--red) 0%,var(--red-dark) 100%);border-radius:22px;padding:28px;color:var(--white);margin-bottom:20px;animation:fadeUp .6s ease both;position:relative;overflow:hidden;text-align:center}
+    .hero-card::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.06)}
+    .hc-icon{width:60px;height:60px;background:rgba(255,255,255,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+    .hc-icon svg{width:28px;height:28px}
+    .hc-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;margin-bottom:8px}
+    .hc-sub{font-size:13px;opacity:.8;line-height:1.7;max-width:280px;margin:0 auto}
+    .commission-badge{display:inline-block;background:rgba(255,255,255,.2);border-radius:12px;padding:10px 20px;margin-top:16px;font-size:20px;font-weight:700;letter-spacing:.02em}
+
+    .stats-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;animation:fadeUp .6s ease .1s both}
+    .stat-c{background:var(--white);border-radius:16px;padding:18px;border:1px solid var(--gray-line);box-shadow:0 2px 12px rgba(0,0,0,.04);text-align:center}
+    .sc-val{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;color:var(--black)}
+    .sc-lbl{font-size:11px;color:var(--gray-soft);margin-top:4px;letter-spacing:.06em;text-transform:uppercase}
+
+    .link-card{background:var(--white);border-radius:18px;padding:22px;border:1px solid var(--gray-line);box-shadow:0 4px 16px rgba(0,0,0,.04);margin-bottom:16px;animation:fadeUp .6s ease .15s both}
+    .lc-title{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-soft);margin-bottom:14px}
+    .link-box{background:var(--off-white);border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px;border:1px solid var(--gray-line);margin-bottom:12px}
+    .link-text{flex:1;font-size:12px;color:var(--black);word-break:break-all;font-family:monospace}
+    .btn-copy{padding:9px 16px;background:var(--red);color:var(--white);border:none;border-radius:9px;font-size:12px;font-weight:600;cursor:pointer;transition:all .25s;white-space:nowrap}
+    .btn-copy:hover{background:var(--red-dark)}
+    .btn-copy.copied{background:#16A34A}
+    .share-btns{display:flex;gap:10px}
+    .share-btn{flex:1;padding:12px;border:1.5px solid var(--gray-line);border-radius:12px;background:transparent;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:8px;color:var(--black)}
+    .share-btn:hover{border-color:var(--red);color:var(--red)}
+    .share-btn svg{width:16px;height:16px}
+
+    .how-card{background:var(--white);border-radius:18px;padding:22px;border:1px solid var(--gray-line);box-shadow:0 4px 16px rgba(0,0,0,.04);animation:fadeUp .6s ease .2s both}
+    .how-title{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-soft);margin-bottom:16px}
+    .how-step{display:flex;gap:14px;padding:10px 0;border-bottom:1px solid var(--gray-line)}
+    .how-step:last-child{border-bottom:none}
+    .how-num{width:30px;height:30px;background:var(--red);color:var(--white);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+    .how-info{flex:1}
+    .how-info-title{font-size:14px;font-weight:600;margin-bottom:2px}
+    .how-info-sub{font-size:12px;color:var(--gray-soft);line-height:1.5}
+
+    .notice{background:rgba(200,16,46,.06);border:1px solid rgba(200,16,46,.15);border-radius:12px;padding:14px 16px;font-size:12px;color:var(--red);line-height:1.6;margin-bottom:16px;display:flex;gap:10px;align-items:flex-start;animation:fadeUp .6s ease .25s both}
+    .notice svg{width:16px;height:16px;flex-shrink:0;margin-top:1px}
+
+    .toast{position:fixed;top:24px;left:50%;transform:translateX(-50%) translateY(-120%);background:var(--white);border-radius:14px;padding:14px 24px;box-shadow:0 16px 48px rgba(0,0,0,.12);border-left:4px solid var(--red);display:flex;align-items:center;gap:12px;font-size:14px;font-weight:500;z-index:2000;transition:transform .5s cubic-bezier(.175,.885,.32,1.275);max-width:90vw}
+    .toast.show{transform:translateX(-50%) translateY(0)}
+    .toast.success{border-left-color:#16A34A}
+
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+  </style>
+</head>
+<body>
+<div class="bg-layer"></div>
+<div class="toast" id="toast"><span id="toastMsg"></span></div>
+<div class="header">
+  <a href="index.html" class="back-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg></a>
+  <div class="h-title">Convite &amp; Afiliados</div>
+</div>
+<div class="content">
+
+  <div class="hero-card">
+    <div class="hc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+    <div class="hc-title">Convide e Ganhe</div>
+    <div class="hc-sub">Partilhe o seu link com amigos e familiares. Cada afiliado activo gera-lhe uma comissão directa.</div>
+    <div class="commission-badge">10% de comissão por afiliado</div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-c"><div class="sc-val" id="refCount">0</div><div class="sc-lbl">Afiliados</div></div>
+    <div class="stat-c"><div class="sc-val" id="refEarned">0 Kz</div><div class="sc-lbl">Ganho em comissões</div></div>
+  </div>
+
+  <div class="link-card">
+    <div class="lc-title">O seu link de convite</div>
+    <div class="link-box">
+      <div class="link-text" id="refLink">A carregar...</div>
+      <button class="btn-copy" id="copyBtn" onclick="copyLink()">Copiar</button>
+    </div>
+    <div class="share-btns">
+      <button class="share-btn" onclick="shareWA()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        WhatsApp
+      </button>
+      <button class="share-btn" onclick="shareNative()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        Partilhar
+      </button>
+    </div>
+  </div>
+
+  <div class="notice">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    Após o seu afiliado estar activo e ter feito o primeiro investimento, entre em contacto com o atendimento para solicitar o seu subsídio.
+  </div>
+
+  <div class="how-card">
+    <div class="how-title">Como Funciona</div>
+    <div class="how-step">
+      <div class="how-num">1</div>
+      <div class="how-info"><div class="how-info-title">Partilhe o seu link</div><div class="how-info-sub">Copie o link e partilhe com amigos, familiares ou nas redes sociais.</div></div>
+    </div>
+    <div class="how-step">
+      <div class="how-num">2</div>
+      <div class="how-info"><div class="how-info-title">O afiliado regista-se</div><div class="how-info-sub">O seu convidado cria a conta e faz o primeiro investimento usando o seu link.</div></div>
+    </div>
+    <div class="how-step">
+      <div class="how-num">3</div>
+      <div class="how-info"><div class="how-info-title">Receba 10% de comissão</div><div class="how-info-sub">Ganhe 10% sobre o valor do primeiro investimento do seu afiliado. Sem limite de afiliados.</div></div>
+    </div>
+    <div class="how-step">
+      <div class="how-num">4</div>
+      <div class="how-info"><div class="how-info-title">Solicite o subsídio</div><div class="how-info-sub">Contacte o suporte via WhatsApp para receber a comissão na sua conta.</div></div>
+    </div>
+  </div>
+
+</div>
+
+<script type="module">
+  import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import{getFirestore,doc,getDoc}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  const cfg={apiKey:"AIzaSyBp8X1PPp3FqiQ6OXErr8Mu11GEp6MZ2-U",authDomain:"ascend-34bf0.firebaseapp.com",projectId:"ascend-34bf0",storageBucket:"ascend-34bf0.firebasestorage.app",messagingSenderId:"592623076677",appId:"1:592623076677:web:c5615719870aefdabf6a2c"};
+  const app=initializeApp(cfg);const auth=getAuth(app);const db=getFirestore(app);
+  let refLink='';
+
+  onAuthStateChanged(auth,async user=>{
+    if(!user){window.location.href='auth.html';return;}
+    const snap=await getDoc(doc(db,'users',user.uid));
+    if(!snap.exists())return;
+    const d=snap.data();
+    refLink=`${window.location.origin}/auth.html?ref=${d.accountId}`;
+    document.getElementById('refLink').textContent=refLink;
+    document.getElementById('refCount').textContent=d.referralCount||0;
+    document.getElementById('refEarned').textContent=(d.referralEarned||0).toLocaleString('pt-AO')+' Kz';
+  });
+
+  window.copyLink=function(){
+    navigator.clipboard.writeText(refLink).then(()=>{
+      const btn=document.getElementById('copyBtn');
+      btn.textContent='Copiado';btn.classList.add('copied');
+      setTimeout(()=>{btn.textContent='Copiar';btn.classList.remove('copied');},2000);
+    });
+  };
+  window.shareWA=function(){window.open('https://wa.me/?text='+encodeURIComponent('Invisto na Magnus Capital e estou a ter excelentes rendimentos! Regista-te aqui: '+refLink));};
+  window.shareNative=function(){
+    if(navigator.share){navigator.share({title:'Magnus Capital',text:'Convite para investir',url:refLink});}
+    else{window.copyLink();}
+  };
+</script>
+</body>
+</html>

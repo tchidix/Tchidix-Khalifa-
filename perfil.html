@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Magnus Capital — Perfil</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--red:#C8102E;--red-dark:#A00D24;--white:#FFFFFF;--off-white:#F8F6F3;--black:#0D0D0D;--gray-soft:#6B6B6B;--gray-line:#E0DEDD;}
+    html,body{min-height:100%;font-family:'DM Sans',sans-serif;background:var(--off-white);color:var(--black)}
+    .bg-layer{position:fixed;inset:0;z-index:0;background:var(--off-white)}
+    .bg-layer::before{content:'';position:absolute;top:-10%;right:-15%;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(200,16,46,0.07) 0%,transparent 70%);animation:pbg 8s ease infinite alternate}
+    @keyframes pbg{from{transform:scale(1)}to{transform:scale(1.2)}}
+    .header{position:sticky;top:0;z-index:100;background:rgba(248,246,243,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--gray-line);padding:0 20px;height:60px;display:flex;align-items:center;gap:14px}
+    .back-btn{width:36px;height:36px;border:1.5px solid var(--gray-line);border-radius:10px;background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;text-decoration:none;color:var(--black);transition:all .25s;flex-shrink:0}
+    .back-btn:hover{border-color:var(--red);color:var(--red)}
+    .h-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700}
+    .content{position:relative;z-index:1;padding:24px 20px 100px;max-width:500px;margin:0 auto}
+
+    /* QR SECTION */
+    .qr-card{background:linear-gradient(135deg,var(--red) 0%,var(--red-dark) 100%);border-radius:22px;padding:28px;color:var(--white);text-align:center;margin-bottom:20px;animation:fadeUp .6s ease both;position:relative;overflow:hidden}
+    .qr-card::before{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,0.06)}
+    .qr-box{width:120px;height:120px;background:var(--white);border-radius:14px;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;padding:8px}
+    .qr-box img,.qr-box canvas{width:100%;height:100%;border-radius:6px}
+    .qr-id{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:700;letter-spacing:.1em}
+    .qr-label{font-size:11px;opacity:.7;letter-spacing:.12em;text-transform:uppercase;margin-top:4px}
+    .qr-info{display:flex;gap:12px;margin-top:20px;padding-top:20px;border-top:1px solid rgba(255,255,255,.15)}
+    .qi-item{flex:1;text-align:center}
+    .qi-val{font-size:15px;font-weight:600}
+    .qi-lbl{font-size:10px;opacity:.65;margin-top:2px;letter-spacing:.06em}
+
+    /* PROFILE DATA */
+    .profile-card{background:var(--white);border-radius:18px;padding:24px;margin-bottom:16px;border:1px solid var(--gray-line);box-shadow:0 4px 20px rgba(0,0,0,.04);animation:fadeUp .6s ease .1s both}
+    .pc-title{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-soft);margin-bottom:18px}
+    .pc-row{display:flex;align-items:center;padding:12px 0;border-bottom:1px solid var(--gray-line)}
+    .pc-row:last-child{border-bottom:none}
+    .pc-icon{width:36px;height:36px;background:rgba(200,16,46,.07);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--red);flex-shrink:0;margin-right:14px}
+    .pc-icon svg{width:16px;height:16px}
+    .pc-info{flex:1}
+    .pc-info-label{font-size:10px;color:var(--gray-soft);letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px}
+    .pc-info-val{font-size:14px;font-weight:500;color:var(--black)}
+
+    /* FORM */
+    .form-card{background:var(--white);border-radius:18px;padding:24px;border:1px solid var(--gray-line);box-shadow:0 4px 20px rgba(0,0,0,.04);animation:fadeUp .6s ease .15s both}
+    .field{margin-bottom:16px}
+    .field label{display:block;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-soft);margin-bottom:7px}
+    .field input,.field select{width:100%;padding:13px 14px;border:1.5px solid var(--gray-line);border-radius:12px;font-size:14px;font-family:'DM Sans',sans-serif;background:#FAFAF9;color:var(--black);outline:none;transition:all .25s;-webkit-appearance:none}
+    .field input:focus,.field select:focus{border-color:var(--red);background:var(--white);box-shadow:0 0 0 4px rgba(200,16,46,.08)}
+    .btn-save{width:100%;padding:15px;background:var(--red);color:var(--white);border:none;border-radius:13px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all .3s;box-shadow:0 8px 32px rgba(200,16,46,.3);margin-top:8px}
+    .btn-save:hover{background:var(--red-dark);transform:translateY(-1px)}
+    .btn-save:disabled{opacity:.6;cursor:not-allowed;transform:none}
+
+    .notice{background:rgba(200,16,46,.06);border:1px solid rgba(200,16,46,.15);border-radius:12px;padding:14px 16px;font-size:12px;color:var(--red);line-height:1.6;margin-bottom:20px;animation:fadeUp .6s ease .2s both;display:flex;gap:10px;align-items:flex-start}
+    .notice svg{width:16px;height:16px;flex-shrink:0;margin-top:1px}
+
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+
+    .toast{position:fixed;top:24px;left:50%;transform:translateX(-50%) translateY(-120%);background:var(--white);border-radius:14px;padding:14px 24px;box-shadow:0 16px 48px rgba(0,0,0,.12);border-left:4px solid var(--red);display:flex;align-items:center;gap:12px;font-size:14px;font-weight:500;z-index:2000;transition:transform .5s cubic-bezier(.175,.885,.32,1.275);max-width:90vw}
+    .toast.show{transform:translateX(-50%) translateY(0)}
+    .toast.success{border-left-color:#16A34A}
+  </style>
+</head>
+<body>
+<div class="bg-layer"></div>
+<div class="toast" id="toast"><span id="toastMsg"></span></div>
+
+<div class="header">
+  <a href="index.html" class="back-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg></a>
+  <div class="h-title">Meu Perfil</div>
+</div>
+
+<div class="content">
+
+  <!-- QR Card (always visible) -->
+  <div class="qr-card" id="qrCard">
+    <div class="qr-box" id="qrBox">
+      <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+        <rect x="5" y="5" width="30" height="30" rx="4" stroke="white" stroke-width="3"/>
+        <rect x="13" y="13" width="14" height="14" fill="white" rx="2"/>
+        <rect x="45" y="5" width="30" height="30" rx="4" stroke="white" stroke-width="3"/>
+        <rect x="53" y="13" width="14" height="14" fill="white" rx="2"/>
+        <rect x="5" y="45" width="30" height="30" rx="4" stroke="white" stroke-width="3"/>
+        <rect x="13" y="53" width="14" height="14" fill="white" rx="2"/>
+        <rect x="45" y="45" width="6" height="6" fill="white" rx="1"/><rect x="54" y="45" width="6" height="6" fill="white" rx="1"/><rect x="63" y="45" width="6" height="6" fill="white" rx="1"/>
+        <rect x="45" y="54" width="6" height="6" fill="white" rx="1"/><rect x="63" y="54" width="6" height="6" fill="white" rx="1"/>
+        <rect x="45" y="63" width="6" height="6" fill="white" rx="1"/><rect x="54" y="63" width="6" height="6" fill="white" rx="1"/><rect x="63" y="63" width="6" height="6" fill="white" rx="1"/>
+      </svg>
+    </div>
+    <div class="qr-id" id="qrId">MC——————</div>
+    <div class="qr-label">Identificador da Conta</div>
+    <div class="qr-info">
+      <div class="qi-item"><div class="qi-val" id="qrLevel">—</div><div class="qi-lbl">Nível</div></div>
+      <div class="qi-item"><div class="qi-val" id="qrRefs">—</div><div class="qi-lbl">Afiliados</div></div>
+      <div class="qi-item"><div class="qi-val" id="qrDate">—</div><div class="qi-lbl">Membro desde</div></div>
+    </div>
+  </div>
+
+  <!-- Profile filled data -->
+  <div id="profileView" style="display:none">
+    <div class="profile-card">
+      <div class="pc-title">Dados Pessoais</div>
+      <div class="pc-row">
+        <div class="pc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>
+        <div class="pc-info"><div class="pc-info-label">Nome Completo</div><div class="pc-info-val" id="pName">—</div></div>
+      </div>
+      <div class="pc-row">
+        <div class="pc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+        <div class="pc-info"><div class="pc-info-label">Província</div><div class="pc-info-val" id="pProv">—</div></div>
+      </div>
+      <div class="pc-row">
+        <div class="pc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>
+        <div class="pc-info"><div class="pc-info-label">Cidade Actual</div><div class="pc-info-val" id="pCity">—</div></div>
+      </div>
+      <div class="pc-row">
+        <div class="pc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg></div>
+        <div class="pc-info"><div class="pc-info-label">Número de BI</div><div class="pc-info-val" id="pBi">—</div></div>
+      </div>
+      <div class="pc-row">
+        <div class="pc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
+        <div class="pc-info"><div class="pc-info-label">IBAN</div><div class="pc-info-val" id="pIban">—</div></div>
+      </div>
+      <div class="pc-row">
+        <div class="pc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>
+        <div class="pc-info"><div class="pc-info-label">Banco</div><div class="pc-info-val" id="pBank">—</div></div>
+      </div>
+    </div>
+    <div class="notice">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      O seu perfil está guardado de forma segura. Não é possível editar ou excluir estes dados. Para alterações contacte o suporte.
+    </div>
+  </div>
+
+  <!-- Fill form (if not yet filled) -->
+  <div id="profileForm">
+    <div class="notice">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Complete o seu perfil. Após guardar, os dados ficam permanentes e não poderão ser alterados.
+    </div>
+    <div class="form-card">
+      <div class="field"><label>Nome Completo</label><input type="text" id="fName" placeholder="Ex: João Manuel Ginga"/></div>
+      <div class="field"><label>Província (Naturalidade)</label>
+        <select id="fProv">
+          <option value="">Selecionar...</option>
+          <option>Luanda</option><option>Benguela</option><option>Huambo</option><option>Bié</option>
+          <option>Malanje</option><option>Huíla</option><option>Moxico</option><option>Cuando Cubango</option>
+          <option>Cunene</option><option>Namibe</option><option>Zaire</option><option>Uíge</option>
+          <option>Kuanza Norte</option><option>Kuanza Sul</option><option>Lunda Norte</option>
+          <option>Lunda Sul</option><option>Bengo</option><option>Cabinda</option><option>Lisboa (PT)</option><option>Porto (PT)</option>
+        </select>
+      </div>
+      <div class="field"><label>Cidade Actual</label><input type="text" id="fCity" placeholder="Ex: Luanda"/></div>
+      <div class="field"><label>Número de BI</label><input type="text" id="fBi" placeholder="Ex: 005123456LA041"/></div>
+      <div class="field"><label>IBAN (para saque)</label><input type="text" id="fIban" placeholder="AO06 0040 0000 0000 0000 1019 4"/></div>
+      <div class="field"><label>Nome do Banco</label>
+        <select id="fBank">
+          <option value="">Selecionar...</option>
+          <option>BFA — Banco de Fomento Angola</option><option>BAI — Banco Angolano de Investimentos</option>
+          <option>BPC — Banco de Poupança e Crédito</option><option>Millennium Atlântico</option>
+          <option>BIC — Banco BIC</option><option>Sol — Banco Sol</option><option>BCI</option>
+          <option>Keve</option><option>Express</option><option>Outro</option>
+        </select>
+      </div>
+      <button class="btn-save" id="saveBtn" onclick="saveProfile()">Guardar Perfil</button>
+    </div>
+  </div>
+
+</div>
+
+<script type="module">
+  import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import{getFirestore,doc,getDoc,updateDoc}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  const cfg={apiKey:"AIzaSyBp8X1PPp3FqiQ6OXErr8Mu11GEp6MZ2-U",authDomain:"ascend-34bf0.firebaseapp.com",projectId:"ascend-34bf0",storageBucket:"ascend-34bf0.firebasestorage.app",messagingSenderId:"592623076677",appId:"1:592623076677:web:c5615719870aefdabf6a2c"};
+  const app=initializeApp(cfg);const auth=getAuth(app);const db=getFirestore(app);
+  let uid='';
+
+  function toast(msg,type='success'){const t=document.getElementById('toast');document.getElementById('toastMsg').textContent=msg;t.className='toast '+type;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
+
+  onAuthStateChanged(auth,async user=>{
+    if(!user){window.location.href='auth.html';return;}
+    uid=user.uid;
+    const snap=await getDoc(doc(db,'users',uid));
+    if(!snap.exists())return;
+    const d=snap.data();
+    document.getElementById('qrId').textContent=d.accountId||'—';
+    document.getElementById('qrLevel').textContent=d.level||'G0';
+    document.getElementById('qrRefs').textContent=d.referralCount||0;
+    if(d.createdAt)document.getElementById('qrDate').textContent=d.createdAt.slice(0,7);
+
+    if(d.profileComplete){
+      document.getElementById('profileForm').style.display='none';
+      document.getElementById('profileView').style.display='block';
+      document.getElementById('pName').textContent=d.fullName||'—';
+      document.getElementById('pProv').textContent=d.province||'—';
+      document.getElementById('pCity').textContent=d.city||'—';
+      document.getElementById('pBi').textContent=d.biNumber||'—';
+      document.getElementById('pIban').textContent=d.iban||'—';
+      document.getElementById('pBank').textContent=d.bankName||'—';
+    }
+  });
+
+  window.saveProfile=async function(){
+    const name=document.getElementById('fName').value.trim();
+    const prov=document.getElementById('fProv').value;
+    const city=document.getElementById('fCity').value.trim();
+    const bi=document.getElementById('fBi').value.trim();
+    const iban=document.getElementById('fIban').value.trim();
+    const bank=document.getElementById('fBank').value;
+    if(!name||!prov||!city||!bi||!iban||!bank){toast('Preencha todos os campos.','error');return;}
+    document.getElementById('saveBtn').disabled=true;
+    document.getElementById('saveBtn').textContent='A guardar...';
+    try{
+      await updateDoc(doc(db,'users',uid),{fullName:name,province:prov,city,biNumber:bi,iban,bankName:bank,profileComplete:true});
+      toast('Perfil guardado com sucesso!','success');
+      setTimeout(()=>window.location.reload(),1500);
+    }catch(e){toast('Erro ao guardar. Tente novamente.','error');document.getElementById('saveBtn').disabled=false;document.getElementById('saveBtn').textContent='Guardar Perfil';}
+  };
+</script>
+</body>
+</html>

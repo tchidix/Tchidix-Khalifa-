@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Magnus Capital — Levantamento</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--red:#C8102E;--red-dark:#A00D24;--white:#FFFFFF;--off-white:#F8F6F3;--black:#0D0D0D;--gray-soft:#6B6B6B;--gray-line:#E0DEDD;}
+    html,body{min-height:100%;font-family:'DM Sans',sans-serif;background:var(--off-white);color:var(--black)}
+    .bg-layer{position:fixed;inset:0;z-index:0;background:var(--off-white)}
+    .bg-layer::before{content:'';position:absolute;top:-20%;right:-10%;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(200,16,46,0.07) 0%,transparent 70%);animation:pbg 8s ease infinite alternate}
+    @keyframes pbg{from{transform:scale(1)}to{transform:scale(1.15)}}
+    .header{position:sticky;top:0;z-index:100;background:rgba(248,246,243,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--gray-line);padding:0 20px;height:60px;display:flex;align-items:center;gap:14px}
+    .back-btn{width:36px;height:36px;border:1.5px solid var(--gray-line);border-radius:10px;background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;text-decoration:none;color:var(--black);transition:all .25s;flex-shrink:0}
+    .back-btn:hover{border-color:var(--red);color:var(--red)}
+    .h-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700}
+    .content{position:relative;z-index:1;padding:24px 20px 60px;max-width:500px;margin:0 auto}
+
+    /* HERO */
+    .hero-card{background:linear-gradient(135deg,var(--red) 0%,var(--red-dark) 100%);border-radius:22px;padding:28px;color:var(--white);margin-bottom:20px;animation:fadeUp .6s ease both;position:relative;overflow:hidden}
+    .hero-card::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.06)}
+    .hc-label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;opacity:.75;margin-bottom:8px}
+    .hc-balance{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:700;line-height:1}
+    .hc-currency{font-size:16px;font-weight:400;opacity:.8;margin-left:4px}
+    .hc-sub{font-size:12px;opacity:.65;margin-top:10px}
+
+    /* FORM CARD */
+    .card{background:var(--white);border-radius:18px;padding:24px;margin-bottom:16px;border:1px solid var(--gray-line);box-shadow:0 4px 20px rgba(0,0,0,.04);animation:fadeUp .6s ease .1s both}
+    .card-title{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-soft);margin-bottom:18px}
+    .field{margin-bottom:16px}
+    .field label{display:block;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-soft);margin-bottom:7px}
+    .input-wrap{position:relative}
+    .input-wrap input{width:100%;padding:13px 48px 13px 14px;border:1.5px solid var(--gray-line);border-radius:12px;font-size:14px;font-family:'DM Sans',sans-serif;background:#FAFAF9;color:var(--black);outline:none;transition:all .25s}
+    .input-wrap input:focus{border-color:var(--red);background:var(--white);box-shadow:0 0 0 4px rgba(200,16,46,.08)}
+    .input-suffix{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--gray-soft);font-weight:500}
+
+    /* FEE PREVIEW */
+    .fee-preview{background:var(--off-white);border-radius:12px;padding:14px 16px;margin-bottom:16px;border:1px solid var(--gray-line)}
+    .fp-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:4px 0}
+    .fp-row.total{font-weight:600;color:var(--black);padding-top:10px;border-top:1px solid var(--gray-line);margin-top:6px}
+    .fp-row span:first-child{color:var(--gray-soft)}
+    .fp-row span.red{color:var(--red);font-weight:600}
+
+    /* INFO PILLS */
+    .info-pills{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+    .info-pill{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--off-white);border-radius:10px;font-size:12px;color:var(--gray-soft)}
+    .info-pill svg{width:15px;height:15px;color:var(--red);flex-shrink:0}
+
+    .btn-main{width:100%;padding:15px;background:var(--red);color:var(--white);border:none;border-radius:13px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all .3s;box-shadow:0 8px 32px rgba(200,16,46,.3)}
+    .btn-main:hover{background:var(--red-dark);transform:translateY(-1px)}
+    .btn-main:disabled{opacity:.6;cursor:not-allowed;transform:none}
+
+    /* HISTORY */
+    .hist-card{background:var(--white);border-radius:18px;padding:24px;margin-bottom:16px;border:1px solid var(--gray-line);box-shadow:0 4px 20px rgba(0,0,0,.04);animation:fadeUp .6s ease .2s both}
+    .hist-item{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--gray-line)}
+    .hist-item:last-child{border-bottom:none}
+    .hist-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .hist-icon.pending{background:rgba(245,158,11,.1);color:#D97706}
+    .hist-icon.approved{background:rgba(22,163,74,.1);color:#16A34A}
+    .hist-icon.rejected{background:rgba(200,16,46,.1);color:var(--red)}
+    .hist-icon svg{width:18px;height:18px}
+    .hist-info{flex:1}
+    .hist-amount{font-size:15px;font-weight:600}
+    .hist-date{font-size:11px;color:var(--gray-soft);margin-top:2px}
+    .hist-badge{font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;letter-spacing:.06em}
+    .hist-badge.pending{background:rgba(245,158,11,.1);color:#D97706}
+    .hist-badge.approved{background:rgba(22,163,74,.1);color:#16A34A}
+    .hist-badge.rejected{background:rgba(200,16,46,.1);color:var(--red)}
+    .hist-empty{text-align:center;padding:24px;color:var(--gray-soft);font-size:13px}
+
+    /* SPINNER */
+    .spinner-overlay{position:fixed;inset:0;z-index:1000;background:rgba(248,246,243,.85);backdrop-filter:blur(8px);display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
+    .spinner-overlay.show{opacity:1;pointer-events:all}
+    .spinner-ring{width:72px;height:72px}
+    .spinner-ring svg{width:100%;height:100%;animation:spin 1.2s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .spinner-ring svg circle{fill:none;stroke-width:3;stroke-linecap:round}
+    .spinner-ring svg circle.track{stroke:rgba(200,16,46,.15)}
+    .spinner-ring svg circle.arc{stroke:var(--red);stroke-dasharray:160;stroke-dashoffset:40}
+    .spinner-label{margin-top:20px;font-size:14px;font-weight:500;color:var(--gray-soft)}
+
+    .toast{position:fixed;top:24px;left:50%;transform:translateX(-50%) translateY(-120%);background:var(--white);border-radius:14px;padding:14px 24px;box-shadow:0 16px 48px rgba(0,0,0,.12);border-left:4px solid var(--red);display:flex;align-items:center;gap:12px;font-size:14px;font-weight:500;z-index:2000;transition:transform .5s cubic-bezier(.175,.885,.32,1.275);max-width:90vw}
+    .toast.show{transform:translateX(-50%) translateY(0)}
+    .toast.success{border-left-color:#16A34A}
+
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+  </style>
+</head>
+<body>
+<div class="bg-layer"></div>
+<div class="spinner-overlay" id="spinner">
+  <div class="spinner-ring"><svg viewBox="0 0 72 72"><circle class="track" cx="36" cy="36" r="30"/><circle class="arc" cx="36" cy="36" r="30"/></svg></div>
+  <p class="spinner-label">A processar solicitação...</p>
+</div>
+<div class="toast" id="toast"><span id="toastMsg"></span></div>
+
+<div class="header">
+  <a href="index.html" class="back-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg></a>
+  <div class="h-title">Levantamento</div>
+</div>
+
+<div class="content">
+
+  <!-- Hero balance -->
+  <div class="hero-card">
+    <div class="hc-label">Saldo Disponível</div>
+    <div class="hc-balance"><span id="heroBalance">0</span><span class="hc-currency">Kz</span></div>
+    <div class="hc-sub">Valores disponíveis para levantar</div>
+  </div>
+
+  <!-- Info pills -->
+  <div class="info-pills">
+    <div class="info-pill">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Processamento: 30 min a 24h · Sexta-feira até 72h
+    </div>
+    <div class="info-pill">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      Taxa de processamento: 15% por solicitação
+    </div>
+    <div class="info-pill">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/><path d="M5 20h14"/></svg>
+      Limite diário: 800 Kz mínimo · 100.000 Kz máximo
+    </div>
+  </div>
+
+  <!-- Withdrawal Form -->
+  <div class="card">
+    <div class="card-title">Solicitar Levantamento</div>
+    <div class="field">
+      <label>Valor a Levantar</label>
+      <div class="input-wrap">
+        <input type="number" id="wAmount" placeholder="Mínimo 800" min="800" max="100000" oninput="calcFee(this.value)"/>
+        <span class="input-suffix">Kz</span>
+      </div>
+    </div>
+    <div class="fee-preview" id="feePreview" style="display:none">
+      <div class="fp-row"><span>Valor solicitado</span><span id="fpGross">—</span></div>
+      <div class="fp-row"><span>Taxa (15%)</span><span class="red" id="fpFee">—</span></div>
+      <div class="fp-row total"><span>Receberá</span><span id="fpNet">—</span></div>
+    </div>
+    <button class="btn-main" id="wBtn" onclick="doWithdraw()">Solicitar Levantamento</button>
+  </div>
+
+  <!-- History -->
+  <div class="hist-card">
+    <div class="card-title">Histórico de Saques</div>
+    <div id="histList"><div class="hist-empty">Sem levantamentos registados.</div></div>
+  </div>
+
+</div>
+
+<script type="module">
+  import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import{getFirestore,doc,getDoc,collection,addDoc,query,where,orderBy,getDocs,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  const cfg={apiKey:"AIzaSyBp8X1PPp3FqiQ6OXErr8Mu11GEp6MZ2-U",authDomain:"ascend-34bf0.firebaseapp.com",projectId:"ascend-34bf0",storageBucket:"ascend-34bf0.firebasestorage.app",messagingSenderId:"592623076677",appId:"1:592623076677:web:c5615719870aefdabf6a2c"};
+  const app=initializeApp(cfg);const auth=getAuth(app);const db=getFirestore(app);
+  let uid='',userBalance=0;
+
+  function fmt(n){return Number(n).toLocaleString('pt-AO');}
+  function toast(msg,type='success'){const t=document.getElementById('toast');document.getElementById('toastMsg').textContent=msg;t.className='toast '+type;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
+
+  onAuthStateChanged(auth,async user=>{
+    if(!user){window.location.href='auth.html';return;}
+    uid=user.uid;
+    const snap=await getDoc(doc(db,'users',uid));
+    if(!snap.exists())return;
+    const d=snap.data();
+    userBalance=d.balance||0;
+    document.getElementById('heroBalance').textContent=fmt(userBalance);
+    loadHistory();
+  });
+
+  async function loadHistory(){
+    const q=query(collection(db,'withdrawals'),where('uid','==',uid),orderBy('createdAt','desc'));
+    const snaps=await getDocs(q);
+    const list=document.getElementById('histList');
+    if(snaps.empty){list.innerHTML='<div class="hist-empty">Sem levantamentos registados.</div>';return;}
+    list.innerHTML='';
+    snaps.forEach(d=>{
+      const w=d.data();
+      const statusMap={pending:'Em análise',approved:'Aprovado',rejected:'Rejeitado'};
+      const dt=w.createdAt?.toDate?.()?.toLocaleDateString('pt-AO')||'—';
+      list.innerHTML+=`<div class="hist-item">
+        <div class="hist-icon ${w.status||'pending'}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/><path d="M5 20h14"/></svg>
+        </div>
+        <div class="hist-info">
+          <div class="hist-amount">${fmt(w.amount)} Kz</div>
+          <div class="hist-date">${dt}</div>
+        </div>
+        <span class="hist-badge ${w.status||'pending'}">${statusMap[w.status||'pending']}</span>
+      </div>`;
+    });
+  }
+
+  window.doWithdraw=async function(){
+    const amount=parseInt(document.getElementById('wAmount').value)||0;
+    if(amount<800){toast('O valor mínimo de levantamento é 800 Kz.','error');return;}
+    if(amount>100000){toast('O valor máximo diário é 100.000 Kz.','error');return;}
+    if(amount>userBalance){toast('Saldo insuficiente.','error');return;}
+    document.getElementById('spinner').classList.add('show');
+    document.getElementById('wBtn').disabled=true;
+    try{
+      await addDoc(collection(db,'withdrawals'),{uid,amount,fee:Math.round(amount*0.15),netAmount:Math.round(amount*0.85),status:'pending',createdAt:serverTimestamp()});
+      document.getElementById('spinner').classList.remove('show');
+      toast('Solicitação enviada com sucesso!','success');
+      document.getElementById('wAmount').value='';
+      document.getElementById('feePreview').style.display='none';
+      loadHistory();
+    }catch(e){
+      document.getElementById('spinner').classList.remove('show');
+      toast('Erro ao processar. Tente novamente.','error');
+    }
+    document.getElementById('wBtn').disabled=false;
+  };
+</script>
+<script>
+  function fmt(n){return Number(n).toLocaleString('pt-AO');}
+  function calcFee(val){
+    const v=parseInt(val)||0;
+    const fp=document.getElementById('feePreview');
+    if(v>=800){
+      fp.style.display='block';
+      const fee=Math.round(v*0.15);
+      document.getElementById('fpGross').textContent=fmt(v)+' Kz';
+      document.getElementById('fpFee').textContent='-'+fmt(fee)+' Kz';
+      document.getElementById('fpNet').textContent=fmt(v-fee)+' Kz';
+    } else {fp.style.display='none';}
+  }
+</script>
+</body>
+</html>

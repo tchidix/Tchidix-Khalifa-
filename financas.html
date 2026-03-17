@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Magnus Capital — Finanças</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--red:#C8102E;--red-dark:#A00D24;--white:#FFFFFF;--off-white:#F8F6F3;--black:#0D0D0D;--gray-soft:#6B6B6B;--gray-line:#E0DEDD;}
+    html,body{min-height:100%;font-family:'DM Sans',sans-serif;background:var(--off-white);color:var(--black)}
+    .bg-layer{position:fixed;inset:0;z-index:0;background:var(--off-white)}
+    .bg-layer::before{content:'';position:absolute;top:-20%;right:-10%;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(200,16,46,0.07) 0%,transparent 70%);animation:pbg 8s ease infinite alternate}
+    @keyframes pbg{from{transform:scale(1)}to{transform:scale(1.15)}}
+    .header{position:sticky;top:0;z-index:100;background:rgba(248,246,243,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--gray-line);padding:0 20px;height:60px;display:flex;align-items:center;gap:14px}
+    .back-btn{width:36px;height:36px;border:1.5px solid var(--gray-line);border-radius:10px;background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;text-decoration:none;color:var(--black);transition:all .25s;flex-shrink:0}
+    .back-btn:hover{border-color:var(--red);color:var(--red)}
+    .h-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700}
+    .content{position:relative;z-index:1;padding:24px 20px 60px;max-width:500px;margin:0 auto}
+
+    /* BALANCE HERO */
+    .balance-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;animation:fadeUp .6s ease both}
+    .bal-card{border-radius:18px;padding:20px;position:relative;overflow:hidden}
+    .bal-card.main{background:linear-gradient(135deg,var(--red) 0%,var(--red-dark) 100%);color:var(--white);grid-column:1/-1}
+    .bal-card.main::before{content:'';position:absolute;top:-30px;right:-30px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.06)}
+    .bal-card.secondary{background:var(--white);border:1px solid var(--gray-line);box-shadow:0 4px 16px rgba(0,0,0,.04)}
+    .bc-lbl{font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
+    .bal-card.main .bc-lbl{opacity:.7}
+    .bal-card.secondary .bc-lbl{color:var(--gray-soft)}
+    .bc-val{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:700}
+    .bal-card.secondary .bc-val{color:var(--black)}
+    .bc-sub{font-size:11px;margin-top:6px;opacity:.65}
+    .bal-card.secondary .bc-sub{color:var(--gray-soft)}
+
+    /* NEXT EARN */
+    .next-card{background:var(--white);border-radius:18px;padding:22px;margin-bottom:16px;border:1px solid var(--gray-line);box-shadow:0 4px 16px rgba(0,0,0,.04);animation:fadeUp .6s ease .1s both}
+    .nc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+    .nc-title{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-soft)}
+    .countdown{display:flex;gap:8px;align-items:center}
+    .cd-item{text-align:center;background:var(--off-white);border-radius:10px;padding:8px 12px;min-width:52px}
+    .cd-num{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;line-height:1;color:var(--black)}
+    .cd-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--gray-soft);margin-top:2px}
+    .cd-sep{font-size:20px;font-weight:700;color:var(--gray-line);margin-bottom:8px}
+    .nc-earning{display:flex;align-items:center;justify-content:space-between;padding-top:14px;border-top:1px solid var(--gray-line);margin-top:14px}
+    .nc-earning-lbl{font-size:13px;color:var(--gray-soft)}
+    .nc-earning-val{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--red)}
+
+    /* CONVERT BTN */
+    .convert-section{margin-bottom:20px;animation:fadeUp .6s ease .15s both}
+    .convert-card{background:var(--white);border-radius:18px;padding:22px;border:1px solid var(--gray-line);box-shadow:0 4px 16px rgba(0,0,0,.04)}
+    .cc-title{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-soft);margin-bottom:14px}
+    .cc-info{font-size:13px;color:var(--gray-soft);line-height:1.7;margin-bottom:18px}
+    .cc-info strong{color:var(--black)}
+    .btn-convert{width:100%;padding:15px;background:var(--red);color:var(--white);border:none;border-radius:13px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all .3s;box-shadow:0 8px 32px rgba(200,16,46,.3);display:flex;align-items:center;justify-content:center;gap:10px}
+    .btn-convert:hover{background:var(--red-dark);transform:translateY(-1px)}
+    .btn-convert:disabled{opacity:.5;cursor:not-allowed;transform:none}
+    .btn-convert svg{width:18px;height:18px}
+
+    /* NO PLAN */
+    .no-plan{background:var(--white);border-radius:18px;padding:32px 24px;text-align:center;border:1px solid var(--gray-line);animation:fadeUp .6s ease both}
+    .no-plan-icon{width:56px;height:56px;background:rgba(200,16,46,.08);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;color:var(--red)}
+    .no-plan-icon svg{width:26px;height:26px}
+    .no-plan-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;margin-bottom:8px}
+    .no-plan-sub{font-size:13px;color:var(--gray-soft);line-height:1.6;margin-bottom:20px}
+    .btn-goto{display:inline-block;padding:12px 28px;background:var(--red);color:var(--white);border-radius:12px;text-decoration:none;font-size:14px;font-weight:600;transition:all .3s;box-shadow:0 6px 20px rgba(200,16,46,.25)}
+    .btn-goto:hover{background:var(--red-dark)}
+
+    .toast{position:fixed;top:24px;left:50%;transform:translateX(-50%) translateY(-120%);background:var(--white);border-radius:14px;padding:14px 24px;box-shadow:0 16px 48px rgba(0,0,0,.12);border-left:4px solid var(--red);display:flex;align-items:center;gap:12px;font-size:14px;font-weight:500;z-index:2000;transition:transform .5s cubic-bezier(.175,.885,.32,1.275);max-width:90vw}
+    .toast.show{transform:translateX(-50%) translateY(0)}
+    .toast.success{border-left-color:#16A34A}
+
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+  </style>
+</head>
+<body>
+<div class="bg-layer"></div>
+<div class="toast" id="toast"><span id="toastMsg"></span></div>
+
+<div class="header">
+  <a href="index.html" class="back-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg></a>
+  <div class="h-title">Finanças</div>
+</div>
+
+<div class="content" id="mainContent">
+
+  <!-- No plan state -->
+  <div class="no-plan" id="noPlanView">
+    <div class="no-plan-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+    <div class="no-plan-title">Sem Plano Activo</div>
+    <div class="no-plan-sub">Adquira um plano de investimento para começar a receber rendimentos diários na sua conta.</div>
+    <a href="planos.html" class="btn-goto">Ver Planos</a>
+  </div>
+
+  <!-- Active investment view -->
+  <div id="investView" style="display:none">
+
+    <div class="balance-grid">
+      <div class="bal-card main">
+        <div class="bc-lbl">Saldo Total Disponível</div>
+        <div class="bc-val" id="totalBalance">0 Kz</div>
+        <div class="bc-sub">Inclui saldo + rendimentos convertidos</div>
+      </div>
+      <div class="bal-card secondary">
+        <div class="bc-lbl">Ganhos Pendentes</div>
+        <div class="bc-val" id="pendingEarn">0 Kz</div>
+        <div class="bc-sub">A aguardar conversão</div>
+      </div>
+      <div class="bal-card secondary">
+        <div class="bc-lbl">Total Ganho</div>
+        <div class="bc-val" id="totalEarned">0 Kz</div>
+        <div class="bc-sub">Histórico acumulado</div>
+      </div>
+    </div>
+
+    <div class="next-card">
+      <div class="nc-header">
+        <div class="nc-title">Próximo Rendimento</div>
+      </div>
+      <div class="countdown">
+        <div class="cd-item"><div class="cd-num" id="cdH">00</div><div class="cd-lbl">Horas</div></div>
+        <div class="cd-sep">:</div>
+        <div class="cd-item"><div class="cd-num" id="cdM">00</div><div class="cd-lbl">Min</div></div>
+        <div class="cd-sep">:</div>
+        <div class="cd-item"><div class="cd-num" id="cdS">00</div><div class="cd-lbl">Seg</div></div>
+      </div>
+      <div class="nc-earning">
+        <div class="nc-earning-lbl">Valor do próximo rendimento</div>
+        <div class="nc-earning-val" id="nextEarnVal">0 Kz</div>
+      </div>
+    </div>
+
+    <div class="convert-section">
+      <div class="convert-card">
+        <div class="cc-title">Converter Rendimentos</div>
+        <div class="cc-info">Os seus ganhos diários são disponibilizados <strong>exactamente 24h</strong> após a activação do investimento. Clique em Converter para adicionar ao saldo disponível.</div>
+        <button class="btn-convert" id="convertBtn" onclick="convertEarnings()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          Converter Ganhos para Saldo
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script type="module">
+  import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import{getFirestore,doc,getDoc,updateDoc,increment}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  const cfg={apiKey:"AIzaSyBp8X1PPp3FqiQ6OXErr8Mu11GEp6MZ2-U",authDomain:"ascend-34bf0.firebaseapp.com",projectId:"ascend-34bf0",storageBucket:"ascend-34bf0.firebasestorage.app",messagingSenderId:"592623076677",appId:"1:592623076677:web:c5615719870aefdabf6a2c"};
+  const app=initializeApp(cfg);const auth=getAuth(app);const db=getFirestore(app);
+  let uid='',userData={},timerInterval;
+
+  function fmt(n){return Number(Math.round(n)).toLocaleString('pt-AO');}
+  function toast(msg,type='success'){const t=document.getElementById('toast');document.getElementById('toastMsg').textContent=msg;t.className='toast '+type;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
+
+  onAuthStateChanged(auth,async user=>{
+    if(!user){window.location.href='auth.html';return;}
+    uid=user.uid;
+    const snap=await getDoc(doc(db,'users',uid));
+    if(!snap.exists())return;
+    userData=snap.data();
+    if(!userData.invested){
+      document.getElementById('noPlanView').style.display='block';
+      return;
+    }
+    document.getElementById('noPlanView').style.display='none';
+    document.getElementById('investView').style.display='block';
+    renderFinances();
+  });
+
+  function renderFinances(){
+    const rate=userData.dailyRate||5;
+    const inv=userData.investedAmount||0;
+    const daily=Math.round(inv*(rate/100));
+    document.getElementById('nextEarnVal').textContent=fmt(daily)+' Kz';
+    document.getElementById('totalBalance').textContent=fmt(userData.balance||0)+' Kz';
+    document.getElementById('pendingEarn').textContent=fmt(userData.pendingEarnings||0)+' Kz';
+    document.getElementById('totalEarned').textContent=fmt(userData.totalEarned||0)+' Kz';
+
+    // Countdown to next earning (24h from investedAt or lastEarning)
+    const base=userData.lastEarningAt||userData.investedAt;
+    if(base){
+      const next=new Date(base).getTime()+24*60*60*1000;
+      startCountdown(next,daily);
+    }
+  }
+
+  function startCountdown(targetMs,daily){
+    if(timerInterval)clearInterval(timerInterval);
+    function tick(){
+      const diff=targetMs-Date.now();
+      if(diff<=0){
+        document.getElementById('cdH').textContent='00';
+        document.getElementById('cdM').textContent='00';
+        document.getElementById('cdS').textContent='00';
+        document.getElementById('convertBtn').disabled=false;
+        clearInterval(timerInterval);
+        return;
+      }
+      const h=Math.floor(diff/3600000);
+      const m=Math.floor((diff%3600000)/60000);
+      const s=Math.floor((diff%60000)/1000);
+      document.getElementById('cdH').textContent=String(h).padStart(2,'0');
+      document.getElementById('cdM').textContent=String(m).padStart(2,'0');
+      document.getElementById('cdS').textContent=String(s).padStart(2,'0');
+      document.getElementById('convertBtn').disabled=diff>0;
+    }
+    tick();timerInterval=setInterval(tick,1000);
+  }
+
+  window.convertEarnings=async function(){
+    const rate=userData.dailyRate||5;
+    const inv=userData.investedAmount||0;
+    const daily=Math.round(inv*(rate/100));
+    const base=userData.lastEarningAt||userData.investedAt;
+    if(base){
+      const next=new Date(base).getTime()+24*60*60*1000;
+      if(Date.now()<next){toast('Rendimento ainda não disponível.','error');return;}
+    }
+    document.getElementById('convertBtn').disabled=true;
+    try{
+      await updateDoc(doc(db,'users',uid),{
+        balance:increment(daily),
+        totalEarned:increment(daily),
+        pendingEarnings:0,
+        lastEarningAt:new Date().toISOString()
+      });
+      userData.balance=(userData.balance||0)+daily;
+      userData.totalEarned=(userData.totalEarned||0)+daily;
+      userData.lastEarningAt=new Date().toISOString();
+      toast('Ganhos convertidos com sucesso!','success');
+      renderFinances();
+    }catch(e){toast('Erro ao converter. Tente novamente.','error');document.getElementById('convertBtn').disabled=false;}
+  };
+</script>
+</body>
+</html>

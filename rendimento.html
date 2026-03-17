@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Magnus Capital — Rendimento</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--red:#C8102E;--red-dark:#A00D24;--white:#FFFFFF;--off-white:#F8F6F3;--black:#0D0D0D;--gray-soft:#6B6B6B;--gray-line:#E0DEDD;}
+    html,body{min-height:100%;font-family:'DM Sans',sans-serif;background:var(--off-white);color:var(--black)}
+    .bg-layer{position:fixed;inset:0;z-index:0;background:var(--off-white)}
+    .bg-layer::before{content:'';position:absolute;top:-20%;right:-10%;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(200,16,46,0.07) 0%,transparent 70%);animation:pbg 8s ease infinite alternate}
+    @keyframes pbg{from{transform:scale(1)}to{transform:scale(1.15)}}
+    .header{position:sticky;top:0;z-index:100;background:rgba(248,246,243,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--gray-line);padding:0 20px;height:60px;display:flex;align-items:center;gap:14px}
+    .back-btn{width:36px;height:36px;border:1.5px solid var(--gray-line);border-radius:10px;background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;text-decoration:none;color:var(--black);transition:all .25s;flex-shrink:0}
+    .back-btn:hover{border-color:var(--red);color:var(--red)}
+    .h-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700}
+    .content{position:relative;z-index:1;padding:24px 20px 60px;max-width:500px;margin:0 auto}
+
+    .summary-card{background:linear-gradient(135deg,var(--red) 0%,var(--red-dark) 100%);border-radius:22px;padding:28px;color:var(--white);margin-bottom:20px;animation:fadeUp .6s ease both;position:relative;overflow:hidden}
+    .summary-card::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.06)}
+    .sc-label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;opacity:.75;margin-bottom:8px}
+    .sc-total{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:700;line-height:1}
+    .sc-row{display:flex;gap:0;margin-top:20px;padding-top:20px;border-top:1px solid rgba(255,255,255,.15)}
+    .sc-stat{flex:1;text-align:center}
+    .sc-stat-val{font-size:15px;font-weight:600}
+    .sc-stat-lbl{font-size:10px;opacity:.65;margin-top:2px;letter-spacing:.06em}
+    .sc-sep{width:1px;background:rgba(255,255,255,.2)}
+
+    .hist-card{background:var(--white);border-radius:18px;padding:0;border:1px solid var(--gray-line);box-shadow:0 4px 20px rgba(0,0,0,.04);overflow:hidden;animation:fadeUp .6s ease .1s both}
+    .hc-header{padding:18px 20px;border-bottom:1px solid var(--gray-line);display:flex;align-items:center;justify-content:space-between}
+    .hc-title{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-soft)}
+    .hist-item{display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid var(--gray-line);animation:fadeUp .4s ease both}
+    .hist-item:last-child{border-bottom:none}
+    .hi-icon{width:40px;height:40px;background:rgba(22,163,74,.1);border-radius:12px;display:flex;align-items:center;justify-content:center;color:#16A34A;flex-shrink:0}
+    .hi-icon svg{width:18px;height:18px}
+    .hi-info{flex:1}
+    .hi-amount{font-size:15px;font-weight:600;color:var(--black)}
+    .hi-date{font-size:11px;color:var(--gray-soft);margin-top:2px}
+    .hi-badge{font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;background:rgba(22,163,74,.1);color:#16A34A;letter-spacing:.06em}
+
+    .empty-state{padding:40px 20px;text-align:center}
+    .empty-icon{width:52px;height:52px;background:rgba(200,16,46,.08);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;color:var(--red)}
+    .empty-icon svg{width:24px;height:24px}
+    .empty-title{font-size:16px;font-weight:600;margin-bottom:6px}
+    .empty-sub{font-size:13px;color:var(--gray-soft);line-height:1.6}
+
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+  </style>
+</head>
+<body>
+<div class="bg-layer"></div>
+<div class="header">
+  <a href="index.html" class="back-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg></a>
+  <div class="h-title">Histórico de Rendimento</div>
+</div>
+<div class="content">
+
+  <div class="summary-card">
+    <div class="sc-label">Total Acumulado</div>
+    <div class="sc-total" id="grandTotal">0 Kz</div>
+    <div class="sc-row">
+      <div class="sc-stat"><div class="sc-stat-val" id="totalDays">0</div><div class="sc-stat-lbl">Conversões</div></div>
+      <div class="sc-sep"></div>
+      <div class="sc-stat"><div class="sc-stat-val" id="planLevel">—</div><div class="sc-stat-lbl">Plano Activo</div></div>
+      <div class="sc-sep"></div>
+      <div class="sc-stat"><div class="sc-stat-val" id="dailyRate">0%</div><div class="sc-stat-lbl">Taxa Diária</div></div>
+    </div>
+  </div>
+
+  <div class="hist-card">
+    <div class="hc-header">
+      <div class="hc-title">Histórico de Conversões</div>
+    </div>
+    <div id="histList">
+      <div class="empty-state">
+        <div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+        <div class="empty-title">Sem Histórico</div>
+        <div class="empty-sub">As suas conversões de rendimento diário aparecerão aqui depois de efectuadas em Finanças.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script type="module">
+  import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import{getFirestore,doc,getDoc,collection,query,where,orderBy,getDocs}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  const cfg={apiKey:"AIzaSyBp8X1PPp3FqiQ6OXErr8Mu11GEp6MZ2-U",authDomain:"ascend-34bf0.firebaseapp.com",projectId:"ascend-34bf0",storageBucket:"ascend-34bf0.firebasestorage.app",messagingSenderId:"592623076677",appId:"1:592623076677:web:c5615719870aefdabf6a2c"};
+  const app=initializeApp(cfg);const auth=getAuth(app);const db=getFirestore(app);
+
+  function fmt(n){return Number(Math.round(n)).toLocaleString('pt-AO');}
+
+  onAuthStateChanged(auth,async user=>{
+    if(!user){window.location.href='auth.html';return;}
+    const snap=await getDoc(doc(db,'users',user.uid));
+    if(!snap.exists())return;
+    const d=snap.data();
+    document.getElementById('grandTotal').textContent=fmt(d.totalEarned||0)+' Kz';
+    document.getElementById('planLevel').textContent=d.level||'—';
+    document.getElementById('dailyRate').textContent=(d.dailyRate||0)+'%';
+
+    // Load earnings history
+    try{
+      const q=query(collection(db,'earnings'),where('uid','==',user.uid),orderBy('createdAt','desc'));
+      const snaps=await getDocs(q);
+      document.getElementById('totalDays').textContent=snaps.size;
+      if(!snaps.empty){
+        const list=document.getElementById('histList');
+        list.innerHTML='';
+        let delay=0;
+        snaps.forEach(doc=>{
+          const e=doc.data();
+          const dt=e.createdAt?.toDate?.()?.toLocaleString('pt-AO')||'—';
+          list.innerHTML+=`<div class="hist-item" style="animation-delay:${delay}s">
+            <div class="hi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+            <div class="hi-info">
+              <div class="hi-amount">+${fmt(e.amount)} Kz</div>
+              <div class="hi-date">${dt}</div>
+            </div>
+            <span class="hi-badge">Convertido</span>
+          </div>`;
+          delay+=0.05;
+        });
+      }
+    }catch(e){console.log('No earnings collection yet');}
+  });
+</script>
+</body>
+</html>
