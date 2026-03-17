@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Magnus Capital — Levantamento</title>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
@@ -122,72 +123,224 @@
 <script type="module">
   import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import{getFirestore,doc,getDoc,collection,addDoc,query,where,orderBy,getDocs,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import{getFirestore,doc,getDoc,collection,addDoc,query,where,orderBy,getDocs,serverTimestamp,updateDoc,runTransaction}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  
   const cfg={apiKey:"AIzaSyBp8X1PPp3FqiQ6OXErr8Mu11GEp6MZ2-U",authDomain:"ascend-34bf0.firebaseapp.com",projectId:"ascend-34bf0",storageBucket:"ascend-34bf0.firebasestorage.app",messagingSenderId:"592623076677",appId:"1:592623076677:web:c5615719870aefdabf6a2c"};
-  const app=initializeApp(cfg);const auth=getAuth(app);const db=getFirestore(app);
-  let uid='',userBalance=0;
-  function fmt(n){return Number(n).toLocaleString('pt-AO');}
-  onAuthStateChanged(auth,async user=>{
-    if(!user){window.location.href='auth.html';return;}
+  const app=initializeApp(cfg);
+  const auth=getAuth(app);
+  const db=getFirestore(app);
+  
+  let uid='';
+  let userBalance=0;
+  let userDocRef = null;
+  
+  function fmt(n){return Number(n).toLocaleString('pt-AO')+ ' Kz';}
+  
+  // Função para atualizar o saldo na interface
+  async function updateBalanceDisplay() {
+    if (!uid) return;
+    try {
+      const snap = await getDoc(doc(db, 'users', uid));
+      if (snap.exists()) {
+        userBalance = snap.data().balance || 0;
+        document.getElementById('heroBalance').textContent = Number(userBalance).toLocaleString('pt-AO');
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar saldo:', error);
+    }
+  }
+  
+  onAuthStateChanged(auth, async user=>{
+    if(!user){
+      window.location.href='auth.html';
+      return;
+    }
     uid=user.uid;
-    const snap=await getDoc(doc(db,'users',uid));
-    if(!snap.exists())return;
-    const d=snap.data();userBalance=d.balance||0;
-    document.getElementById('heroBalance').textContent=fmt(userBalance);
+    userDocRef = doc(db, 'users', uid);
+    
+    // Carregar saldo inicial
+    await updateBalanceDisplay();
+    
+    // Carregar histórico
     loadHistory();
   });
+  
   async function loadHistory(){
     try{
       const q=query(collection(db,'withdrawals'),where('uid','==',uid),orderBy('createdAt','desc'));
       const snaps=await getDocs(q);
       const list=document.getElementById('histList');
-      if(snaps.empty){list.innerHTML='<div class="hist-empty">Sem levantamentos registados.</div>';return;}
+      
+      if(snaps.empty){
+        list.innerHTML='<div class="hist-empty">Sem levantamentos registados.</div>';
+        return;
+      }
+      
       list.innerHTML='';
       snaps.forEach(d=>{
         const w=d.data();
         const sm={pending:'Em análise',approved:'Aprovado',rejected:'Rejeitado'};
-        const dt=w.createdAt?.toDate?.()?.toLocaleDateString('pt-AO')||'—';
-        list.innerHTML+=`<div class="hist-item"><div class="hist-icon ${w.status||'pending'}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/><path d="M5 20h14"/></svg></div><div class="hist-info"><div class="hist-amount">${fmt(w.amount)} Kz</div><div class="hist-date">${dt}</div></div><span class="hist-badge ${w.status||'pending'}">${sm[w.status||'pending']}</span></div>`;
+        const dt=w.createdAt?.toDate ? w.createdAt.toDate().toLocaleDateString('pt-AO') : '—';
+        
+        list.innerHTML+=`
+          <div class="hist-item">
+            <div class="hist-icon ${w.status||'pending'}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+                <path d="M5 20h14"/>
+              </svg>
+            </div>
+            <div class="hist-info">
+              <div class="hist-amount">${Number(w.amount).toLocaleString('pt-AO')} Kz</div>
+              <div class="hist-date">${dt}</div>
+            </div>
+            <span class="hist-badge ${w.status||'pending'}">${sm[w.status||'pending']}</span>
+          </div>
+        `;
       });
-    }catch(e){}
-  }
-  window.doWithdraw=async function(){
-    const amount=parseInt(document.getElementById('wAmount').value)||0;
-    if(amount<800){window.toast('O valor mínimo de levantamento é 800 Kz.','error');return;}
-    if(amount>100000){window.toast('O valor máximo diário é 100.000 Kz.','error');return;}
-    if(amount>userBalance){window.toast('Saldo insuficiente.','error');return;}
-    document.getElementById('spinner').classList.add('show');
-    document.getElementById('wBtn').disabled=true;
-    try{
-      await addDoc(collection(db,'withdrawals'),{uid,amount,fee:Math.round(amount*0.15),netAmount:Math.round(amount*0.85),status:'pending',createdAt:serverTimestamp()});
-      document.getElementById('spinner').classList.remove('show');
-      window.toast('Solicitação enviada com sucesso!','success');
-      document.getElementById('wAmount').value='';
-      document.getElementById('feePreview').style.display='none';
-      loadHistory();
-    }catch(e){
-      document.getElementById('spinner').classList.remove('show');
-      window.toast('Erro ao processar. Tente novamente.','error');
+    } catch(e){
+      console.error('Erro ao carregar histórico:', e);
     }
-    document.getElementById('wBtn').disabled=false;
+  }
+  
+  window.doWithdraw = async function() {
+    const amountInput = document.getElementById('wAmount');
+    const amount = parseInt(amountInput.value) || 0;
+    const btn = document.getElementById('wBtn');
+    
+    // Validações
+    if(amount < 800){
+      window.toast('O valor mínimo de levantamento é 800 Kz.','error');
+      return;
+    }
+    if(amount > 100000){
+      window.toast('O valor máximo diário é 100.000 Kz.','error');
+      return;
+    }
+    
+    // Verificar saldo atual antes de prosseguir
+    const currentBalance = await getDoc(userDocRef);
+    if (!currentBalance.exists()) {
+      window.toast('Erro ao verificar saldo.','error');
+      return;
+    }
+    
+    const availableBalance = currentBalance.data().balance || 0;
+    if(amount > availableBalance){
+      window.toast('Saldo insuficiente.','error');
+      return;
+    }
+    
+    // Mostrar spinner e desabilitar botão
+    document.getElementById('spinner').classList.add('show');
+    btn.disabled = true;
+    
+    try {
+      const fee = Math.round(amount * 0.15);
+      const netAmount = Math.round(amount * 0.85);
+      const newBalance = availableBalance - amount;
+      
+      // Usar transação para garantir consistência dos dados
+      await runTransaction(db, async (transaction) => {
+        // 1. Atualizar saldo do usuário
+        transaction.update(userDocRef, {
+          balance: newBalance,
+          updatedAt: serverTimestamp()
+        });
+        
+        // 2. Criar registro de levantamento
+        const withdrawalRef = doc(collection(db, 'withdrawals'));
+        transaction.set(withdrawalRef, {
+          uid: uid,
+          amount: amount,
+          fee: fee,
+          netAmount: netAmount,
+          status: 'pending',
+          createdAt: serverTimestamp(),
+          previousBalance: availableBalance,
+          newBalance: newBalance
+        });
+      });
+      
+      // Atualizar saldo na interface
+      userBalance = newBalance;
+      document.getElementById('heroBalance').textContent = Number(newBalance).toLocaleString('pt-AO');
+      
+      // Limpar formulário
+      amountInput.value = '';
+      document.getElementById('feePreview').style.display = 'none';
+      
+      // Mostrar mensagem de sucesso
+      window.toast('Solicitação enviada com sucesso!','success');
+      
+      // Recarregar histórico
+      await loadHistory();
+      
+    } catch(error) {
+      console.error('Erro detalhado:', error);
+      window.toast('Erro ao processar. Tente novamente.','error');
+    } finally {
+      // Esconder spinner e reabilitar botão
+      document.getElementById('spinner').classList.remove('show');
+      btn.disabled = false;
+    }
   };
 </script>
+
 <script>
-  function fmt(n){return Number(n).toLocaleString('pt-AO');}
+  // Funções globais
+  function fmt(n){
+    return Number(n).toLocaleString('pt-AO');
+  }
+  
   function calcFee(val){
-    const v=parseInt(val)||0;const fp=document.getElementById('feePreview');
-    if(v>=800){fp.style.display='block';const fee=Math.round(v*0.15);document.getElementById('fpGross').textContent=fmt(v)+' Kz';document.getElementById('fpFee').textContent='-'+fmt(fee)+' Kz';document.getElementById('fpNet').textContent=fmt(v-fee)+' Kz';}
-    else{fp.style.display='none';}
+    const v = parseInt(val) || 0;
+    const fp = document.getElementById('feePreview');
+    
+    if(v >= 800){
+      fp.style.display = 'block';
+      const fee = Math.round(v * 0.15);
+      const net = v - fee;
+      
+      document.getElementById('fpGross').textContent = fmt(v) + ' Kz';
+      document.getElementById('fpFee').textContent = '-' + fmt(fee) + ' Kz';
+      document.getElementById('fpNet').textContent = fmt(net) + ' Kz';
+    } else {
+      fp.style.display = 'none';
+    }
   }
-  let _tt=null;
-  function toast(msg,type){
-    if(_tt)clearTimeout(_tt);
-    const t=document.getElementById('toast'),m=document.getElementById('toastMsg');
-    t.className='toast';m.textContent='';void t.offsetHeight;
-    m.textContent=msg;t.className='toast '+(type||'success')+' show';
-    _tt=setTimeout(()=>{t.classList.remove('show');_tt=setTimeout(()=>{t.className='toast';},450);},3200);
+  
+  // Sistema de toast
+  let toastTimeout = null;
+  
+  function toast(msg, type){
+    if(toastTimeout) clearTimeout(toastTimeout);
+    
+    const t = document.getElementById('toast');
+    const m = document.getElementById('toastMsg');
+    
+    // Reset
+    t.className = 'toast';
+    m.textContent = '';
+    
+    // Forçar reflow
+    void t.offsetHeight;
+    
+    // Mostrar nova mensagem
+    m.textContent = msg;
+    t.className = 'toast ' + (type || 'success') + ' show';
+    
+    // Auto-esconder após 3.2s
+    toastTimeout = setTimeout(() => {
+      t.classList.remove('show');
+      toastTimeout = setTimeout(() => {
+        t.className = 'toast';
+      }, 450);
+    }, 3200);
   }
-  window.toast=toast;
+  
+  window.toast = toast;
 </script>
 </body>
 </html>
