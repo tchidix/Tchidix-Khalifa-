@@ -15,15 +15,31 @@
     .header{position:sticky;top:0;z-index:100;background:rgba(248,246,243,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--gray-line);padding:0 20px;height:60px;display:flex;align-items:center;gap:14px}
     .back-btn{width:36px;height:36px;border:1.5px solid var(--gray-line);border-radius:10px;background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;text-decoration:none;color:var(--black);transition:all .25s;flex-shrink:0}
     .back-btn:hover{border-color:var(--red);color:var(--red)}
-    .h-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700}
-    .content{position:relative;z-index:1;padding:24px 20px 40px;max-width:500px;margin:0 auto}
-    .hero-card{background:linear-gradient(135deg,var(--red) 0%,var(--red-dark) 100%);border-radius:22px;padding:28px;color:var(--white);margin-bottom:20px;animation:fadeUp .6s ease both;position:relative;overflow:hidden}
+    .h-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;flex:1}
+    .content{position:relative;z-index:1;padding:24px 20px 40px;max-width:1200px;margin:0 auto}
+    
+    /* Layout de duas colunas */
+    .dashboard-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:20px;align-items:start}
+    @media (max-width:768px){.dashboard-grid{grid-template-columns:1fr}}
+    
+    /* Coluna da esquerda - Formulário */
+    .left-column{display:flex;flex-direction:column;gap:20px}
+    .hero-card{background:linear-gradient(135deg,var(--red) 0%,var(--red-dark) 100%);border-radius:22px;padding:28px;color:var(--white);animation:fadeUp .6s ease both;position:relative;overflow:hidden}
     .hero-card::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.06)}
     .hc-label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;opacity:.75;margin-bottom:8px}
     .hc-balance{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:700;line-height:1}
     .hc-currency{font-size:16px;opacity:.8;margin-left:4px}
     .hc-sub{font-size:12px;opacity:.65;margin-top:10px}
-    .card{background:var(--white);border-radius:18px;padding:24px;margin-bottom:16px;border:1px solid var(--gray-line);box-shadow:0 4px 20px rgba(0,0,0,.04);animation:fadeUp .6s ease .1s both}
+    
+    /* Coluna da direita - Histórico */
+    .right-column{background:var(--white);border-radius:22px;border:1px solid var(--gray-line);box-shadow:0 4px 20px rgba(0,0,0,.04);animation:fadeUp .6s ease .1s both;height:fit-content;max-height:calc(100vh - 120px);overflow-y:auto;position:sticky;top:84px}
+    .hist-header{padding:24px 24px 16px;border-bottom:1px solid var(--gray-line);display:flex;justify-content:space-between;align-items:center}
+    .hist-header h2{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--black)}
+    .hist-count{background:var(--off-white);padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;color:var(--gray-soft)}
+    .hist-list{padding:0 24px 24px}
+    
+    /* Cards e formulários */
+    .card{background:var(--white);border-radius:18px;padding:24px;border:1px solid var(--gray-line);box-shadow:0 4px 20px rgba(0,0,0,.04);animation:fadeUp .6s ease .1s both}
     .card-title{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-soft);margin-bottom:18px}
     .field{margin-bottom:16px}
     .field label{display:block;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-soft);margin-bottom:7px}
@@ -31,33 +47,40 @@
     .input-wrap input{width:100%;padding:13px 48px 13px 14px;border:1.5px solid var(--gray-line);border-radius:12px;font-size:14px;font-family:'DM Sans',sans-serif;background:#FAFAF9;color:var(--black);outline:none;transition:all .25s}
     .input-wrap input:focus{border-color:var(--red);background:var(--white);box-shadow:0 0 0 4px rgba(200,16,46,.08)}
     .input-suffix{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--gray-soft);font-weight:500}
+    
+    .info-pills{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+    .info-pill{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--off-white);border-radius:10px;font-size:12px;color:var(--gray-soft)}
+    .info-pill svg{width:15px;height:15px;color:var(--red);flex-shrink:0}
+    
     .fee-preview{background:var(--off-white);border-radius:12px;padding:14px 16px;margin-bottom:16px;border:1px solid var(--gray-line)}
     .fp-row{display:flex;justify-content:space-between;font-size:13px;padding:4px 0}
     .fp-row.total{font-weight:600;padding-top:10px;border-top:1px solid var(--gray-line);margin-top:6px}
     .fp-row span:first-child{color:var(--gray-soft)}
     .fp-row span.red{color:var(--red);font-weight:600}
-    .info-pills{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
-    .info-pill{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--off-white);border-radius:10px;font-size:12px;color:var(--gray-soft)}
-    .info-pill svg{width:15px;height:15px;color:var(--red);flex-shrink:0}
+    
     .btn-main{width:100%;padding:15px;background:var(--red);color:var(--white);border:none;border-radius:13px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all .3s;box-shadow:0 8px 32px rgba(200,16,46,.3)}
     .btn-main:hover{background:var(--red-dark);transform:translateY(-1px)}
     .btn-main:disabled{opacity:.6;cursor:not-allowed;transform:none}
-    .hist-card{background:var(--white);border-radius:18px;padding:24px;margin-bottom:16px;border:1px solid var(--gray-line);box-shadow:0 4px 20px rgba(0,0,0,.04);animation:fadeUp .6s ease .2s both}
-    .hist-item{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--gray-line)}
+    
+    /* Itens do histórico */
+    .hist-item{display:flex;align-items:center;gap:14px;padding:16px 0;border-bottom:1px solid var(--gray-line)}
     .hist-item:last-child{border-bottom:none}
     .hist-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
     .hist-icon.pending{background:rgba(245,158,11,.1);color:#D97706}
-    .hist-icon.approved{background:rgba(22,163,74,.1);color:#16A34A}
+    .hist-icon.approved, .hist-icon.sucesso{background:rgba(22,163,74,.1);color:#16A34A}
     .hist-icon.rejected{background:rgba(200,16,46,.1);color:var(--red)}
     .hist-icon svg{width:18px;height:18px}
     .hist-info{flex:1}
     .hist-amount{font-size:15px;font-weight:600}
-    .hist-date{font-size:11px;color:var(--gray-soft);margin-top:2px}
+    .hist-details{display:flex;gap:12px;margin-top:4px;font-size:11px;color:var(--gray-soft)}
+    .hist-details span{display:flex;align-items:center;gap:4px}
     .hist-badge{font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;letter-spacing:.06em}
     .hist-badge.pending{background:rgba(245,158,11,.1);color:#D97706}
-    .hist-badge.approved{background:rgba(22,163,74,.1);color:#16A34A}
+    .hist-badge.approved, .hist-badge.sucesso{background:rgba(22,163,74,.1);color:#16A34A}
     .hist-badge.rejected{background:rgba(200,16,46,.1);color:var(--red)}
-    .hist-empty{text-align:center;padding:24px;color:var(--gray-soft);font-size:13px}
+    .hist-empty{text-align:center;padding:40px 24px;color:var(--gray-soft);font-size:13px}
+    
+    /* Spinner e Toast */
     .spinner-overlay{position:fixed;inset:0;z-index:1000;background:rgba(248,246,243,.85);backdrop-filter:blur(8px);display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
     .spinner-overlay.show{opacity:1;pointer-events:all}
     .spinner-ring{width:72px;height:72px}
@@ -67,10 +90,12 @@
     .spinner-ring svg circle.track{stroke:rgba(200,16,46,.15)}
     .spinner-ring svg circle.arc{stroke:var(--red);stroke-dasharray:160;stroke-dashoffset:40}
     .spinner-label{margin-top:20px;font-size:14px;font-weight:500;color:var(--gray-soft)}
+    
     .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(calc(-100% - 30px));opacity:0;visibility:hidden;background:var(--white);border-radius:13px;padding:12px 18px;box-shadow:0 14px 44px rgba(0,0,0,.13);border-left:4px solid var(--red);display:flex;align-items:center;gap:10px;font-size:13px;font-weight:500;z-index:9999;transition:transform .4s cubic-bezier(.22,1,.36,1),opacity .4s ease,visibility 0s linear .4s;max-width:92vw;pointer-events:none}
     .toast.show{transform:translateX(-50%) translateY(0);opacity:1;visibility:visible;pointer-events:all;transition:transform .4s cubic-bezier(.22,1,.36,1),opacity .4s ease,visibility 0s linear 0s}
     .toast.success{border-left-color:#16A34A}
     .toast.error{border-left-color:var(--red)}
+    
     @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
   </style>
 </head>
@@ -84,46 +109,60 @@
 
 <div class="header">
   <a href="index.html" class="back-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg></a>
-  <div class="h-title">Levantamento</div>
+  <div class="h-title">Magnus Capital — Levantamentos</div>
 </div>
 
 <div class="content">
-  <div class="hero-card">
-    <div class="hc-label">Saldo Disponível</div>
-    <div class="hc-balance"><span id="heroBalance">0</span><span class="hc-currency">Kz</span></div>
-    <div class="hc-sub">Valores disponíveis para levantar</div>
-  </div>
-  <div class="info-pills">
-    <div class="info-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Processamento: 30 min a 24h &middot; Sexta-feira até 72h</div>
-    <div class="info-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Taxa de processamento: 15% por solicitação</div>
-    <div class="info-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/><path d="M5 20h14"/></svg>Mínimo 800 Kz &middot; Máximo 100.000 Kz por dia</div>
-  </div>
-  <div class="card">
-    <div class="card-title">Solicitar Levantamento</div>
-    <div class="field">
-      <label>Valor a Levantar</label>
-      <div class="input-wrap">
-        <input type="number" id="wAmount" placeholder="Mínimo 800" min="800" max="100000" oninput="calcFee(this.value)"/>
-        <span class="input-suffix">Kz</span>
+  <div class="dashboard-grid">
+    <!-- COLUNA ESQUERDA: Saldo e Formulário -->
+    <div class="left-column">
+      <div class="hero-card">
+        <div class="hc-label">Saldo Disponível</div>
+        <div class="hc-balance"><span id="heroBalance">0</span><span class="hc-currency">Kz</span></div>
+        <div class="hc-sub">Valores disponíveis para levantar</div>
+      </div>
+      
+      <div class="info-pills">
+        <div class="info-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Processamento: 30 min a 24h · Sexta até 72h</div>
+        <div class="info-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Taxa: 15% por solicitação</div>
+        <div class="info-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/><path d="M5 20h14"/></svg>Mín. 800 · Máx. 100.000 Kz/dia</div>
+      </div>
+      
+      <div class="card">
+        <div class="card-title">Solicitar Levantamento</div>
+        <div class="field">
+          <label>Valor a Levantar</label>
+          <div class="input-wrap">
+            <input type="number" id="wAmount" placeholder="Mínimo 800" min="800" max="100000" oninput="calcFee(this.value)"/>
+            <span class="input-suffix">Kz</span>
+          </div>
+        </div>
+        <div class="fee-preview" id="feePreview" style="display:none">
+          <div class="fp-row"><span>Valor solicitado</span><span id="fpGross">—</span></div>
+          <div class="fp-row"><span>Taxa (15%)</span><span class="red" id="fpFee">—</span></div>
+          <div class="fp-row total"><span>Receberá</span><span id="fpNet">—</span></div>
+        </div>
+        <button class="btn-main" id="wBtn" onclick="doWithdraw()">Solicitar Levantamento</button>
       </div>
     </div>
-    <div class="fee-preview" id="feePreview" style="display:none">
-      <div class="fp-row"><span>Valor solicitado</span><span id="fpGross">—</span></div>
-      <div class="fp-row"><span>Taxa (15%)</span><span class="red" id="fpFee">—</span></div>
-      <div class="fp-row total"><span>Receberá</span><span id="fpNet">—</span></div>
+    
+    <!-- COLUNA DIREITA: Histórico Completo -->
+    <div class="right-column">
+      <div class="hist-header">
+        <h2>Histórico de Levantamentos</h2>
+        <span class="hist-count" id="histCount">0</span>
+      </div>
+      <div class="hist-list" id="histList">
+        <div class="hist-empty">Carregando histórico...</div>
+      </div>
     </div>
-    <button class="btn-main" id="wBtn" onclick="doWithdraw()">Solicitar Levantamento</button>
-  </div>
-  <div class="hist-card">
-    <div class="card-title">Histórico de Saques</div>
-    <div id="histList"><div class="hist-empty">Sem levantamentos registados.</div></div>
   </div>
 </div>
 
 <script type="module">
   import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import{getFirestore,doc,getDoc,collection,addDoc,query,where,orderBy,getDocs,serverTimestamp,updateDoc,runTransaction}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import{getFirestore,doc,getDoc,collection,query,where,orderBy,getDocs,serverTimestamp,runTransaction}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
   
   const cfg={apiKey:"AIzaSyBp8X1PPp3FqiQ6OXErr8Mu11GEp6MZ2-U",authDomain:"ascend-34bf0.firebaseapp.com",projectId:"ascend-34bf0",storageBucket:"ascend-34bf0.firebasestorage.app",messagingSenderId:"592623076677",appId:"1:592623076677:web:c5615719870aefdabf6a2c"};
   const app=initializeApp(cfg);
@@ -134,57 +173,90 @@
   let userBalance=0;
   let userDocRef = null;
   
-  function fmt(n){return Number(n).toLocaleString('pt-AO')+ ' Kz';}
+  // Formatar número
+  function fmtNumber(n) {
+    return Number(n).toLocaleString('pt-AO');
+  }
   
-  // Função para atualizar o saldo na interface
-  async function updateBalanceDisplay() {
+  // Formatar status
+  function formatStatus(status) {
+    const statusMap = {
+      'pending': 'Em análise',
+      'approved': 'Aprovado',
+      'rejected': 'Rejeitado',
+      'sucesso': 'Aprovado'
+    };
+    return statusMap[status] || status || 'Em análise';
+  }
+  
+  // Classe do status
+  function getStatusClass(status) {
+    if (status === 'sucesso' || status === 'approved') return 'approved';
+    if (status === 'rejected') return 'rejected';
+    return 'pending';
+  }
+  
+  // Formatar data
+  function formatDate(timestamp) {
+    if (!timestamp || !timestamp.toDate) return '—';
+    const date = timestamp.toDate();
+    return date.toLocaleDateString('pt-AO', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+  
+  // Atualizar saldo
+  async function updateBalance() {
     if (!uid) return;
     try {
       const snap = await getDoc(doc(db, 'users', uid));
       if (snap.exists()) {
         userBalance = snap.data().balance || 0;
-        document.getElementById('heroBalance').textContent = Number(userBalance).toLocaleString('pt-AO');
+        document.getElementById('heroBalance').textContent = fmtNumber(userBalance);
       }
     } catch (error) {
       console.error('Erro ao atualizar saldo:', error);
     }
   }
   
-  onAuthStateChanged(auth, async user=>{
-    if(!user){
-      window.location.href='auth.html';
-      return;
-    }
-    uid=user.uid;
-    userDocRef = doc(db, 'users', uid);
+  // Carregar histórico completo
+  async function loadFullHistory() {
+    if (!uid) return;
     
-    // Carregar saldo inicial
-    await updateBalanceDisplay();
-    
-    // Carregar histórico
-    loadHistory();
-  });
-  
-  async function loadHistory(){
-    try{
-      const q=query(collection(db,'withdrawals'),where('uid','==',uid),orderBy('createdAt','desc'));
-      const snaps=await getDocs(q);
-      const list=document.getElementById('histList');
+    try {
+      const q = query(
+        collection(db, 'withdrawals'), 
+        where('uid', '==', uid), 
+        orderBy('createdAt', 'desc')
+      );
       
-      if(snaps.empty){
-        list.innerHTML='<div class="hist-empty">Sem levantamentos registados.</div>';
+      const snaps = await getDocs(q);
+      const list = document.getElementById('histList');
+      const countSpan = document.getElementById('histCount');
+      
+      countSpan.textContent = snaps.size;
+      
+      if (snaps.empty) {
+        list.innerHTML = '<div class="hist-empty">Nenhum levantamento encontrado</div>';
         return;
       }
       
-      list.innerHTML='';
-      snaps.forEach(d=>{
-        const w=d.data();
-        const sm={pending:'Em análise',approved:'Aprovado',rejected:'Rejeitado'};
-        const dt=w.createdAt?.toDate ? w.createdAt.toDate().toLocaleDateString('pt-AO') : '—';
+      let html = '';
+      snaps.forEach(doc => {
+        const w = doc.data();
+        const statusClass = getStatusClass(w.status);
+        const statusText = formatStatus(w.status);
+        const dateStr = formatDate(w.createdAt);
+        const feeAmount = w.fee || Math.round(w.amount * 0.15);
+        const netAmount = w.netAmount || (w.amount - feeAmount);
         
-        list.innerHTML+=`
+        html += `
           <div class="hist-item">
-            <div class="hist-icon ${w.status||'pending'}">
+            <div class="hist-icon ${statusClass}">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="17 8 12 3 7 8"/>
                 <line x1="12" y1="3" x2="12" y2="15"/>
@@ -192,47 +264,81 @@
               </svg>
             </div>
             <div class="hist-info">
-              <div class="hist-amount">${Number(w.amount).toLocaleString('pt-AO')} Kz</div>
-              <div class="hist-date">${dt}</div>
+              <div class="hist-amount">${fmtNumber(w.amount)} Kz</div>
+              <div class="hist-details">
+                <span>📅 ${dateStr}</span>
+                <span>💰 Recebe: ${fmtNumber(netAmount)} Kz</span>
+                <span>📊 Taxa: ${fmtNumber(feeAmount)} Kz</span>
+              </div>
             </div>
-            <span class="hist-badge ${w.status||'pending'}">${sm[w.status||'pending']}</span>
+            <span class="hist-badge ${statusClass}">${statusText}</span>
           </div>
         `;
       });
-    } catch(e){
-      console.error('Erro ao carregar histórico:', e);
+      
+      list.innerHTML = html;
+      
+    } catch (error) {
+      console.error('Erro detalhado ao carregar histórico:', error);
+      document.getElementById('histList').innerHTML = `
+        <div class="hist-empty">
+          Erro ao carregar histórico: ${error.message}
+          <br><br>
+          <button onclick="location.reload()" style="padding:8px 16px;background:var(--red);color:white;border:none;border-radius:8px;cursor:pointer">Tentar novamente</button>
+        </div>
+      `;
     }
   }
   
+  // Auth state
+  onAuthStateChanged(auth, async user => {
+    if (!user) {
+      window.location.href = 'auth.html';
+      return;
+    }
+    
+    uid = user.uid;
+    userDocRef = doc(db, 'users', uid);
+    
+    // Mostrar loading
+    document.getElementById('histList').innerHTML = '<div class="hist-empty">Carregando histórico...</div>';
+    
+    // Carregar dados
+    await Promise.all([
+      updateBalance(),
+      loadFullHistory()
+    ]);
+  });
+  
+  // Função de levantamento
   window.doWithdraw = async function() {
     const amountInput = document.getElementById('wAmount');
     const amount = parseInt(amountInput.value) || 0;
     const btn = document.getElementById('wBtn');
     
-    // Validações
-    if(amount < 800){
-      window.toast('O valor mínimo de levantamento é 800 Kz.','error');
+    if (amount < 800) {
+      window.toast('O valor mínimo é 800 Kz.', 'error');
       return;
     }
-    if(amount > 100000){
-      window.toast('O valor máximo diário é 100.000 Kz.','error');
+    if (amount > 100000) {
+      window.toast('O valor máximo é 100.000 Kz.', 'error');
       return;
     }
     
-    // Verificar saldo atual antes de prosseguir
+    // Verificar saldo
     const currentBalance = await getDoc(userDocRef);
     if (!currentBalance.exists()) {
-      window.toast('Erro ao verificar saldo.','error');
+      window.toast('Erro ao verificar saldo.', 'error');
       return;
     }
     
     const availableBalance = currentBalance.data().balance || 0;
-    if(amount > availableBalance){
-      window.toast('Saldo insuficiente.','error');
+    if (amount > availableBalance) {
+      window.toast('Saldo insuficiente.', 'error');
       return;
     }
     
-    // Mostrar spinner e desabilitar botão
+    // Processar
     document.getElementById('spinner').classList.add('show');
     btn.disabled = true;
     
@@ -241,15 +347,12 @@
       const netAmount = Math.round(amount * 0.85);
       const newBalance = availableBalance - amount;
       
-      // Usar transação para garantir consistência dos dados
       await runTransaction(db, async (transaction) => {
-        // 1. Atualizar saldo do usuário
         transaction.update(userDocRef, {
           balance: newBalance,
           updatedAt: serverTimestamp()
         });
         
-        // 2. Criar registro de levantamento
         const withdrawalRef = doc(collection(db, 'withdrawals'));
         transaction.set(withdrawalRef, {
           uid: uid,
@@ -263,25 +366,21 @@
         });
       });
       
-      // Atualizar saldo na interface
+      // Atualizar interface
       userBalance = newBalance;
-      document.getElementById('heroBalance').textContent = Number(newBalance).toLocaleString('pt-AO');
-      
-      // Limpar formulário
+      document.getElementById('heroBalance').textContent = fmtNumber(newBalance);
       amountInput.value = '';
       document.getElementById('feePreview').style.display = 'none';
       
-      // Mostrar mensagem de sucesso
-      window.toast('Solicitação enviada com sucesso!','success');
+      window.toast('Solicitação enviada com sucesso!', 'success');
       
       // Recarregar histórico
-      await loadHistory();
+      await loadFullHistory();
       
-    } catch(error) {
-      console.error('Erro detalhado:', error);
-      window.toast('Erro ao processar. Tente novamente.','error');
+    } catch (error) {
+      console.error('Erro:', error);
+      window.toast('Erro ao processar. Tente novamente.', 'error');
     } finally {
-      // Esconder spinner e reabilitar botão
       document.getElementById('spinner').classList.remove('show');
       btn.disabled = false;
     }
@@ -290,15 +389,15 @@
 
 <script>
   // Funções globais
-  function fmt(n){
+  function fmt(n) {
     return Number(n).toLocaleString('pt-AO');
   }
   
-  function calcFee(val){
+  function calcFee(val) {
     const v = parseInt(val) || 0;
     const fp = document.getElementById('feePreview');
     
-    if(v >= 800){
+    if (v >= 800) {
       fp.style.display = 'block';
       const fee = Math.round(v * 0.15);
       const net = v - fee;
@@ -311,27 +410,21 @@
     }
   }
   
-  // Sistema de toast
+  // Toast
   let toastTimeout = null;
-  
-  function toast(msg, type){
-    if(toastTimeout) clearTimeout(toastTimeout);
+  function toast(msg, type) {
+    if (toastTimeout) clearTimeout(toastTimeout);
     
     const t = document.getElementById('toast');
     const m = document.getElementById('toastMsg');
     
-    // Reset
     t.className = 'toast';
     m.textContent = '';
-    
-    // Forçar reflow
     void t.offsetHeight;
     
-    // Mostrar nova mensagem
     m.textContent = msg;
     t.className = 'toast ' + (type || 'success') + ' show';
     
-    // Auto-esconder após 3.2s
     toastTimeout = setTimeout(() => {
       t.classList.remove('show');
       toastTimeout = setTimeout(() => {
