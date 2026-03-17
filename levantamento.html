@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Magnus Capital — Levantamento</title>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
@@ -12,462 +11,317 @@
     .bg-layer{position:fixed;inset:0;z-index:0;background:var(--off-white)}
     .bg-layer::before{content:'';position:absolute;top:-20%;right:-10%;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(200,16,46,0.07) 0%,transparent 70%);animation:pbg 8s ease infinite alternate}
     @keyframes pbg{from{transform:scale(1)}to{transform:scale(1.15)}}
+
     .header{position:sticky;top:0;z-index:100;background:rgba(248,246,243,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--gray-line);padding:0 20px;height:60px;display:flex;align-items:center;gap:14px}
     .back-btn{width:36px;height:36px;border:1.5px solid var(--gray-line);border-radius:10px;background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;text-decoration:none;color:var(--black);transition:all .25s;flex-shrink:0}
     .back-btn:hover{border-color:var(--red);color:var(--red)}
-    .h-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;flex:1}
-    .content{position:relative;z-index:1;padding:24px 20px 40px;max-width:1200px;margin:0 auto}
-    
-    /* Layout de duas colunas */
-    .dashboard-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:20px;align-items:start}
-    @media (max-width:768px){.dashboard-grid{grid-template-columns:1fr}}
-    
-    /* Coluna da esquerda - Formulário */
-    .left-column{display:flex;flex-direction:column;gap:20px}
-    .hero-card{background:linear-gradient(135deg,var(--red) 0%,var(--red-dark) 100%);border-radius:22px;padding:28px;color:var(--white);animation:fadeUp .6s ease both;position:relative;overflow:hidden}
-    .hero-card::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.06)}
-    .hc-label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;opacity:.75;margin-bottom:8px}
-    .hc-balance{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:700;line-height:1}
-    .hc-currency{font-size:16px;opacity:.8;margin-left:4px}
-    .hc-sub{font-size:12px;opacity:.65;margin-top:10px}
-    
-    /* Coluna da direita - Histórico */
-    .right-column{background:var(--white);border-radius:22px;border:1px solid var(--gray-line);box-shadow:0 4px 20px rgba(0,0,0,.04);animation:fadeUp .6s ease .1s both;height:fit-content;max-height:calc(100vh - 120px);overflow-y:auto;position:sticky;top:84px}
-    .hist-header{padding:24px 24px 16px;border-bottom:1px solid var(--gray-line);display:flex;justify-content:space-between;align-items:center}
-    .hist-header h2{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--black)}
-    .hist-count{background:var(--off-white);padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;color:var(--gray-soft)}
-    .hist-list{padding:0 24px 24px}
-    
-    /* Cards e formulários */
-    .card{background:var(--white);border-radius:18px;padding:24px;border:1px solid var(--gray-line);box-shadow:0 4px 20px rgba(0,0,0,.04);animation:fadeUp .6s ease .1s both}
-    .card-title{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-soft);margin-bottom:18px}
-    .field{margin-bottom:16px}
-    .field label{display:block;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-soft);margin-bottom:7px}
+    .h-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700}
+
+    .content{position:relative;z-index:1;padding:20px 20px 40px;max-width:500px;margin:0 auto}
+
+    /* ── MINI BALANCE CARD — igual ao index ── */
+    .balance-card{background:var(--white);border-radius:18px;padding:14px 18px;margin-bottom:16px;border:1px solid var(--gray-line);box-shadow:0 4px 24px rgba(0,0,0,.06);animation:fadeUp .6s ease both;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .bc-left{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
+    .bc-label{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--gray-soft);font-weight:600}
+    .bc-amount-row{display:flex;align-items:baseline;gap:5px}
+    .bc-amount{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;color:var(--black);line-height:1;white-space:nowrap;letter-spacing:-.01em}
+    .bc-currency{font-size:13px;font-weight:600;color:var(--red);letter-spacing:.04em;text-transform:uppercase}
+    .bc-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
+    .bc-accent{background:var(--red);border-radius:10px;padding:6px 12px;display:flex;flex-direction:column;align-items:center;gap:1px}
+    .bc-accent-val{font-size:12px;font-weight:700;color:var(--white);line-height:1;white-space:nowrap}
+    .bc-accent-lbl{font-size:9px;color:rgba(255,255,255,.7);letter-spacing:.07em;text-transform:uppercase}
+
+    /* ── TABS (igual ao auth) ── */
+    .tabs{display:flex;gap:4px;background:var(--white);border-radius:16px;padding:5px;margin-bottom:16px;border:1px solid var(--gray-line);box-shadow:0 2px 12px rgba(0,0,0,.04);animation:fadeUp .6s ease .05s both}
+    .tab-btn{flex:1;padding:11px;border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .3s;background:transparent;color:var(--gray-soft);letter-spacing:.01em}
+    .tab-btn.active{background:var(--red);color:var(--white);box-shadow:0 4px 14px rgba(200,16,46,.28)}
+
+    /* ── PANELS ── */
+    .panel{display:none}
+    .panel.visible{display:block;animation:fadeIn .35s ease}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+    /* ── INFO PILLS ── */
+    .info-pills{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+    .info-pill{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--white);border-radius:10px;font-size:12px;color:var(--gray-soft);border:1px solid var(--gray-line)}
+    .info-pill svg{width:15px;height:15px;color:var(--red);flex-shrink:0}
+
+    /* ── FORM CARD ── */
+    .card{background:var(--white);border-radius:18px;padding:22px;margin-bottom:14px;border:1px solid var(--gray-line);box-shadow:0 4px 20px rgba(0,0,0,.04)}
+    .card-title{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--gray-soft);margin-bottom:16px}
+    .field{margin-bottom:14px}
+    .field label{display:block;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-soft);margin-bottom:6px}
     .input-wrap{position:relative}
     .input-wrap input{width:100%;padding:13px 48px 13px 14px;border:1.5px solid var(--gray-line);border-radius:12px;font-size:14px;font-family:'DM Sans',sans-serif;background:#FAFAF9;color:var(--black);outline:none;transition:all .25s}
     .input-wrap input:focus{border-color:var(--red);background:var(--white);box-shadow:0 0 0 4px rgba(200,16,46,.08)}
     .input-suffix{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--gray-soft);font-weight:500}
-    
-    .info-pills{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
-    .info-pill{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--off-white);border-radius:10px;font-size:12px;color:var(--gray-soft)}
-    .info-pill svg{width:15px;height:15px;color:var(--red);flex-shrink:0}
-    
-    .fee-preview{background:var(--off-white);border-radius:12px;padding:14px 16px;margin-bottom:16px;border:1px solid var(--gray-line)}
-    .fp-row{display:flex;justify-content:space-between;font-size:13px;padding:4px 0}
-    .fp-row.total{font-weight:600;padding-top:10px;border-top:1px solid var(--gray-line);margin-top:6px}
+
+    .fee-preview{background:var(--off-white);border-radius:12px;padding:13px 15px;margin-bottom:14px;border:1px solid var(--gray-line)}
+    .fp-row{display:flex;justify-content:space-between;font-size:13px;padding:3px 0}
+    .fp-row.total{font-weight:600;padding-top:9px;border-top:1px solid var(--gray-line);margin-top:5px}
     .fp-row span:first-child{color:var(--gray-soft)}
     .fp-row span.red{color:var(--red);font-weight:600}
-    
-    .btn-main{width:100%;padding:15px;background:var(--red);color:var(--white);border:none;border-radius:13px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all .3s;box-shadow:0 8px 32px rgba(200,16,46,.3)}
+
+    .btn-main{width:100%;padding:14px;background:var(--red);color:var(--white);border:none;border-radius:13px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .3s;box-shadow:0 8px 28px rgba(200,16,46,.28)}
     .btn-main:hover{background:var(--red-dark);transform:translateY(-1px)}
     .btn-main:disabled{opacity:.6;cursor:not-allowed;transform:none}
-    
-    /* Itens do histórico */
-    .hist-item{display:flex;align-items:center;gap:14px;padding:16px 0;border-bottom:1px solid var(--gray-line)}
+
+    /* ── HISTORY ── */
+    .hist-item{display:flex;align-items:center;gap:14px;padding:13px 0;border-bottom:1px solid var(--gray-line)}
     .hist-item:last-child{border-bottom:none}
     .hist-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
     .hist-icon.pending{background:rgba(245,158,11,.1);color:#D97706}
-    .hist-icon.approved, .hist-icon.sucesso{background:rgba(22,163,74,.1);color:#16A34A}
+    .hist-icon.approved{background:rgba(22,163,74,.1);color:#16A34A}
     .hist-icon.rejected{background:rgba(200,16,46,.1);color:var(--red)}
-    .hist-icon svg{width:18px;height:18px}
+    .hist-icon svg{width:17px;height:17px}
     .hist-info{flex:1}
-    .hist-amount{font-size:15px;font-weight:600}
-    .hist-details{display:flex;gap:12px;margin-top:4px;font-size:11px;color:var(--gray-soft);flex-wrap:wrap}
-    .hist-details span{display:flex;align-items:center;gap:4px}
-    .hist-badge{font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;letter-spacing:.06em}
+    .hist-amount{font-size:14px;font-weight:600}
+    .hist-date{font-size:11px;color:var(--gray-soft);margin-top:1px}
+    .hist-badge{font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;letter-spacing:.05em}
     .hist-badge.pending{background:rgba(245,158,11,.1);color:#D97706}
-    .hist-badge.approved, .hist-badge.sucesso{background:rgba(22,163,74,.1);color:#16A34A}
+    .hist-badge.approved{background:rgba(22,163,74,.1);color:#16A34A}
     .hist-badge.rejected{background:rgba(200,16,46,.1);color:var(--red)}
-    .hist-empty{text-align:center;padding:40px 24px;color:var(--gray-soft);font-size:13px}
-    
-    /* Spinner e Toast */
-    .spinner-overlay{position:fixed;inset:0;z-index:1000;background:rgba(248,246,243,.85);backdrop-filter:blur(8px);display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
+    .hist-empty{text-align:center;padding:32px 20px;color:var(--gray-soft);font-size:13px}
+    .hist-empty svg{width:36px;height:36px;margin:0 auto 10px;display:block;opacity:.3}
+
+    /* ── SPINNER ── */
+    .spinner-overlay{position:fixed;inset:0;z-index:1000;background:rgba(248,246,243,.88);backdrop-filter:blur(8px);display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
     .spinner-overlay.show{opacity:1;pointer-events:all}
-    .spinner-ring{width:72px;height:72px}
+    .spinner-ring{width:68px;height:68px}
     .spinner-ring svg{width:100%;height:100%;animation:spin 1.2s linear infinite}
     @keyframes spin{to{transform:rotate(360deg)}}
     .spinner-ring svg circle{fill:none;stroke-width:3;stroke-linecap:round}
     .spinner-ring svg circle.track{stroke:rgba(200,16,46,.15)}
     .spinner-ring svg circle.arc{stroke:var(--red);stroke-dasharray:160;stroke-dashoffset:40}
-    .spinner-label{margin-top:20px;font-size:14px;font-weight:500;color:var(--gray-soft)}
-    
+    .spinner-label{margin-top:18px;font-size:13px;font-weight:500;color:var(--gray-soft)}
+
+    /* ── TOAST ── */
     .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(calc(-100% - 30px));opacity:0;visibility:hidden;background:var(--white);border-radius:13px;padding:12px 18px;box-shadow:0 14px 44px rgba(0,0,0,.13);border-left:4px solid var(--red);display:flex;align-items:center;gap:10px;font-size:13px;font-weight:500;z-index:9999;transition:transform .4s cubic-bezier(.22,1,.36,1),opacity .4s ease,visibility 0s linear .4s;max-width:92vw;pointer-events:none}
     .toast.show{transform:translateX(-50%) translateY(0);opacity:1;visibility:visible;pointer-events:all;transition:transform .4s cubic-bezier(.22,1,.36,1),opacity .4s ease,visibility 0s linear 0s}
     .toast.success{border-left-color:#16A34A}
     .toast.error{border-left-color:var(--red)}
-    
-    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+
+    @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
   </style>
 </head>
 <body>
 <div class="bg-layer"></div>
+
 <div class="spinner-overlay" id="spinner">
   <div class="spinner-ring"><svg viewBox="0 0 72 72"><circle class="track" cx="36" cy="36" r="30"/><circle class="arc" cx="36" cy="36" r="30"/></svg></div>
-  <p class="spinner-label">A processar solicitação...</p>
+  <p class="spinner-label">A processar...</p>
 </div>
 <div class="toast" id="toast"><span id="toastMsg"></span></div>
 
 <div class="header">
   <a href="index.html" class="back-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg></a>
-  <div class="h-title">Magnus Capital — Levantamentos</div>
+  <div class="h-title">Levantamento</div>
 </div>
 
 <div class="content">
-  <div class="dashboard-grid">
-    <!-- COLUNA ESQUERDA: Saldo e Formulário -->
-    <div class="left-column">
-      <div class="hero-card">
-        <div class="hc-label">Saldo Disponível</div>
-        <div class="hc-balance"><span id="heroBalance">0</span><span class="hc-currency">Kz</span></div>
-        <div class="hc-sub">Valores disponíveis para levantar</div>
-      </div>
-      
-      <div class="info-pills">
-        <div class="info-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Processamento: 30 min a 24h · Sexta até 72h</div>
-        <div class="info-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Taxa: 15% por solicitação</div>
-        <div class="info-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/><path d="M5 20h14"/></svg>Mín. 800 · Máx. 100.000 Kz/dia</div>
-      </div>
-      
-      <div class="card">
-        <div class="card-title">Solicitar Levantamento</div>
-        <div class="field">
-          <label>Valor a Levantar</label>
-          <div class="input-wrap">
-            <input type="number" id="wAmount" placeholder="Mínimo 800" min="800" max="100000" oninput="calcFee(this.value)"/>
-            <span class="input-suffix">Kz</span>
-          </div>
-        </div>
-        <div class="fee-preview" id="feePreview" style="display:none">
-          <div class="fp-row"><span>Valor solicitado</span><span id="fpGross">—</span></div>
-          <div class="fp-row"><span>Taxa (15%)</span><span class="red" id="fpFee">—</span></div>
-          <div class="fp-row total"><span>Receberá</span><span id="fpNet">—</span></div>
-        </div>
-        <button class="btn-main" id="wBtn" onclick="doWithdraw()">Solicitar Levantamento</button>
+
+  <!-- MINI BALANCE CARD — igual ao index -->
+  <div class="balance-card">
+    <div class="bc-left">
+      <div class="bc-label">Saldo Disponível</div>
+      <div class="bc-amount-row">
+        <div class="bc-amount" id="heroBalance">0</div>
+        <div class="bc-currency">Kz</div>
       </div>
     </div>
-    
-    <!-- COLUNA DIREITA: Histórico Completo -->
-    <div class="right-column">
-      <div class="hist-header">
-        <h2>Histórico de Levantamentos</h2>
-        <span class="hist-count" id="histCount">0</span>
-      </div>
-      <div class="hist-list" id="histList">
-        <div class="hist-empty">Carregando histórico...</div>
+    <div class="bc-right">
+      <div class="bc-accent">
+        <div class="bc-accent-val">15%</div>
+        <div class="bc-accent-lbl">Taxa</div>
       </div>
     </div>
   </div>
+
+  <!-- TABS — lado levantamento | lado histórico -->
+  <div class="tabs">
+    <button class="tab-btn active" id="tabW" onclick="switchTab('withdraw')">Levantar</button>
+    <button class="tab-btn" id="tabH" onclick="switchTab('history')">Histórico</button>
+  </div>
+
+  <!-- PANEL: LEVANTAMENTO -->
+  <div class="panel visible" id="panelWithdraw">
+    <div class="info-pills">
+      <div class="info-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Processamento: 30 min a 24h &middot; Sexta-feira até 72h</div>
+      <div class="info-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/><path d="M5 20h14"/></svg>Mínimo 800 Kz &middot; Máximo 100.000 Kz por dia</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Solicitar Levantamento</div>
+      <div class="field">
+        <label>Valor a Levantar</label>
+        <div class="input-wrap">
+          <input type="number" id="wAmount" placeholder="Mínimo 800" min="800" max="100000" oninput="calcFee(this.value)"/>
+          <span class="input-suffix">Kz</span>
+        </div>
+      </div>
+      <div class="fee-preview" id="feePreview" style="display:none">
+        <div class="fp-row"><span>Valor solicitado</span><span id="fpGross">—</span></div>
+        <div class="fp-row"><span>Taxa (15%)</span><span class="red" id="fpFee">—</span></div>
+        <div class="fp-row total"><span>Receberá</span><span id="fpNet">—</span></div>
+      </div>
+      <button class="btn-main" id="wBtn" onclick="doWithdraw()">Solicitar Levantamento</button>
+    </div>
+  </div>
+
+  <!-- PANEL: HISTÓRICO -->
+  <div class="panel" id="panelHistory">
+    <div class="card">
+      <div class="card-title">Histórico de Saques</div>
+      <div id="histList">
+        <div class="hist-empty">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/><path d="M5 20h14"/></svg>
+          Sem levantamentos registados.
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script type="module">
   import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import{getFirestore,doc,getDoc,collection,query,where,orderBy,getDocs,serverTimestamp,runTransaction}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-  
-  const cfg={
-    apiKey: "AIzaSyBp8X1PPp3FqiQ6OXErr8Mu11GEp6MZ2-U",
-    authDomain: "ascend-34bf0.firebaseapp.com",
-    projectId: "ascend-34bf0",
-    storageBucket: "ascend-34bf0.firebasestorage.app",
-    messagingSenderId: "592623076677",
-    appId: "1:592623076677:web:c5615719870aefdabf6a2c"
-  };
-  
-  const app = initializeApp(cfg);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-  
-  let uid = '';
-  let userBalance = 0;
-  let userDocRef = null;
-  
-  // Formatar número
-  function fmtNumber(n) {
-    return Number(n).toLocaleString('pt-AO', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-  }
-  
-  // Formatar status
-  function formatStatus(status) {
-    const statusMap = {
-      'pending': 'Em análise',
-      'approved': 'Aprovado',
-      'rejected': 'Rejeitado',
-      'sucesso': 'Aprovado'
-    };
-    return statusMap[status] || status || 'Em análise';
-  }
-  
-  // Classe do status
-  function getStatusClass(status) {
-    if (status === 'sucesso' || status === 'approved') return 'approved';
-    if (status === 'rejected') return 'rejected';
-    return 'pending';
-  }
-  
-  // Formatar data
-  function formatDate(timestamp) {
-    if (!timestamp || !timestamp.toDate) return '—';
-    try {
-      const date = timestamp.toDate();
-      return date.toLocaleDateString('pt-AO', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-    } catch (e) {
-      return '—';
-    }
-  }
-  
-  // Atualizar saldo
-  async function updateBalance() {
-    if (!uid) return;
-    try {
-      const snap = await getDoc(doc(db, 'users', uid));
-      if (snap.exists()) {
-        userBalance = snap.data().balance || 0;
-        document.getElementById('heroBalance').textContent = fmtNumber(userBalance);
-      }
-    } catch (error) {
-      console.error('Erro ao atualizar saldo:', error);
-    }
-  }
-  
-  // Carregar histórico completo
-  async function loadFullHistory() {
-    if (!uid) return;
-    
-    const list = document.getElementById('histList');
-    const countSpan = document.getElementById('histCount');
-    
-    try {
-      // Consulta com índice composto (uid + createdAt descendente)
-      const q = query(
-        collection(db, 'withdrawals'), 
-        where('uid', '==', uid), 
-        orderBy('createdAt', 'desc')
-      );
-      
-      const snaps = await getDocs(q);
-      
-      countSpan.textContent = snaps.size;
-      
-      if (snaps.empty) {
-        list.innerHTML = '<div class="hist-empty">Nenhum levantamento encontrado</div>';
-        return;
-      }
-      
-      let html = '';
-      snaps.forEach(doc => {
-        const w = doc.data();
-        const statusClass = getStatusClass(w.status);
-        const statusText = formatStatus(w.status);
-        const dateStr = formatDate(w.createdAt);
-        
-        // Calcular valores se não existirem
-        const amount = w.amount || 0;
-        const feeAmount = w.fee || Math.round(amount * 0.15);
-        const netAmount = w.netAmount || (amount - feeAmount);
-        
-        html += `
-          <div class="hist-item">
-            <div class="hist-icon ${statusClass}">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="17 8 12 3 7 8"/>
-                <line x1="12" y1="3" x2="12" y2="15"/>
-                <path d="M5 20h14"/>
-              </svg>
-            </div>
-            <div class="hist-info">
-              <div class="hist-amount">${fmtNumber(amount)} Kz</div>
-              <div class="hist-details">
-                <span> ${dateStr}</span>
-                <span> Recebe: ${fmtNumber(netAmount)} Kz</span>
-                <span> Taxa: ${fmtNumber(feeAmount)} Kz</span>
-              </div>
-            </div>
-            <span class="hist-badge ${statusClass}">${statusText}</span>
-          </div>
-        `;
-      });
-      
-      list.innerHTML = html;
-      
-    } catch (error) {
-      console.error('Erro detalhado ao carregar histórico:', error);
-      
-      // Mensagem de erro mais amigável
-      let errorMessage = 'Erro ao carregar histórico. ';
-      
-      if (error.code === 'failed-precondition') {
-        errorMessage = 'O índice do Firestore ainda está sendo criado. Aguarde alguns minutos e tente novamente.';
-      } else {
-        errorMessage += error.message;
-      }
-      
-      list.innerHTML = `
-        <div class="hist-empty">
-          ${errorMessage}
-          <br><br>
-          <button onclick="location.reload()" style="padding:8px 16px;background:var(--red);color:white;border:none;border-radius:8px;cursor:pointer;margin-top:10px">Tentar novamente</button>
-        </div>
-      `;
-    }
-  }
-  
-  // Auth state
-  onAuthStateChanged(auth, async (user) => {
-    if (!user) {
-      window.location.href = 'auth.html';
-      return;
-    }
-    
-    uid = user.uid;
-    userDocRef = doc(db, 'users', uid);
-    
-    // Mostrar loading
-    document.getElementById('histList').innerHTML = '<div class="hist-empty">Carregando histórico...</div>';
-    
-    // Carregar dados
-    await Promise.all([
-      updateBalance(),
-      loadFullHistory()
-    ]);
+  import{getFirestore,doc,getDoc,updateDoc,increment,collection,addDoc,query,where,orderBy,getDocs,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const cfg={apiKey:"AIzaSyBp8X1PPp3FqiQ6OXErr8Mu11GEp6MZ2-U",authDomain:"ascend-34bf0.firebaseapp.com",projectId:"ascend-34bf0",storageBucket:"ascend-34bf0.firebasestorage.app",messagingSenderId:"592623076677",appId:"1:592623076677:web:c5615719870aefdabf6a2c"};
+  const app=initializeApp(cfg);
+  const auth=getAuth(app);
+  const db=getFirestore(app);
+
+  let uid='', userBalance=0;
+  function fmt(n){return Number(n).toLocaleString('pt-AO');}
+
+  onAuthStateChanged(auth, async user=>{
+    if(!user){window.location.href='auth.html';return;}
+    uid=user.uid;
+    const snap=await getDoc(doc(db,'users',uid));
+    if(!snap.exists())return;
+    const d=snap.data();
+    userBalance=d.balance||0;
+    document.getElementById('heroBalance').textContent=fmt(userBalance);
+    loadHistory();
   });
-  
-  // Função de levantamento
-  window.doWithdraw = async function() {
-    const amountInput = document.getElementById('wAmount');
-    const amount = parseInt(amountInput.value) || 0;
-    const btn = document.getElementById('wBtn');
-    
-    // Validações
-    if (amount < 800) {
-      window.toast('O valor mínimo é 800 Kz.', 'error');
-      return;
-    }
-    if (amount > 100000) {
-      window.toast('O valor máximo é 100.000 Kz.', 'error');
-      return;
-    }
-    
-    // Mostrar spinner
-    document.getElementById('spinner').classList.add('show');
-    btn.disabled = true;
-    
-    try {
-      // Verificar saldo atual
-      const balanceSnap = await getDoc(userDocRef);
-      if (!balanceSnap.exists()) {
-        throw new Error('Usuário não encontrado');
-      }
-      
-      const availableBalance = balanceSnap.data().balance || 0;
-      
-      if (amount > availableBalance) {
-        window.toast('Saldo insuficiente.', 'error');
-        document.getElementById('spinner').classList.remove('show');
-        btn.disabled = false;
+
+  async function loadHistory(){
+    try{
+      const q=query(collection(db,'withdrawals'),where('uid','==',uid),orderBy('createdAt','desc'));
+      const snaps=await getDocs(q);
+      const list=document.getElementById('histList');
+      if(snaps.empty){
+        list.innerHTML='<div class="hist-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/><path d="M5 20h14"/></svg>Sem levantamentos registados.</div>';
         return;
       }
-      
-      // Processar transação
-      const fee = Math.round(amount * 0.15);
-      const netAmount = amount - fee;
-      const newBalance = availableBalance - amount;
-      
-      await runTransaction(db, async (transaction) => {
-        // Atualizar saldo do usuário
-        transaction.update(userDocRef, {
-          balance: newBalance,
-          updatedAt: serverTimestamp()
-        });
-        
-        // Criar registro de levantamento
-        const withdrawalRef = doc(collection(db, 'withdrawals'));
-        transaction.set(withdrawalRef, {
-          uid: uid,
-          amount: amount,
-          fee: fee,
-          netAmount: netAmount,
-          status: 'pending',
-          createdAt: serverTimestamp(),
-          previousBalance: availableBalance,
-          newBalance: newBalance
-        });
+      list.innerHTML='';
+      snaps.forEach(d=>{
+        const w=d.data();
+        const sm={pending:'Em análise',approved:'Aprovado',rejected:'Rejeitado'};
+        const dt=w.createdAt?.toDate?.()?.toLocaleDateString('pt-AO')||'—';
+        list.innerHTML+=`<div class="hist-item">
+          <div class="hist-icon ${w.status||'pending'}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/><path d="M5 20h14"/></svg>
+          </div>
+          <div class="hist-info">
+            <div class="hist-amount">${fmt(w.amount)} Kz</div>
+            <div class="hist-date">${dt}</div>
+          </div>
+          <span class="hist-badge ${w.status||'pending'}">${sm[w.status||'pending']}</span>
+        </div>`;
       });
-      
-      // Atualizar interface
-      userBalance = newBalance;
-      document.getElementById('heroBalance').textContent = fmtNumber(newBalance);
-      amountInput.value = '';
-      document.getElementById('feePreview').style.display = 'none';
-      
-      window.toast('Solicitação enviada com sucesso!', 'success');
-      
-      // Recarregar histórico
-      await loadFullHistory();
-      
-    } catch (error) {
-      console.error('Erro no levantamento:', error);
-      window.toast('Erro ao processar. Tente novamente.', 'error');
-    } finally {
+    }catch(e){}
+  }
+
+  window.doWithdraw=async function(){
+    const amount=parseInt(document.getElementById('wAmount').value)||0;
+    if(amount<800){window.toast('O valor mínimo de levantamento é 800 Kz.','error');return;}
+    if(amount>100000){window.toast('O valor máximo diário é 100.000 Kz.','error');return;}
+    if(amount>userBalance){window.toast('Saldo insuficiente para este levantamento.','error');return;}
+
+    document.getElementById('spinner').classList.add('show');
+    document.getElementById('wBtn').disabled=true;
+
+    try{
+      // 1. Registar o pedido de levantamento
+      await addDoc(collection(db,'withdrawals'),{
+        uid, amount,
+        fee: Math.round(amount*0.15),
+        netAmount: Math.round(amount*0.85),
+        status:'pending',
+        createdAt: serverTimestamp()
+      });
+
+      // 2. DEBITAR o saldo do utilizador imediatamente
+      await updateDoc(doc(db,'users',uid),{
+        balance: increment(-amount)
+      });
+
+      // 3. Actualizar valor local
+      userBalance -= amount;
+      document.getElementById('heroBalance').textContent=fmt(userBalance);
+
       document.getElementById('spinner').classList.remove('show');
-      btn.disabled = false;
+      window.toast('Solicitação enviada! Saldo debitado.','success');
+      document.getElementById('wAmount').value='';
+      document.getElementById('feePreview').style.display='none';
+
+      // Mudar para aba histórico e recarregar
+      switchTab('history');
+      loadHistory();
+
+    }catch(e){
+      document.getElementById('spinner').classList.remove('show');
+      window.toast('Erro ao processar. Tente novamente.','error');
     }
+    document.getElementById('wBtn').disabled=false;
   };
 </script>
 
 <script>
-  // Funções globais
-  function fmt(n) {
-    return Number(n).toLocaleString('pt-AO', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-  }
-  
-  function calcFee(val) {
-    const v = parseInt(val) || 0;
-    const fp = document.getElementById('feePreview');
-    
-    if (v >= 800) {
-      fp.style.display = 'block';
-      const fee = Math.round(v * 0.15);
-      const net = v - fee;
-      
-      document.getElementById('fpGross').textContent = fmt(v) + ' Kz';
-      document.getElementById('fpFee').textContent = '-' + fmt(fee) + ' Kz';
-      document.getElementById('fpNet').textContent = fmt(net) + ' Kz';
+  function fmt(n){return Number(n).toLocaleString('pt-AO');}
+
+  function switchTab(tab){
+    document.getElementById('panelWithdraw').classList.toggle('visible', tab==='withdraw');
+    document.getElementById('panelHistory').classList.toggle('visible', tab==='history');
+    document.getElementById('panelWithdraw').classList.toggle('panel', true);
+    document.getElementById('panelHistory').classList.toggle('panel', true);
+    document.getElementById('tabW').classList.toggle('active', tab==='withdraw');
+    document.getElementById('tabH').classList.toggle('active', tab==='history');
+    if(tab==='withdraw'){
+      document.getElementById('panelWithdraw').style.display='block';
+      document.getElementById('panelHistory').style.display='none';
     } else {
-      fp.style.display = 'none';
+      document.getElementById('panelWithdraw').style.display='none';
+      document.getElementById('panelHistory').style.display='block';
     }
   }
-  
-  // Toast
-  let toastTimeout = null;
-  function toast(msg, type) {
-    if (toastTimeout) clearTimeout(toastTimeout);
-    
-    const t = document.getElementById('toast');
-    const m = document.getElementById('toastMsg');
-    
-    // Reset
-    t.className = 'toast';
-    m.textContent = '';
-    void t.offsetHeight; // Force reflow
-    
-    m.textContent = msg;
-    t.className = 'toast ' + (type || 'success') + ' show';
-    
-    toastTimeout = setTimeout(() => {
-      t.classList.remove('show');
-      toastTimeout = setTimeout(() => {
-        t.className = 'toast';
-      }, 450);
-    }, 3200);
+
+  function calcFee(val){
+    const v=parseInt(val)||0;
+    const fp=document.getElementById('feePreview');
+    if(v>=800){
+      fp.style.display='block';
+      const fee=Math.round(v*0.15);
+      document.getElementById('fpGross').textContent=fmt(v)+' Kz';
+      document.getElementById('fpFee').textContent='-'+fmt(fee)+' Kz';
+      document.getElementById('fpNet').textContent=fmt(v-fee)+' Kz';
+    } else {
+      fp.style.display='none';
+    }
   }
-  
-  window.toast = toast;
+
+  let _tt=null;
+  function toast(msg,type){
+    if(_tt)clearTimeout(_tt);
+    const t=document.getElementById('toast'),m=document.getElementById('toastMsg');
+    t.className='toast';m.textContent='';void t.offsetHeight;
+    m.textContent=msg;t.className='toast '+(type||'success')+' show';
+    _tt=setTimeout(()=>{t.classList.remove('show');_tt=setTimeout(()=>{t.className='toast';},450);},3200);
+  }
+  window.toast=toast;
 </script>
 </body>
 </html>
