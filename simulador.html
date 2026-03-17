@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Magnus Capital — Simulador</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--red:#C8102E;--red-dark:#A00D24;--white:#FFFFFF;--off-white:#F8F6F3;--black:#0D0D0D;--gray-soft:#6B6B6B;--gray-line:#E0DEDD;}
+    html,body{min-height:100%;font-family:'DM Sans',sans-serif;background:var(--off-white);color:var(--black)}
+    .bg-layer{position:fixed;inset:0;z-index:0;background:var(--off-white)}
+    .bg-layer::before{content:'';position:absolute;top:-20%;right:-10%;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(200,16,46,0.07) 0%,transparent 70%);animation:pbg 8s ease infinite alternate}
+    @keyframes pbg{from{transform:scale(1)}to{transform:scale(1.15)}}
+    .header{position:sticky;top:0;z-index:100;background:rgba(248,246,243,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--gray-line);padding:0 20px;height:60px;display:flex;align-items:center;gap:14px}
+    .back-btn{width:36px;height:36px;border:1.5px solid var(--gray-line);border-radius:10px;background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;text-decoration:none;color:var(--black);transition:all .25s;flex-shrink:0}
+    .back-btn:hover{border-color:var(--red);color:var(--red)}
+    .h-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700}
+    .content{position:relative;z-index:1;padding:24px 20px 40px;max-width:500px;margin:0 auto}
+
+    .hero{background:linear-gradient(135deg,var(--red) 0%,var(--red-dark) 100%);border-radius:22px;padding:28px;color:var(--white);margin-bottom:20px;animation:fadeUp .6s ease both;position:relative;overflow:hidden;text-align:center}
+    .hero::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.06)}
+    .hero-icon{width:56px;height:56px;background:rgba(255,255,255,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
+    .hero-icon svg{width:26px;height:26px}
+    .hero-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;margin-bottom:7px}
+    .hero-sub{font-size:12px;opacity:.8;line-height:1.7}
+
+    .form-card{background:var(--white);border-radius:18px;padding:22px;margin-bottom:16px;border:1px solid var(--gray-line);box-shadow:0 4px 20px rgba(0,0,0,.04);animation:fadeUp .6s ease .08s both}
+    .card-title{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--gray-soft);margin-bottom:18px}
+    .field{margin-bottom:18px}
+    .field label{display:flex;justify-content:space-between;align-items:center;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--gray-soft);margin-bottom:8px}
+    .field label span{font-size:13px;font-weight:700;color:var(--red);text-transform:none;letter-spacing:0}
+    .slider-wrap{position:relative}
+    input[type=range]{width:100%;-webkit-appearance:none;appearance:none;height:6px;border-radius:99px;background:var(--gray-line);outline:none;cursor:pointer}
+    input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--red);cursor:pointer;box-shadow:0 2px 10px rgba(200,16,46,.3);border:3px solid var(--white)}
+    input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--red);cursor:pointer;border:3px solid var(--white);box-shadow:0 2px 10px rgba(200,16,46,.3)}
+    .range-labels{display:flex;justify-content:space-between;margin-top:5px;font-size:10px;color:var(--gray-soft)}
+
+    .result-card{background:var(--white);border-radius:18px;padding:22px;border:1px solid var(--gray-line);box-shadow:0 4px 20px rgba(0,0,0,.04);animation:fadeUp .6s ease .16s both}
+    .result-main{text-align:center;padding:20px 0;border-bottom:1px solid var(--gray-line);margin-bottom:18px}
+    .result-label{font-size:11px;color:var(--gray-soft);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
+    .result-amount{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:700;color:var(--black);line-height:1}
+    .result-currency{font-size:16px;color:var(--gray-soft)}
+    .result-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+    .rg-item{text-align:center;padding:12px 8px;background:var(--off-white);border-radius:12px}
+    .rg-val{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--black)}
+    .rg-lbl{font-size:9px;color:var(--gray-soft);margin-top:3px;letter-spacing:.05em;text-transform:uppercase;line-height:1.3}
+
+    .breakdown-card{background:var(--white);border-radius:18px;padding:22px;margin-top:16px;border:1px solid var(--gray-line);box-shadow:0 4px 20px rgba(0,0,0,.04);animation:fadeUp .6s ease .22s both}
+    .bar-row{margin-bottom:14px}
+    .bar-header{display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px}
+    .bar-header span:first-child{color:var(--gray-soft)}
+    .bar-header span:last-child{font-weight:600}
+    .bar-bg{height:8px;background:var(--off-white);border-radius:99px;overflow:hidden}
+    .bar-fill{height:100%;border-radius:99px;transition:width 1s ease}
+    .bar-fill.invested{background:var(--gray-soft)}
+    .bar-fill.returns{background:var(--red)}
+
+    .scenario-card{background:var(--white);border-radius:18px;padding:22px;margin-top:16px;border:1px solid var(--gray-line);box-shadow:0 4px 20px rgba(0,0,0,.04);animation:fadeUp .6s ease .28s both}
+    .scenario-item{display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid var(--gray-line)}
+    .scenario-item:last-child{border-bottom:none}
+    .sc-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+    .sc-dot.c{background:var(--gray-soft)}
+    .sc-dot.g5{background:#F59E0B}
+    .sc-dot.g10{background:var(--red)}
+    .sc-info{flex:1}
+    .sc-name{font-size:12px;font-weight:600}
+    .sc-desc{font-size:11px;color:var(--gray-soft);margin-top:1px}
+    .sc-val{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--black)}
+
+    .cta-card{background:linear-gradient(135deg,var(--red) 0%,var(--red-dark) 100%);border-radius:18px;padding:22px;margin-top:16px;color:var(--white);text-align:center;animation:fadeUp .6s ease .32s both}
+    .cta-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;margin-bottom:6px}
+    .cta-sub{font-size:12px;opacity:.8;margin-bottom:16px;line-height:1.6}
+    .btn-cta{display:inline-block;padding:12px 28px;background:rgba(255,255,255,.2);color:var(--white);border:2px solid rgba(255,255,255,.4);border-radius:12px;text-decoration:none;font-size:13px;font-weight:600;transition:all .25s}
+    .btn-cta:hover{background:rgba(255,255,255,.3)}
+
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+  </style>
+</head>
+<body>
+<div class="bg-layer"></div>
+<div class="header">
+  <a href="index.html" class="back-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg></a>
+  <div class="h-title">Simulador de Aposentadoria</div>
+</div>
+
+<div class="content">
+  <div class="hero">
+    <div class="hero-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></div>
+    <div class="hero-title">O seu futuro financeiro</div>
+    <div class="hero-sub">Simule quanto acumulará ao investir mensalmente na Magnus Capital. Defina os valores e veja o resultado em tempo real.</div>
+  </div>
+
+  <div class="form-card">
+    <div class="card-title">Configurar Simulação</div>
+
+    <div class="field">
+      <label>Investimento Mensal <span id="lblMonthly">10.000 Kz</span></label>
+      <input type="range" id="slMonthly" min="4000" max="500000" step="1000" value="10000" oninput="simulate()"/>
+      <div class="range-labels"><span>4.000 Kz</span><span>500.000 Kz</span></div>
+    </div>
+
+    <div class="field">
+      <label>Período de Investimento <span id="lblYears">10 anos</span></label>
+      <input type="range" id="slYears" min="1" max="30" step="1" value="10" oninput="simulate()"/>
+      <div class="range-labels"><span>1 ano</span><span>30 anos</span></div>
+    </div>
+
+    <div class="field">
+      <label>Taxa de Rendimento Diária <span id="lblRate">5%</span></label>
+      <input type="range" id="slRate" min="5" max="6" step="1" value="5" oninput="simulate()"/>
+      <div class="range-labels"><span>5% (G1)</span><span>6% (G2)</span></div>
+    </div>
+  </div>
+
+  <div class="result-card">
+    <div class="card-title">Resultado da Simulação</div>
+    <div class="result-main">
+      <div class="result-label">Total Acumulado Estimado</div>
+      <div class="result-amount" id="resTotal">0</div>
+      <div class="result-currency">Kz</div>
+    </div>
+    <div class="result-grid">
+      <div class="rg-item"><div class="rg-val" id="resInvested">0 Kz</div><div class="rg-lbl">Total Investido</div></div>
+      <div class="rg-item"><div class="rg-val" id="resReturns">0 Kz</div><div class="rg-lbl">Rendimentos</div></div>
+      <div class="rg-item"><div class="rg-val" id="resMultiplier">0x</div><div class="rg-lbl">Multiplicador</div></div>
+    </div>
+  </div>
+
+  <div class="breakdown-card">
+    <div class="card-title">Composição do Resultado</div>
+    <div class="bar-row">
+      <div class="bar-header"><span>Capital investido</span><span id="barInvestedPct">0%</span></div>
+      <div class="bar-bg"><div class="bar-fill invested" id="barInvested" style="width:0%"></div></div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-header"><span>Rendimentos gerados</span><span id="barReturnsPct">0%</span></div>
+      <div class="bar-bg"><div class="bar-fill returns" id="barReturns" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <div class="scenario-card">
+    <div class="card-title">Comparativo de Cenários</div>
+    <div id="scenarioList"></div>
+  </div>
+
+  <div class="cta-card">
+    <div class="cta-title">Comece hoje mesmo</div>
+    <div class="cta-sub">Cada dia que passa é um dia a menos de rendimento. Escolha o seu plano e comece a construir o seu futuro.</div>
+    <a href="planos.html" class="btn-cta">Ver Planos de Investimento</a>
+  </div>
+</div>
+
+<script>
+  function fmt(n){
+    if(n>=1000000000)return (n/1000000000).toFixed(1)+'B';
+    if(n>=1000000)return (n/1000000).toFixed(1)+'M';
+    return Number(Math.round(n)).toLocaleString('pt-AO');
+  }
+  function fmtFull(n){return Number(Math.round(n)).toLocaleString('pt-AO');}
+
+  function simulate(){
+    const monthly=parseInt(document.getElementById('slMonthly').value)||10000;
+    const years=parseInt(document.getElementById('slYears').value)||10;
+    const dailyRate=parseInt(document.getElementById('slRate').value)||5;
+
+    document.getElementById('lblMonthly').textContent=fmtFull(monthly)+' Kz';
+    document.getElementById('lblYears').textContent=years+' ano'+(years>1?'s':'');
+    document.getElementById('lblRate').textContent=dailyRate+'%';
+
+    // Monthly compound: monthly investment × daily rate applied monthly (approx 30 days)
+    // Monthly rate ≈ dailyRate% × 30 = capped at reasonable compound
+    // Use simplified: totalInvested + dailyEarning × days
+    const months=years*12;
+    const dailyEarning=monthly*(dailyRate/100);
+    const monthlyEarning=dailyEarning*30;
+
+    // Compound accumulation: each month's investment earns returns for remaining months
+    let total=0;
+    for(let m=1;m<=months;m++){
+      const remainingMonths=months-m+1;
+      total+=monthly+(monthlyEarning*remainingMonths);
+    }
+
+    const totalInvested=monthly*months;
+    const totalReturns=total-totalInvested;
+    const multiplier=(total/totalInvested).toFixed(1);
+
+    document.getElementById('resTotal').textContent=fmt(total);
+    document.getElementById('resInvested').textContent=fmt(totalInvested)+' Kz';
+    document.getElementById('resReturns').textContent=fmt(totalReturns)+' Kz';
+    document.getElementById('resMultiplier').textContent=multiplier+'x';
+
+    const invPct=Math.round((totalInvested/total)*100);
+    const retPct=100-invPct;
+    document.getElementById('barInvested').style.width=invPct+'%';
+    document.getElementById('barReturns').style.width=retPct+'%';
+    document.getElementById('barInvestedPct').textContent=invPct+'%';
+    document.getElementById('barReturnsPct').textContent=retPct+'%';
+
+    // Scenarios comparison
+    const scenarios=[
+      {name:'Sem investimento',desc:'Guardar debaixo do colchão',rate:0,dot:'c'},
+      {name:'Plano G1 — 5%/dia',desc:years+' anos com rendimento diário',rate:5,dot:'g5'},
+      {name:'Plano G2 — 6%/dia',desc:years+' anos com rendimento máximo',rate:6,dot:'g10'},
+    ];
+    const sl=document.getElementById('scenarioList');sl.innerHTML='';
+    scenarios.forEach(s=>{
+      let t=0;
+      if(s.rate===0){t=monthly*months;}
+      else{
+        const me=monthly*(s.rate/100)*30;
+        for(let m=1;m<=months;m++){const rm=months-m+1;t+=monthly+(me*rm);}
+      }
+      sl.innerHTML+=`<div class="scenario-item"><div class="sc-dot ${s.dot}"></div><div class="sc-info"><div class="sc-name">${s.name}</div><div class="sc-desc">${s.desc}</div></div><div class="sc-val">${fmt(t)} Kz</div></div>`;
+    });
+  }
+
+  simulate();
+</script>
+</body>
+</html>
