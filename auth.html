@@ -245,7 +245,7 @@
 <script type="module">
   import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import{getAuth,signInWithEmailAndPassword,createUserWithEmailAndPassword,updateProfile}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import{getFirestore,doc,setDoc,getDoc,updateDoc,increment}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import{getFirestore,doc,setDoc,getDoc,updateDoc,increment,collection,query,where,getDocs}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
   const cfg={apiKey:"AIzaSyBp8X1PPp3FqiQ6OXErr8Mu11GEp6MZ2-U",authDomain:"ascend-34bf0.firebaseapp.com",projectId:"ascend-34bf0",storageBucket:"ascend-34bf0.firebasestorage.app",messagingSenderId:"592623076677",appId:"1:592623076677:web:c5615719870aefdabf6a2c"};
   const app=initializeApp(cfg);const auth=getAuth(app);const db=getFirestore(app);
 
@@ -284,10 +284,16 @@
       const cred=await createUserWithEmailAndPassword(auth,buildEmail(prefix,phone),pin);
       await updateProfile(cred.user,{displayName:accountId});
       await setDoc(doc(db,'users',cred.user.uid),{accountId,phone:prefix+phone,email,referredBy:ref||null,createdAt:new Date().toISOString(),level:'G0',balance:0,invested:false,referralCount:0});
-      // credit referrer if valid
+      // credit referrer: find user with accountId == ref and increment their referralCount
       if(ref){
-        // find referrer by accountId — simplified: store ref for admin to process
-        // In production: query users collection where accountId==ref
+        try{
+          const q=query(collection(db,'users'),where('accountId','==',ref));
+          const refSnaps=await getDocs(q);
+          if(!refSnaps.empty){
+            const referrerDoc=refSnaps.docs[0];
+            await updateDoc(doc(db,'users',referrerDoc.id),{referralCount:increment(1)});
+          }
+        }catch(refErr){console.log('Referral update failed:',refErr);}
       }
       hideSpinner();
       document.getElementById('idCode').textContent=accountId;
