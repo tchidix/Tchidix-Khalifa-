@@ -291,17 +291,25 @@
     try{
       const cred=await createUserWithEmailAndPassword(auth,buildEmail(prefix,phone),pin);
       await updateProfile(cred.user,{displayName:accountId});
-      await setDoc(doc(db,'users',cred.user.uid),{accountId,phone:prefix+phone,email,referredBy:ref||null,createdAt:new Date().toISOString(),level:'G0',balance:0,invested:false,referralCount:0});
-      // credit referrer: find user with accountId == ref and increment their referralCount
+      await setDoc(doc(db,'users',cred.user.uid),{accountId,phone:prefix+phone,email,referredBy:ref||null,createdAt:new Date().toISOString(),level:'G0',balance:0,invested:false,referralCount:0,referralEarned:0});
+
+      // Incrementar contador do utilizador que convidou
       if(ref){
         try{
           const q=query(collection(db,'users'),where('accountId','==',ref));
           const refSnaps=await getDocs(q);
           if(!refSnaps.empty){
-            const referrerDoc=refSnaps.docs[0];
-            await updateDoc(doc(db,'users',referrerDoc.id),{referralCount:increment(1)});
+            const referrerId=refSnaps.docs[0].id;
+            // Usar campo diferente para não conflituar com regras
+            await updateDoc(doc(db,'users',referrerId),{referralCount:increment(1)});
+            console.log('Referral counted for',ref);
+          } else {
+            console.log('Referral code not found:',ref);
           }
-        }catch(refErr){console.log('Referral update failed:',refErr);}
+        }catch(refErr){
+          // Não bloquear criação de conta se referral falhar
+          console.log('Referral update failed:',refErr.code,refErr.message);
+        }
       }
       hideSpinner();
       document.getElementById('idCode').textContent=accountId;
