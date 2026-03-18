@@ -15,39 +15,49 @@
     .back-btn{width:36px;height:36px;border:1.5px solid var(--gray-line);border-radius:10px;background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;text-decoration:none;color:var(--black);transition:all .25s;flex-shrink:0}
     .back-btn:hover{border-color:var(--red);color:var(--red)}
     .h-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700}
-    .content{position:relative;z-index:1;padding:24px 20px 40px;max-width:500px;margin:0 auto}
-    .qr-card{background:linear-gradient(135deg,var(--red) 0%,var(--red-dark) 100%);border-radius:22px;padding:28px;color:var(--white);text-align:center;margin-bottom:20px;animation:fadeUp .6s ease both;position:relative;overflow:hidden}
+    .content{position:relative;z-index:1;padding:20px 20px 40px;max-width:500px;margin:0 auto}
+
+    /* QR CARD */
+    .qr-card{background:linear-gradient(135deg,var(--red) 0%,var(--red-dark) 100%);border-radius:20px;padding:22px;color:var(--white);margin-bottom:16px;animation:fadeUp .6s ease both;display:flex;align-items:center;gap:20px;position:relative;overflow:hidden}
     .qr-card::before{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.06)}
-    .qr-box{width:110px;height:110px;background:var(--white);border-radius:14px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;padding:8px}
-    .qr-id{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;letter-spacing:.1em}
-    .qr-label{font-size:10px;opacity:.7;letter-spacing:.12em;text-transform:uppercase;margin-top:4px}
-    .qr-info{display:flex;gap:12px;margin-top:18px;padding-top:18px;border-top:1px solid rgba(255,255,255,.15)}
-    .qi-item{flex:1;text-align:center}
-    .qi-val{font-size:14px;font-weight:600}
-    .qi-lbl{font-size:9px;opacity:.65;margin-top:2px;letter-spacing:.06em;text-transform:uppercase}
-    .profile-card{background:var(--white);border-radius:18px;padding:22px;margin-bottom:14px;border:1px solid var(--gray-line);box-shadow:0 4px 20px rgba(0,0,0,.04);animation:fadeUp .6s ease .1s both}
-    .pc-title{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-soft);margin-bottom:16px}
-    .pc-row{display:flex;align-items:center;padding:11px 0;border-bottom:1px solid var(--gray-line)}
+    .qr-img-wrap{width:90px;height:90px;background:var(--white);border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:4px}
+    .qr-img-wrap img{width:100%;height:100%;border-radius:8px}
+    .qr-loader{font-size:10px;color:var(--gray-soft);text-align:center}
+    .qr-info-side{flex:1;position:relative;z-index:1}
+    .qr-id-lbl{font-size:9px;letter-spacing:.14em;text-transform:uppercase;opacity:.65;margin-bottom:4px}
+    .qr-id-val{font-family:'DM Sans',sans-serif;font-size:20px;font-weight:700;letter-spacing:.06em;margin-bottom:10px}
+    .qr-chips{display:flex;flex-wrap:wrap;gap:6px}
+    .qr-chip{background:rgba(255,255,255,.15);border-radius:8px;padding:4px 10px;font-size:11px;font-weight:500}
+    .qr-chip span{opacity:.65;margin-right:3px;font-size:10px}
+
+    /* PROFILE VIEW */
+    .profile-card{background:var(--white);border-radius:16px;padding:18px;margin-bottom:14px;border:1px solid var(--gray-line);box-shadow:0 4px 20px rgba(0,0,0,.04);animation:fadeUp .6s ease .08s both}
+    .pc-title{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-soft);margin-bottom:14px}
+    .pc-row{display:flex;align-items:center;padding:10px 0;border-bottom:1px solid var(--gray-line)}
     .pc-row:last-child{border-bottom:none}
-    .pc-icon{width:34px;height:34px;background:rgba(200,16,46,.07);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--red);flex-shrink:0;margin-right:13px}
-    .pc-icon svg{width:15px;height:15px}
-    .pc-info-label{font-size:9px;color:var(--gray-soft);letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px}
+    .pc-icon{width:32px;height:32px;background:rgba(200,16,46,.07);border-radius:9px;display:flex;align-items:center;justify-content:center;color:var(--red);flex-shrink:0;margin-right:12px}
+    .pc-icon svg{width:14px;height:14px}
+    .pc-info-label{font-size:9px;color:var(--gray-soft);letter-spacing:.06em;text-transform:uppercase;margin-bottom:1px}
     .pc-info-val{font-size:13px;font-weight:500}
-    .form-card{background:var(--white);border-radius:18px;padding:22px;border:1px solid var(--gray-line);box-shadow:0 4px 20px rgba(0,0,0,.04);animation:fadeUp .6s ease .15s both}
-    .field{margin-bottom:14px}
-    .field label{display:block;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-soft);margin-bottom:6px}
-    .field input,.field select{width:100%;padding:12px 13px;border:1.5px solid var(--gray-line);border-radius:12px;font-size:13px;font-family:'DM Sans',sans-serif;background:#FAFAF9;color:var(--black);outline:none;transition:all .25s;-webkit-appearance:none}
+
+    /* FORM */
+    .form-card{background:var(--white);border-radius:16px;padding:18px;border:1px solid var(--gray-line);box-shadow:0 4px 20px rgba(0,0,0,.04);animation:fadeUp .6s ease .1s both}
+    .field{margin-bottom:13px}
+    .field label{display:block;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-soft);margin-bottom:5px}
+    .field input,.field select{width:100%;padding:11px 13px;border:1.5px solid var(--gray-line);border-radius:11px;font-size:13px;font-family:'DM Sans',sans-serif;background:#FAFAF9;color:var(--black);outline:none;transition:all .25s;-webkit-appearance:none}
     .field input:focus,.field select:focus{border-color:var(--red);background:var(--white);box-shadow:0 0 0 4px rgba(200,16,46,.08)}
-    .btn-save{width:100%;padding:14px;background:var(--red);color:var(--white);border:none;border-radius:13px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .3s;box-shadow:0 8px 28px rgba(200,16,46,.28);margin-top:6px}
+    .btn-save{width:100%;padding:13px;background:var(--red);color:var(--white);border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .3s;box-shadow:0 8px 28px rgba(200,16,46,.28);margin-top:6px}
     .btn-save:hover{background:var(--red-dark);transform:translateY(-1px)}
     .btn-save:disabled{opacity:.6;cursor:not-allowed;transform:none}
-    .notice{background:rgba(200,16,46,.06);border:1px solid rgba(200,16,46,.15);border-radius:12px;padding:13px 15px;font-size:12px;color:var(--red);line-height:1.6;margin-bottom:18px;animation:fadeUp .6s ease .2s both;display:flex;gap:9px;align-items:flex-start}
-    .notice svg{width:15px;height:15px;flex-shrink:0;margin-top:1px}
+
+    .notice{background:rgba(200,16,46,.06);border:1px solid rgba(200,16,46,.15);border-radius:11px;padding:11px 14px;font-size:11px;color:var(--red);line-height:1.6;margin-bottom:14px;animation:fadeUp .6s ease .12s both;display:flex;gap:8px;align-items:flex-start}
+    .notice svg{width:14px;height:14px;flex-shrink:0;margin-top:1px}
+
     .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(calc(-100% - 30px));opacity:0;visibility:hidden;background:var(--white);border-radius:13px;padding:12px 18px;box-shadow:0 14px 44px rgba(0,0,0,.13);border-left:4px solid var(--red);display:flex;align-items:center;gap:10px;font-size:13px;font-weight:500;z-index:9999;transition:transform .4s cubic-bezier(.22,1,.36,1),opacity .4s ease,visibility 0s linear .4s;max-width:92vw;pointer-events:none}
     .toast.show{transform:translateX(-50%) translateY(0);opacity:1;visibility:visible;pointer-events:all;transition:transform .4s cubic-bezier(.22,1,.36,1),opacity .4s ease,visibility 0s linear 0s}
     .toast.success{border-left-color:#16A34A}
     .toast.error{border-left-color:var(--red)}
-    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
   </style>
 </head>
 <body>
@@ -60,58 +70,80 @@
 </div>
 
 <div class="content">
-  <div class="qr-card" id="qrCard">
-    <div class="qr-box">
-      <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
-        <rect x="5" y="5" width="30" height="30" rx="4" stroke="#C8102E" stroke-width="3"/>
-        <rect x="13" y="13" width="14" height="14" fill="#C8102E" rx="2"/>
-        <rect x="45" y="5" width="30" height="30" rx="4" stroke="#C8102E" stroke-width="3"/>
-        <rect x="53" y="13" width="14" height="14" fill="#C8102E" rx="2"/>
-        <rect x="5" y="45" width="30" height="30" rx="4" stroke="#C8102E" stroke-width="3"/>
-        <rect x="13" y="53" width="14" height="14" fill="#C8102E" rx="2"/>
-        <rect x="45" y="45" width="6" height="6" fill="#C8102E" rx="1"/><rect x="54" y="45" width="6" height="6" fill="#C8102E" rx="1"/><rect x="63" y="45" width="6" height="6" fill="#C8102E" rx="1"/>
-        <rect x="45" y="54" width="6" height="6" fill="#C8102E" rx="1"/><rect x="63" y="54" width="6" height="6" fill="#C8102E" rx="1"/>
-        <rect x="45" y="63" width="6" height="6" fill="#C8102E" rx="1"/><rect x="54" y="63" width="6" height="6" fill="#C8102E" rx="1"/><rect x="63" y="63" width="6" height="6" fill="#C8102E" rx="1"/>
-      </svg>
+
+  <!-- QR CARD -->
+  <div class="qr-card">
+    <div class="qr-img-wrap" id="qrWrap">
+      <div class="qr-loader">A gerar...</div>
     </div>
-    <div class="qr-id" id="qrId">MC——————</div>
-    <div class="qr-label">Identificador da Conta</div>
-    <div class="qr-info">
-      <div class="qi-item"><div class="qi-val" id="qrLevel">—</div><div class="qi-lbl">Nível</div></div>
-      <div class="qi-item"><div class="qi-val" id="qrRefs">—</div><div class="qi-lbl">Afiliados</div></div>
-      <div class="qi-item"><div class="qi-val" id="qrDate">—</div><div class="qi-lbl">Membro desde</div></div>
+    <div class="qr-info-side">
+      <div class="qr-id-lbl">ID da Conta</div>
+      <div class="qr-id-val" id="qrId">—</div>
+      <div class="qr-chips">
+        <div class="qr-chip"><span>Plano</span><span id="qrLevel">—</span></div>
+        <div class="qr-chip"><span>Afiliados</span><span id="qrRefs">—</span></div>
+        <div class="qr-chip"><span>Desde</span><span id="qrDate">—</span></div>
+      </div>
     </div>
   </div>
 
+  <!-- PROFILE FILLED -->
   <div id="profileView" style="display:none">
     <div class="profile-card">
       <div class="pc-title">Dados Pessoais</div>
-      <div class="pc-row"><div class="pc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div><div><div class="pc-info-label">Nome Completo</div><div class="pc-info-val" id="pName">—</div></div></div>
-      <div class="pc-row"><div class="pc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div><div><div class="pc-info-label">Província</div><div class="pc-info-val" id="pProv">—</div></div></div>
-      <div class="pc-row"><div class="pc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div><div><div class="pc-info-label">Cidade Actual</div><div class="pc-info-val" id="pCity">—</div></div></div>
-      <div class="pc-row"><div class="pc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg></div><div><div class="pc-info-label">Número de BI</div><div class="pc-info-val" id="pBi">—</div></div></div>
-      <div class="pc-row"><div class="pc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div><div><div class="pc-info-label">IBAN</div><div class="pc-info-val" id="pIban">—</div></div></div>
-      <div class="pc-row"><div class="pc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div><div><div class="pc-info-label">Banco</div><div class="pc-info-val" id="pBank">—</div></div></div>
+      <div class="pc-row">
+        <div class="pc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>
+        <div><div class="pc-info-label">Nome</div><div class="pc-info-val" id="pName">—</div></div>
+      </div>
+      <div class="pc-row">
+        <div class="pc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+        <div><div class="pc-info-label">Província / Cidade</div><div class="pc-info-val" id="pProvCity">—</div></div>
+      </div>
+      <div class="pc-row">
+        <div class="pc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
+        <div><div class="pc-info-label">IBAN · Banco</div><div class="pc-info-val" id="pIbanBank">—</div></div>
+      </div>
     </div>
-    <div class="notice"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>O seu perfil está guardado de forma segura. Não é possível editar ou excluir. Para alterações contacte o suporte.</div>
+    <div class="notice">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Perfil bloqueado. Para alterações contacte o suporte.
+    </div>
   </div>
 
+  <!-- PROFILE FORM -->
   <div id="profileForm">
-    <div class="notice"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Complete o seu perfil. Após guardar, os dados ficam permanentes e não poderão ser alterados.</div>
+    <div class="notice">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Preencha os seus dados. Após guardar não será possível alterar.
+    </div>
     <div class="form-card">
       <div class="field"><label>Nome Completo</label><input type="text" id="fName" placeholder="Ex: João Manuel Ginga"/></div>
-      <div class="field"><label>Província (Naturalidade)</label>
-        <select id="fProv"><option value="">Selecionar...</option><option>Luanda</option><option>Benguela</option><option>Huambo</option><option>Bié</option><option>Malanje</option><option>Huíla</option><option>Moxico</option><option>Cuando Cubango</option><option>Cunene</option><option>Namibe</option><option>Zaire</option><option>Uíge</option><option>Kuanza Norte</option><option>Kuanza Sul</option><option>Lunda Norte</option><option>Lunda Sul</option><option>Bengo</option><option>Cabinda</option><option>Lisboa (PT)</option><option>Porto (PT)</option></select>
+      <div class="field"><label>Província</label>
+        <select id="fProv">
+          <option value="">Selecionar...</option>
+          <option>Luanda</option><option>Benguela</option><option>Huambo</option><option>Bié</option>
+          <option>Malanje</option><option>Huíla</option><option>Moxico</option><option>Cuando Cubango</option>
+          <option>Cunene</option><option>Namibe</option><option>Zaire</option><option>Uíge</option>
+          <option>Kuanza Norte</option><option>Kuanza Sul</option><option>Lunda Norte</option><option>Lunda Sul</option>
+          <option>Bengo</option><option>Cabinda</option><option>Lisboa (PT)</option><option>Porto (PT)</option>
+        </select>
       </div>
       <div class="field"><label>Cidade Actual</label><input type="text" id="fCity" placeholder="Ex: Luanda"/></div>
       <div class="field"><label>Número de BI</label><input type="text" id="fBi" placeholder="Ex: 005123456LA041"/></div>
       <div class="field"><label>IBAN (para saque)</label><input type="text" id="fIban" placeholder="AO06 0040 0000 0000 0000 1019 4"/></div>
       <div class="field"><label>Nome do Banco</label>
-        <select id="fBank"><option value="">Selecionar...</option><option>BFA — Banco de Fomento Angola</option><option>BAI — Banco Angolano de Investimentos</option><option>BPC — Banco de Poupança e Crédito</option><option>Millennium Atlântico</option><option>BIC — Banco BIC</option><option>Sol — Banco Sol</option><option>BCI</option><option>Keve</option><option>Express</option><option>Outro</option></select>
+        <select id="fBank">
+          <option value="">Selecionar...</option>
+          <option>BFA — Banco de Fomento Angola</option><option>BAI — Banco Angolano de Investimentos</option>
+          <option>BPC — Banco de Poupança e Crédito</option><option>Millennium Atlântico</option>
+          <option>BIC — Banco BIC</option><option>Sol — Banco Sol</option><option>BCI</option>
+          <option>Keve</option><option>Express</option><option>Outro</option>
+        </select>
       </div>
       <button class="btn-save" id="saveBtn" onclick="saveProfile()">Guardar Perfil</button>
     </div>
   </div>
+
 </div>
 
 <script type="module">
@@ -121,27 +153,45 @@
   const cfg={apiKey:"AIzaSyBp8X1PPp3FqiQ6OXErr8Mu11GEp6MZ2-U",authDomain:"ascend-34bf0.firebaseapp.com",projectId:"ascend-34bf0",storageBucket:"ascend-34bf0.firebasestorage.app",messagingSenderId:"592623076677",appId:"1:592623076677:web:c5615719870aefdabf6a2c"};
   const app=initializeApp(cfg);const auth=getAuth(app);const db=getFirestore(app);
   let uid='';
+
+  function generateQR(text){
+    const wrap=document.getElementById('qrWrap');
+    // Use QR Server API — free, no key needed
+    const size=82;
+    const url=`https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(text)}&bgcolor=ffffff&color=C8102E&qzone=1&format=png`;
+    const img=document.createElement('img');
+    img.src=url;
+    img.width=size;img.height=size;
+    img.style.borderRadius='6px';
+    img.onerror=()=>{wrap.innerHTML='<div class="qr-loader" style="font-size:9px;color:#999">QR indisponível</div>';};
+    wrap.innerHTML='';
+    wrap.appendChild(img);
+  }
+
   onAuthStateChanged(auth,async user=>{
     if(!user){window.location.href='auth.html';return;}
     uid=user.uid;
     const snap=await getDoc(doc(db,'users',uid));
     if(!snap.exists())return;
     const d=snap.data();
-    document.getElementById('qrId').textContent=d.accountId||'—';
+
+    // QR com ID da conta
+    const accountId=d.accountId||'—';
+    document.getElementById('qrId').textContent=accountId;
     document.getElementById('qrLevel').textContent=d.level||'G0';
     document.getElementById('qrRefs').textContent=d.referralCount||0;
     if(d.createdAt)document.getElementById('qrDate').textContent=d.createdAt.slice(0,7);
+    generateQR(accountId);
+
     if(d.profileComplete){
       document.getElementById('profileForm').style.display='none';
       document.getElementById('profileView').style.display='block';
       document.getElementById('pName').textContent=d.fullName||'—';
-      document.getElementById('pProv').textContent=d.province||'—';
-      document.getElementById('pCity').textContent=d.city||'—';
-      document.getElementById('pBi').textContent=d.biNumber||'—';
-      document.getElementById('pIban').textContent=d.iban||'—';
-      document.getElementById('pBank').textContent=d.bankName||'—';
+      document.getElementById('pProvCity').textContent=(d.province||'—')+' · '+(d.city||'—');
+      document.getElementById('pIbanBank').textContent=(d.iban||'—')+' · '+(d.bankName||'—');
     }
   });
+
   window.saveProfile=async function(){
     const name=document.getElementById('fName').value.trim();
     const prov=document.getElementById('fProv').value;
@@ -149,15 +199,17 @@
     const bi=document.getElementById('fBi').value.trim();
     const iban=document.getElementById('fIban').value.trim();
     const bank=document.getElementById('fBank').value;
-    if(!name||!prov||!city||!bi||!iban||!bank){window.toast('Preencha todos os campos.','error');return;}
-    document.getElementById('saveBtn').disabled=true;document.getElementById('saveBtn').textContent='A guardar...';
+    if(!name||!prov||!city||!bi||!iban||!bank){toast('Preencha todos os campos.','error');return;}
+    document.getElementById('saveBtn').disabled=true;
+    document.getElementById('saveBtn').textContent='A guardar...';
     try{
       await updateDoc(doc(db,'users',uid),{fullName:name,province:prov,city,biNumber:bi,iban,bankName:bank,profileComplete:true});
-      window.toast('Perfil guardado com sucesso!','success');
+      toast('Perfil guardado com sucesso!','success');
       setTimeout(()=>window.location.reload(),1500);
     }catch(e){
-      window.toast('Erro ao guardar. Tente novamente.','error');
-      document.getElementById('saveBtn').disabled=false;document.getElementById('saveBtn').textContent='Guardar Perfil';
+      toast('Erro ao guardar: '+(e.code||e.message),'error');
+      document.getElementById('saveBtn').disabled=false;
+      document.getElementById('saveBtn').textContent='Guardar Perfil';
     }
   };
 </script>
