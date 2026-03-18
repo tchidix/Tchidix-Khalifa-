@@ -6,19 +6,19 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{--red:#C8102E;--red-dark:#A00D24;--white:#FFFFFF;--off-white:#F8F6F3;--black:#0D0D0D;--gray-soft:#6B6B6B;--gray-line:#E0DEDD;}
+    :root{--navy:#1B3A6B;--navy-dark:#0F2347;--white:#FFFFFF;--off-white:#F8F6F3;--black:#0D0D0D;--gray-soft:#6B6B6B;--gray-line:#E0DEDD;}
     html,body{min-height:100%;font-family:'DM Sans',sans-serif;background:var(--off-white);color:var(--black)}
-    .bg-layer{position:fixed;inset:0;z-index:0;background:var(--off-white)}
-    .bg-layer::before{content:'';position:absolute;top:-20%;right:-10%;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(200,16,46,0.07) 0%,transparent 70%);animation:pbg 8s ease infinite alternate}
+    .bg-layer{position:fixed;inset:0;z-index:0;background:linear-gradient(160deg,#F0F4FF 0%,#EEF2FB 50%,#F5F8FF 100%)}
+    .bg-layer::before{content:'';position:absolute;top:-20%;right:-10%;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(27,58,107,0.07) 0%,transparent 70%);animation:pbg 8s ease infinite alternate}
     @keyframes pbg{from{transform:scale(1)}to{transform:scale(1.15)}}
-    .header{position:sticky;top:0;z-index:100;background:rgba(248,246,243,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--gray-line);padding:0 20px;height:60px;display:flex;align-items:center;gap:14px}
+    .header{position:sticky;top:0;z-index:100;background:rgba(240,244,255,.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--gray-line);padding:0 20px;height:60px;display:flex;align-items:center;gap:14px}
     .back-btn{width:36px;height:36px;border:1.5px solid var(--gray-line);border-radius:10px;background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;text-decoration:none;color:var(--black);transition:all .25s;flex-shrink:0}
-    .back-btn:hover{border-color:var(--red);color:var(--red)}
+    .back-btn:hover{border-color:var(--navy);color:var(--navy)}
     .h-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700}
     .content{position:relative;z-index:1;padding:24px 20px 40px;max-width:500px;margin:0 auto}
     .balance-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;animation:fadeUp .6s ease both}
     .bal-card{border-radius:18px;padding:18px;position:relative;overflow:hidden}
-    .bal-card.main{background:linear-gradient(135deg,var(--red) 0%,var(--red-dark) 100%);color:var(--white);grid-column:1/-1}
+    .bal-card.main{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-dark) 100%);color:var(--white);grid-column:1/-1}
     .bal-card.main::before{content:'';position:absolute;top:-30px;right:-30px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.06)}
     .bal-card.secondary{background:var(--white);border:1px solid var(--gray-line);box-shadow:0 4px 16px rgba(0,0,0,.04)}
     .bc-lbl{font-size:10px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:7px}
@@ -38,26 +38,26 @@
     .cd-sep{font-size:18px;font-weight:700;color:var(--gray-line);margin-bottom:6px}
     .nc-earning{display:flex;align-items:center;justify-content:space-between;padding-top:14px;border-top:1px solid var(--gray-line);margin-top:14px}
     .nc-earning-lbl{font-size:12px;color:var(--gray-soft)}
-    .nc-earning-val{font-family:'DM Sans',sans-serif;font-size:18px;font-weight:600;color:var(--red)}
+    .nc-earning-val{font-family:'DM Sans',sans-serif;font-size:18px;font-weight:600;color:var(--navy)}
     .convert-card{background:var(--white);border-radius:18px;padding:20px;border:1px solid var(--gray-line);box-shadow:0 4px 16px rgba(0,0,0,.04);margin-bottom:16px;animation:fadeUp .6s ease .15s both}
     .cc-title{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-soft);margin-bottom:12px}
     .cc-info{font-size:12px;color:var(--gray-soft);line-height:1.7;margin-bottom:16px}
     .cc-info strong{color:var(--black)}
-    .btn-convert{width:100%;padding:14px;background:var(--red);color:var(--white);border:none;border-radius:13px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .3s;box-shadow:0 8px 28px rgba(200,16,46,.28);display:flex;align-items:center;justify-content:center;gap:9px}
-    .btn-convert:hover{background:var(--red-dark);transform:translateY(-1px)}
+    .btn-convert{width:100%;padding:14px;background:var(--navy);color:var(--white);border:none;border-radius:13px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .3s;box-shadow:0 8px 28px rgba(27,58,107,.28);display:flex;align-items:center;justify-content:center;gap:9px}
+    .btn-convert:hover{background:var(--navy-dark);transform:translateY(-1px)}
     .btn-convert:disabled{opacity:.5;cursor:not-allowed;transform:none}
     .btn-convert svg{width:17px;height:17px}
     .no-plan{background:var(--white);border-radius:18px;padding:32px 24px;text-align:center;border:1px solid var(--gray-line);animation:fadeUp .6s ease both}
-    .no-plan-icon{width:52px;height:52px;background:rgba(200,16,46,.08);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;color:var(--red)}
+    .no-plan-icon{width:52px;height:52px;background:rgba(27,58,107,.08);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;color:var(--navy)}
     .no-plan-icon svg{width:24px;height:24px}
     .no-plan-title{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:700;margin-bottom:7px}
     .no-plan-sub{font-size:12px;color:var(--gray-soft);line-height:1.6;margin-bottom:18px}
-    .btn-goto{display:inline-block;padding:11px 26px;background:var(--red);color:var(--white);border-radius:12px;text-decoration:none;font-size:13px;font-weight:600;transition:all .3s;box-shadow:0 5px 18px rgba(200,16,46,.22)}
-    .btn-goto:hover{background:var(--red-dark)}
-    .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(calc(-100% - 30px));opacity:0;visibility:hidden;background:var(--white);border-radius:13px;padding:12px 18px;box-shadow:0 14px 44px rgba(0,0,0,.13);border-left:4px solid var(--red);display:flex;align-items:center;gap:10px;font-size:13px;font-weight:500;z-index:9999;transition:transform .4s cubic-bezier(.22,1,.36,1),opacity .4s ease,visibility 0s linear .4s;max-width:92vw;pointer-events:none}
+    .btn-goto{display:inline-block;padding:11px 26px;background:var(--navy);color:var(--white);border-radius:12px;text-decoration:none;font-size:13px;font-weight:600;transition:all .3s;box-shadow:0 5px 18px rgba(27,58,107,.22)}
+    .btn-goto:hover{background:var(--navy-dark)}
+    .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(calc(-100% - 30px));opacity:0;visibility:hidden;background:var(--white);border-radius:13px;padding:12px 18px;box-shadow:0 14px 44px rgba(0,0,0,.13);border-left:4px solid var(--navy);display:flex;align-items:center;gap:10px;font-size:13px;font-weight:500;z-index:9999;transition:transform .4s cubic-bezier(.22,1,.36,1),opacity .4s ease,visibility 0s linear .4s;max-width:92vw;pointer-events:none}
     .toast.show{transform:translateX(-50%) translateY(0);opacity:1;visibility:visible;pointer-events:all;transition:transform .4s cubic-bezier(.22,1,.36,1),opacity .4s ease,visibility 0s linear 0s}
     .toast.success{border-left-color:#16A34A}
-    .toast.error{border-left-color:var(--red)}
+    .toast.error{border-left-color:var(--navy)}
     @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
   </style>
 </head>
@@ -166,14 +166,38 @@
     const rate=userData.dailyRate||5;const inv=userData.investedAmount||0;
     const daily=Math.round(inv*(rate/100));
     const base=userData.lastEarningAt||userData.investedAt;
-    if(base&&Date.now()<new Date(base).getTime()+24*60*60*1000){window.toast('Rendimento ainda não disponível.','error');return;}
+    if(base&&Date.now()<new Date(base).getTime()+24*60*60*1000){
+      window.toast('Rendimento ainda não disponível.','error');return;
+    }
     document.getElementById('convertBtn').disabled=true;
     try{
-      await updateDoc(doc(db,'users',uid),{balance:increment(daily),totalEarned:increment(daily),pendingEarnings:0,lastEarningAt:new Date().toISOString()});
-      userData.balance=(userData.balance||0)+daily;userData.totalEarned=(userData.totalEarned||0)+daily;userData.lastEarningAt=new Date().toISOString();
-      window.toast('Ganhos convertidos com sucesso!','success');
+      // Gravar pedido de conversão numa colecção separada
+      // O admin (ou regra específica) processa e credita o saldo
+      // Por agora usamos a colecção 'earnings' que o utilizador pode criar
+      const{collection,addDoc,serverTimestamp:st}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+      await addDoc(collection(db,'earnings'),{
+        uid,
+        amount:daily,
+        rate,
+        investedAmount:inv,
+        createdAt:st(),
+        processed:false
+      });
+      // Actualizar lastEarningAt e totalEarned (permitidos pelas regras)
+      await updateDoc(doc(db,'users',uid),{
+        lastEarningAt:new Date().toISOString(),
+        totalEarned:increment(daily),
+        pendingEarnings:increment(daily)
+      });
+      userData.totalEarned=(userData.totalEarned||0)+daily;
+      userData.lastEarningAt=new Date().toISOString();
+      window.toast('Rendimento registado! Saldo creditado em breve.','success');
       renderFinances();
-    }catch(e){window.toast('Erro ao converter. Tente novamente.','error');document.getElementById('convertBtn').disabled=false;}
+    }catch(e){
+      console.error(e);
+      window.toast('Erro: '+(e.code||e.message),'error');
+      document.getElementById('convertBtn').disabled=false;
+    }
   };
 </script>
 <script>
