@@ -199,24 +199,38 @@
   import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import{getFirestore,collection,addDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-  import{getStorage,ref,uploadBytes,getDownloadURL}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
   const cfg={apiKey:"AIzaSyBp8X1PPp3FqiQ6OXErr8Mu11GEp6MZ2-U",authDomain:"ascend-34bf0.firebaseapp.com",projectId:"ascend-34bf0",storageBucket:"ascend-34bf0.firebasestorage.app",messagingSenderId:"592623076677",appId:"1:592623076677:web:c5615719870aefdabf6a2c"};
-  const app=initializeApp(cfg);const auth=getAuth(app);const db=getFirestore(app);const storage=getStorage(app);
+  const app=initializeApp(cfg);const auth=getAuth(app);const db=getFirestore(app);
   let uid='';
   onAuthStateChanged(auth,u=>{if(!u){window.location.href='auth.html';}else{uid=u.uid;}});
 
   window.submitDeposit=async function(){
     const file=document.getElementById('fileInput').files[0];
     const amount=window._selectedAmount;
-    if(!file){alert('Selecione o comprovativo.');return;}
-    if(!amount){alert('Selecione um valor.');return;}
+    if(!file){showToast('Selecione o comprovativo.','error');return;}
+    if(!amount){showToast('Selecione um valor.','error');return;}
     document.getElementById('spinner').classList.add('show');
     document.getElementById('submitBtn').disabled=true;
     try{
-      const sRef=ref(storage,`deposits/${uid}/${Date.now()}_${file.name}`);
-      await uploadBytes(sRef,file);
-      const url=await getDownloadURL(sRef);
-      await addDoc(collection(db,'deposits'),{uid,amount,account:window._selectedAcc||'bfa',proofUrl:url,status:'pending',createdAt:serverTimestamp()});
+      // Converter ficheiro para base64 para evitar dependência do Storage
+      const base64=await new Promise((res,rej)=>{
+        const reader=new FileReader();
+        reader.onload=()=>res(reader.result);
+        reader.onerror=rej;
+        reader.readAsDataURL(file);
+      });
+
+      await addDoc(collection(db,'deposits'),{
+        uid,
+        amount,
+        account:window._selectedAcc||'bfa',
+        proofBase64:base64.length>500000?'ficheiro_grande':base64,
+        proofName:file.name,
+        proofType:file.type,
+        status:'pending',
+        createdAt:serverTimestamp()
+      });
+
       document.getElementById('spinner').classList.remove('show');
       document.getElementById('step3Card').style.display='none';
       document.getElementById('stepsBar').style.display='none';
@@ -224,10 +238,24 @@
       document.getElementById('successText').textContent=`Depósito de ${Number(amount).toLocaleString('pt-AO')} Kz em análise. Será creditado em breve.`;
     }catch(e){
       document.getElementById('spinner').classList.remove('show');
-      alert('Erro ao enviar. Tente novamente.');
+      showToast('Erro: '+(e.code||e.message),'error');
       document.getElementById('submitBtn').disabled=false;
     }
   };
+
+  function showToast(msg,type){
+    let t=document.getElementById('depositToast');
+    if(!t){
+      t=document.createElement('div');t.id='depositToast';
+      t.style.cssText='position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(calc(-100% - 30px));opacity:0;visibility:hidden;background:#fff;border-radius:13px;padding:12px 18px;box-shadow:0 14px 44px rgba(0,0,0,.13);border-left:4px solid #C8102E;font-size:13px;font-weight:500;z-index:9999;transition:transform .4s cubic-bezier(.22,1,.36,1),opacity .4s ease,visibility 0s linear .4s;max-width:92vw;font-family:DM Sans,sans-serif';
+      document.body.appendChild(t);
+    }
+    t.textContent=msg;
+    t.style.borderLeftColor=type==='error'?'#C8102E':'#16A34A';
+    t.style.transform='translateX(-50%) translateY(0)';t.style.opacity='1';t.style.visibility='visible';
+    t.style.transition='transform .4s cubic-bezier(.22,1,.36,1),opacity .4s ease,visibility 0s linear 0s';
+    setTimeout(()=>{t.style.transform='translateX(-50%) translateY(calc(-100% - 30px))';t.style.opacity='0';t.style.visibility='hidden';t.style.transition='transform .4s,opacity .4s,visibility 0s linear .4s';},3500);
+  }
 </script>
 <script>
   let selAmount=null,selAcc='bfa',currentFile=null;
