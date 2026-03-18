@@ -6,14 +6,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{--red:#C8102E;--red-dark:#A00D24;--white:#FFFFFF;--off-white:#F8F6F3;--black:#0D0D0D;--gray-soft:#6B6B6B;--gray-line:#E0DEDD;}
+    :root{--navy:#1B3A6B;--navy-dark:#0F2347;--white:#FFFFFF;--off-white:#F8F6F3;--black:#0D0D0D;--gray-soft:#6B6B6B;--gray-line:#E0DEDD;}
     html,body{min-height:100%;font-family:'DM Sans',sans-serif;background:var(--off-white);color:var(--black)}
-    .bg-layer{position:fixed;inset:0;z-index:0;background:var(--off-white)}
-    .bg-layer::before{content:'';position:absolute;top:-20%;right:-10%;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(200,16,46,0.07) 0%,transparent 70%);animation:pbg 8s ease infinite alternate}
+    .bg-layer{position:fixed;inset:0;z-index:0;background:linear-gradient(160deg,#F0F4FF 0%,#EEF2FB 50%,#F5F8FF 100%)}
+    .bg-layer::before{content:'';position:absolute;top:-20%;right:-10%;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(27,58,107,0.07) 0%,transparent 70%);animation:pbg 8s ease infinite alternate}
     @keyframes pbg{from{transform:scale(1)}to{transform:scale(1.15)}}
-    .header{position:sticky;top:0;z-index:100;background:rgba(248,246,243,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--gray-line);padding:0 20px;height:60px;display:flex;align-items:center;gap:14px}
+    .header{position:sticky;top:0;z-index:100;background:rgba(240,244,255,.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--gray-line);padding:0 20px;height:60px;display:flex;align-items:center;gap:14px}
     .back-btn{width:36px;height:36px;border:1.5px solid var(--gray-line);border-radius:10px;background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;text-decoration:none;color:var(--black);transition:all .25s;flex-shrink:0}
-    .back-btn:hover{border-color:var(--red);color:var(--red)}
+    .back-btn:hover{border-color:var(--navy);color:var(--navy)}
     .h-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700}
     .content{position:relative;z-index:1;padding:24px 20px 60px;max-width:500px;margin:0 auto}
 
@@ -23,13 +23,13 @@
 
     .support-cards{display:flex;flex-direction:column;gap:14px}
     .sup-card{background:var(--white);border-radius:18px;padding:22px;border:1px solid var(--gray-line);box-shadow:0 4px 16px rgba(0,0,0,.04);display:flex;align-items:center;gap:16px;cursor:pointer;text-decoration:none;transition:all .3s;animation:fadeUp .6s ease both}
-    .sup-card:hover{border-color:var(--red);transform:translateY(-2px);box-shadow:0 8px 28px rgba(200,16,46,.1)}
-    .sup-icon{width:52px;height:52px;background:var(--red);border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--white)}
+    .sup-card:hover{border-color:var(--navy);transform:translateY(-2px);box-shadow:0 8px 28px rgba(27,58,107,.1)}
+    .sup-icon{width:52px;height:52px;background:var(--navy);border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--white)}
     .sup-icon svg{width:24px;height:24px}
     .sup-info{flex:1}
     .sup-type{font-size:11px;color:var(--gray-soft);letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
     .sup-title{font-size:16px;font-weight:600;color:var(--black);margin-bottom:2px}
-    .sup-contact{font-size:13px;color:var(--red);font-weight:500}
+    .sup-contact{font-size:13px;color:var(--navy);font-weight:500}
     .sup-arrow{color:var(--gray-soft)}
     .sup-arrow svg{width:18px;height:18px}
 
@@ -61,7 +61,7 @@
       <div class="sup-info">
         <div class="sup-type">Atendimento Geral</div>
         <div class="sup-title">Reclamações &amp; Suporte</div>
-        <div class="sup-contact">+939 273 895</div>
+        <div class="sup-contact">+923 448 183</div>
       </div>
       <div class="sup-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
     </a>
