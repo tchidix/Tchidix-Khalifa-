@@ -6,19 +6,19 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{--red:#C8102E;--red-dark:#A00D24;--white:#FFFFFF;--off-white:#F8F6F3;--black:#0D0D0D;--gray-soft:#6B6B6B;--gray-line:#E0DEDD;}
+    :root{--navy:#1B3A6B;--navy-dark:#0F2347;--white:#FFFFFF;--off-white:#F8F6F3;--black:#0D0D0D;--gray-soft:#6B6B6B;--gray-line:#E0DEDD;}
     html,body{min-height:100%;font-family:'DM Sans',sans-serif;background:var(--off-white);color:var(--black)}
-    .bg-layer{position:fixed;inset:0;z-index:0;background:var(--off-white)}
-    .bg-layer::before{content:'';position:absolute;top:-10%;right:-15%;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(200,16,46,0.07) 0%,transparent 70%);animation:pbg 8s ease infinite alternate}
+    .bg-layer{position:fixed;inset:0;z-index:0;background:linear-gradient(160deg,#F0F4FF 0%,#EEF2FB 50%,#F5F8FF 100%)}
+    .bg-layer::before{content:'';position:absolute;top:-10%;right:-15%;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(27,58,107,0.07) 0%,transparent 70%);animation:pbg 8s ease infinite alternate}
     @keyframes pbg{from{transform:scale(1)}to{transform:scale(1.2)}}
-    .header{position:sticky;top:0;z-index:100;background:rgba(248,246,243,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--gray-line);padding:0 20px;height:60px;display:flex;align-items:center;gap:14px}
+    .header{position:sticky;top:0;z-index:100;background:rgba(240,244,255,.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--gray-line);padding:0 20px;height:60px;display:flex;align-items:center;gap:14px}
     .back-btn{width:36px;height:36px;border:1.5px solid var(--gray-line);border-radius:10px;background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;text-decoration:none;color:var(--black);transition:all .25s;flex-shrink:0}
-    .back-btn:hover{border-color:var(--red);color:var(--red)}
+    .back-btn:hover{border-color:var(--navy);color:var(--navy)}
     .h-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700}
     .content{position:relative;z-index:1;padding:20px 20px 40px;max-width:500px;margin:0 auto}
 
     /* QR CARD */
-    .qr-card{background:linear-gradient(135deg,var(--red) 0%,var(--red-dark) 100%);border-radius:20px;padding:22px;color:var(--white);margin-bottom:16px;animation:fadeUp .6s ease both;display:flex;align-items:center;gap:20px;position:relative;overflow:hidden}
+    .qr-card{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-dark) 100%);border-radius:20px;padding:22px;color:var(--white);margin-bottom:16px;animation:fadeUp .6s ease both;display:flex;align-items:center;gap:20px;position:relative;overflow:hidden}
     .qr-card::before{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.06)}
     .qr-img-wrap{width:90px;height:90px;background:var(--white);border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:4px}
     .qr-img-wrap img{width:100%;height:100%;border-radius:8px}
@@ -35,7 +35,7 @@
     .pc-title{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-soft);margin-bottom:14px}
     .pc-row{display:flex;align-items:center;padding:10px 0;border-bottom:1px solid var(--gray-line)}
     .pc-row:last-child{border-bottom:none}
-    .pc-icon{width:32px;height:32px;background:rgba(200,16,46,.07);border-radius:9px;display:flex;align-items:center;justify-content:center;color:var(--red);flex-shrink:0;margin-right:12px}
+    .pc-icon{width:32px;height:32px;background:rgba(27,58,107,.07);border-radius:9px;display:flex;align-items:center;justify-content:center;color:var(--navy);flex-shrink:0;margin-right:12px}
     .pc-icon svg{width:14px;height:14px}
     .pc-info-label{font-size:9px;color:var(--gray-soft);letter-spacing:.06em;text-transform:uppercase;margin-bottom:1px}
     .pc-info-val{font-size:13px;font-weight:500}
@@ -45,18 +45,18 @@
     .field{margin-bottom:13px}
     .field label{display:block;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-soft);margin-bottom:5px}
     .field input,.field select{width:100%;padding:11px 13px;border:1.5px solid var(--gray-line);border-radius:11px;font-size:13px;font-family:'DM Sans',sans-serif;background:#FAFAF9;color:var(--black);outline:none;transition:all .25s;-webkit-appearance:none}
-    .field input:focus,.field select:focus{border-color:var(--red);background:var(--white);box-shadow:0 0 0 4px rgba(200,16,46,.08)}
-    .btn-save{width:100%;padding:13px;background:var(--red);color:var(--white);border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .3s;box-shadow:0 8px 28px rgba(200,16,46,.28);margin-top:6px}
-    .btn-save:hover{background:var(--red-dark);transform:translateY(-1px)}
+    .field input:focus,.field select:focus{border-color:var(--navy);background:var(--white);box-shadow:0 0 0 4px rgba(27,58,107,.08)}
+    .btn-save{width:100%;padding:13px;background:var(--navy);color:var(--white);border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .3s;box-shadow:0 8px 28px rgba(27,58,107,.28);margin-top:6px}
+    .btn-save:hover{background:var(--navy-dark);transform:translateY(-1px)}
     .btn-save:disabled{opacity:.6;cursor:not-allowed;transform:none}
 
-    .notice{background:rgba(200,16,46,.06);border:1px solid rgba(200,16,46,.15);border-radius:11px;padding:11px 14px;font-size:11px;color:var(--red);line-height:1.6;margin-bottom:14px;animation:fadeUp .6s ease .12s both;display:flex;gap:8px;align-items:flex-start}
+    .notice{background:rgba(27,58,107,.06);border:1px solid rgba(27,58,107,.15);border-radius:11px;padding:11px 14px;font-size:11px;color:var(--navy);line-height:1.6;margin-bottom:14px;animation:fadeUp .6s ease .12s both;display:flex;gap:8px;align-items:flex-start}
     .notice svg{width:14px;height:14px;flex-shrink:0;margin-top:1px}
 
-    .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(calc(-100% - 30px));opacity:0;visibility:hidden;background:var(--white);border-radius:13px;padding:12px 18px;box-shadow:0 14px 44px rgba(0,0,0,.13);border-left:4px solid var(--red);display:flex;align-items:center;gap:10px;font-size:13px;font-weight:500;z-index:9999;transition:transform .4s cubic-bezier(.22,1,.36,1),opacity .4s ease,visibility 0s linear .4s;max-width:92vw;pointer-events:none}
+    .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(calc(-100% - 30px));opacity:0;visibility:hidden;background:var(--white);border-radius:13px;padding:12px 18px;box-shadow:0 14px 44px rgba(0,0,0,.13);border-left:4px solid var(--navy);display:flex;align-items:center;gap:10px;font-size:13px;font-weight:500;z-index:9999;transition:transform .4s cubic-bezier(.22,1,.36,1),opacity .4s ease,visibility 0s linear .4s;max-width:92vw;pointer-events:none}
     .toast.show{transform:translateX(-50%) translateY(0);opacity:1;visibility:visible;pointer-events:all;transition:transform .4s cubic-bezier(.22,1,.36,1),opacity .4s ease,visibility 0s linear 0s}
     .toast.success{border-left-color:#16A34A}
-    .toast.error{border-left-color:var(--red)}
+    .toast.error{border-left-color:var(--navy)}
     @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
   </style>
 </head>
@@ -158,7 +158,7 @@
     const wrap=document.getElementById('qrWrap');
     // Use QR Server API — free, no key needed
     const size=82;
-    const url=`https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(text)}&bgcolor=ffffff&color=C8102E&qzone=1&format=png`;
+    const url=`https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(text)}&bgcolor=ffffff&color=1B3A6B&qzone=1&format=png`;
     const img=document.createElement('img');
     img.src=url;
     img.width=size;img.height=size;
