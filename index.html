@@ -21,8 +21,17 @@
     .h-right{display:flex;align-items:center;gap:10px}
     .notif-btn{width:36px;height:36px;border:1.5px solid var(--gray-line);border-radius:10px;background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .25s;color:var(--black)}
     .notif-btn:hover{border-color:var(--red);color:var(--red)}
-    .menu-btn{width:36px;height:36px;border:none;background:var(--red);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .25s;color:var(--white)}
-    .menu-btn:hover{background:var(--red-dark);transform:scale(1.05)}
+    .menu-btn{width:36px;height:36px;border:none;background:var(--red);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .25s;color:var(--white);animation:btnPulse 2.5s ease-in-out infinite}
+    .menu-btn:hover{background:var(--red-dark)}
+    .menu-btn:active{transform:scale(.93)}
+    @keyframes btnPulse{
+      0%,100%{transform:scale(1) rotate(0deg);box-shadow:0 0 0 0 rgba(200,16,46,.5)}
+      10%{transform:scale(1.08) rotate(-4deg)}
+      20%{transform:scale(1.08) rotate(4deg)}
+      30%{transform:scale(1.08) rotate(-3deg)}
+      40%{transform:scale(1) rotate(0deg);box-shadow:0 0 0 8px rgba(200,16,46,0)}
+      100%{box-shadow:0 0 0 0 rgba(200,16,46,0)}
+    }
     .menu-overlay{position:fixed;inset:0;z-index:200;opacity:0;pointer-events:none;transition:opacity .3s}
     .menu-overlay.open{opacity:1;pointer-events:all}
     .menu-backdrop{position:absolute;inset:0;background:rgba(13,13,13,0.45);backdrop-filter:blur(6px)}
@@ -97,14 +106,23 @@
     .td-dot{width:5px;height:5px;border-radius:50%;background:var(--gray-line);transition:all .3s;cursor:pointer}
     .td-dot.active{background:var(--red);width:14px;border-radius:2px}
 
-    /* QUICK ACTIONS */
-    .section-title{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gray-soft);margin-bottom:11px}
-    .quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;animation:fadeUp .7s ease .18s both}
-    .q-item{background:var(--white);border-radius:13px;padding:13px 6px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;border:1.5px solid transparent;transition:all .25s;box-shadow:0 2px 10px rgba(0,0,0,0.04);text-decoration:none;color:var(--black)}
-    .q-item:hover{border-color:var(--red);transform:translateY(-2px);box-shadow:0 7px 18px rgba(200,16,46,0.12)}
-    .q-icon{width:38px;height:38px;background:rgba(200,16,46,0.08);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--red)}
-    .q-icon svg{width:17px;height:17px}
-    .q-label{font-size:10px;font-weight:500;text-align:center;line-height:1.3}
+    /* CHART */
+    .chart-card{background:var(--white);border-radius:16px;padding:16px 18px 10px;margin-bottom:14px;border:1px solid var(--gray-line);box-shadow:0 4px 20px rgba(0,0,0,.04);animation:fadeUp .7s ease .18s both}
+    .chart-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+    .chart-title{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-soft)}
+    .chart-meta{display:flex;align-items:baseline;gap:5px}
+    .chart-val{font-size:18px;font-weight:600;color:var(--black)}
+    .chart-change{font-size:11px;color:#16A34A;font-weight:500}
+    .chart-tabs{display:flex;gap:4px;margin-bottom:12px}
+    .chart-tab{padding:4px 10px;border-radius:20px;font-size:10px;font-weight:500;cursor:pointer;border:1px solid var(--gray-line);color:var(--gray-soft);background:transparent;transition:all .2s}
+    .chart-tab.active{background:var(--red);color:var(--white);border-color:var(--red)}
+    .chart-wrap{position:relative;height:120px}
+    canvas#chartCanvas{width:100%;height:100%;display:block}
+    .chart-labels{display:flex;justify-content:space-between;margin-top:6px;padding:0 2px}
+    .chart-label{font-size:9px;color:var(--gray-soft)}
+    .chart-legend{display:flex;gap:14px;margin-top:10px;padding-top:10px;border-top:1px solid var(--gray-line)}
+    .cl-item{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--gray-soft)}
+    .cl-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 
     /* STATS */
     .stats-row{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:14px;animation:fadeUp .7s ease .22s both}
@@ -221,13 +239,28 @@
     </div>
   </div>
 
-  <!-- QUICK ACTIONS -->
-  <div class="section-title">Acesso Rápido</div>
-  <div class="quick-grid">
-    <a href="deposito.html" class="q-item"><div class="q-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div class="q-label">Depósito</div></a>
-    <a href="levantamento.html" class="q-item"><div class="q-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/><path d="M5 20h14"/></svg></div><div class="q-label">Levantar</div></a>
-    <a href="planos.html" class="q-item"><div class="q-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="q-label">Planos</div></a>
-    <a href="convite.html" class="q-item"><div class="q-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><div class="q-label">Convidar</div></a>
+  <!-- CHART -->
+  <div class="chart-card">
+    <div class="chart-header">
+      <div class="chart-title">Rendimento Estimado</div>
+      <div class="chart-meta">
+        <div class="chart-val" id="chartTotal">0 Kz</div>
+        <div class="chart-change" id="chartChange">+5%/dia</div>
+      </div>
+    </div>
+    <div class="chart-tabs">
+      <div class="chart-tab active" onclick="setChartPeriod(7,this)">7D</div>
+      <div class="chart-tab" onclick="setChartPeriod(15,this)">15D</div>
+      <div class="chart-tab" onclick="setChartPeriod(30,this)">30D</div>
+    </div>
+    <div class="chart-wrap">
+      <canvas id="chartCanvas"></canvas>
+    </div>
+    <div class="chart-labels" id="chartLabels"></div>
+    <div class="chart-legend">
+      <div class="cl-item"><div class="cl-dot" style="background:var(--red)"></div>Rendimento diário</div>
+      <div class="cl-item"><div class="cl-dot" style="background:rgba(200,16,46,.15)"></div>Acumulado</div>
+    </div>
   </div>
 
   <!-- STATS -->
@@ -262,8 +295,13 @@
     if(lvl!=='G0'&&planRates[lvl]){
       document.getElementById('levelProgress').style.width=((Object.keys(planRates).indexOf(lvl)+1)/10*100)+'%';
       document.getElementById('earningRate').innerHTML=planRates[lvl].rate+'<span>%</span>';
-      document.getElementById('nextEarning').innerHTML=fmt(Math.round(_i*(planRates[lvl].rate/100)))+' <span>Kz</span>';
+      const daily=Math.round(_i*(planRates[lvl].rate/100));
+      document.getElementById('nextEarning').innerHTML=fmt(daily)+' <span>Kz</span>';
       document.getElementById('levelNext').textContent='Nível '+lvl;
+      window._dailyEarning=daily;
+      document.getElementById('chartChange').textContent='+'+planRates[lvl].rate+'%/dia';
+      document.getElementById('chartTotal').textContent=fmt(daily*7)+' Kz';
+      if(window.drawChart)window.drawChart(7);
     }
   });
 
@@ -296,6 +334,98 @@
   }
   window.setTicker=setTicker;
   setInterval(()=>setTicker((cur+1)%4),3500);
+</script>
+<script>
+  // ── CHART ──
+  function drawChart(days){
+    window._chartDays=days;
+    const daily=window._dailyEarning||0;
+    const canvas=document.getElementById('chartCanvas');
+    const wrap=canvas.parentElement;
+    canvas.width=wrap.offsetWidth*2;
+    canvas.height=wrap.offsetHeight*2;
+    canvas.style.width=wrap.offsetWidth+'px';
+    canvas.style.height=wrap.offsetHeight+'px';
+    const ctx=canvas.getContext('2d');
+    const W=canvas.width,H=canvas.height;
+    ctx.clearRect(0,0,W,H);
+
+    // Generate data points — cumulative earnings per day
+    const pts=[];
+    for(let i=0;i<days;i++){pts.push(daily*(i+1));}
+    const max=Math.max(...pts,1);
+    const padL=10,padR=10,padT=16,padB=10;
+    const cW=W-padL-padR,cH=H-padT-padB;
+
+    const x=i=>padL+(i/(days-1))*cW;
+    const y=v=>padT+cH-(v/max)*cH;
+
+    // Gradient fill
+    const grad=ctx.createLinearGradient(0,padT,0,padT+cH);
+    grad.addColorStop(0,'rgba(200,16,46,0.18)');
+    grad.addColorStop(1,'rgba(200,16,46,0)');
+    ctx.beginPath();
+    ctx.moveTo(x(0),y(pts[0]));
+    for(let i=1;i<days;i++){
+      const cpx=(x(i-1)+x(i))/2;
+      ctx.bezierCurveTo(cpx,y(pts[i-1]),cpx,y(pts[i]),x(i),y(pts[i]));
+    }
+    ctx.lineTo(x(days-1),padT+cH);
+    ctx.lineTo(x(0),padT+cH);
+    ctx.closePath();
+    ctx.fillStyle=grad;
+    ctx.fill();
+
+    // Line
+    ctx.beginPath();
+    ctx.moveTo(x(0),y(pts[0]));
+    for(let i=1;i<days;i++){
+      const cpx=(x(i-1)+x(i))/2;
+      ctx.bezierCurveTo(cpx,y(pts[i-1]),cpx,y(pts[i]),x(i),y(pts[i]));
+    }
+    ctx.strokeStyle='#C8102E';
+    ctx.lineWidth=3;
+    ctx.lineJoin='round';
+    ctx.stroke();
+
+    // Dots at each point
+    pts.forEach((v,i)=>{
+      ctx.beginPath();
+      ctx.arc(x(i),y(v),days>15?3:4,0,Math.PI*2);
+      ctx.fillStyle='#C8102E';
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(x(i),y(v),days>15?1.5:2.5,0,Math.PI*2);
+      ctx.fillStyle='#fff';
+      ctx.fill();
+    });
+
+    // Labels
+    const labelsEl=document.getElementById('chartLabels');
+    const fmt=n=>Number(n).toLocaleString('pt-AO');
+    const step=days<=7?1:days<=15?3:7;
+    let html='';
+    for(let i=0;i<days;i+=step){
+      html+=`<span class="chart-label">D${i+1}</span>`;
+    }
+    labelsEl.innerHTML=html;
+
+    // Update total
+    const total=pts[pts.length-1];
+    document.getElementById('chartTotal').textContent=fmt(total)+' Kz';
+  }
+
+  window.drawChart=drawChart;
+  window.setChartPeriod=function(days,el){
+    document.querySelectorAll('.chart-tab').forEach(t=>t.classList.remove('active'));
+    el.classList.add('active');
+    drawChart(days);
+  };
+
+  // Initial empty chart on load
+  window.addEventListener('load',()=>{
+    setTimeout(()=>{if(!window._dailyEarning)drawChart(7);},400);
+  });
 </script>
 </body>
 </html>
