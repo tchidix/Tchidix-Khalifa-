@@ -6,31 +6,32 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{--red:#C8102E;--red-dark:#A00D24;--white:#FFFFFF;--off-white:#F8F6F3;--black:#0D0D0D;--gray-soft:#6B6B6B;--gray-line:#E0DEDD;--green:#16A34A;}
+    :root{--navy:#1B3A6B;--navy-dark:#0F2347;--white:#FFFFFF;--off-white:#F8F6F3;--black:#0D0D0D;--gray-soft:#6B6B6B;--gray-line:#E0DEDD;--green:#16A34A;}
     html,body{min-height:100%;font-family:'DM Sans',sans-serif;background:var(--off-white);color:var(--black)}
-    .bg-layer{position:fixed;inset:0;z-index:0;background:var(--off-white)}
-    .bg-layer::before{content:'';position:absolute;top:-20%;right:-10%;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(200,16,46,0.07) 0%,transparent 70%);animation:pbg 8s ease infinite alternate}
+    .bg-layer{position:fixed;inset:0;z-index:0;background:linear-gradient(160deg,#F0F4FF 0%,#EEF2FB 50%,#F5F8FF 100%)}
+    .bg-layer::before{content:'';position:absolute;top:-20%;right:-10%;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(27,58,107,0.07) 0%,transparent 70%);animation:pbg 8s ease infinite alternate}
     @keyframes pbg{from{transform:scale(1)}to{transform:scale(1.15)}}
-    .header{position:sticky;top:0;z-index:100;background:rgba(248,246,243,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--gray-line);padding:0 20px;height:60px;display:flex;align-items:center;gap:14px}
+    .header{position:sticky;top:0;z-index:100;background:rgba(240,244,255,.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--gray-line);padding:0 20px;height:60px;display:flex;align-items:center;gap:14px}
     .back-btn{width:36px;height:36px;border:1.5px solid var(--gray-line);border-radius:10px;background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;text-decoration:none;color:var(--black);transition:all .25s;flex-shrink:0}
-    .back-btn:hover{border-color:var(--red);color:var(--red)}
+    .back-btn:hover{border-color:var(--navy);color:var(--navy)}
     .h-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700}
     .content{position:relative;z-index:1;padding:24px 20px 40px;max-width:500px;margin:0 auto}
 
-    .score-card{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);border-radius:22px;padding:28px;color:var(--white);margin-bottom:20px;animation:fadeUp .6s ease both;position:relative;overflow:hidden;text-align:center}
-    .score-card::before{content:'';position:absolute;top:-50px;right:-50px;width:220px;height:220px;border-radius:50%;background:rgba(200,16,46,.08)}
-    .score-ring{width:100px;height:100px;margin:0 auto 16px;position:relative}
+    .score-card{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);border-radius:16px;padding:16px 18px;color:var(--white);margin-bottom:16px;animation:fadeUp .6s ease both;position:relative;overflow:hidden;display:flex;align-items:center;gap:16px}
+    .score-card::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:rgba(27,58,107,.08)}
+    .score-ring{width:70px;height:70px;flex-shrink:0;position:relative}
     .score-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
-    .score-ring svg circle{fill:none;stroke-width:8;stroke-linecap:round}
+    .score-ring svg circle{fill:none;stroke-width:7;stroke-linecap:round}
     .score-ring svg circle.track{stroke:rgba(255,255,255,.1)}
-    .score-ring svg circle.fill{stroke:var(--red);stroke-dasharray:283;transition:stroke-dashoffset 1s ease}
+    .score-ring svg circle.fill{stroke:var(--navy);stroke-dasharray:283;transition:stroke-dashoffset 1s ease}
     .score-num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-    .score-num span{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;line-height:1}
-    .score-num small{font-size:10px;opacity:.6;letter-spacing:.06em;text-transform:uppercase}
-    .score-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;margin-bottom:6px}
-    .score-sub{font-size:12px;opacity:.7;line-height:1.6}
-    .score-level{display:inline-block;padding:4px 14px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:.06em;margin-top:12px}
-    .score-level.low{background:rgba(200,16,46,.2);color:#FCA5A5}
+    .score-num span{font-size:20px;font-weight:700;line-height:1;color:#fff}
+    .score-num small{font-size:9px;opacity:.55;letter-spacing:.05em;text-transform:uppercase;color:#fff}
+    .score-info{flex:1;position:relative;z-index:1}
+    .score-title{font-size:15px;font-weight:700;margin-bottom:3px;color:#fff}
+    .score-sub{font-size:11px;opacity:.65;line-height:1.5;color:#fff}
+    .score-level{display:inline-block;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:600;letter-spacing:.05em;margin-top:7px}
+    .score-level.low{background:rgba(27,58,107,.2);color:#FCA5A5}
     .score-level.mid{background:rgba(245,158,11,.2);color:#FCD34D}
     .score-level.high{background:rgba(22,163,74,.2);color:#86EFAC}
 
@@ -39,7 +40,7 @@
     .options-card{background:var(--white);border-radius:18px;overflow:hidden;border:1px solid var(--gray-line);box-shadow:0 4px 20px rgba(0,0,0,.04);margin-bottom:16px;animation:fadeUp .6s ease .08s both}
     .opt-item{display:flex;align-items:center;gap:14px;padding:16px 20px;border-bottom:1px solid var(--gray-line);transition:background .2s;cursor:pointer}
     .opt-item:last-child{border-bottom:none}
-    .opt-item:hover{background:rgba(200,16,46,.03)}
+    .opt-item:hover{background:rgba(27,58,107,.03)}
     .opt-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
     .opt-icon svg{width:18px;height:18px}
     .opt-info{flex:1}
@@ -48,7 +49,7 @@
     .opt-right{display:flex;align-items:center;gap:8px}
     .opt-badge{font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px}
     .opt-badge.active{background:rgba(22,163,74,.1);color:var(--green)}
-    .opt-badge.inactive{background:rgba(200,16,46,.08);color:var(--red)}
+    .opt-badge.inactive{background:rgba(27,58,107,.08);color:var(--navy)}
     .opt-badge.info{background:var(--off-white);color:var(--gray-soft)}
     .toggle{width:44px;height:24px;border-radius:12px;position:relative;cursor:pointer;transition:background .3s;border:none;flex-shrink:0}
     .toggle.on{background:var(--green)}
@@ -70,13 +71,13 @@
     .modal-sub{font-size:12px;color:var(--gray-soft);margin-bottom:20px;line-height:1.6}
     .modal-steps{display:flex;flex-direction:column;gap:12px;margin-bottom:22px}
     .modal-step{display:flex;gap:12px;align-items:flex-start}
-    .ms-num{width:26px;height:26px;background:var(--red);color:var(--white);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+    .ms-num{width:26px;height:26px;background:var(--navy);color:var(--white);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
     .ms-text{font-size:13px;line-height:1.6;padding-top:3px}
     .ms-text strong{color:var(--black)}
-    .btn-modal{width:100%;padding:14px;background:var(--red);color:var(--white);border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 6px 20px rgba(200,16,46,.25);transition:all .3s}
-    .btn-modal:hover{background:var(--red-dark)}
+    .btn-modal{width:100%;padding:14px;background:var(--navy);color:var(--white);border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 6px 20px rgba(27,58,107,.25);transition:all .3s}
+    .btn-modal:hover{background:var(--navy-dark)}
     .btn-modal-sec{width:100%;padding:13px;border:1.5px solid var(--gray-line);border-radius:12px;background:transparent;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;color:var(--gray-soft);margin-top:8px;transition:all .2s}
-    .btn-modal-sec:hover{border-color:var(--red);color:var(--red)}
+    .btn-modal-sec:hover{border-color:var(--navy);color:var(--navy)}
 
     /* Login history */
     .hist-card{background:var(--white);border-radius:18px;overflow:hidden;border:1px solid var(--gray-line);box-shadow:0 4px 20px rgba(0,0,0,.04);margin-bottom:16px;animation:fadeUp .6s ease .16s both}
@@ -91,10 +92,10 @@
     .hist-location{font-size:11px;color:var(--gray-soft)}
     .hist-current-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:rgba(22,163,74,.1);color:var(--green)}
 
-    .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(calc(-100% - 30px));opacity:0;visibility:hidden;background:var(--white);border-radius:13px;padding:12px 18px;box-shadow:0 14px 44px rgba(0,0,0,.13);border-left:4px solid var(--red);display:flex;align-items:center;gap:10px;font-size:13px;font-weight:500;z-index:9999;transition:transform .4s cubic-bezier(.22,1,.36,1),opacity .4s ease,visibility 0s linear .4s;max-width:92vw;pointer-events:none}
+    .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(calc(-100% - 30px));opacity:0;visibility:hidden;background:var(--white);border-radius:13px;padding:12px 18px;box-shadow:0 14px 44px rgba(0,0,0,.13);border-left:4px solid var(--navy);display:flex;align-items:center;gap:10px;font-size:13px;font-weight:500;z-index:9999;transition:transform .4s cubic-bezier(.22,1,.36,1),opacity .4s ease,visibility 0s linear .4s;max-width:92vw;pointer-events:none}
     .toast.show{transform:translateX(-50%) translateY(0);opacity:1;visibility:visible;pointer-events:all;transition:transform .4s cubic-bezier(.22,1,.36,1),opacity .4s ease,visibility 0s linear 0s}
     .toast.success{border-left-color:#16A34A}
-    .toast.error{border-left-color:var(--red)}
+    .toast.error{border-left-color:var(--navy)}
 
     @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
   </style>
@@ -148,16 +149,18 @@
       </svg>
       <div class="score-num"><span id="scoreNum">40</span><small>/ 100</small></div>
     </div>
-    <div class="score-title">Pontuação de Segurança</div>
-    <div class="score-sub" id="scoreDesc">Active mais opções de segurança para proteger melhor a sua conta.</div>
-    <div class="score-level low" id="scoreLevelBadge">Segurança Básica</div>
+    <div class="score-info">
+      <div class="score-title">Pontuação de Segurança</div>
+      <div class="score-sub" id="scoreDesc">Active mais opções para proteger a sua conta.</div>
+      <div class="score-level low" id="scoreLevelBadge">Segurança Básica</div>
+    </div>
   </div>
 
   <!-- PROTECTION -->
   <div class="section-title">Protecção da Conta</div>
   <div class="options-card">
     <div class="opt-item" onclick="openModal('tfaModal')">
-      <div class="opt-icon" style="background:rgba(200,16,46,.08);color:var(--red)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/><circle cx="12" cy="16" r="1" fill="currentColor"/></svg></div>
+      <div class="opt-icon" style="background:rgba(27,58,107,.08);color:var(--navy)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/><circle cx="12" cy="16" r="1" fill="currentColor"/></svg></div>
       <div class="opt-info">
         <div class="opt-title">Autenticação de 2 Fatores</div>
         <div class="opt-sub">Protecção extra com código de verificação</div>
@@ -306,7 +309,7 @@
     const arc=document.getElementById('scoreArc');
     const circumference=2*Math.PI*45;
     arc.style.strokeDashoffset=circumference-(circumference*(score/100));
-    arc.style.stroke=score>=80?'#16A34A':score>=60?'#F59E0B':'#C8102E';
+    arc.style.stroke=score>=80?'#16A34A':score>=60?'#F59E0B':'#1B3A6B';
     const lb=document.getElementById('scoreLevelBadge');
     const desc=document.getElementById('scoreDesc');
     if(score>=80){lb.className='score-level high';lb.textContent='Segurança Elevada';desc.textContent='A sua conta está muito bem protegida. Excelente!';}
