@@ -6,14 +6,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{--red:#C8102E;--red-dark:#A00D24;--white:#FFFFFF;--off-white:#F8F6F3;--black:#0D0D0D;--gray-soft:#6B6B6B;--gray-line:#E0DEDD;}
+    :root{--navy:#1B3A6B;--navy-dark:#0F2347;--white:#FFFFFF;--off-white:#F8F6F3;--black:#0D0D0D;--gray-soft:#6B6B6B;--gray-line:#E0DEDD;}
     html,body{min-height:100%;font-family:'DM Sans',sans-serif;background:var(--off-white);color:var(--black)}
-    .bg-layer{position:fixed;inset:0;z-index:0;background:var(--off-white)}
-    .bg-layer::before{content:'';position:absolute;top:-20%;right:-10%;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(200,16,46,0.07) 0%,transparent 70%);animation:pbg 8s ease infinite alternate}
+    .bg-layer{position:fixed;inset:0;z-index:0;background:linear-gradient(160deg,#F0F4FF 0%,#EEF2FB 50%,#F5F8FF 100%)}
+    .bg-layer::before{content:'';position:absolute;top:-20%;right:-10%;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(27,58,107,0.07) 0%,transparent 70%);animation:pbg 8s ease infinite alternate}
     @keyframes pbg{from{transform:scale(1)}to{transform:scale(1.15)}}
-    .header{position:sticky;top:0;z-index:100;background:rgba(248,246,243,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--gray-line);padding:0 20px;height:60px;display:flex;align-items:center;gap:14px}
+    .header{position:sticky;top:0;z-index:100;background:rgba(240,244,255,.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--gray-line);padding:0 20px;height:60px;display:flex;align-items:center;gap:14px}
     .back-btn{width:36px;height:36px;border:1.5px solid var(--gray-line);border-radius:10px;background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;text-decoration:none;color:var(--black);transition:all .25s;flex-shrink:0}
-    .back-btn:hover{border-color:var(--red);color:var(--red)}
+    .back-btn:hover{border-color:var(--navy);color:var(--navy)}
     .h-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700}
     .content{position:relative;z-index:1;padding:24px 20px 40px;max-width:500px;margin:0 auto}
 
@@ -25,7 +25,7 @@
     .sc-total{font-family:'DM Sans',sans-serif;font-size:26px;font-weight:600;color:var(--black);line-height:1;white-space:nowrap;letter-spacing:0}
     .sc-currency{font-size:13px;font-weight:500;color:var(--gray-soft);letter-spacing:0}
     .sc-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
-    .sc-accent{background:var(--red);border-radius:10px;padding:6px 12px;display:flex;flex-direction:column;align-items:center;gap:1px}
+    .sc-accent{background:var(--navy);border-radius:10px;padding:6px 12px;display:flex;flex-direction:column;align-items:center;gap:1px}
     .sc-accent-val{font-size:13px;font-weight:700;color:var(--white);line-height:1;white-space:nowrap}
     .sc-accent-lbl{font-size:9px;color:rgba(255,255,255,.7);letter-spacing:.07em;text-transform:uppercase}
 
@@ -42,7 +42,7 @@
     .hi-badge{font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;background:rgba(22,163,74,.1);color:#16A34A;letter-spacing:.06em}
 
     .empty-state{padding:40px 20px;text-align:center}
-    .empty-icon{width:52px;height:52px;background:rgba(200,16,46,.08);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;color:var(--red)}
+    .empty-icon{width:52px;height:52px;background:rgba(27,58,107,.08);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;color:var(--navy)}
     .empty-icon svg{width:24px;height:24px}
     .empty-title{font-size:16px;font-weight:600;margin-bottom:6px}
     .empty-sub{font-size:13px;color:var(--gray-soft);line-height:1.6}
