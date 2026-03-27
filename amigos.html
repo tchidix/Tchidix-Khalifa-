@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ExxonMobil — Amigos e Familias</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0a1628;--blue:#1E6FBF;--blue2:#2a7fd4;--red:#c8102e;--white:#fff;--off:#f7f8fc;--g100:#eef0f5;--g300:#c2c8d8;--g500:#7a849a;--text:#0d1117;--green:#0a7c4b;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);min-height:100vh;padding-bottom:40px;font-variant-numeric:normal;}
+.top-bar{background:var(--navy);padding:18px 20px 22px;display:flex;align-items:center;gap:14px;position:relative;overflow:hidden;}
+.top-bar::before{content:'';position:absolute;top:-60px;right:-60px;width:180px;height:180px;background:radial-gradient(circle,rgba(30,111,191,.2) 0%,transparent 70%);border-radius:50%;}
+.back-btn{background:rgba(255,255,255,.1);border:none;border-radius:10px;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0;position:relative;z-index:2;}
+.page-title-wrap{position:relative;z-index:2;}
+.top-bar h1{color:#fff;font-size:18px;font-weight:700;}
+.top-bar p{color:rgba(255,255,255,.45);font-size:12px;margin-top:2px;}
+
+/* HERO BANNER */
+.ref-hero{background:linear-gradient(135deg,var(--blue),var(--blue2));padding:24px 20px;position:relative;overflow:hidden;}
+.ref-hero::before{content:'';position:absolute;bottom:-50px;right:-50px;width:180px;height:180px;background:rgba(255,255,255,.06);border-radius:50%;}
+.ref-hero::after{content:'';position:absolute;top:-30px;left:-30px;width:120px;height:120px;background:rgba(255,255,255,.04);border-radius:50%;}
+.ref-hero h2{color:#fff;font-family:'Bebas Neue';font-size:28px;letter-spacing:.5px;position:relative;z-index:2;margin-bottom:6px;}
+.ref-hero p{color:rgba(255,255,255,.75);font-size:13px;line-height:1.7;position:relative;z-index:2;margin-bottom:18px;}
+.ref-bonus-pill{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.15);border-radius:20px;padding:8px 16px;position:relative;z-index:2;}
+.ref-bonus-pill .val{font-size:20px;font-weight:700;font-family:'Space Mono';color:#fff;}
+.ref-bonus-pill .lbl{font-size:12px;color:rgba(255,255,255,.75);}
+
+/* LINK CARD */
+.section{padding:20px 20px 0;}
+.section-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--g500);margin-bottom:12px;}
+
+.link-card{background:var(--white);border-radius:16px;border:1px solid var(--g100);padding:16px;}
+.link-label{font-size:12px;color:var(--g500);margin-bottom:8px;}
+.link-box{display:flex;align-items:center;gap:8px;background:var(--off);border:1.5px solid var(--g100);border-radius:10px;padding:10px 14px;}
+.link-text{flex:1;font-size:13px;font-family:'Space Mono';color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.copy-btn{background:var(--blue);color:#fff;border:none;border-radius:8px;padding:8px 14px;font-family:'DM Sans';font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;transition:.15s;flex-shrink:0;}
+.copy-btn:hover{background:var(--blue2);}
+.copy-btn.copied{background:var(--green);}
+
+/* SHARE BUTTONS */
+.share-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;}
+.share-btn{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:12px;border:1.5px solid var(--g100);background:var(--white);cursor:pointer;transition:.15s;text-decoration:none;}
+.share-btn:hover{border-color:var(--blue);}
+.share-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.share-label{font-size:13px;font-weight:700;color:var(--navy);}
+.share-sub{font-size:10px;color:var(--g500);}
+
+/* HOW IT WORKS */
+.steps-list{}
+.step-item{background:var(--white);border-radius:14px;border:1px solid var(--g100);padding:14px 16px;display:flex;align-items:flex-start;gap:14px;margin-bottom:10px;}
+.step-num{width:32px;height:32px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0;margin-top:1px;}
+.step-body h4{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:3px;}
+.step-body p{font-size:12px;color:var(--g500);line-height:1.6;}
+
+/* RULES */
+.rules-card{background:var(--white);border-radius:14px;border:1px solid var(--g100);padding:16px;}
+.rules-card h4{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:12px;}
+.rule-row{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--g100);}
+.rule-row:last-child{border-bottom:none;}
+.rule-dot{width:6px;height:6px;border-radius:50%;background:var(--blue);flex-shrink:0;margin-top:6px;}
+.rule-text{font-size:13px;color:var(--g500);line-height:1.6;}
+.rule-text strong{color:var(--navy);font-weight:700;}
+
+/* STATS */
+.ref-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.ref-stat{background:var(--white);border-radius:14px;border:1px solid var(--g100);padding:14px 10px;text-align:center;}
+.ref-stat-val{font-size:20px;font-weight:700;font-family:'Space Mono';color:var(--navy);}
+.ref-stat-lbl{font-size:10px;color:var(--g500);text-transform:uppercase;letter-spacing:.5px;margin-top:3px;}
+
+/* TOAST */
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--navy);color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:600;z-index:1000;transition:transform .3s;white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+
+<div class="top-bar">
+  <button class="back-btn" onclick="history.back()"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg></button>
+  <div class="page-title-wrap">
+    <h1>Amigos e Familias</h1>
+    <p>Programa de Referencia ExxonMobil</p>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="ref-hero">
+  <h2>Convide e Ganhe</h2>
+  <p>Partilhe o seu link de convite com amigos e familiares. Receba 10% sobre o primeiro investimento de cada pessoa que activar um plano atraves do seu link.</p>
+  <div class="ref-bonus-pill">
+    <div class="val">10%</div>
+    <div class="lbl">sobre o 1. investimento de cada amigo</div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="section">
+  <div class="section-title">Os Seus Resultados</div>
+  <div class="ref-stats">
+    <div class="ref-stat"><div class="ref-stat-val" id="totalRefs">0</div><div class="ref-stat-lbl">Convidados</div></div>
+    <div class="ref-stat"><div class="ref-stat-val" id="activeRefs">0</div><div class="ref-stat-lbl">Activos</div></div>
+    <div class="ref-stat"><div class="ref-stat-val" id="refEarnings">0</div><div class="ref-stat-lbl">Ganhos Kz</div></div>
+  </div>
+</div>
+
+<!-- LINK -->
+<div class="section">
+  <div class="section-title">O Seu Link de Convite</div>
+  <div class="link-card">
+    <div class="link-label">Partilhe este link com os seus amigos</div>
+    <div class="link-box">
+      <div class="link-text" id="refLinkText">Carregando...</div>
+      <button class="copy-btn" id="copyBtn" onclick="copyLink()">Copiar</button>
+    </div>
+    <div class="share-grid">
+      <a class="share-btn" id="whatsappBtn" href="#" onclick="shareWhatsApp();return false;">
+        <div class="share-icon" style="background:#f0fdf4;"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#0a7c4b" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg></div>
+        <div><div class="share-label">WhatsApp</div><div class="share-sub">Partilhar agora</div></div>
+      </a>
+      <a class="share-btn" href="#" onclick="shareSMS();return false;">
+        <div class="share-icon" style="background:#eff6ff;"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#1E6FBF" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg></div>
+        <div><div class="share-label">SMS</div><div class="share-sub">Via mensagem</div></div>
+      </a>
+      <a class="share-btn" href="#" onclick="copyLink();return false;">
+        <div class="share-icon" style="background:#fef9c3;"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#92400e" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg></div>
+        <div><div class="share-label">Copiar Link</div><div class="share-sub">Colar em qualquer lugar</div></div>
+      </a>
+      <a class="share-btn" href="#" onclick="shareTelegram();return false;">
+        <div class="share-icon" style="background:#eff6ff;"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#1E6FBF" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg></div>
+        <div><div class="share-label">Telegram</div><div class="share-sub">Partilhar agora</div></div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="section">
+  <div class="section-title">Como Funciona</div>
+  <div class="steps-list">
+    <div class="step-item">
+      <div class="step-num">1</div>
+      <div class="step-body"><h4>Copie o seu link de convite</h4><p>Aceda a esta pagina e copie o seu link personalizado com o seu codigo unico de referencia.</p></div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">2</div>
+      <div class="step-body"><h4>Partilhe com amigos e familia</h4><p>Envie o link por WhatsApp, SMS, Telegram ou qualquer outra plataforma de mensagens.</p></div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">3</div>
+      <div class="step-body"><h4>O seu amigo cria uma conta</h4><p>Ao clicar no link, o codigo de convite sera preenchido automaticamente no registo.</p></div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">4</div>
+      <div class="step-body"><h4>Receba 10% de comissao</h4><p>Quando o seu amigo activar o primeiro plano de investimento, voce recebe automaticamente 10% do valor investido.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- RULES -->
+<div class="section" style="padding-bottom:28px;">
+  <div class="section-title">Regras do Programa</div>
+  <div class="rules-card">
+    <h4>Termos e Condicoes</h4>
+    <div class="rule-row"><div class="rule-dot"></div><div class="rule-text">A comissao e de <strong>10% sobre o primeiro investimento</strong> de cada amigo convidado.</div></div>
+    <div class="rule-row"><div class="rule-dot"></div><div class="rule-text">A comissao e creditada automaticamente apos o plano do amigo ser activado e confirmado.</div></div>
+    <div class="rule-row"><div class="rule-dot"></div><div class="rule-text">Nao existe limite de convidados — quanto mais amigos convidar, mais ganha.</div></div>
+    <div class="rule-row"><div class="rule-dot"></div><div class="rule-text">O amigo convidado deve usar o seu link para que a comissao seja atribuida correctamente.</div></div>
+    <div class="rule-row"><div class="rule-dot"></div><div class="rule-text">A comissao so e valida para o <strong>primeiro investimento</strong> de cada utilizador convidado.</div></div>
+    <div class="rule-row"><div class="rule-dot"></div><div class="rule-text">As comissoes podem ser levantadas normalmente com o saldo da conta.</div></div>
+  </div>
+</div>
+
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import{getFirestore,doc,getDoc,collection,query,where,getDocs}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyBp8X1PPp3FqiQ6OXErr8Mu11GEp6MZ2-U",authDomain:"ascend-34bf0.firebaseapp.com",projectId:"ascend-34bf0",storageBucket:"ascend-34bf0.firebasestorage.app",messagingSenderId:"592623076677",appId:"1:592623076677:web:c5615719870aefdabf6a2c"};
+const app=initializeApp(cfg);const auth=getAuth(app);const db=getFirestore(app);
+let refCode='';let refLink='';
+
+onAuthStateChanged(auth,async user=>{
+  if(!user){window.location.href='auth.html';return;}
+  const snap=await getDoc(doc(db,'users',user.uid));
+  if(!snap.exists())return;
+  const d=snap.data();
+  refCode=d.referralCode||user.uid.slice(0,8).toUpperCase();
+  refLink=window.location.origin+'/auth.html?ref='+refCode;
+  document.getElementById('refLinkText').textContent=refLink;
+
+  // Load referral stats
+  try{
+    const refs=await getDocs(query(collection(db,'users'),where('referredBy','==',refCode)));
+    let activeCount=0;let totalEarnings=0;
+    refs.forEach(r=>{
+      const rd=r.data();
+      if(rd.activePlan){activeCount++;totalEarnings+=rd.activePlan.amount*0.10;}
+    });
+    document.getElementById('totalRefs').textContent=refs.size;
+    document.getElementById('activeRefs').textContent=activeCount;
+    document.getElementById('refEarnings').textContent=totalEarnings>0?(totalEarnings/1000).toFixed(1)+'K':'0';
+  }catch(e){}
+});
+
+window.copyLink=function(){
+  navigator.clipboard.writeText(refLink);
+  const btn=document.getElementById('copyBtn');
+  btn.textContent='Copiado';btn.classList.add('copied');
+  setTimeout(()=>{btn.textContent='Copiar';btn.classList.remove('copied');},2500);
+  showToast('Link copiado com sucesso');
+};
+window.shareWhatsApp=function(){
+  const msg=encodeURIComponent('Junta-te a mim na ExxonMobil Investments e comeca a gerar ganhos diarios! Usa o meu link: '+refLink);
+  window.open('https://wa.me/?text='+msg,'_blank');
+};
+window.shareSMS=function(){
+  const msg=encodeURIComponent('Junta-te a ExxonMobil Investments: '+refLink);
+  window.open('sms:?body='+msg,'_blank');
+};
+window.shareTelegram=function(){
+  const msg=encodeURIComponent('Junta-te a ExxonMobil Investments: '+refLink);
+  window.open('https://t.me/share/url?url='+encodeURIComponent(refLink)+'&text='+msg,'_blank');
+};
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
+</script>
+</body>
+</html>
