@@ -3,23 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ExxonMobil — Segurança</title>
+<title>ExxonMobil — Seguranca</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root{--navy:#0a1628;--navy2:#122040;--blue:#0d3a8e;--red:#c8102e;--white:#fff;--off:#f7f8fc;--g100:#eef0f5;--g300:#c2c8d8;--g500:#7a849a;--text:#0d1117;--green:#0a7c4b;}
+:root{--navy:#0a1628;--blue:#1E6FBF;--blue2:#2a7fd4;--red:#c8102e;--white:#fff;--off:#f7f8fc;--g100:#eef0f5;--g300:#c2c8d8;--g500:#7a849a;--text:#0d1117;--green:#0a7c4b;}
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);min-height:100vh;padding-bottom:40px;}
-
 .top-bar{background:var(--navy);padding:18px 20px 22px;display:flex;align-items:center;gap:14px;position:relative;overflow:hidden;}
-.top-bar::before{content:'';position:absolute;top:-60px;right:-60px;width:180px;height:180px;background:radial-gradient(circle,rgba(200,16,46,.2) 0%,transparent 70%);border-radius:50%;}
+.top-bar::before{content:'';position:absolute;top:-60px;right:-60px;width:180px;height:180px;background:radial-gradient(circle,rgba(30,111,191,.2) 0%,transparent 70%);border-radius:50%;}
 .back-btn{background:rgba(255,255,255,.1);border:none;border-radius:10px;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0;position:relative;z-index:2;}
 .top-bar h1{color:#fff;font-size:18px;font-weight:700;position:relative;z-index:2;}
-
-/* SECTIONS */
 .section{padding:20px 20px 0;}
 .section-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--g500);margin-bottom:10px;}
-
-/* MENU LIST */
 .menu-list{background:var(--white);border-radius:16px;border:1px solid var(--g100);overflow:hidden;}
 .menu-item{display:flex;align-items:center;gap:14px;padding:15px 16px;border-bottom:1px solid var(--g100);cursor:pointer;transition:.15s;text-decoration:none;}
 .menu-item:last-child{border-bottom:none;}
@@ -30,61 +25,47 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
 .menu-sub{font-size:11px;color:var(--g500);margin-top:2px;}
 .menu-arrow{color:var(--g300);}
 .menu-item.danger .menu-label{color:var(--red);}
-
-/* CHANGE PASSWORD PANEL */
 .panel{display:none;padding:20px;}
 .panel.show{display:block;animation:fadeUp .3s ease both;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .panel-title{font-size:16px;font-weight:700;color:var(--navy);margin-bottom:6px;}
 .panel-sub{font-size:13px;color:var(--g500);margin-bottom:20px;line-height:1.6;}
-
 .form-group{margin-bottom:18px;}
 .form-label{display:block;font-size:12px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.8px;margin-bottom:7px;}
-.pin-group{display:flex;gap:8px;}
-.pin-digit{width:100%;height:52px;border:1.5px solid var(--g300);border-radius:10px;text-align:center;font-size:20px;font-weight:700;font-family:'Space Mono';color:var(--navy);background:var(--off);outline:none;transition:.2s;}
-.pin-digit:focus{border-color:var(--navy);background:var(--white);}
-.pin-digit.filled{border-color:var(--navy);}
-
-.btn-primary{width:100%;padding:15px;background:var(--navy);color:#fff;font-family:'DM Sans';font-size:15px;font-weight:700;border:none;border-radius:12px;cursor:pointer;transition:.2s;position:relative;overflow:hidden;}
-.btn-primary::before{content:'';position:absolute;left:0;top:0;width:4px;height:100%;background:var(--red);}
-.btn-primary:hover{background:var(--navy2);}
+.input-wrap{position:relative;}
+.input-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--g500);pointer-events:none;}
+.form-input{width:100%;padding:14px 14px 14px 42px;border:1.5px solid var(--g300);border-radius:10px;font-family:'DM Sans';font-size:15px;color:var(--text);background:var(--off);outline:none;transition:.2s;font-variant-numeric:normal;}
+.form-input[type="password"]{letter-spacing:4px;}
+.form-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(30,111,191,.12);background:#fff;}
+.btn-primary{width:100%;padding:15px;background:var(--blue);color:#fff;font-family:'DM Sans';font-size:15px;font-weight:700;border:none;border-radius:12px;cursor:pointer;transition:.2s;}
+.btn-primary:hover{background:var(--blue2);}
 .btn-back{width:100%;padding:12px;background:var(--g100);color:var(--navy);font-family:'DM Sans';font-size:14px;font-weight:700;border:none;border-radius:12px;cursor:pointer;margin-top:10px;}
-
-/* LOGOUT MODAL */
 .modal-backdrop{display:none;position:fixed;inset:0;background:rgba(10,22,40,.75);backdrop-filter:blur(8px);z-index:950;align-items:flex-end;justify-content:center;}
 .modal-backdrop.open{display:flex;}
 .modal-sheet{background:#fff;border-radius:24px 24px 0 0;padding:28px 24px 40px;width:100%;max-width:480px;animation:slideUp .4s cubic-bezier(.25,.8,.25,1) both;text-align:center;}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.m-icon{font-size:44px;margin-bottom:14px;}
+.m-icon-box{width:56px;height:56px;border-radius:50%;background:#fff0f2;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;}
 .m-title{font-size:18px;font-weight:700;color:var(--navy);margin-bottom:8px;}
 .m-body{font-size:13px;color:var(--g500);line-height:1.6;margin-bottom:24px;}
 .m-actions{display:flex;gap:10px;}
 .m-btn{flex:1;padding:14px;border-radius:12px;border:none;font-family:'DM Sans';font-size:14px;font-weight:700;cursor:pointer;}
 .m-btn.primary{background:var(--red);color:#fff;}
 .m-btn.ghost{background:var(--g100);color:var(--navy);}
-
-/* OVERLAY */
 .overlay{display:none;position:fixed;inset:0;background:rgba(10,22,40,.72);backdrop-filter:blur(6px);z-index:900;align-items:center;justify-content:center;flex-direction:column;gap:14px;}
 .overlay.active{display:flex;}
 .spinner{width:52px;height:52px;border:4px solid rgba(255,255,255,.15);border-top-color:var(--red);border-radius:50%;animation:spin .85s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg)}}
 .spinner-label{color:#fff;font-size:14px;font-weight:500;}
-
-/* TOAST */
 .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--navy);color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:600;z-index:1000;transition:transform .3s;white-space:nowrap;}
 .toast.show{transform:translateX(-50%) translateY(0);}
 </style>
 </head>
 <body>
-<div class="overlay" id="overlay">
-  <div class="spinner"></div>
-  <div class="spinner-label" id="spinLabel">Processing...</div>
-</div>
-
+<div class="overlay" id="overlay"><div class="spinner"></div><div class="spinner-label" id="spinLabel">Processing...</div></div>
 <div class="modal-backdrop" id="logoutModal">
   <div class="modal-sheet">
-    <div class="m-icon">🚪</div>
-    <div class="m-title">Terminar Sessão?</div>
+    <div class="m-icon-box"><svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="#c8102e" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg></div>
+    <div class="m-title">Terminar Sessao?</div>
     <div class="m-body">Tem certeza que deseja sair da sua conta ExxonMobil Investments?</div>
     <div class="m-actions">
       <button class="m-btn ghost" onclick="document.getElementById('logoutModal').classList.remove('open')">Cancelar</button>
@@ -92,71 +73,45 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
     </div>
   </div>
 </div>
-
 <div class="toast" id="toast"></div>
 
 <div class="top-bar">
-  <button class="back-btn" onclick="showMain()">
-    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
-  </button>
-  <h1>Segurança & Conta</h1>
+  <button class="back-btn" id="backBtn" onclick="showMain()"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg></button>
+  <h1>Seguranca e Conta</h1>
 </div>
 
-<!-- MAIN MENU -->
 <div id="mainMenu">
   <div class="section">
-    <div class="section-title">Segurança</div>
+    <div class="section-title">Seguranca</div>
     <div class="menu-list">
       <div class="menu-item" onclick="showChangePassword()">
-        <div class="menu-icon" style="background:#eff6ff;">
-          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#0d3a8e" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-        </div>
-        <div class="menu-body">
-          <div class="menu-label">Alterar Senha</div>
-          <div class="menu-sub">Actualize a sua senha de 6 dígitos</div>
-        </div>
+        <div class="menu-icon" style="background:#eff6ff;"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#1E6FBF" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg></div>
+        <div class="menu-body"><div class="menu-label">Alterar Senha</div><div class="menu-sub">Actualize a sua senha de 6 digitos</div></div>
         <svg class="menu-arrow" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
       </div>
     </div>
   </div>
-
   <div class="section">
     <div class="section-title">Suporte</div>
     <div class="menu-list">
       <div class="menu-item" onclick="openSupport()">
-        <div class="menu-icon" style="background:#f0fdf4;">
-          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#0a7c4b" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
-        </div>
-        <div class="menu-body">
-          <div class="menu-label">Suporte ExxonMobil</div>
-          <div class="menu-sub">WhatsApp · 932426257</div>
-        </div>
+        <div class="menu-icon" style="background:#f0fdf4;"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#0a7c4b" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg></div>
+        <div class="menu-body"><div class="menu-label">Suporte ExxonMobil</div><div class="menu-sub">WhatsApp · 932426257</div></div>
         <svg class="menu-arrow" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
       </div>
-      <div class="menu-item" onclick="window.location.href='exxonmobil.html'">
-        <div class="menu-icon" style="background:#fff0f2;">
-          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#c8102e" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-        </div>
-        <div class="menu-body">
-          <div class="menu-label">Sobre a ExxonMobil</div>
-          <div class="menu-sub">Informações da empresa</div>
-        </div>
+      <a href="exxonmobil.html" class="menu-item">
+        <div class="menu-icon" style="background:#fff0f2;"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#c8102e" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+        <div class="menu-body"><div class="menu-label">Sobre a ExxonMobil</div><div class="menu-sub">Informacoes da empresa</div></div>
         <svg class="menu-arrow" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-      </div>
+      </a>
     </div>
   </div>
-
   <div class="section" style="padding-bottom:24px;">
-    <div class="section-title">Sessão</div>
+    <div class="section-title">Sessao</div>
     <div class="menu-list">
       <div class="menu-item danger" onclick="document.getElementById('logoutModal').classList.add('open')">
-        <div class="menu-icon" style="background:#fff0f2;">
-          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#c8102e" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-        </div>
-        <div class="menu-body">
-          <div class="menu-label">Terminar Sessão</div>
-          <div class="menu-sub">Sair da sua conta</div>
-        </div>
+        <div class="menu-icon" style="background:#fff0f2;"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#c8102e" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg></div>
+        <div class="menu-body"><div class="menu-label">Terminar Sessao</div><div class="menu-sub">Sair da sua conta</div></div>
       </div>
     </div>
   </div>
@@ -165,44 +120,28 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
 <!-- CHANGE PASSWORD PANEL -->
 <div class="panel" id="changePasswordPanel">
   <div class="panel-title">Alterar Senha</div>
-  <div class="panel-sub">Insira a sua senha actual e depois crie uma nova senha de 6 dígitos.</div>
-
+  <div class="panel-sub">Insira a sua senha actual e depois defina uma nova senha de 6 digitos.</div>
   <div class="form-group">
     <label class="form-label">Senha Actual</label>
-    <div class="pin-group" id="old-pin">
-      <input type="password" class="pin-digit" maxlength="1" inputmode="numeric" oninput="pinNext(this,0,'old')" onkeydown="pinBack(event,this,0,'old')">
-      <input type="password" class="pin-digit" maxlength="1" inputmode="numeric" oninput="pinNext(this,1,'old')" onkeydown="pinBack(event,this,1,'old')">
-      <input type="password" class="pin-digit" maxlength="1" inputmode="numeric" oninput="pinNext(this,2,'old')" onkeydown="pinBack(event,this,2,'old')">
-      <input type="password" class="pin-digit" maxlength="1" inputmode="numeric" oninput="pinNext(this,3,'old')" onkeydown="pinBack(event,this,3,'old')">
-      <input type="password" class="pin-digit" maxlength="1" inputmode="numeric" oninput="pinNext(this,4,'old')" onkeydown="pinBack(event,this,4,'old')">
-      <input type="password" class="pin-digit" maxlength="1" inputmode="numeric" oninput="pinNext(this,5,'old')" onkeydown="pinBack(event,this,5,'old')">
+    <div class="input-wrap">
+      <span class="input-icon"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg></span>
+      <input type="password" id="oldPass" class="form-input" placeholder="Senha actual" maxlength="6" inputmode="numeric" autocomplete="current-password">
     </div>
   </div>
-
   <div class="form-group">
     <label class="form-label">Nova Senha</label>
-    <div class="pin-group" id="new-pin">
-      <input type="password" class="pin-digit" maxlength="1" inputmode="numeric" oninput="pinNext(this,0,'new')" onkeydown="pinBack(event,this,0,'new')">
-      <input type="password" class="pin-digit" maxlength="1" inputmode="numeric" oninput="pinNext(this,1,'new')" onkeydown="pinBack(event,this,1,'new')">
-      <input type="password" class="pin-digit" maxlength="1" inputmode="numeric" oninput="pinNext(this,2,'new')" onkeydown="pinBack(event,this,2,'new')">
-      <input type="password" class="pin-digit" maxlength="1" inputmode="numeric" oninput="pinNext(this,3,'new')" onkeydown="pinBack(event,this,3,'new')">
-      <input type="password" class="pin-digit" maxlength="1" inputmode="numeric" oninput="pinNext(this,4,'new')" onkeydown="pinBack(event,this,4,'new')">
-      <input type="password" class="pin-digit" maxlength="1" inputmode="numeric" oninput="pinNext(this,5,'new')" onkeydown="pinBack(event,this,5,'new')">
+    <div class="input-wrap">
+      <span class="input-icon"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg></span>
+      <input type="password" id="newPass" class="form-input" placeholder="Nova senha de 6 digitos" maxlength="6" inputmode="numeric" autocomplete="new-password">
     </div>
   </div>
-
   <div class="form-group">
     <label class="form-label">Confirmar Nova Senha</label>
-    <div class="pin-group" id="confirm-pin">
-      <input type="password" class="pin-digit" maxlength="1" inputmode="numeric" oninput="pinNext(this,0,'confirm')" onkeydown="pinBack(event,this,0,'confirm')">
-      <input type="password" class="pin-digit" maxlength="1" inputmode="numeric" oninput="pinNext(this,1,'confirm')" onkeydown="pinBack(event,this,1,'confirm')">
-      <input type="password" class="pin-digit" maxlength="1" inputmode="numeric" oninput="pinNext(this,2,'confirm')" onkeydown="pinBack(event,this,2,'confirm')">
-      <input type="password" class="pin-digit" maxlength="1" inputmode="numeric" oninput="pinNext(this,3,'confirm')" onkeydown="pinBack(event,this,3,'confirm')">
-      <input type="password" class="pin-digit" maxlength="1" inputmode="numeric" oninput="pinNext(this,4,'confirm')" onkeydown="pinBack(event,this,4,'confirm')">
-      <input type="password" class="pin-digit" maxlength="1" inputmode="numeric" oninput="pinNext(this,5,'confirm')" onkeydown="pinBack(event,this,5,'confirm')">
+    <div class="input-wrap">
+      <span class="input-icon"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></span>
+      <input type="password" id="confirmPass" class="form-input" placeholder="Repetir nova senha" maxlength="6" inputmode="numeric" autocomplete="new-password">
     </div>
   </div>
-
   <div id="pwAlert" style="margin-bottom:12px;"></div>
   <button class="btn-primary" onclick="doChangePassword()">Actualizar Senha</button>
   <button class="btn-back" onclick="showMain()">Cancelar</button>
@@ -212,87 +151,44 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import{getAuth,onAuthStateChanged,updatePassword,reauthenticateWithCredential,EmailAuthProvider,signOut}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 const cfg={apiKey:"AIzaSyBp8X1PPp3FqiQ6OXErr8Mu11GEp6MZ2-U",authDomain:"ascend-34bf0.firebaseapp.com",projectId:"ascend-34bf0",storageBucket:"ascend-34bf0.firebasestorage.app",messagingSenderId:"592623076677",appId:"1:592623076677:web:c5615719870aefdabf6a2c"};
-const app=initializeApp(cfg);
-const auth=getAuth(app);
+const app=initializeApp(cfg);const auth=getAuth(app);
 let currentUser=null;
-
-onAuthStateChanged(auth,user=>{
-  if(!user){window.location.href='auth.html';return;}
-  currentUser=user;
-});
-
-window.openSupport=function(){
-  window.open('https://wa.me/932426257?text=Olá,%20preciso%20de%20ajuda%20com%20a%20plataforma%20ExxonMobil%20Investments.','_blank');
-};
-
-window.showMain=function(){
-  document.getElementById('mainMenu').style.display='block';
-  document.getElementById('changePasswordPanel').classList.remove('show');
-};
-window.showChangePassword=function(){
-  document.getElementById('mainMenu').style.display='none';
-  document.getElementById('changePasswordPanel').classList.add('show');
-};
-
+onAuthStateChanged(auth,user=>{if(!user){window.location.href='auth.html';return;}currentUser=user;});
+window.openSupport=function(){window.open('https://wa.me/932426257?text=Ola,%20preciso%20de%20ajuda%20com%20a%20plataforma%20ExxonMobil%20Investments.','_blank');};
+window.showMain=function(){document.getElementById('mainMenu').style.display='block';document.getElementById('changePasswordPanel').classList.remove('show');document.getElementById('backBtn').onclick=()=>history.back();};
+window.showChangePassword=function(){document.getElementById('mainMenu').style.display='none';document.getElementById('changePasswordPanel').classList.add('show');document.getElementById('backBtn').onclick=showMain;};
 window.doChangePassword=async function(){
-  const oldPin=getPinVal('old');
-  const newPin=getPinVal('new');
-  const confirmPin=getPinVal('confirm');
-  if(oldPin.length<6){showAlert('⚠️ Insira a senha actual completa.');return;}
-  if(newPin.length<6){showAlert('⚠️ Insira a nova senha completa.');return;}
-  if(newPin!==confirmPin){showAlert('⚠️ As senhas novas não coincidem.');return;}
-  if(newPin===oldPin){showAlert('⚠️ A nova senha deve ser diferente da actual.');return;}
+  const old=document.getElementById('oldPass').value;
+  const nw=document.getElementById('newPass').value;
+  const conf=document.getElementById('confirmPass').value;
+  if(old.length<6){showAlert('Insira a senha actual completa.');return;}
+  if(nw.length<6){showAlert('Insira a nova senha completa.');return;}
+  if(nw!==conf){showAlert('As novas senhas nao coincidem.');return;}
+  if(nw===old){showAlert('A nova senha deve ser diferente da actual.');return;}
   document.getElementById('spinLabel').textContent='Updating password...';
   document.getElementById('overlay').classList.add('active');
   try{
-    const credential=EmailAuthProvider.credential(currentUser.email,oldPin);
-    await reauthenticateWithCredential(currentUser,credential);
-    await updatePassword(currentUser,newPin);
+    const cred=EmailAuthProvider.credential(currentUser.email,old);
+    await reauthenticateWithCredential(currentUser,cred);
+    await updatePassword(currentUser,nw);
     document.getElementById('overlay').classList.remove('active');
-    showToast('✅ Senha actualizada com sucesso!');
+    showToast('Senha actualizada com sucesso');
     showMain();
   }catch(e){
     document.getElementById('overlay').classList.remove('active');
     let msg='Erro ao actualizar senha.';
-    if(e.code==='auth/wrong-password')msg='⚠️ Senha actual incorrecta.';
+    if(e.code==='auth/wrong-password')msg='Senha actual incorrecta.';
     showAlert(msg);
   }
 };
-
 window.doLogout=async function(){
   document.getElementById('logoutModal').classList.remove('open');
   document.getElementById('spinLabel').textContent='Signing out...';
   document.getElementById('overlay').classList.add('active');
-  await signOut(auth);
-  window.location.href='auth.html';
+  await signOut(auth);window.location.href='auth.html';
 };
-
-function getPinVal(prefix){
-  return Array.from(document.querySelectorAll(`#${prefix}-pin .pin-digit`)).map(d=>d.value).join('');
-}
-function showAlert(msg){
-  document.getElementById('pwAlert').innerHTML=`<div style="background:#fff0f2;border:1px solid #fbc8d2;color:#9b0e24;padding:10px 14px;border-radius:10px;font-size:13px;">${msg}</div>`;
-  setTimeout(()=>{document.getElementById('pwAlert').innerHTML='';},5000);
-}
-function showToast(msg){
-  const t=document.getElementById('toast');
-  t.textContent=msg;
-  t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),3000);
-}
-</script>
-<script>
-function pinNext(el,idx,prefix){
-  el.value=el.value.replace(/[^0-9]/g,'').slice(-1);
-  if(el.value){el.classList.add('filled');const next=el.parentElement.querySelectorAll('.pin-digit')[idx+1];if(next)next.focus();}
-  else el.classList.remove('filled');
-}
-function pinBack(e,el,idx,prefix){
-  if(e.key==='Backspace'&&!el.value){
-    const prev=el.parentElement.querySelectorAll('.pin-digit')[idx-1];
-    if(prev){prev.value='';prev.classList.remove('filled');prev.focus();}
-  }
-}
+function showAlert(msg){document.getElementById('pwAlert').innerHTML=`<div style="background:#fff0f2;border:1px solid #fbc8d2;color:#9b0e24;padding:10px 14px;border-radius:10px;font-size:13px;">${msg}</div>`;setTimeout(()=>{document.getElementById('pwAlert').innerHTML='';},5000);}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
 </script>
 </body>
 </html>
