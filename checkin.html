@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ExxonMobil — Check In</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0a1628;--navy2:#122040;--blue:#0d3a8e;--red:#c8102e;--white:#fff;--off:#f7f8fc;--g100:#eef0f5;--g300:#c2c8d8;--g500:#7a849a;--text:#0d1117;--green:#0a7c4b;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);min-height:100vh;padding-bottom:90px;}
+.nav-bar{position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:1px solid var(--g100);display:flex;z-index:800;box-shadow:0 -4px 20px rgba(10,22,40,.08);}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px 8px;gap:3px;cursor:pointer;border:none;background:none;transition:.2s;}
+.nav-item span{font-size:10px;font-weight:600;color:var(--g500);letter-spacing:.4px;text-transform:uppercase;}
+.nav-item svg{color:var(--g500);}
+.nav-item.active svg,.nav-item.active span{color:var(--navy);}
+.nav-item.active span{color:var(--red);}
+
+/* HEADER */
+.top-bar{background:var(--navy);padding:18px 20px 22px;position:relative;overflow:hidden;}
+.top-bar::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(200,16,46,.2) 0%,transparent 70%);border-radius:50%;}
+.top-bar h1{color:#fff;font-size:22px;font-weight:700;position:relative;z-index:2;}
+.top-bar p{color:rgba(255,255,255,.55);font-size:13px;margin-top:2px;position:relative;z-index:2;}
+
+/* CHECKIN CARD */
+.checkin-hero{margin:20px;background:linear-gradient(135deg,var(--navy) 0%,#1a3a6e 100%);border-radius:20px;padding:24px;position:relative;overflow:hidden;}
+.checkin-hero::after{content:'✦';position:absolute;right:20px;top:20px;font-size:60px;color:rgba(255,255,255,.04);line-height:1;}
+.checkin-day{font-family:'Bebas Neue';font-size:48px;color:#fff;line-height:1;}
+.checkin-day span{color:var(--red);}
+.checkin-sub{color:rgba(255,255,255,.55);font-size:13px;margin-bottom:20px;}
+.checkin-btn{background:var(--red);border:none;border-radius:12px;color:#fff;font-family:'DM Sans';font-size:15px;font-weight:700;padding:14px 28px;cursor:pointer;transition:.2s;width:100%;}
+.checkin-btn:hover{background:#e8192e;}
+.checkin-btn:disabled{background:var(--g300);cursor:not-allowed;}
+.checkin-btn.done{background:var(--green);}
+
+/* DAY STRIP */
+.day-strip{display:flex;gap:6px;overflow-x:auto;padding:0 20px;scrollbar-width:none;margin-bottom:20px;}
+.day-strip::-webkit-scrollbar{display:none;}
+.day-dot{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:38px;}
+.day-dot .d-circle{width:34px;height:34px;border-radius:50%;border:2px solid var(--g300);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--g500);background:var(--white);}
+.day-dot.done .d-circle{background:var(--green);border-color:var(--green);color:#fff;}
+.day-dot.today .d-circle{background:var(--navy);border-color:var(--navy);color:#fff;}
+.day-dot .d-lbl{font-size:9px;color:var(--g500);text-transform:uppercase;letter-spacing:.5px;}
+
+/* EARNINGS SECTION */
+.section{padding:0 20px;margin-bottom:20px;}
+.section-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--navy);margin-bottom:14px;}
+
+.earnings-card{background:var(--white);border-radius:16px;border:1px solid var(--g100);overflow:hidden;}
+.earnings-header{padding:16px;border-bottom:1px solid var(--g100);display:flex;align-items:center;justify-content:space-between;}
+.earnings-header h3{font-size:14px;font-weight:700;color:var(--navy);}
+.earnings-plan-badge{background:var(--g100);border-radius:20px;padding:4px 10px;font-size:11px;font-weight:700;color:var(--navy);}
+
+.hourly-grid{padding:14px 16px;}
+.progress-label{display:flex;justify-content:space-between;margin-bottom:6px;font-size:12px;color:var(--g500);}
+.progress-bar{height:6px;background:var(--g100);border-radius:3px;overflow:hidden;margin-bottom:16px;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--navy),var(--blue));border-radius:3px;transition:width 1s ease;}
+
+.hours-row{display:flex;gap:4px;flex-wrap:wrap;}
+.hour-pill{width:calc(100%/12 - 4px);aspect-ratio:1;border-radius:6px;background:var(--g100);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--g500);}
+.hour-pill.earned{background:var(--navy);color:#fff;}
+.hour-pill.current{background:var(--red);color:#fff;animation:pulse .8s ease infinite alternate;}
+@keyframes pulse{from{opacity:.7}to{opacity:1}}
+
+.earnings-footer{padding:14px 16px;border-top:1px solid var(--g100);display:flex;justify-content:space-between;align-items:center;}
+.earn-today{font-size:13px;color:var(--g500);}
+.earn-val{font-size:20px;font-weight:700;font-family:'Space Mono';color:var(--navy);}
+.earn-val span{font-size:11px;color:var(--g500);font-family:'DM Sans';}
+
+/* RECEIVE BTN */
+.receive-btn{width:100%;margin-top:14px;background:var(--navy);border:none;border-radius:12px;color:#fff;font-family:'DM Sans';font-size:14px;font-weight:700;padding:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s;}
+.receive-btn:hover{background:var(--navy2);}
+.receive-btn:disabled{background:var(--g300);cursor:not-allowed;}
+
+/* TASKS */
+.task-card{background:var(--white);border-radius:14px;border:1px solid var(--g100);padding:14px 16px;display:flex;align-items:center;gap:14px;margin-bottom:10px;transition:.2s;}
+.task-card:hover{border-color:var(--navy);}
+.task-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.task-icon.blue{background:#eff6ff;}
+.task-icon.red{background:#fff0f2;}
+.task-icon.green{background:#f0fdf4;}
+.task-body{flex:1;}
+.task-title{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:2px;}
+.task-desc{font-size:11px;color:var(--g500);}
+.task-reward{font-size:14px;font-weight:700;color:var(--green);white-space:nowrap;}
+.task-check{width:22px;height:22px;border-radius:50%;border:2px solid var(--g300);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.task-check.done{border-color:var(--green);background:var(--green);}
+
+/* OVERLAY */
+.overlay{display:none;position:fixed;inset:0;background:rgba(10,22,40,.72);backdrop-filter:blur(6px);z-index:900;align-items:center;justify-content:center;}
+.overlay.active{display:flex;}
+.spinner{width:52px;height:52px;border:4px solid rgba(255,255,255,.15);border-top-color:var(--red);border-radius:50%;animation:spin .85s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* TOAST */
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--navy);color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:600;z-index:1000;transition:transform .3s;white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<div class="overlay" id="overlay"><div class="spinner"></div></div>
+<div class="toast" id="toast"></div>
+
+<div class="top-bar">
+  <h1>Check In Diário</h1>
+  <p id="todayDate">Hoje</p>
+</div>
+
+<!-- DAY STRIP -->
+<div style="padding:20px 20px 0;">
+  <div class="section-title">Sequência da semana</div>
+</div>
+<div class="day-strip" id="dayStrip"></div>
+
+<!-- CHECKIN HERO -->
+<div class="checkin-hero">
+  <div class="checkin-day">DIA <span id="streakCount">1</span></div>
+  <div class="checkin-sub" id="checkinStatus">Faça o check in para activar os seus ganhos hoje</div>
+  <button class="checkin-btn" id="checkinBtn" onclick="doCheckin()">
+    ✅ Fazer Check In Agora
+  </button>
+</div>
+
+<!-- HOURLY EARNINGS -->
+<div class="section">
+  <div class="section-title">Ganhos Diários — Progresso Horário</div>
+  <div class="earnings-card">
+    <div class="earnings-header">
+      <h3>Rendimento de Hoje</h3>
+      <span class="earnings-plan-badge" id="planBadge">Sem plano activo</span>
+    </div>
+    <div class="hourly-grid">
+      <div class="progress-label">
+        <span id="hoursEarned">0 de 24 horas</span>
+        <span id="pctEarned">0%</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+      <div class="hours-row" id="hoursRow"></div>
+    </div>
+    <div class="earnings-footer">
+      <div>
+        <div class="earn-today">Ganhos hoje</div>
+        <div class="earn-val" id="todayEarnings">Kz 0.00 <span>/ <span id="dailyTarget">0.00</span></span></div>
+      </div>
+      <button class="receive-btn" id="receiveBtn" onclick="receiveEarnings()" style="width:auto;margin:0;padding:10px 18px;" disabled>
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+        Receber
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- TASKS -->
+<div class="section">
+  <div class="section-title">Tarefas Diárias</div>
+
+  <div class="task-card" id="task-1" onclick="completeTask(1,50)">
+    <div class="task-icon blue">
+      <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#1a56cc" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+        <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+      </svg>
+    </div>
+    <div class="task-body">
+      <div class="task-title">Visitar Plataforma</div>
+      <div class="task-desc">Aceda à plataforma e explore os planos disponíveis</div>
+    </div>
+    <div class="task-reward">+Kz 50</div>
+    <div class="task-check" id="check-1"></div>
+  </div>
+
+  <div class="task-card" id="task-2" onclick="completeTask(2,100)">
+    <div class="task-icon red">
+      <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#c8102e" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6 5.87a4 4 0 100-8 4 4 0 000 8zm6-10a4 4 0 10-8 0 4 4 0 008 0z"/>
+      </svg>
+    </div>
+    <div class="task-body">
+      <div class="task-title">Convidar 1 Amigo</div>
+      <div class="task-desc">Partilhe o seu link de convite com um amigo</div>
+    </div>
+    <div class="task-reward">+Kz 100</div>
+    <div class="task-check" id="check-2"></div>
+  </div>
+
+  <div class="task-card" id="task-3" onclick="completeTask(3,75)">
+    <div class="task-icon green">
+      <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#0a7c4b" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+      </svg>
+    </div>
+    <div class="task-body">
+      <div class="task-title">Ver Relatório de Ganhos</div>
+      <div class="task-desc">Verifique o seu histórico de ganhos e rendimentos</div>
+    </div>
+    <div class="task-reward">+Kz 75</div>
+    <div class="task-check" id="check-3"></div>
+  </div>
+
+  <div class="task-card" id="task-4" onclick="completeTask(4,200)">
+    <div class="task-icon blue">
+      <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#1a56cc" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
+      </svg>
+    </div>
+    <div class="task-body">
+      <div class="task-title">Primeiro Depósito do Mês</div>
+      <div class="task-desc">Faça um depósito neste mês para desbloquear o bónus</div>
+    </div>
+    <div class="task-reward">+Kz 200</div>
+    <div class="task-check" id="check-4"></div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="nav-bar">
+  <button class="nav-item" onclick="window.location.href='index.html'">
+    <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+    <span>Início</span>
+  </button>
+  <button class="nav-item active" onclick="window.location.href='checkin.html'">
+    <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    <span>Check In</span>
+  </button>
+  <button class="nav-item" onclick="window.location.href='conta.html'">
+    <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+    <span>Conta</span>
+  </button>
+</nav>
+
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import{getFirestore,doc,getDoc,updateDoc,increment,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyBp8X1PPp3FqiQ6OXErr8Mu11GEp6MZ2-U",authDomain:"ascend-34bf0.firebaseapp.com",projectId:"ascend-34bf0",storageBucket:"ascend-34bf0.firebasestorage.app",messagingSenderId:"592623076677",appId:"1:592623076677:web:c5615719870aefdabf6a2c"};
+const app=initializeApp(cfg);
+const auth=getAuth(app);
+const db=getFirestore(app);
+
+let currentUser=null;
+let userData=null;
+let dailyEarning=0;
+let checkinDone=false;
+
+// Today info
+const now=new Date();
+document.getElementById('todayDate').textContent=now.toLocaleDateString('pt-AO',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+// Build day strip
+const days=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+const strip=document.getElementById('dayStrip');
+for(let i=0;i<7;i++){
+  const d=document.createElement('div');
+  d.className='day-dot'+(i===now.getDay()?' today':'');
+  d.innerHTML=`<div class="d-circle">${i+1}</div><div class="d-lbl">${days[i]}</div>`;
+  strip.appendChild(d);
+}
+
+onAuthStateChanged(auth,async user=>{
+  if(!user){window.location.href='auth.html';return;}
+  currentUser=user;
+  const snap=await getDoc(doc(db,'users',user.uid));
+  if(!snap.exists())return;
+  userData=snap.data();
+
+  // Check plan
+  const plan=userData.activePlan;
+  if(plan){
+    document.getElementById('planBadge').textContent='Kz '+plan.amount.toLocaleString()+' / dia '+plan.daily;
+    dailyEarning=plan.daily;
+    document.getElementById('dailyTarget').textContent=dailyEarning.toFixed(2);
+  }
+
+  // Check if already checked in today
+  const lastCI=userData.lastCheckin;
+  const todayStr=now.toDateString();
+  if(lastCI&&new Date(lastCI.toDate?lastCI.toDate():lastCI).toDateString()===todayStr){
+    checkinDone=true;
+    const btn=document.getElementById('checkinBtn');
+    btn.textContent='✅ Check In Concluído';
+    btn.classList.add('done');
+    btn.disabled=true;
+    document.getElementById('checkinStatus').textContent='Check in feito! Os seus ganhos horários estão a acumular.';
+  }
+
+  document.getElementById('streakCount').textContent=userData.streak||1;
+  buildHourlyProgress();
+});
+
+function buildHourlyProgress(){
+  const row=document.getElementById('hoursRow');
+  const currentHour=now.getHours();
+  let totalEarned=0;
+  for(let h=0;h<24;h++){
+    const pill=document.createElement('div');
+    pill.className='hour-pill';
+    if(checkinDone&&h<currentHour){pill.classList.add('earned');totalEarned+=dailyEarning/24;}
+    else if(checkinDone&&h===currentHour)pill.classList.add('current');
+    pill.textContent=h;
+    row.appendChild(pill);
+  }
+  const pct=Math.round((currentHour/24)*100);
+  document.getElementById('progressFill').style.width=pct+'%';
+  document.getElementById('hoursEarned').textContent=currentHour+' de 24 horas';
+  document.getElementById('pctEarned').textContent=pct+'%';
+  document.getElementById('todayEarnings').innerHTML='Kz '+totalEarned.toFixed(2)+' <span>/ <span id="dailyTarget">'+dailyEarning.toFixed(2)+'</span></span>';
+  if(totalEarned>0)document.getElementById('receiveBtn').disabled=false;
+}
+
+window.doCheckin=async function(){
+  if(!currentUser||checkinDone)return;
+  document.getElementById('overlay').classList.add('active');
+  await new Promise(r=>setTimeout(r,1500));
+  try{
+    const newStreak=(userData.streak||0)+1;
+    await updateDoc(doc(db,'users',currentUser.uid),{
+      lastCheckin:serverTimestamp(),
+      streak:newStreak,
+      balance:increment(0)
+    });
+    checkinDone=true;
+    const btn=document.getElementById('checkinBtn');
+    btn.textContent='✅ Check In Concluído';
+    btn.classList.add('done');
+    btn.disabled=true;
+    document.getElementById('checkinStatus').textContent='Check in feito! Os seus ganhos horários estão a acumular.';
+    document.getElementById('streakCount').textContent=newStreak;
+    document.getElementById('overlay').classList.remove('active');
+    showToast('✅ Check In concluído! Ganhos activados.');
+    buildHourlyProgress();
+  }catch(e){
+    document.getElementById('overlay').classList.remove('active');
+    showToast('❌ Erro ao fazer check in. Tente novamente.');
+  }
+};
+
+window.receiveEarnings=async function(){
+  if(!currentUser||!checkinDone||dailyEarning===0)return;
+  document.getElementById('overlay').classList.add('active');
+  await new Promise(r=>setTimeout(r,1500));
+  const earned=(dailyEarning/24)*now.getHours();
+  await updateDoc(doc(db,'users',currentUser.uid),{balance:increment(earned),totalGains:increment(earned)});
+  document.getElementById('overlay').classList.remove('active');
+  document.getElementById('receiveBtn').disabled=true;
+  showToast('💰 Kz '+earned.toFixed(2)+' recebidos com sucesso!');
+};
+
+window.completeTask=function(id,reward){
+  const check=document.getElementById('check-'+id);
+  if(check.classList.contains('done'))return;
+  check.classList.add('done');
+  check.innerHTML='<svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>';
+  showToast('✅ Tarefa concluída! +Kz '+reward);
+};
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+</script>
+</body>
+</html>

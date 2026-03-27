@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ExxonMobil — Levantamento</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0a1628;--navy2:#122040;--blue:#0d3a8e;--red:#c8102e;--white:#fff;--off:#f7f8fc;--g100:#eef0f5;--g300:#c2c8d8;--g500:#7a849a;--text:#0d1117;--green:#0a7c4b;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);min-height:100vh;padding-bottom:40px;}
+
+.top-bar{background:var(--navy);padding:18px 20px 22px;display:flex;align-items:center;gap:14px;position:relative;overflow:hidden;}
+.top-bar::before{content:'';position:absolute;top:-60px;right:-60px;width:180px;height:180px;background:radial-gradient(circle,rgba(200,16,46,.2) 0%,transparent 70%);border-radius:50%;}
+.back-btn{background:rgba(255,255,255,.1);border:none;border-radius:10px;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0;position:relative;z-index:2;}
+.top-bar h1{color:#fff;font-size:18px;font-weight:700;position:relative;z-index:2;}
+
+/* ELIGIBILITY CHECKER */
+.elig-wrap{margin:20px;background:var(--white);border-radius:16px;border:1px solid var(--g100);padding:24px;text-align:center;}
+.elig-spinner{width:56px;height:56px;border:4px solid var(--g100);border-top-color:var(--navy);border-radius:50%;animation:spin .85s linear infinite;margin:0 auto 16px;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.elig-label{font-size:14px;color:var(--g500);}
+.elig-result{display:none;}
+.elig-ok{display:flex;flex-direction:column;align-items:center;gap:10px;}
+.elig-ok-icon{width:56px;height:56px;border-radius:50%;background:#f0fdf4;display:flex;align-items:center;justify-content:center;font-size:26px;}
+.elig-ok h3{font-size:16px;font-weight:700;color:var(--navy);}
+.elig-ok p{font-size:13px;color:var(--g500);}
+.elig-fail{display:flex;flex-direction:column;align-items:center;gap:10px;}
+.elig-fail-icon{width:56px;height:56px;border-radius:50%;background:#fff0f2;display:flex;align-items:center;justify-content:center;font-size:26px;}
+.elig-fail h3{font-size:16px;font-weight:700;color:var(--red);}
+.elig-fail p{font-size:13px;color:var(--g500);text-align:center;}
+
+/* FORM */
+.form-section{display:none;padding:0 20px;}
+.form-section.show{display:block;animation:fadeUp .35s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+.balance-banner{background:var(--navy);border-radius:14px;padding:16px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;}
+.bb-label{color:rgba(255,255,255,.5);font-size:11px;text-transform:uppercase;letter-spacing:.8px;}
+.bb-val{color:#fff;font-size:22px;font-weight:700;font-family:'Space Mono';}
+
+.form-group{margin-bottom:18px;}
+.form-label{display:block;font-size:12px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.8px;margin-bottom:7px;}
+.form-input{width:100%;padding:14px;border:1.5px solid var(--g300);border-radius:12px;font-family:'DM Sans';font-size:16px;color:var(--text);background:var(--white);outline:none;transition:.2s;}
+.form-input:focus{border-color:var(--navy);}
+
+.min-note{font-size:11px;color:var(--g500);margin-top:4px;}
+.min-note span{color:var(--red);font-weight:700;}
+
+.btn-primary{width:100%;padding:15px;background:var(--navy);color:#fff;font-family:'DM Sans';font-size:15px;font-weight:700;border:none;border-radius:12px;cursor:pointer;transition:.2s;position:relative;overflow:hidden;}
+.btn-primary::before{content:'';position:absolute;left:0;top:0;width:4px;height:100%;background:var(--red);}
+.btn-primary:hover{background:var(--navy2);}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;}
+
+/* OVERLAY */
+.overlay{display:none;position:fixed;inset:0;background:rgba(10,22,40,.75);backdrop-filter:blur(6px);z-index:900;align-items:center;justify-content:center;}
+.overlay.active{display:flex;}
+.spinner2{width:52px;height:52px;border:4px solid rgba(255,255,255,.15);border-top-color:var(--red);border-radius:50%;animation:spin .85s linear infinite;}
+.spin2-label{color:#fff;font-size:14px;font-weight:500;margin-top:14px;}
+
+/* MODAL */
+.modal-backdrop{display:none;position:fixed;inset:0;background:rgba(10,22,40,.75);backdrop-filter:blur(8px);z-index:950;align-items:flex-end;justify-content:center;}
+.modal-backdrop.open{display:flex;}
+.modal-sheet{background:#fff;border-radius:24px 24px 0 0;padding:28px 24px 40px;width:100%;max-width:480px;animation:slideUp .4s cubic-bezier(.25,.8,.25,1) both;text-align:center;}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-icon-big{font-size:48px;margin-bottom:14px;}
+.modal-title{font-size:20px;font-weight:700;color:var(--navy);margin-bottom:8px;}
+.modal-body{font-size:14px;color:var(--g500);line-height:1.6;margin-bottom:24px;}
+.modal-actions{display:flex;gap:10px;}
+.modal-btn{flex:1;padding:14px;border-radius:12px;border:none;font-family:'DM Sans';font-size:15px;font-weight:700;cursor:pointer;transition:.2s;}
+.modal-btn.primary{background:var(--navy);color:#fff;}
+.modal-btn.ghost{background:var(--g100);color:var(--navy);}
+</style>
+</head>
+<body>
+<div class="overlay" id="overlay">
+  <div style="display:flex;flex-direction:column;align-items:center;">
+    <div class="spinner2"></div>
+    <div class="spin2-label" id="spinLabel">Processing...</div>
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="modal-backdrop" id="confirmModal">
+  <div class="modal-sheet">
+    <div class="modal-icon-big">💸</div>
+    <div class="modal-title">Confirm Withdrawal</div>
+    <div class="modal-body" id="confirmBody"></div>
+    <div class="modal-actions">
+      <button class="modal-btn ghost" onclick="closeConfirm()">Cancel</button>
+      <button class="modal-btn primary" onclick="executeWithdraw()">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS/FAIL MODAL -->
+<div class="modal-backdrop" id="resultModal">
+  <div class="modal-sheet">
+    <div class="modal-icon-big" id="resultIcon"></div>
+    <div class="modal-title" id="resultTitle"></div>
+    <div class="modal-body" id="resultBody"></div>
+    <button class="modal-btn primary" onclick="closeResult()">Continue</button>
+  </div>
+</div>
+
+<div class="top-bar">
+  <button class="back-btn" onclick="history.back()">
+    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+  </button>
+  <h1>Levantamento</h1>
+</div>
+
+<!-- ELIGIBILITY -->
+<div class="elig-wrap" id="eligWrap">
+  <div id="eligChecking">
+    <div class="elig-spinner"></div>
+    <div class="elig-label">Verificando elegibilidade...</div>
+  </div>
+  <div class="elig-result" id="eligResult"></div>
+</div>
+
+<!-- FORM -->
+<div class="form-section" id="withdrawForm">
+  <div class="balance-banner">
+    <div>
+      <div class="bb-label">Saldo Disponível</div>
+      <div class="bb-val">Kz <span id="availBalance">0.00</span></div>
+    </div>
+    <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="rgba(255,255,255,.4)" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/></svg>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Valor a Levantar</label>
+    <input type="number" class="form-input" id="withdrawAmount" placeholder="750.00" min="750">
+    <div class="min-note">Mínimo: <span>Kz 750.00</span></div>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">IBAN / Número da Conta</label>
+    <input type="text" class="form-input" id="withdrawIban" placeholder="Ex: 004000005823366110135">
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Nome do Titular</label>
+    <input type="text" class="form-input" id="withdrawName" placeholder="Nome completo">
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Banco</label>
+    <input type="text" class="form-input" id="withdrawBank" placeholder="Ex: BAI, BFA, BIC...">
+  </div>
+
+  <div id="formAlert" style="margin-bottom:12px;"></div>
+  <button class="btn-primary" onclick="requestWithdraw()">Solicitar Levantamento</button>
+</div>
+
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import{getFirestore,doc,getDoc,updateDoc,increment,collection,addDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyBp8X1PPp3FqiQ6OXErr8Mu11GEp6MZ2-U",authDomain:"ascend-34bf0.firebaseapp.com",projectId:"ascend-34bf0",storageBucket:"ascend-34bf0.firebasestorage.app",messagingSenderId:"592623076677",appId:"1:592623076677:web:c5615719870aefdabf6a2c"};
+const app=initializeApp(cfg);
+const auth=getAuth(app);
+const db=getFirestore(app);
+let currentUser=null;
+let userData=null;
+let withdrawData={};
+
+onAuthStateChanged(auth,async user=>{
+  if(!user){window.location.href='auth.html';return;}
+  currentUser=user;
+  // Simulate eligibility check
+  await new Promise(r=>setTimeout(r,2000));
+  const snap=await getDoc(doc(db,'users',user.uid));
+  if(!snap.exists())return;
+  userData=snap.data();
+  const balance=userData.balance||0;
+  const eligible=balance>=750&&userData.activePlan;
+  document.getElementById('eligChecking').style.display='none';
+  const res=document.getElementById('eligResult');
+  res.style.display='block';
+  if(eligible){
+    res.innerHTML=`<div class="elig-ok"><div class="elig-ok-icon">✅</div><h3>Elegível para Levantamento</h3><p>Saldo disponível: Kz ${balance.toFixed(2)}</p></div>`;
+    setTimeout(()=>{
+      document.getElementById('eligWrap').style.display='none';
+      document.getElementById('availBalance').textContent=balance.toFixed(2);
+      document.getElementById('withdrawForm').classList.add('show');
+    },1200);
+  }else{
+    let reason='';
+    if(!userData.activePlan)reason='É necessário ter um plano activo para solicitar levantamentos.';
+    else reason='Saldo insuficiente. Mínimo: Kz 750.00';
+    res.innerHTML=`<div class="elig-fail"><div class="elig-fail-icon">❌</div><h3>Não Elegível</h3><p>${reason}</p><a href="planos.html" style="display:inline-block;margin-top:12px;background:var(--navy);color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:700;text-decoration:none;">Ver Planos</a></div>`;
+  }
+});
+
+window.requestWithdraw=function(){
+  const amount=parseFloat(document.getElementById('withdrawAmount').value)||0;
+  const iban=document.getElementById('withdrawIban').value.trim();
+  const name=document.getElementById('withdrawName').value.trim();
+  const bank=document.getElementById('withdrawBank').value.trim();
+  const balance=userData?.balance||0;
+  if(amount<750){showFormAlert('⚠️ Withdrawal amount must be at least Kz 750.00.');return;}
+  if(amount>balance){showFormAlert('⚠️ Insufficient balance. Available: Kz '+balance.toFixed(2));return;}
+  if(!iban){showFormAlert('⚠️ Please enter your IBAN or account number.');return;}
+  if(!name){showFormAlert('⚠️ Please enter the account holder name.');return;}
+  if(!bank){showFormAlert('⚠️ Please enter your bank name.');return;}
+  withdrawData={amount,iban,name,bank};
+  document.getElementById('confirmBody').textContent=`You are about to withdraw Kz ${amount.toFixed(2)} to ${bank} account ending in ...${iban.slice(-4)} (${name}). This action cannot be undone.`;
+  document.getElementById('confirmModal').classList.add('open');
+};
+
+window.closeConfirm=function(){document.getElementById('confirmModal').classList.remove('open');};
+
+window.executeWithdraw=async function(){
+  document.getElementById('confirmModal').classList.remove('open');
+  document.getElementById('spinLabel').textContent='Processing your withdrawal...';
+  document.getElementById('overlay').classList.add('active');
+  await new Promise(r=>setTimeout(r,2000));
+  try{
+    await addDoc(collection(db,'withdrawals'),{
+      userId:currentUser.uid,...withdrawData,status:'pending',createdAt:serverTimestamp()
+    });
+    await updateDoc(doc(db,'users',currentUser.uid),{balance:increment(-withdrawData.amount)});
+    document.getElementById('overlay').classList.remove('active');
+    showResult('✅','Withdrawal Requested!','Your withdrawal of Kz '+withdrawData.amount.toFixed(2)+' has been submitted. Processing time: 24–48 hours.',true);
+  }catch(e){
+    document.getElementById('overlay').classList.remove('active');
+    showResult('❌','Request Failed','An error occurred while processing your withdrawal request. Please try again later.',false);
+  }
+};
+
+function showResult(icon,title,body,success){
+  document.getElementById('resultIcon').textContent=icon;
+  document.getElementById('resultTitle').textContent=title;
+  document.getElementById('resultBody').textContent=body;
+  document.getElementById('resultModal').classList.add('open');
+}
+window.closeResult=function(){
+  document.getElementById('resultModal').classList.remove('open');
+  window.location.href='index.html';
+};
+
+function showFormAlert(msg){
+  document.getElementById('formAlert').innerHTML=`<div style="background:#fff0f2;border:1px solid #fbc8d2;color:#9b0e24;padding:10px 14px;border-radius:10px;font-size:13px;">${msg}</div>`;
+  setTimeout(()=>{document.getElementById('formAlert').innerHTML='';},5000);
+}
+</script>
+</body>
+</html>

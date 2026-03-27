@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ExxonMobil — Sobre a Empresa</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--navy:#0a1628;--navy2:#122040;--blue:#0d3a8e;--red:#c8102e;--white:#fff;--off:#f7f8fc;--g100:#eef0f5;--g300:#c2c8d8;--g500:#7a849a;--text:#0d1117;--green:#0a7c4b;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);min-height:100vh;padding-bottom:40px;}
+
+.top-bar{background:var(--navy);padding:18px 20px 22px;display:flex;align-items:center;gap:14px;position:relative;overflow:hidden;}
+.top-bar::before{content:'';position:absolute;top:-60px;right:-60px;width:180px;height:180px;background:radial-gradient(circle,rgba(200,16,46,.2) 0%,transparent 70%);border-radius:50%;}
+.back-btn{background:rgba(255,255,255,.1);border:none;border-radius:10px;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0;position:relative;z-index:2;}
+.top-bar h1{color:#fff;font-size:18px;font-weight:700;position:relative;z-index:2;}
+
+/* HERO */
+.company-hero{background:var(--navy);padding:24px 20px;position:relative;overflow:hidden;}
+.company-hero::before{content:'';position:absolute;bottom:-60px;left:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(13,58,142,.4) 0%,transparent 70%);border-radius:50%;}
+.ch-logo{display:flex;align-items:center;gap:12px;margin-bottom:18px;position:relative;z-index:2;}
+.ch-logo-box{width:52px;height:52px;background:var(--red);border-radius:14px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue';font-size:28px;color:#fff;}
+.ch-name{font-family:'Bebas Neue';font-size:26px;color:#fff;letter-spacing:.5px;}
+.ch-ticker{font-size:13px;color:rgba(255,255,255,.5);margin-top:2px;}
+
+.price-row{display:flex;align-items:flex-end;gap:12px;position:relative;z-index:2;margin-bottom:20px;}
+.price-big{font-family:'Space Mono';font-size:36px;font-weight:700;color:#fff;}
+.price-change{padding:4px 10px;border-radius:20px;font-size:13px;font-weight:700;}
+.price-up{background:rgba(74,222,128,.15);color:#4ade80;}
+.price-down{background:rgba(248,113,113,.15);color:#f87171;}
+
+.metrics-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;position:relative;z-index:2;}
+.metric{background:rgba(255,255,255,.06);border-radius:10px;padding:10px 12px;}
+.metric-val{font-family:'Space Mono';font-size:16px;font-weight:700;color:#fff;}
+.metric-lbl{font-size:10px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.6px;margin-top:2px;}
+
+/* CHART */
+.section{padding:20px 20px 0;}
+.section-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--navy);margin-bottom:14px;}
+.chart-card{background:var(--white);border-radius:16px;border:1px solid var(--g100);padding:16px;}
+.chart-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.chart-header h4{font-size:14px;font-weight:700;color:var(--navy);}
+.live-dot{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--green);}
+.live-dot::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--green);animation:blink 1s ease infinite alternate;}
+@keyframes blink{from{opacity:.4}to{opacity:1}}
+.chart-wrap{height:180px;}
+
+/* INFO SECTIONS */
+.info-block{background:var(--white);border-radius:16px;border:1px solid var(--g100);padding:18px;margin-bottom:14px;}
+.info-block h3{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:10px;}
+.info-block p{font-size:13px;color:var(--g500);line-height:1.8;}
+.info-block ul{padding-left:16px;margin-top:8px;}
+.info-block ul li{font-size:13px;color:var(--g500);line-height:1.8;}
+
+.relation-wrap{background:var(--navy);border-radius:16px;padding:18px;position:relative;overflow:hidden;margin-bottom:14px;}
+.relation-wrap::before{content:'';position:absolute;top:-50px;right:-50px;width:160px;height:160px;background:radial-gradient(circle,rgba(200,16,46,.22) 0%,transparent 70%);border-radius:50%;}
+.relation-wrap h3{color:#fff;font-size:15px;font-weight:700;margin-bottom:10px;position:relative;z-index:2;}
+.relation-wrap p{color:rgba(255,255,255,.65);font-size:13px;line-height:1.8;position:relative;z-index:2;}
+.flag-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;position:relative;z-index:2;}
+.flag-badge{background:rgba(255,255,255,.1);border-radius:20px;padding:5px 12px;color:#fff;font-size:12px;font-weight:700;}
+
+/* PLATFORM STATS */
+.plat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.plat-card{background:var(--white);border-radius:14px;border:1px solid var(--g100);padding:14px;text-align:center;}
+.plat-val{font-size:22px;font-weight:700;font-family:'Space Mono';color:var(--navy);}
+.plat-lbl{font-size:10px;color:var(--g500);text-transform:uppercase;letter-spacing:.6px;margin-top:3px;}
+.plat-trend{font-size:10px;font-weight:700;color:var(--green);margin-top:4px;}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <button class="back-btn" onclick="history.back()">
+    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+  </button>
+  <h1>ExxonMobil</h1>
+</div>
+
+<!-- HERO PRICE -->
+<div class="company-hero">
+  <div class="ch-logo">
+    <div class="ch-logo-box">X</div>
+    <div>
+      <div class="ch-name">ExxonMobil</div>
+      <div class="ch-ticker">NYSE: XOM · Houston, TX</div>
+    </div>
+  </div>
+  <div class="price-row">
+    <div class="price-big" id="livePrice">$112.48</div>
+    <div class="price-change price-up" id="priceChange">+1.24%</div>
+  </div>
+  <div class="metrics-grid">
+    <div class="metric"><div class="metric-val">$450B+</div><div class="metric-lbl">Market Cap</div></div>
+    <div class="metric"><div class="metric-val" id="volMetric">$2.1B</div><div class="metric-lbl">Volume Diário</div></div>
+    <div class="metric"><div class="metric-val">$0.99</div><div class="metric-lbl">Dividendo</div></div>
+    <div class="metric"><div class="metric-val">60+</div><div class="metric-lbl">Países</div></div>
+  </div>
+</div>
+
+<!-- LIVE CHART -->
+<div class="section">
+  <div class="chart-card">
+    <div class="chart-header">
+      <h4>XOM — Capital em Tempo Real</h4>
+      <div class="live-dot">Live</div>
+    </div>
+    <div class="chart-wrap">
+      <canvas id="liveChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="section">
+  <div class="section-title">Como Funciona</div>
+  <div class="info-block">
+    <h3>🛢️ Modelo de Investimento</h3>
+    <p>A ExxonMobil Investments permite aos investidores angolanos e africanos participar nos lucros das operações petrolíferas da ExxonMobil. O capital dos investidores é alocado às operações offshore de extracção de petróleo e gás natural.</p>
+    <ul>
+      <li>Escolha um plano de investimento a partir de Kz 4.000</li>
+      <li>Receba ganhos diários gerados pelas operações petrolíferas</li>
+      <li>Levante os seus ganhos a qualquer momento (mínimo Kz 750)</li>
+      <li>Reinvista para multiplicar os seus rendimentos</li>
+    </ul>
+  </div>
+</div>
+
+<!-- USA AFRICA -->
+<div class="section">
+  <div class="section-title">Parceria EUA — África</div>
+  <div class="relation-wrap">
+    <div class="flag-row">
+      <span class="flag-badge">🇺🇸 Estados Unidos</span>
+      <span style="color:rgba(255,255,255,.4);font-size:18px">⟷</span>
+      <span class="flag-badge">🇦🇴 Angola</span>
+    </div>
+    <h3>Décadas de Parceria Estratégica</h3>
+    <p>Desde os anos 1990, a ExxonMobil opera no Bloco 15 offshore de Angola em parceria com a Sonangol. Angola é o segundo maior produtor de petróleo de África, e a ExxonMobil investiu mais de $4 bilhões USD nas operações locais. Esta plataforma de investimentos canaliza parte desses lucros de volta para os investidores angolanos, criando um ciclo de riqueza que beneficia África.</p>
+  </div>
+</div>
+
+<!-- PLATFORM STATS -->
+<div class="section">
+  <div class="section-title">Plataforma ExxonMobil Investments</div>
+  <div class="plat-grid">
+    <div class="plat-card">
+      <div class="plat-val" id="pUsers">2.4K</div>
+      <div class="plat-lbl">Investidores Activos</div>
+      <div class="plat-trend">↑ +124 esta semana</div>
+    </div>
+    <div class="plat-card">
+      <div class="plat-val" id="pVolume">84M</div>
+      <div class="plat-lbl">Volume Total (Kz)</div>
+      <div class="plat-trend">↑ +2.1M hoje</div>
+    </div>
+    <div class="plat-card">
+      <div class="plat-val">98.7%</div>
+      <div class="plat-lbl">Taxa de Sucesso</div>
+      <div class="plat-trend">↑ Pagamentos confirmados</div>
+    </div>
+    <div class="plat-card">
+      <div class="plat-val">24/7</div>
+      <div class="plat-lbl">Disponibilidade</div>
+      <div class="plat-trend">↑ Sem interrupções</div>
+    </div>
+  </div>
+</div>
+
+<!-- COMPANY INFO -->
+<div class="section" style="padding-bottom:24px;">
+  <div class="info-block">
+    <h3>📊 Sobre a ExxonMobil Corporation</h3>
+    <p>Fundada em 1870 como Standard Oil, a ExxonMobil é hoje uma das maiores empresas do mundo por capitalização de mercado. Com sede em Houston, Texas, a empresa opera em mais de 60 países nos sectores de upstream (exploração e produção), downstream (refinação e distribuição) e química.</p>
+    <ul>
+      <li>41 anos consecutivos de aumento de dividendos</li>
+      <li>Lucro trimestral de $8.6 bilhões (2024)</li>
+      <li>Produção diária: 3.7 milhões de barris equivalentes</li>
+      <li>Reservas provadas: 17.5 bilhões de barris equivalentes</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+// Live chart with animation
+const ctx = document.getElementById('liveChart').getContext('2d');
+let prices = [];
+let basePrice = 112.48;
+for(let i = 0; i < 30; i++) {
+  basePrice += (Math.random() - 0.47) * 0.8;
+  prices.push(parseFloat(basePrice.toFixed(2)));
+}
+const labels = Array.from({length:30}, (_,i) => i===29?'Agora':(29-i)+'m');
+
+const chart = new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels,
+    datasets: [{
+      data: prices,
+      borderColor: '#4ade80',
+      backgroundColor: 'rgba(74,222,128,.06)',
+      borderWidth: 2,
+      fill: true,
+      tension: 0.4,
+      pointRadius: 0,
+      pointHoverRadius: 4
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    animation: { duration: 300 },
+    plugins: { legend: { display: false }, tooltip: { callbacks: { label: v => '$' + v.raw } } },
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { size: 9 }, color: '#7a849a', maxTicksLimit: 6 } },
+      y: { grid: { color: 'rgba(0,0,0,.04)' }, ticks: { font: { size: 9 }, color: '#7a849a', callback: v => '$' + v } }
+    }
+  }
+});
+
+// Simulate live price updates
+let livePrice = prices[prices.length - 1];
+setInterval(() => {
+  livePrice += (Math.random() - 0.48) * 0.4;
+  livePrice = parseFloat(livePrice.toFixed(2));
+  prices.push(livePrice);
+  prices.shift();
+  chart.data.datasets[0].data = [...prices];
+  chart.update('none');
+  const prev = 112.48;
+  const change = livePrice - prev;
+  const pct = ((change / prev) * 100).toFixed(2);
+  document.getElementById('livePrice').textContent = '$' + livePrice.toFixed(2);
+  const badge = document.getElementById('priceChange');
+  badge.textContent = (change >= 0 ? '+' : '') + pct + '%';
+  badge.className = 'price-change ' + (change >= 0 ? 'price-up' : 'price-down');
+}, 2000);
+</script>
+</body>
+</html>

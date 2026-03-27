@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ExxonMobil — Planos</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0a1628;--navy2:#122040;--blue:#0d3a8e;--red:#c8102e;--white:#fff;--off:#f7f8fc;--g100:#eef0f5;--g300:#c2c8d8;--g500:#7a849a;--text:#0d1117;--green:#0a7c4b;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);min-height:100vh;padding-bottom:40px;}
+
+.top-bar{background:var(--navy);padding:18px 20px 22px;display:flex;align-items:center;gap:14px;position:relative;overflow:hidden;}
+.top-bar::before{content:'';position:absolute;top:-60px;right:-60px;width:180px;height:180px;background:radial-gradient(circle,rgba(200,16,46,.2) 0%,transparent 70%);border-radius:50%;}
+.back-btn{background:rgba(255,255,255,.1);border:none;border-radius:10px;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0;position:relative;z-index:2;}
+.page-title-wrap{position:relative;z-index:2;}
+.top-bar h1{color:#fff;font-size:18px;font-weight:700;}
+.top-bar p{color:rgba(255,255,255,.5);font-size:12px;margin-top:2px;}
+
+/* TABS */
+.tab-strip{display:flex;background:var(--white);border-bottom:1px solid var(--g100);position:sticky;top:0;z-index:50;}
+.t-tab{flex:1;padding:13px;font-family:'DM Sans';font-size:13px;font-weight:600;color:var(--g500);background:none;border:none;cursor:pointer;position:relative;transition:.2s;}
+.t-tab.active{color:var(--navy);}
+.t-tab.active::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--red);}
+
+/* INFO BANNER */
+.info-banner{margin:16px;background:linear-gradient(135deg,var(--navy),#1a3a6e);border-radius:16px;padding:16px 18px;display:flex;gap:12px;align-items:flex-start;}
+.info-banner-icon{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.info-banner p{color:rgba(255,255,255,.7);font-size:12px;line-height:1.7;}
+.info-banner strong{color:#fff;font-size:13px;}
+
+/* PLANS GRID */
+.plans-list{padding:0 16px 16px;}
+.plan-card{background:var(--white);border-radius:16px;border:1.5px solid var(--g100);margin-bottom:12px;overflow:hidden;transition:.2s;}
+.plan-card:hover{border-color:var(--navy);}
+.plan-card.popular{border-color:var(--red);}
+.popular-tag{background:var(--red);color:#fff;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;padding:4px 12px;text-align:center;}
+.plan-body{padding:16px;}
+.plan-row1{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.plan-amount{font-family:'Space Mono';font-size:20px;font-weight:700;color:var(--navy);}
+.plan-amount span{font-size:12px;font-weight:400;color:var(--g500);font-family:'DM Sans';}
+.plan-roi{background:var(--g100);border-radius:20px;padding:4px 10px;font-size:11px;font-weight:700;color:var(--navy);}
+.plan-info-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.plan-badge{background:var(--off);border-radius:8px;padding:6px 10px;font-size:11px;color:var(--g500);}
+.plan-badge strong{color:var(--navy);font-weight:700;}
+.plan-desc{font-size:12px;color:var(--g500);line-height:1.6;margin-bottom:14px;}
+.invest-btn{width:100%;padding:12px;background:var(--navy);color:#fff;font-family:'DM Sans';font-size:14px;font-weight:700;border:none;border-radius:10px;cursor:pointer;transition:.2s;position:relative;overflow:hidden;}
+.invest-btn::before{content:'';position:absolute;left:0;top:0;width:3px;height:100%;background:var(--red);}
+.invest-btn:hover{background:var(--navy2);}
+
+/* ACTIVE PLAN TAB */
+.active-plan-wrap{padding:16px;}
+.no-plan{text-align:center;padding:40px 20px;}
+.no-plan-icon{font-size:48px;margin-bottom:12px;}
+.no-plan h3{font-size:16px;font-weight:700;color:var(--navy);margin-bottom:8px;}
+.no-plan p{font-size:13px;color:var(--g500);}
+
+.active-plan-card{background:var(--navy);border-radius:16px;padding:20px;margin-bottom:14px;position:relative;overflow:hidden;}
+.active-plan-card::before{content:'';position:absolute;top:-60px;right:-60px;width:180px;height:180px;background:radial-gradient(circle,rgba(200,16,46,.25) 0%,transparent 70%);border-radius:50%;}
+.ap-badge{display:inline-flex;background:rgba(255,255,255,.1);border-radius:20px;padding:4px 10px;font-size:11px;color:rgba(255,255,255,.6);font-weight:600;margin-bottom:12px;}
+.ap-amount{font-family:'Space Mono';font-size:28px;font-weight:700;color:#fff;margin-bottom:4px;}
+.ap-daily{font-size:13px;color:rgba(255,255,255,.5);}
+.ap-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px;position:relative;z-index:2;}
+.ap-stat{background:rgba(255,255,255,.07);border-radius:10px;padding:10px 12px;}
+.ap-stat-val{font-size:16px;font-weight:700;font-family:'Space Mono';color:#fff;}
+.ap-stat-lbl{font-size:10px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.6px;margin-top:2px;}
+
+/* OVERLAY */
+.overlay{display:none;position:fixed;inset:0;background:rgba(10,22,40,.75);backdrop-filter:blur(6px);z-index:900;align-items:center;justify-content:center;}
+.overlay.active{display:flex;}
+.spinner{width:52px;height:52px;border:4px solid rgba(255,255,255,.15);border-top-color:var(--red);border-radius:50%;animation:spin .85s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* MODAL */
+.modal-backdrop{display:none;position:fixed;inset:0;background:rgba(10,22,40,.75);backdrop-filter:blur(8px);z-index:950;align-items:flex-end;justify-content:center;}
+.modal-backdrop.open{display:flex;}
+.modal-sheet{background:#fff;border-radius:24px 24px 0 0;padding:28px 24px 40px;width:100%;max-width:480px;animation:slideUp .4s cubic-bezier(.25,.8,.25,1) both;text-align:center;}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.m-icon{font-size:44px;margin-bottom:14px;}
+.m-title{font-size:20px;font-weight:700;color:var(--navy);margin-bottom:8px;}
+.m-body{font-size:14px;color:var(--g500);line-height:1.6;margin-bottom:24px;}
+.m-actions{display:flex;gap:10px;}
+.m-btn{flex:1;padding:14px;border-radius:12px;border:none;font-family:'DM Sans';font-size:15px;font-weight:700;cursor:pointer;}
+.m-btn.primary{background:var(--navy);color:#fff;}
+.m-btn.ghost{background:var(--g100);color:var(--navy);}
+</style>
+</head>
+<body>
+<div class="overlay" id="overlay"><div class="spinner"></div></div>
+
+<!-- CONFIRM -->
+<div class="modal-backdrop" id="confirmModal">
+  <div class="modal-sheet">
+    <div class="m-icon">📊</div>
+    <div class="m-title">Confirm Investment</div>
+    <div class="m-body" id="confirmBody"></div>
+    <div class="m-actions">
+      <button class="m-btn ghost" onclick="closeConfirm()">Cancel</button>
+      <button class="m-btn primary" onclick="executePlan()">Invest Now</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESULT -->
+<div class="modal-backdrop" id="resultModal">
+  <div class="modal-sheet">
+    <div class="m-icon" id="rIcon"></div>
+    <div class="m-title" id="rTitle"></div>
+    <div class="m-body" id="rBody"></div>
+    <button class="m-btn primary" onclick="closeResult()">Continue</button>
+  </div>
+</div>
+
+<div class="top-bar">
+  <button class="back-btn" onclick="history.back()">
+    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+  </button>
+  <div class="page-title-wrap">
+    <h1>ExxonMobil Plans</h1>
+    <p>Planos de Investimento</p>
+  </div>
+</div>
+
+<div class="tab-strip">
+  <button class="t-tab active" id="tab-plans" onclick="switchTab('plans')">Todos os Planos</button>
+  <button class="t-tab" id="tab-active" onclick="switchTab('active')">Plano Activo</button>
+</div>
+
+<!-- PLANS TAB -->
+<div id="panel-plans">
+  <div class="info-banner">
+    <div class="info-banner-icon">
+      <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    </div>
+    <div>
+      <strong>Como Funciona</strong>
+      <p>Escolha um plano, invista e receba ganhos diários. Quanto maior o investimento, maior o rendimento diário.</p>
+    </div>
+  </div>
+
+  <div class="plans-list" id="plansList"></div>
+</div>
+
+<!-- ACTIVE TAB -->
+<div id="panel-active" style="display:none;">
+  <div class="active-plan-wrap" id="activePlanContent">
+    <div class="no-plan">
+      <div class="no-plan-icon">📭</div>
+      <h3>Sem plano activo</h3>
+      <p>Ainda não tem nenhum plano de investimento activo. Escolha um plano para começar a ganhar.</p>
+      <button onclick="switchTab('plans')" style="margin-top:16px;background:var(--navy);color:#fff;border:none;border-radius:10px;padding:12px 24px;font-family:'DM Sans';font-size:14px;font-weight:700;cursor:pointer;">Ver Planos</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import{getFirestore,doc,getDoc,updateDoc,increment,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyBp8X1PPp3FqiQ6OXErr8Mu11GEp6MZ2-U",authDomain:"ascend-34bf0.firebaseapp.com",projectId:"ascend-34bf0",storageBucket:"ascend-34bf0.firebasestorage.app",messagingSenderId:"592623076677",appId:"1:592623076677:web:c5615719870aefdabf6a2c"};
+const app=initializeApp(cfg);
+const auth=getAuth(app);
+const db=getFirestore(app);
+let currentUser=null;
+let userData=null;
+let selectedPlan=null;
+
+const plans=[
+  {amount:4000,daily:250,roi:'6.25%/dia'},
+  {amount:8000,daily:500,roi:'6.25%/dia'},
+  {amount:12000,daily:750,roi:'6.25%/dia'},
+  {amount:16000,daily:1000,roi:'6.25%/dia'},
+  {amount:20000,daily:1250,roi:'6.25%/dia',popular:true},
+  {amount:24000,daily:1500,roi:'6.25%/dia'},
+  {amount:28000,daily:1750,roi:'6.25%/dia'},
+  {amount:32000,daily:2000,roi:'6.25%/dia'},
+  {amount:36000,daily:2250,roi:'6.25%/dia'},
+  {amount:40000,daily:2500,roi:'6.25%/dia',popular:true},
+  {amount:44000,daily:2750,roi:'6.25%/dia'},
+  {amount:48000,daily:3000,roi:'6.25%/dia'},
+  {amount:52000,daily:3250,roi:'6.25%/dia'},
+];
+
+function buildPlans(){
+  const list=document.getElementById('plansList');
+  plans.forEach((p,i)=>{
+    const card=document.createElement('div');
+    card.className='plan-card'+(p.popular?' popular':'');
+    card.innerHTML=`
+      ${p.popular?'<div class="popular-tag">⭐ Mais Popular</div>':''}
+      <div class="plan-body">
+        <div class="plan-row1">
+          <div class="plan-amount">Kz ${p.amount.toLocaleString()}<span> investimento</span></div>
+          <span class="plan-roi">${p.roi}</span>
+        </div>
+        <div class="plan-info-row">
+          <div class="plan-badge">Diário: <strong>Kz ${p.daily.toLocaleString()}</strong></div>
+          <div class="plan-badge">Mensal: <strong>Kz ${(p.daily*30).toLocaleString()}</strong></div>
+        </div>
+        <div class="plan-desc">Plano ExxonMobil de rendimento fixo. Os ganhos são gerados a partir das operações petrolíferas offshore em Angola e nos EUA. Rendimento garantido e diário.</div>
+        <button class="invest-btn" onclick="openConfirm(${i})">Invest Now →</button>
+      </div>`;
+    list.appendChild(card);
+  });
+}
+
+onAuthStateChanged(auth,async user=>{
+  if(!user){window.location.href='auth.html';return;}
+  currentUser=user;
+  const snap=await getDoc(doc(db,'users',user.uid));
+  if(snap.exists()){
+    userData=snap.data();
+    if(userData.activePlan){
+      const p=userData.activePlan;
+      document.getElementById('activePlanContent').innerHTML=`
+        <div class="active-plan-card">
+          <div class="ap-badge">Plano Activo</div>
+          <div class="ap-amount">Kz ${p.amount.toLocaleString()}</div>
+          <div class="ap-daily">Kz ${p.daily.toLocaleString()} / dia</div>
+          <div class="ap-grid">
+            <div class="ap-stat"><div class="ap-stat-val">Kz ${p.daily.toLocaleString()}</div><div class="ap-stat-lbl">Ganho Diário</div></div>
+            <div class="ap-stat"><div class="ap-stat-val">Kz ${(p.daily*30).toLocaleString()}</div><div class="ap-stat-lbl">Ganho Mensal</div></div>
+            <div class="ap-stat"><div class="ap-stat-val">${(userData.balance||0).toFixed(0)}</div><div class="ap-stat-lbl">Saldo Kz</div></div>
+            <div class="ap-stat"><div class="ap-stat-val">Activo</div><div class="ap-stat-lbl">Estado</div></div>
+          </div>
+        </div>`;
+    }
+  }
+  buildPlans();
+});
+
+window.switchTab=function(tab){
+  document.querySelectorAll('.t-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  document.getElementById('panel-plans').style.display=tab==='plans'?'block':'none';
+  document.getElementById('panel-active').style.display=tab==='active'?'block':'none';
+};
+
+window.openConfirm=function(idx){
+  selectedPlan=plans[idx];
+  const balance=userData?.balance||0;
+  document.getElementById('confirmBody').textContent=`You are about to invest Kz ${selectedPlan.amount.toLocaleString()} in the ExxonMobil ${selectedPlan.roi} plan. Daily earnings: Kz ${selectedPlan.daily.toLocaleString()}. Your current balance: Kz ${balance.toFixed(2)}.`;
+  document.getElementById('confirmModal').classList.add('open');
+};
+window.closeConfirm=function(){document.getElementById('confirmModal').classList.remove('open');};
+
+window.executePlan=async function(){
+  document.getElementById('confirmModal').classList.remove('open');
+  const balance=userData?.balance||0;
+  if(balance<selectedPlan.amount){
+    showResult('❌','Insufficient Balance',`Your balance (Kz ${balance.toFixed(2)}) is insufficient for this plan. Please deposit funds first.`);
+    return;
+  }
+  document.getElementById('overlay').classList.add('active');
+  await new Promise(r=>setTimeout(r,2000));
+  try{
+    await updateDoc(doc(db,'users',currentUser.uid),{
+      activePlan:{amount:selectedPlan.amount,daily:selectedPlan.daily,startedAt:new Date().toISOString()},
+      balance:increment(-selectedPlan.amount),
+      totalDeposited:increment(selectedPlan.amount)
+    });
+    userData.activePlan=selectedPlan;
+    document.getElementById('overlay').classList.remove('active');
+    showResult('✅','Investment Activated!',`Congratulations! Your Kz ${selectedPlan.amount.toLocaleString()} plan is now active. You will earn Kz ${selectedPlan.daily.toLocaleString()} daily.`);
+  }catch(e){
+    document.getElementById('overlay').classList.remove('active');
+    showResult('❌','Investment Failed','An error occurred. Please try again.');
+  }
+};
+
+function showResult(icon,title,body){
+  document.getElementById('rIcon').textContent=icon;
+  document.getElementById('rTitle').textContent=title;
+  document.getElementById('rBody').textContent=body;
+  document.getElementById('resultModal').classList.add('open');
+}
+window.closeResult=function(){
+  document.getElementById('resultModal').classList.remove('open');
+};
+</script>
+</body>
+</html>

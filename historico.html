@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ExxonMobil — Histórico</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0a1628;--navy2:#122040;--blue:#0d3a8e;--red:#c8102e;--white:#fff;--off:#f7f8fc;--g100:#eef0f5;--g300:#c2c8d8;--g500:#7a849a;--text:#0d1117;--green:#0a7c4b;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);min-height:100vh;padding-bottom:40px;}
+
+.top-bar{background:var(--navy);padding:18px 20px 22px;display:flex;align-items:center;gap:14px;position:relative;overflow:hidden;}
+.top-bar::before{content:'';position:absolute;top:-60px;right:-60px;width:180px;height:180px;background:radial-gradient(circle,rgba(200,16,46,.2) 0%,transparent 70%);border-radius:50%;}
+.back-btn{background:rgba(255,255,255,.1);border:none;border-radius:10px;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0;position:relative;z-index:2;}
+.top-bar h1{color:#fff;font-size:18px;font-weight:700;position:relative;z-index:2;}
+
+/* FILTER CHIPS */
+.filter-bar{padding:14px 16px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;background:var(--white);border-bottom:1px solid var(--g100);}
+.filter-bar::-webkit-scrollbar{display:none;}
+.filter-chip{padding:7px 14px;border-radius:20px;border:1.5px solid var(--g300);background:none;font-family:'DM Sans';font-size:12px;font-weight:600;color:var(--g500);cursor:pointer;white-space:nowrap;transition:.2s;}
+.filter-chip.active{background:var(--navy);border-color:var(--navy);color:#fff;}
+
+/* SUMMARY STRIP */
+.summary-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:0;background:var(--white);border-bottom:1px solid var(--g100);}
+.ss-item{padding:12px 8px;text-align:center;border-right:1px solid var(--g100);}
+.ss-item:last-child{border-right:none;}
+.ss-val{font-size:13px;font-weight:700;font-family:'Space Mono';color:var(--navy);}
+.ss-lbl{font-size:9px;color:var(--g500);text-transform:uppercase;letter-spacing:.4px;margin-top:2px;}
+
+/* HISTORY LIST */
+.history-list{padding:16px;}
+.history-group{}
+.group-date{font-size:11px;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.8px;padding:8px 0 10px;}
+
+.tx-card{background:var(--white);border-radius:12px;border:1px solid var(--g100);padding:13px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;transition:.2s;animation:fadeUp .3s ease both;}
+.tx-card:hover{border-color:var(--g300);}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+.tx-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;}
+.tx-body{flex:1;min-width:0;}
+.tx-title{font-size:14px;font-weight:700;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tx-meta{font-size:11px;color:var(--g500);margin-top:2px;}
+.tx-right{text-align:right;flex-shrink:0;}
+.tx-amount{font-size:15px;font-weight:700;font-family:'Space Mono';}
+.tx-amount.credit{color:var(--green);}
+.tx-amount.debit{color:var(--red);}
+.tx-status{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-top:3px;padding:2px 7px;border-radius:20px;}
+.status-pending{background:#fef9c3;color:#92400e;}
+.status-confirmed{background:#f0fdf4;color:#065f46;}
+.status-failed{background:#fff0f2;color:#9b0e24;}
+
+/* EMPTY */
+.empty-state{text-align:center;padding:50px 20px;}
+.empty-icon{font-size:48px;margin-bottom:12px;}
+.empty-title{font-size:16px;font-weight:700;color:var(--navy);margin-bottom:6px;}
+.empty-sub{font-size:13px;color:var(--g500);}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <button class="back-btn" onclick="history.back()">
+    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+  </button>
+  <h1>Histórico de Transacções</h1>
+</div>
+
+<div class="filter-bar">
+  <button class="filter-chip active" onclick="filterTx('all',this)">Todos</button>
+  <button class="filter-chip" onclick="filterTx('deposit',this)">Depósitos</button>
+  <button class="filter-chip" onclick="filterTx('withdrawal',this)">Levantamentos</button>
+  <button class="filter-chip" onclick="filterTx('gain',this)">Ganhos</button>
+  <button class="filter-chip" onclick="filterTx('task',this)">Tarefas</button>
+  <button class="filter-chip" onclick="filterTx('commission',this)">Comissões</button>
+</div>
+
+<div class="summary-strip">
+  <div class="ss-item"><div class="ss-val" id="ss-in">0</div><div class="ss-lbl">Entradas</div></div>
+  <div class="ss-item"><div class="ss-val" id="ss-out">0</div><div class="ss-lbl">Saídas</div></div>
+  <div class="ss-item"><div class="ss-val" id="ss-total">0</div><div class="ss-lbl">Total</div></div>
+  <div class="ss-item"><div class="ss-val" id="ss-pending">0</div><div class="ss-lbl">Pendentes</div></div>
+</div>
+
+<div class="history-list" id="historyList">
+  <div class="empty-state">
+    <div class="empty-icon">⏳</div>
+    <div class="empty-title">A carregar...</div>
+    <div class="empty-sub">Aguarde enquanto carregamos o seu histórico.</div>
+  </div>
+</div>
+
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import{getFirestore,collection,query,where,orderBy,getDocs}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyBp8X1PPp3FqiQ6OXErr8Mu11GEp6MZ2-U",authDomain:"ascend-34bf0.firebaseapp.com",projectId:"ascend-34bf0",storageBucket:"ascend-34bf0.firebasestorage.app",messagingSenderId:"592623076677",appId:"1:592623076677:web:c5615719870aefdabf6a2c"};
+const app=initializeApp(cfg);
+const auth=getAuth(app);
+const db=getFirestore(app);
+let allTx=[];
+
+const typeConfig={
+  deposit:{icon:'💳',label:'Depósito',dir:'credit'},
+  withdrawal:{icon:'💸',label:'Levantamento',dir:'debit'},
+  gain:{icon:'📈',label:'Ganho Diário',dir:'credit'},
+  task:{icon:'✅',label:'Tarefa',dir:'credit'},
+  commission:{icon:'👥',label:'Comissão de Convite',dir:'credit'},
+  bonus:{icon:'🎁',label:'Bónus de Boas-Vindas',dir:'credit'},
+};
+
+onAuthStateChanged(auth,async user=>{
+  if(!user){window.location.href='auth.html';return;}
+  // Load deposits
+  let txs=[];
+  try{
+    const dSnap=await getDocs(query(collection(db,'deposits'),where('userId','==',user.uid)));
+    dSnap.forEach(d=>{const dt=d.data();txs.push({type:'deposit',...dt,id:d.id});});
+    const wSnap=await getDocs(query(collection(db,'withdrawals'),where('userId','==',user.uid)));
+    wSnap.forEach(d=>{const dt=d.data();txs.push({type:'withdrawal',...dt,id:d.id});});
+  }catch(e){}
+  // Add mock data for demo
+  const now=new Date();
+  txs.push({type:'bonus',amount:100,status:'confirmed',createdAt:{toDate:()=>new Date(now-86400000*2)},id:'b1'});
+  txs.push({type:'gain',amount:250,status:'confirmed',createdAt:{toDate:()=>new Date(now-3600000*5)},id:'g1'});
+  txs.push({type:'task',amount:50,status:'confirmed',createdAt:{toDate:()=>new Date(now-3600000*3)},id:'t1'});
+  txs.sort((a,b)=>{
+    const da=a.createdAt?.toDate?a.createdAt.toDate():new Date(a.createdAt||0);
+    const db2=b.createdAt?.toDate?b.createdAt.toDate():new Date(b.createdAt||0);
+    return db2-da;
+  });
+  allTx=txs;
+  renderTx('all');
+});
+
+function renderTx(filter){
+  const filtered=filter==='all'?allTx:allTx.filter(t=>t.type===filter);
+  const list=document.getElementById('historyList');
+  if(!filtered.length){
+    list.innerHTML=`<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">Sem transacções</div><div class="empty-sub">Ainda não há registos nesta categoria.</div></div>`;
+    return;
+  }
+  let credits=0,debits=0,pending=0;
+  filtered.forEach(t=>{
+    const cfg2=typeConfig[t.type]||{icon:'💰',label:t.type,dir:'credit'};
+    if(cfg2.dir==='credit')credits+=t.amount||0;
+    else debits+=t.amount||0;
+    if(t.status==='pending')pending++;
+  });
+  document.getElementById('ss-in').textContent=(credits/1000).toFixed(1)+'K';
+  document.getElementById('ss-out').textContent=(debits/1000).toFixed(1)+'K';
+  document.getElementById('ss-total').textContent=filtered.length;
+  document.getElementById('ss-pending').textContent=pending;
+
+  // Group by date
+  const groups={};
+  filtered.forEach(t=>{
+    const d=t.createdAt?.toDate?t.createdAt.toDate():new Date(t.createdAt||0);
+    const key=d.toLocaleDateString('pt-AO',{day:'2-digit',month:'long',year:'numeric'});
+    if(!groups[key])groups[key]=[];
+    groups[key].push(t);
+  });
+
+  list.innerHTML='';
+  Object.entries(groups).forEach(([date,txs2])=>{
+    const group=document.createElement('div');
+    group.className='history-group';
+    group.innerHTML=`<div class="group-date">${date}</div>`;
+    txs2.forEach(t=>{
+      const cfg2=typeConfig[t.type]||{icon:'💰',label:t.type,dir:'credit'};
+      const d=t.createdAt?.toDate?t.createdAt.toDate():new Date(t.createdAt||0);
+      const time=d.toLocaleTimeString('pt-AO',{hour:'2-digit',minute:'2-digit'});
+      const statusClass=t.status==='pending'?'status-pending':t.status==='confirmed'?'status-confirmed':'status-failed';
+      const statusLabel=t.status==='pending'?'Pendente':t.status==='confirmed'?'Confirmado':'Falhou';
+      const card=document.createElement('div');
+      card.className='tx-card';
+      card.innerHTML=`
+        <div class="tx-icon" style="background:${cfg2.dir==='credit'?'#f0fdf4':'#fff0f2'}">${cfg2.icon}</div>
+        <div class="tx-body">
+          <div class="tx-title">${cfg2.label}</div>
+          <div class="tx-meta">${time}${t.bank?' · '+t.bank.toUpperCase():''}</div>
+        </div>
+        <div class="tx-right">
+          <div class="tx-amount ${cfg2.dir}">${cfg2.dir==='credit'?'+':'-'}Kz ${(t.amount||0).toLocaleString('pt-AO',{minimumFractionDigits:2})}</div>
+          <span class="tx-status ${statusClass}">${statusLabel}</span>
+        </div>`;
+      group.appendChild(card);
+    });
+    list.appendChild(group);
+  });
+}
+
+window.filterTx=function(type,btn){
+  document.querySelectorAll('.filter-chip').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTx(type);
+};
+</script>
+</body>
+</html>
