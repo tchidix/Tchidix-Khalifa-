@@ -135,42 +135,137 @@
     .card-header-title { font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 700; color: white; }
     .card-header-sub { font-size: 12px; color: rgba(255,255,255,0.75); margin-top: 2px; }
 
-    .banks-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+    .banks-row { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
 
     .bank-card {
-      background: white; border: 2px solid var(--border);
-      border-radius: 14px; padding: 16px 12px;
-      cursor: pointer; transition: all 0.2s; text-align: center;
-    }
-    .bank-card.selected { border-color: var(--navy-mid); background: #eef3fb; }
-    .bank-card-name { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 800; color: var(--navy); margin-bottom: 4px; }
-    .bank-card-label { font-size: 10px; color: var(--text-muted); }
-
-    .bank-details {
       background: white; border: 1.5px solid var(--border);
-      border-radius: 16px; overflow: hidden; margin-bottom: 16px; display: none;
-      animation: fadeUp 0.3s ease;
+      border-radius: 14px; padding: 14px 16px;
+      cursor: pointer; transition: all 0.2s;
+      display: flex; align-items: center; gap: 14px;
     }
-    .bank-details.show { display: block; }
+    .bank-card:hover { border-color: var(--navy-mid); background: #f8faff; }
+    .bank-card.selected { border-color: #e65100; background: #fff8f0; }
+    .bank-card-radio {
+      width: 20px; height: 20px; border-radius: 50%;
+      border: 2px solid var(--border); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+    }
+    .bank-card.selected .bank-card-radio { border-color: #e65100; background: #e65100; }
+    .bank-card.selected .bank-card-radio::after {
+      content: ''; width: 8px; height: 8px;
+      border-radius: 50%; background: white;
+    }
+    .bank-card-info { flex: 1; }
+    .bank-card-name { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 800; color: #0d0d0d; margin-bottom: 2px; }
+    .bank-card.selected .bank-card-name { color: #e65100; }
+    .bank-card-label { font-size: 11px; color: var(--text-muted); }
+    .bank-card-tag {
+      background: var(--off-white); border: 1px solid var(--border);
+      border-radius: 8px; padding: 4px 10px;
+      font-family: 'Sora', sans-serif; font-size: 11px; font-weight: 700;
+      color: var(--navy); flex-shrink: 0;
+    }
+    .bank-card.selected .bank-card-tag { background: #fff3e0; border-color: #ffcc80; color: #e65100; }
+
+    /* ---- BANK DETAILS POPUP SHEET ---- */
+    .bank-popup-overlay {
+      position: fixed; inset: 0;
+      background: rgba(10,22,40,0.45);
+      display: flex; align-items: flex-end; justify-content: center;
+      z-index: 1100; opacity: 0; pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .bank-popup-overlay.show { opacity: 1; pointer-events: all; }
+
+    .bank-popup-sheet {
+      width: 100%; max-width: 480px;
+      background: white;
+      border-radius: 24px 24px 0 0;
+      padding: 0 0 44px;
+      transform: translateY(100%);
+      transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+      overflow: hidden;
+    }
+    .bank-popup-overlay.show .bank-popup-sheet { transform: translateY(0); }
+
+    .bank-popup-handle-wrap {
+      display: flex; justify-content: center; padding: 14px 0 6px;
+    }
+    .bank-popup-handle {
+      width: 40px; height: 4px;
+      background: var(--border); border-radius: 2px;
+    }
+
+    .bank-popup-header {
+      padding: 4px 20px 16px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+    .bank-popup-title-wrap {}
+    .bank-popup-bank-name {
+      font-family: 'Sora', sans-serif;
+      font-size: 24px; font-weight: 800; color: #0d0d0d;
+      letter-spacing: 1px; line-height: 1.1;
+    }
+    .bank-popup-subtitle {
+      font-size: 11px; color: var(--text-muted);
+      font-family: 'DM Sans', sans-serif; margin-top: 3px;
+    }
+    .bank-popup-chip {
+      background: #fff3e0; border: 1px solid #ffcc80;
+      border-radius: 20px; padding: 5px 14px;
+      font-family: 'Sora', sans-serif; font-size: 10px; font-weight: 700;
+      color: #e65100; letter-spacing: 0.5px; flex-shrink: 0;
+    }
+
+    .bank-popup-body { padding: 8px 0; }
 
     .bank-detail-row {
-      padding: 13px 16px; border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; gap: 10px;
+      padding: 13px 20px;
+      display: flex; align-items: center; gap: 12px;
+      border-bottom: 1px solid #f0f4fb;
+      transition: background 0.15s;
     }
     .bank-detail-row:last-child { border-bottom: none; }
-    .bank-detail-key { font-size: 12px; color: var(--text-muted); width: 60px; flex-shrink: 0; }
-    .bank-detail-val { font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 600; color: var(--navy); flex: 1; word-break: break-all; }
+    .bank-detail-row:active { background: #f8faff; }
+
+    .bank-detail-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: #F5F8FF; border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .bank-detail-icon svg { width: 16px; height: 16px; fill: none; stroke: var(--navy); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+    .bank-detail-content { flex: 1; min-width: 0; }
+    .bank-detail-key {
+      font-size: 10px; font-weight: 600; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 0.7px;
+      margin-bottom: 2px; font-family: 'Sora', sans-serif;
+    }
+    .bank-detail-val {
+      font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700;
+      color: #0d0d0d; word-break: break-all; line-height: 1.3;
+    }
+    .bank-detail-val.iban {
+      font-size: 12px; letter-spacing: 0.8px; color: var(--navy);
+      font-family: 'DM Sans', monospace;
+    }
 
     .btn-copy {
-      flex-shrink: 0; width: 32px; height: 32px;
-      border-radius: 8px; border: 1.5px solid var(--border);
-      background: var(--off-white); display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; width: 36px; height: 36px;
+      border-radius: 10px; border: 1.5px solid var(--border);
+      background: white; display: flex; align-items: center; justify-content: center;
       cursor: pointer; transition: all 0.2s;
     }
-    .btn-copy:hover { background: #e8f0fb; border-color: var(--navy-mid); }
+    .btn-copy:hover { background: #fff3e0; border-color: #ffcc80; }
     .btn-copy.copied { background: #e8f5e9; border-color: #a5d6a7; }
     .btn-copy svg { width: 15px; height: 15px; fill: none; stroke: var(--text-muted); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .btn-copy:hover svg { stroke: #e65100; }
     .btn-copy.copied svg { stroke: var(--success); }
+
+
 
     .alert-bank {
       background: #fff3e0; border: 1px solid #ffcc80;
@@ -186,9 +281,10 @@
       border: 1.5px solid var(--border); border-radius: 10px;
       font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text-dark);
       background: var(--off-white); outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
+      transition: border-color 0.2s, box-shadow 0.2s, color 0.2s;
     }
     .field input:focus { border-color: var(--navy-mid); box-shadow: 0 0 0 3px rgba(58,95,160,0.1); background: white; }
+    .field input.has-value { color: #e65100; font-weight: 600; }
     .field-note { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
     .field-error { font-size: 11px; color: var(--error); margin-top: 4px; display: none; }
     .field-error.show { display: block; }
@@ -225,26 +321,30 @@
     .resumo-key { font-size: 12px; color: var(--text-muted); }
     .resumo-val { font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 700; color: var(--navy); }
 
-    .nav-btns { display: flex; gap: 10px; margin-top: 4px; }
+    .nav-btns { display: flex; gap: 10px; margin-top: 4px; justify-content: center; }
 
     .btn-prev {
-      flex: 1; padding: 13px; background: none;
+      padding: 11px 28px; background: none;
       border: 1.5px solid var(--border); border-radius: 12px;
-      font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600;
+      font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 600;
       color: var(--text-muted); cursor: pointer; transition: background 0.2s;
+      white-space: nowrap;
     }
     .btn-prev:hover { background: var(--off-white); }
 
     .btn-next {
-      flex: 2; padding: 13px;
-      background: linear-gradient(135deg, var(--navy), var(--navy-mid));
-      color: white; border: none; border-radius: 12px;
-      font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600;
+      padding: 11px 32px;
+      background: #fff3e0;
+      color: #e65100;
+      border: 1.5px solid #ffcc80;
+      border-radius: 12px;
+      font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 700;
       cursor: pointer; transition: opacity 0.2s, transform 0.15s;
+      white-space: nowrap;
     }
-    .btn-next:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-next:hover { opacity: 0.85; transform: translateY(-1px); }
     .btn-next:active { transform: translateY(0); }
-    .btn-next:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+    .btn-next:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
 
     .spinner-overlay {
       position: fixed; inset: 0; background: rgba(255,255,255,0.9);
@@ -346,63 +446,27 @@
 
       <div class="banks-row">
         <div class="bank-card" id="cardBAI" onclick="selectBank('BAI')">
-          <div class="bank-card-name">BAI</div>
-          <div class="bank-card-label">Banco Angolano de Investimentos</div>
+          <div class="bank-card-radio"></div>
+          <div class="bank-card-info">
+            <div class="bank-card-name">BAI</div>
+            <div class="bank-card-label">Banco Angolano de Investimentos</div>
+          </div>
+          <div class="bank-card-tag">IBAN</div>
         </div>
         <div class="bank-card" id="cardBFA" onclick="selectBank('BFA')">
-          <div class="bank-card-name">BFA</div>
-          <div class="bank-card-label">Banco de Fomento Angola</div>
+          <div class="bank-card-radio"></div>
+          <div class="bank-card-info">
+            <div class="bank-card-name">BFA</div>
+            <div class="bank-card-label">Banco de Fomento Angola</div>
+          </div>
+          <div class="bank-card-tag">IBAN</div>
         </div>
       </div>
 
       <div class="alert-bank" id="alertBank">Seleccione um banco para continuar.</div>
 
-      <div class="bank-details" id="detailsBAI">
-        <div class="card-header">
-          <div class="card-header-title">BAI - Dados para transferencia</div>
-          <div class="card-header-sub">Copie os dados e efectue a transferencia</div>
-        </div>
-        <div class="bank-detail-row">
-          <span class="bank-detail-key">Titular</span>
-          <span class="bank-detail-val">Domingos</span>
-          <button class="btn-copy" onclick="copiar('Domingos', this)"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>
-        </div>
-        <div class="bank-detail-row">
-          <span class="bank-detail-key">IBAN</span>
-          <span class="bank-detail-val">0040.0000.5823.3661.1013.5</span>
-          <button class="btn-copy" onclick="copiar('0040000058233661101350', this)"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>
-        </div>
-        <div class="bank-detail-row">
-          <span class="bank-detail-key">Banco</span>
-          <span class="bank-detail-val">BAI</span>
-          <button class="btn-copy" onclick="copiar('BAI', this)"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>
-        </div>
-      </div>
-
-      <div class="bank-details" id="detailsBFA">
-        <div class="card-header">
-          <div class="card-header-title">BFA - Dados para transferencia</div>
-          <div class="card-header-sub">Copie os dados e efectue a transferencia</div>
-        </div>
-        <div class="bank-detail-row">
-          <span class="bank-detail-key">Titular</span>
-          <span class="bank-detail-val">Domingos</span>
-          <button class="btn-copy" onclick="copiar('Domingos', this)"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>
-        </div>
-        <div class="bank-detail-row">
-          <span class="bank-detail-key">IBAN</span>
-          <span class="bank-detail-val">0006.0000.9095.7416.3015.7</span>
-          <button class="btn-copy" onclick="copiar('0006000090957416301570', this)"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>
-        </div>
-        <div class="bank-detail-row">
-          <span class="bank-detail-key">Banco</span>
-          <span class="bank-detail-val">BFA</span>
-          <button class="btn-copy" onclick="copiar('BFA', this)"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>
-        </div>
-      </div>
-
       <div class="nav-btns">
-        <button class="btn-next" style="flex:1" onclick="irParaEtapa2()">Ja transferi, continuar</button>
+        <button class="btn-next" onclick="irParaEtapa2()">Ja transferi, continuar</button>
       </div>
     </div>
 
@@ -584,17 +648,77 @@
     function hideSpinner() { document.getElementById('spinnerOverlay').classList.remove('show'); }
   </script>
 
+  <!-- BANK POPUP SHEETS -->
+  <div class="bank-popup-overlay" id="bankPopupOverlay" onclick="closeBankPopup(event)">
+    <div class="bank-popup-sheet" id="bankPopupSheet">
+      <div class="bank-popup-handle-wrap"><div class="bank-popup-handle"></div></div>
+      <div class="bank-popup-header">
+        <div class="bank-popup-title-wrap">
+          <div class="bank-popup-bank-name" id="popupBankName">BAI</div>
+          <div class="bank-popup-subtitle" id="popupBankSub">Banco Angolano de Investimentos · Dados para deposito</div>
+        </div>
+        <div class="bank-popup-chip">TRANSFERENCIA</div>
+      </div>
+      <div class="bank-popup-body" id="popupBankBody"></div>
+    </div>
+  </div>
+
   <script>
     window._selectedBank = null;
     let currentStep = 1;
+
+    const bankData = {
+      BAI: {
+        name: 'BAI',
+        sub: 'Banco Angolano de Investimentos · Dados para deposito',
+        rows: [
+          { icon: '<path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>', key: 'Titular da conta', val: 'Domingos', copy: 'Domingos', cls: '' },
+          { icon: '<rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/>', key: 'IBAN', val: '0040.0000.5823.3661.1013.5', copy: '0040000058233661101350', cls: 'iban' },
+          { icon: '<path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>', key: 'Banco', val: 'BAI', copy: 'BAI', cls: '' },
+        ]
+      },
+      BFA: {
+        name: 'BFA',
+        sub: 'Banco de Fomento Angola · Dados para deposito',
+        rows: [
+          { icon: '<path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>', key: 'Titular da conta', val: 'Domingos', copy: 'Domingos', cls: '' },
+          { icon: '<rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/>', key: 'IBAN', val: '0006.0000.9095.7416.3015.7', copy: '0006000090957416301570', cls: 'iban' },
+          { icon: '<path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>', key: 'Banco', val: 'BFA', copy: 'BFA', cls: '' },
+        ]
+      }
+    };
 
     window.selectBank = function(bank) {
       window._selectedBank = bank;
       document.getElementById('cardBAI').classList.toggle('selected', bank === 'BAI');
       document.getElementById('cardBFA').classList.toggle('selected', bank === 'BFA');
-      document.getElementById('detailsBAI').classList.toggle('show', bank === 'BAI');
-      document.getElementById('detailsBFA').classList.toggle('show', bank === 'BFA');
       document.getElementById('alertBank').classList.remove('show');
+
+      const d = bankData[bank];
+      document.getElementById('popupBankName').textContent = d.name;
+      document.getElementById('popupBankSub').textContent = d.sub;
+
+      const body = document.getElementById('popupBankBody');
+      body.innerHTML = d.rows.map((r, i) => `
+        <div class="bank-detail-row">
+          <div class="bank-detail-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${r.icon}</svg></div>
+          <div class="bank-detail-content">
+            <div class="bank-detail-key">${r.key}</div>
+            <div class="bank-detail-val ${r.cls}">${r.val}</div>
+          </div>
+          <button class="btn-copy" onclick="copiar('${r.copy}', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          </button>
+        </div>
+      `).join('');
+
+      document.getElementById('bankPopupOverlay').classList.add('show');
+    };
+
+    window.closeBankPopup = function(e) {
+      if (e.target === document.getElementById('bankPopupOverlay')) {
+        document.getElementById('bankPopupOverlay').classList.remove('show');
+      }
     };
 
     window.irParaEtapa2 = function() {
@@ -642,6 +766,14 @@
     window.voltarOuSair = function() {
       if (currentStep > 1) { irParaEtapa(currentStep - 1); } else { history.back(); }
     };
+
+    // Orange input text when has value
+    document.querySelectorAll('.field input').forEach(inp => {
+      inp.addEventListener('input', function() {
+        if (this.value.trim() !== '') { this.classList.add('has-value'); }
+        else { this.classList.remove('has-value'); }
+      });
+    });
 
     window.copiar = function(texto, btn) {
       navigator.clipboard.writeText(texto).then(() => {
