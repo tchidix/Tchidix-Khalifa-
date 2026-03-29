@@ -7,20 +7,27 @@
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --navy: #1a3a6b; --navy-mid: #1e4d8c; --navy-light: #2560a8;
-      --orange: #f57c00; --orange-light: #ff9800;
-      --off-white: #f8faff; --text-dark: #0d0d0d; --text-muted: #5a6a7e;
-      --border: #dce6f5; --success: #2e7d32; --error: #c62828;
+      --navy: #2c4a8a;
+      --navy-mid: #3a5fa0;
+      --navy-light: #4a72b5;
+      --orange: #f57c00;
+      --orange-light: #ff9800;
+      --off-white: #F5F8FF;
+      --text-dark: #0D1F3C;
+      --text-muted: #6B7FA3;
+      --border: #D6E4FF;
+      --success: #2e7d32;
+      --error: #c62828;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body { min-height: 100%; font-family: 'DM Sans', sans-serif; background: var(--off-white); color: var(--text-dark); }
-    body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(ellipse 70% 40% at 0% 0%, rgba(26,58,107,0.06) 0%, transparent 60%); pointer-events: none; z-index: 0; }
+    body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(ellipse 70% 40% at 0% 0%, rgba(26,86,219,0.06) 0%, transparent 60%); pointer-events: none; z-index: 0; }
     .top-bar { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--navy), var(--navy-mid), var(--navy-light), var(--navy)); z-index: 200; }
-    .header { position: fixed; top: 3px; left: 0; right: 0; height: 56px; background: rgba(255,255,255,0.96); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 16px; gap: 12px; z-index: 100; }
+    .header { position: fixed; top: 3px; left: 0; right: 0; height: 56px; background: rgba(255,255,255,0.96); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 16px; gap: 12px; z-index: 100; box-shadow: 0 2px 12px rgba(26,86,219,0.06); }
     .btn-back { width: 36px; height: 36px; border-radius: 10px; border: 1.5px solid var(--border); background: white; display: flex; align-items: center; justify-content: center; cursor: pointer; }
     .btn-back svg { width: 18px; height: 18px; fill: none; stroke: var(--navy); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-    .header-title { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; color: var(--navy); }
-    .header-saldo { margin-left: auto; background: #e8f0fb; border: 1px solid #c5d8f5; border-radius: 20px; padding: 5px 12px; font-size: 12px; font-weight: 600; color: var(--navy); font-family: 'Sora', sans-serif; }
+    .header-title { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; color: #0d0d0d; }
+    .header-saldo { margin-left: auto; background: #E8F0FE; border: 1px solid #C5D8F5; border-radius: 20px; padding: 5px 12px; font-size: 12px; font-weight: 600; color: var(--navy); font-family: 'Sora', sans-serif; }
     .main { position: relative; z-index: 1; padding: 75px 16px 40px; }
 
     .hero-banner { background: linear-gradient(135deg, var(--orange), var(--orange-light)); border-radius: 16px; padding: 20px; margin-bottom: 20px; text-align: center; position: relative; overflow: hidden; }
@@ -33,7 +40,7 @@
     .sec-title::before { content: ''; display: block; width: 3px; height: 16px; background: var(--navy-mid); border-radius: 2px; }
 
     .plan-card { background: white; border: 1.5px solid var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 12px; transition: box-shadow 0.2s, transform 0.2s; }
-    .plan-card:hover { box-shadow: 0 6px 24px rgba(26,58,107,0.1); transform: translateY(-2px); }
+    .plan-card:hover { box-shadow: 0 6px 24px rgba(26,86,219,0.1); transform: translateY(-2px); }
     .plan-card-body { padding: 16px; display: flex; align-items: center; gap: 14px; }
     .plan-card-img { width: 52px; height: 52px; border-radius: 12px; overflow: hidden; flex-shrink: 0; border: 1.5px solid var(--border); }
     .plan-card-img img { width: 100%; height: 100%; object-fit: cover; }
@@ -49,13 +56,13 @@
     .header-img-icon img { width: 100%; height: 100%; object-fit: cover; }
 
     /* Modal */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(10,22,40,0.5); display: flex; align-items: flex-end; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(13,31,60,0.5); display: flex; align-items: flex-end; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
     .modal-overlay.show { opacity: 1; pointer-events: all; }
     .modal-sheet { width: 100%; max-width: 480px; background: white; border-radius: 24px 24px 0 0; padding: 28px 24px 44px; transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.4,0,0.2,1); }
     .modal-overlay.show .modal-sheet { transform: translateY(0); }
     .modal-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 22px; }
     .modal-icon { width: 58px; height: 58px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; }
-    .modal-icon.confirm { background: #e3f2fd; } .modal-icon.success { background: #e8f5e9; } .modal-icon.error { background: #ffebee; }
+    .modal-icon.confirm { background: #E8F0FE; } .modal-icon.success { background: #e8f5e9; } .modal-icon.error { background: #ffebee; }
     .modal-icon svg { width: 26px; height: 26px; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
     .modal-title { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 700; color: var(--navy); text-align: center; margin-bottom: 8px; }
     .modal-msg { font-size: 14px; color: var(--text-muted); text-align: center; line-height: 1.6; margin-bottom: 18px; }
@@ -156,7 +163,7 @@
       document.getElementById('mPrazo').textContent = '72 horas';
       const icon = document.getElementById('modalIcon'), svg = document.getElementById('modalIconSvg');
       icon.className = 'modal-icon confirm';
-      svg.setAttribute('stroke', '#1e4d8c');
+      svg.setAttribute('stroke', '#3a5fa0');
       svg.innerHTML = '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>';
       document.getElementById('modalTitle').textContent = 'Confirmar investimento';
       document.getElementById('modalMsg').textContent = 'Confirme o plano de investimento rapido. O valor sera debitado do seu saldo disponivel.';
