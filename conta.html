@@ -7,19 +7,20 @@
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --blue: #1A56DB;
-      --blue-dark: #1240A8;
-      --blue-light: #E8F0FE;
-      --blue-pale: #F0F5FF;
-      --orange: #E07B39;
-      --orange-dark: #C4612A;
-      --orange-light: #FFF4EC;
+      --navy: #2c4a8a;
+      --navy-mid: #3a5fa0;
+      --navy-light: #4a72b5;
+      --navy-pale: #F0F5FF;
+      --navy-bg: #F5F8FF;
+      --orange: #f57c00;
+      --orange-dark: #e65100;
+      --orange-light: #fff3e0;
       --bg: #F5F8FF;
       --text: #0D1F3C;
       --muted: #6B7FA3;
       --border: #D6E4FF;
-      --success: #16A34A;
-      --error: #DC2626;
+      --success: #2e7d32;
+      --error: #c62828;
       --white: #FFFFFF;
       --nav-h: 64px;
     }
@@ -34,15 +35,30 @@
       overflow-x: hidden;
     }
 
-    /* Header fixo com safe-area — igual ao index */
+    body::before {
+      content: '';
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background:
+        radial-gradient(ellipse 70% 40% at 0% 0%, rgba(44,74,138,0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 100% 80%, rgba(58,95,160,0.04) 0%, transparent 60%);
+      pointer-events: none; z-index: 0;
+    }
+
+    .top-bar {
+      position: fixed; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--navy), var(--navy-mid), var(--navy-light), var(--navy));
+      z-index: 200;
+    }
+
     .header {
       position: fixed;
-      top: 0; left: 0; right: 0;
+      top: 3px; left: 0; right: 0;
       padding-top: env(safe-area-inset-top);
-      background: var(--white);
+      background: rgba(255,255,255,0.96);
+      backdrop-filter: blur(10px);
       border-bottom: 1px solid var(--border);
       z-index: 100;
-      box-shadow: 0 2px 12px rgba(26,86,219,0.06);
+      box-shadow: 0 2px 12px rgba(44,74,138,0.06);
     }
 
     .header-inner {
@@ -53,7 +69,6 @@
       gap: 10px;
     }
 
-    /* Logo imagem — igual ao index */
     .header-logo {
       width: 38px; height: 38px;
       border-radius: 10px;
@@ -78,11 +93,11 @@
       color: var(--muted);
     }
 
-    /* Hero — começa logo abaixo do header */
+    /* Hero */
     .hero {
-      background: linear-gradient(160deg, var(--blue-dark) 0%, var(--blue) 70%, #2060b8 100%);
+      background: linear-gradient(160deg, var(--navy) 0%, var(--navy-mid) 70%, var(--navy-light) 100%);
       padding: 20px 20px 20px;
-      margin-top: calc(env(safe-area-inset-top) + 56px);
+      margin-top: calc(env(safe-area-inset-top) + 59px);
       position: relative;
       overflow: hidden;
     }
@@ -96,7 +111,6 @@
       background: rgba(255,255,255,0.04);
     }
 
-    /* Linha com imagem + nome + email — igual ao index */
     .hero-top-row {
       display: flex;
       align-items: center;
@@ -129,7 +143,6 @@
       font-size: 12px; color: rgba(255,255,255,0.6);
     }
 
-    /* Mini card saldos */
     .mini-card {
       background: rgba(255,255,255,0.1);
       border: 1px solid rgba(255,255,255,0.15);
@@ -148,7 +161,7 @@
     .mc-val.green  { color: #6ee7b7; }
 
     /* Main */
-    .main { padding: 16px 16px calc(var(--nav-h) + 16px); }
+    .main { position: relative; z-index: 1; padding: 16px 16px calc(var(--nav-h) + 16px); }
 
     .menu-section { margin-bottom: 18px; }
 
@@ -180,19 +193,19 @@
     }
 
     .menu-item:last-child { border-bottom: none; }
-    .menu-item:hover { background: var(--blue-pale); }
+    .menu-item:hover { background: var(--navy-pale); }
 
     .menu-item-icon {
       width: 38px; height: 38px;
       border-radius: 10px;
-      background: var(--blue-light);
+      background: #E8F0FE;
       display: flex; align-items: center; justify-content: center;
       flex-shrink: 0;
     }
 
     .menu-item-icon svg {
       width: 18px; height: 18px;
-      fill: none; stroke: var(--blue);
+      fill: none; stroke: var(--navy-mid);
       stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
     }
 
@@ -238,7 +251,7 @@
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       z-index: 100;
-      box-shadow: 0 -4px 16px rgba(26,86,219,0.06);
+      box-shadow: 0 -4px 16px rgba(44,74,138,0.06);
     }
 
     .nav-item {
@@ -257,7 +270,7 @@
       stroke: currentColor; fill: none; stroke-width: 1.8;
     }
 
-    .nav-item.active { color: var(--blue); }
+    .nav-item.active { color: var(--navy-mid); }
 
     /* Spinner */
     .spinner-overlay {
@@ -271,7 +284,7 @@
     .spinner-ring {
       width: 48px; height: 48px;
       border: 3px solid var(--border);
-      border-top-color: var(--blue);
+      border-top-color: var(--navy-mid);
       border-radius: 50%;
       animation: spin 0.75s linear infinite;
     }
@@ -305,6 +318,8 @@
 </head>
 <body>
 
+  <div class="top-bar"></div>
+
   <div class="spinner-overlay" id="spinnerOverlay">
     <div class="spinner-ring"></div>
   </div>
@@ -321,7 +336,7 @@
     </div>
   </div>
 
-  <!-- Header fixo igual ao index -->
+  <!-- Header -->
   <div class="header">
     <div class="header-inner">
       <div class="header-logo">
