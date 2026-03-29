@@ -7,16 +7,16 @@
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --navy: #1a3a6b;
-      --navy-mid: #1e4d8c;
-      --navy-light: #2560a8;
+      --navy: #2c4a8a;
+      --navy-mid: #3a5fa0;
+      --navy-light: #4a72b5;
       --orange: #f57c00;
       --orange-light: #ff9800;
       --white: #ffffff;
-      --off-white: #f8faff;
-      --text-dark: #0d0d0d;
-      --text-muted: #5a6a7e;
-      --border: #dce6f5;
+      --off-white: #F5F8FF;
+      --text-dark: #0D1F3C;
+      --text-muted: #6B7FA3;
+      --border: #D6E4FF;
       --success: #2e7d32;
       --error: #c62828;
       --nav-h: 64px;
@@ -32,756 +32,406 @@
       overflow-x: hidden;
     }
 
-    .top-bar {
-      position: fixed;
-      top: 0; left: 0; right: 0; height: 3px;
-      background: linear-gradient(90deg, var(--navy), var(--navy-mid), var(--navy-light), var(--navy));
-      z-index: 200;
+    body::before {
+      content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: radial-gradient(ellipse 70% 40% at 0% 0%, rgba(44,74,138,0.06) 0%, transparent 60%),
+                  radial-gradient(ellipse 50% 40% at 100% 80%, rgba(58,95,160,0.04) 0%, transparent 60%);
+      pointer-events: none; z-index: 0;
     }
 
-    /* HERO HEADER */
+    .top-bar { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--navy), var(--navy-mid), var(--navy-light), var(--navy)); z-index: 200; }
+
+    /* ── HERO ── */
     .hero {
       background: linear-gradient(160deg, var(--navy) 0%, var(--navy-mid) 60%, var(--navy-light) 100%);
-      padding: 36px 20px 20px;
-      position: relative;
-      overflow: hidden;
+      padding: 40px 20px 24px;
+      position: relative; overflow: hidden;
     }
 
-    .hero::before {
-      content: '';
-      position: absolute;
-      top: -40px; right: -40px;
-      width: 180px; height: 180px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.04);
-    }
+    .hero::before { content: ''; position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; border-radius: 50%; background: rgba(255,255,255,0.04); }
+    .hero::after  { content: ''; position: absolute; bottom: -30px; left: -20px; width: 130px; height: 130px; border-radius: 50%; background: rgba(255,255,255,0.03); }
 
-    .hero::after {
-      content: '';
-      position: absolute;
-      bottom: -30px; left: -20px;
-      width: 120px; height: 120px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.03);
-    }
+    .hero-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; position: relative; z-index: 1; }
 
-    .hero-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 22px;
-    }
+    .hero-brand { display: flex; align-items: center; gap: 10px; }
+    .hero-logo { width: 38px; height: 38px; border-radius: 10px; overflow: hidden; flex-shrink: 0; }
+    .hero-logo img { width: 100%; height: 100%; object-fit: cover; }
+    .hero-name { font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 700; color: white; line-height: 1.2; }
+    .hero-name span { display: block; font-size: 10px; font-weight: 400; color: rgba(255,255,255,0.6); }
 
-    .hero-brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+    .hero-notif { width: 38px; height: 38px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; border-style: none; cursor: pointer; display: flex; align-items: center; justify-content: center; position: relative; transition: background 0.2s; }
+    .hero-notif:hover { background: rgba(255,255,255,0.2); }
+    .hero-notif svg { width: 18px; height: 18px; fill: none; stroke: white; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .notif-dot { position: absolute; top: 8px; right: 8px; width: 7px; height: 7px; background: var(--orange-light); border-radius: 50%; border: 1.5px solid var(--navy); }
 
-    .hero-logo {
-      width: 36px; height: 36px;
-      border-radius: 10px;
-      overflow: hidden;
-      flex-shrink: 0;
-    }
+    .hero-greeting { font-size: 13px; color: rgba(255,255,255,0.65); margin-bottom: 4px; position: relative; z-index: 1; }
+    .hero-username { font-family: 'Sora', sans-serif; font-size: 24px; font-weight: 800; color: white; margin-bottom: 22px; position: relative; z-index: 1; }
 
-    .hero-logo img {
-      width: 100%; height: 100%;
-      object-fit: cover;
-    }
-
-    .hero-name {
-      font-family: 'Sora', sans-serif;
-      font-size: 13px; font-weight: 700; color: white;
-      line-height: 1.2;
-    }
-
-    .hero-name span {
-      display: block;
-      font-size: 10px; font-weight: 400;
-      color: rgba(255,255,255,0.65);
-    }
-
-    .hero-notif {
-      width: 36px; height: 36px;
-      background: rgba(255,255,255,0.12);
-      border-radius: 10px;
-      border: none; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      position: relative;
-    }
-
-    .hero-notif svg {
-      width: 18px; height: 18px;
-      fill: none; stroke: white; stroke-width: 1.8;
-    }
-
-    .notif-dot {
-      position: absolute;
-      top: 7px; right: 7px;
-      width: 7px; height: 7px;
-      background: var(--orange-light);
-      border-radius: 50%;
-      border: 1.5px solid var(--navy);
-    }
-
-    .hero-greeting {
-      font-size: 13px; color: rgba(255,255,255,0.7);
-      margin-bottom: 4px;
-    }
-
-    .hero-username {
-      font-family: 'Sora', sans-serif;
-      font-size: 22px; font-weight: 800; color: white;
-      margin-bottom: 20px;
-    }
-
-    /* Card de saldo */
+    /* Balance card */
     .balance-card {
       background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.15);
-      border-radius: 16px;
-      padding: 18px;
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 18px; padding: 18px;
       backdrop-filter: blur(8px);
       position: relative; z-index: 1;
+      animation: fadeUp 0.5s ease 0.1s both;
     }
 
-    .balance-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 12px;
-    }
+    .balance-label { font-size: 11px; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 6px; }
+    .balance-main { font-family: 'Sora', sans-serif; font-size: 30px; font-weight: 800; color: white; margin-bottom: 14px; letter-spacing: -0.5px; }
 
-    .balance-item { text-align: center; }
+    .balance-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .balance-mini { background: rgba(255,255,255,0.08); border-radius: 10px; padding: 9px 12px; }
+    .balance-mini-lbl { font-size: 10px; color: rgba(255,255,255,0.55); margin-bottom: 2px; }
+    .balance-mini-val { font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 700; color: white; }
+    .balance-mini-val.green { color: #6ee7b7; }
+    .balance-mini-val.orange { color: #fdba74; }
 
-    .balance-item:not(:last-child) {
-      border-right: 1px solid rgba(255,255,255,0.12);
-    }
+    /* Main */
+    .main { position: relative; z-index: 1; padding: 20px 16px calc(var(--nav-h) + 16px); }
 
-    .balance-label {
-      font-size: 10px; color: rgba(255,255,255,0.6);
-      margin-bottom: 4px; font-weight: 500;
-      text-transform: uppercase; letter-spacing: 0.4px;
-    }
-
-    .balance-value {
-      font-family: 'Sora', sans-serif;
-      font-size: 15px; font-weight: 700; color: white;
-    }
-
-    .balance-value.green { color: #69f0ae; }
-
-    /* Main content */
-    .main {
-      padding: 20px 16px calc(var(--nav-h) + 16px);
-    }
-
-    /* Acesso rapido */
-    .quick-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      margin-bottom: 22px;
-    }
-
-    .quick-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      text-decoration: none;
-      cursor: pointer;
-    }
-
-    .quick-icon {
-      width: 50px; height: 50px;
-      border-radius: 14px;
-      background: white;
-      border: 1.5px solid var(--border);
-      display: flex; align-items: center; justify-content: center;
-      transition: all 0.2s;
-      box-shadow: 0 2px 8px rgba(26,58,107,0.06);
-    }
-
-    .quick-item:hover .quick-icon {
-      background: #eef3fb;
-      border-color: var(--navy-mid);
-    }
-
-    .quick-icon svg {
-      width: 22px; height: 22px;
-      fill: none; stroke: var(--navy);
-      stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
-    }
-
-    .quick-label {
-      font-family: 'Sora', sans-serif;
-      font-size: 10px; font-weight: 600;
-      color: var(--text-muted); text-align: center;
-    }
+    /* Quick actions */
+    .quick-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 24px; }
+    .quick-item { display: flex; flex-direction: column; align-items: center; gap: 6px; text-decoration: none; cursor: pointer; animation: fadeUp 0.4s ease both; }
+    .quick-item:nth-child(1) { animation-delay: 0.05s; }
+    .quick-item:nth-child(2) { animation-delay: 0.10s; }
+    .quick-item:nth-child(3) { animation-delay: 0.15s; }
+    .quick-item:nth-child(4) { animation-delay: 0.20s; }
+    .quick-icon { width: 52px; height: 52px; border-radius: 16px; background: white; border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; transition: all 0.2s; box-shadow: 0 2px 10px rgba(44,74,138,0.07); }
+    .quick-item:hover .quick-icon { background: #E8F0FE; border-color: var(--navy-mid); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(44,74,138,0.13); }
+    .quick-icon svg { width: 22px; height: 22px; fill: none; stroke: var(--navy); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .quick-label { font-family: 'Sora', sans-serif; font-size: 10px; font-weight: 600; color: var(--text-muted); text-align: center; }
 
     /* Section header */
-    .sec-header {
-      display: flex; align-items: center;
-      justify-content: space-between;
-      margin-bottom: 12px;
-    }
-
-    .sec-title {
-      font-family: 'Sora', sans-serif;
-      font-size: 15px; font-weight: 700; color: var(--navy);
-      display: flex; align-items: center; gap: 8px;
-    }
-
-    .sec-link {
-      font-size: 12px; font-weight: 600;
-      color: var(--navy-mid);
-      text-decoration: none;
-    }
+    .sec-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .sec-title { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; color: var(--navy); }
+    .sec-link { font-size: 12px; font-weight: 600; color: var(--navy-mid); text-decoration: none; }
 
     /* Investimento activo */
     .active-invest {
       background: linear-gradient(135deg, var(--navy), var(--navy-mid));
-      border-radius: 16px;
-      padding: 18px;
-      margin-bottom: 22px;
+      border-radius: 16px; padding: 18px; margin-bottom: 22px;
       position: relative; overflow: hidden;
+      animation: fadeUp 0.4s ease 0.15s both;
+      text-decoration: none; display: block;
     }
+    .active-invest::after { content: ''; position: absolute; right: -15px; top: -15px; width: 80px; height: 80px; border-radius: 50%; background: rgba(255,255,255,0.06); }
+    .ai-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .ai-name { font-family: 'Sora', sans-serif; font-size: 16px; font-weight: 700; color: white; }
+    .ai-badge { background: rgba(110,231,183,0.2); border: 1px solid rgba(110,231,183,0.4); border-radius: 20px; padding: 3px 10px; font-size: 11px; font-weight: 600; color: #6ee7b7; font-family: 'Sora', sans-serif; }
+    .ai-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .ai-stat { background: rgba(255,255,255,0.1); border-radius: 10px; padding: 10px 12px; }
+    .ai-stat-lbl { font-size: 10px; color: rgba(255,255,255,0.6); margin-bottom: 3px; }
+    .ai-stat-val { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; color: white; }
+    .ai-stat-val.green { color: #6ee7b7; }
+    .ai-stat-val.orange { color: #fdba74; }
+    .ai-arrow { position: absolute; right: 18px; bottom: 18px; width: 28px; height: 28px; background: rgba(255,255,255,0.15); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .ai-arrow svg { width: 14px; height: 14px; fill: none; stroke: white; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
-    .active-invest::after {
-      content: '';
-      position: absolute;
-      right: -15px; top: -15px;
-      width: 80px; height: 80px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.06);
-    }
-
-    .active-invest-top {
-      display: flex; align-items: center;
-      justify-content: space-between;
-      margin-bottom: 14px;
-    }
-
-    .active-invest-name {
-      font-family: 'Sora', sans-serif;
-      font-size: 16px; font-weight: 700; color: white;
-    }
-
-    .active-invest-badge {
-      background: rgba(105,240,174,0.2);
-      border: 1px solid rgba(105,240,174,0.4);
-      border-radius: 20px;
-      padding: 3px 10px;
-      font-size: 11px; font-weight: 600; color: #69f0ae;
-      font-family: 'Sora', sans-serif;
-    }
-
-    .active-invest-stats {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .ai-stat {
-      background: rgba(255,255,255,0.1);
-      border-radius: 10px;
-      padding: 10px 12px;
-    }
-
-    .ai-stat-label {
-      font-size: 10px; color: rgba(255,255,255,0.6);
-      margin-bottom: 3px;
-    }
-
-    .ai-stat-val {
-      font-family: 'Sora', sans-serif;
-      font-size: 15px; font-weight: 700; color: white;
-    }
-
-    .ai-stat-val.green { color: #69f0ae; }
-
+    /* No invest */
     .no-invest {
-      background: white;
-      border: 1.5px solid var(--border);
-      border-radius: 16px;
-      padding: 24px;
-      text-align: center;
-      margin-bottom: 22px;
+      background: white; border: 1.5px solid var(--border);
+      border-radius: 16px; padding: 24px; text-align: center;
+      margin-bottom: 22px; animation: fadeUp 0.4s ease 0.15s both;
     }
-
-    .no-invest-icon {
-      width: 48px; height: 48px;
-      background: #eef3fb;
-      border-radius: 14px;
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 12px;
-    }
-
-    .no-invest-icon svg {
-      width: 24px; height: 24px;
-      fill: none; stroke: var(--navy-mid); stroke-width: 1.8;
-    }
-
-    .no-invest-title {
-      font-family: 'Sora', sans-serif;
-      font-size: 14px; font-weight: 700; color: var(--navy);
-      margin-bottom: 6px;
-    }
-
-    .no-invest-sub {
-      font-size: 13px; color: var(--text-muted); margin-bottom: 14px;
-    }
-
-    .btn-invest-now {
-      display: inline-block;
-      padding: 10px 24px;
-      background: linear-gradient(135deg, var(--navy), var(--navy-mid));
-      color: white; border: none; border-radius: 10px;
-      font-family: 'Sora', sans-serif;
-      font-size: 13px; font-weight: 600;
-      cursor: pointer; text-decoration: none;
-    }
+    .no-invest-icon { width: 52px; height: 52px; background: #E8F0FE; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
+    .no-invest-icon svg { width: 26px; height: 26px; fill: none; stroke: var(--navy-mid); stroke-width: 1.8; }
+    .no-invest-title { font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+    .no-invest-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; line-height: 1.5; }
+    .btn-invest { display: inline-flex; align-items: center; gap: 6px; padding: 11px 22px; background: linear-gradient(135deg, var(--navy), var(--navy-mid)); color: white; border: none; border-radius: 10px; font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none; }
+    .btn-invest svg { width: 14px; height: 14px; fill: none; stroke: white; stroke-width: 2; }
 
     /* Sobre a empresa */
-    .about-card {
-      background: white;
-      border: 1.5px solid var(--border);
-      border-radius: 16px;
-      overflow: hidden;
-      margin-bottom: 16px;
-    }
-
-    .about-header {
-      background: linear-gradient(135deg, var(--navy), var(--navy-mid));
-      padding: 16px;
-    }
-
-    .about-header-title {
-      font-family: 'Sora', sans-serif;
-      font-size: 14px; font-weight: 700; color: white;
-    }
-
-    .about-header-sub {
-      font-size: 12px; color: rgba(255,255,255,0.7); margin-top: 2px;
-    }
-
+    .about-card { background: white; border: 1.5px solid var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 16px; animation: fadeUp 0.4s ease 0.2s both; }
+    .about-head { background: linear-gradient(135deg, var(--navy), var(--navy-mid)); padding: 16px; }
+    .about-head-title { font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 700; color: white; }
+    .about-head-sub { font-size: 12px; color: rgba(255,255,255,0.7); margin-top: 2px; }
     .about-body { padding: 16px; }
-
-    .about-stat-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 14px;
-    }
-
-    .about-stat {
-      background: var(--off-white);
-      border-radius: 12px;
-      padding: 12px;
-    }
-
-    .about-stat-val {
-      font-family: 'Sora', sans-serif;
-      font-size: 18px; font-weight: 800; color: var(--navy);
-      margin-bottom: 2px;
-    }
-
-    .about-stat-label {
-      font-size: 11px; color: var(--text-muted);
-    }
-
-    .about-text {
-      font-size: 13px; color: var(--text-muted);
-      line-height: 1.7;
-    }
+    .about-text { font-size: 13px; color: var(--text-muted); line-height: 1.75; }
 
     /* Info tiles */
-    .info-tiles {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-bottom: 22px;
-    }
+    .info-tiles { display: flex; flex-direction: column; gap: 10px; margin-bottom: 22px; }
+    .info-tile { background: white; border: 1.5px solid var(--border); border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; animation: fadeUp 0.4s ease both; }
+    .info-tile:nth-child(1) { animation-delay: 0.25s; }
+    .info-tile:nth-child(2) { animation-delay: 0.30s; }
+    .info-tile:nth-child(3) { animation-delay: 0.35s; }
+    .info-tile-icon { width: 42px; height: 42px; border-radius: 12px; background: #E8F0FE; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .info-tile-icon svg { width: 20px; height: 20px; fill: none; stroke: var(--navy-mid); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .info-tile-icon.green { background: #dcfce7; }
+    .info-tile-icon.green svg { stroke: var(--success); }
+    .info-tile-icon.orange { background: #fff3e0; }
+    .info-tile-icon.orange svg { stroke: var(--orange); }
+    .info-tile-title { font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 2px; }
+    .info-tile-sub { font-size: 12px; color: var(--text-muted); }
 
-    .info-tile {
-      background: white;
-      border: 1.5px solid var(--border);
-      border-radius: 14px;
-      padding: 14px 16px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .info-tile-icon {
-      width: 40px; height: 40px;
-      border-radius: 12px;
-      background: #eef3fb;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .info-tile-icon svg {
-      width: 20px; height: 20px;
-      fill: none; stroke: var(--navy-mid); stroke-width: 1.8;
-    }
-
-    .info-tile-title {
-      font-family: 'Sora', sans-serif;
-      font-size: 13px; font-weight: 700; color: var(--navy);
-      margin-bottom: 2px;
-    }
-
-    .info-tile-sub {
-      font-size: 12px; color: var(--text-muted);
-    }
-
-    /* Nav inferior */
-    .bottom-nav {
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      height: var(--nav-h);
-      background: white;
-      border-top: 1px solid var(--border);
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      z-index: 100;
-      box-shadow: 0 -4px 16px rgba(26,58,107,0.06);
-    }
-
-    .nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      text-decoration: none;
-      color: var(--text-muted);
-      font-family: 'Sora', sans-serif;
-      font-size: 10px; font-weight: 600;
-      transition: color 0.2s;
-      border: none; background: none; cursor: pointer;
-    }
-
-    .nav-item svg {
-      width: 22px; height: 22px;
-      stroke: currentColor; fill: none; stroke-width: 1.8;
-    }
-
+    /* Nav */
+    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: var(--nav-h); background: white; border-top: 1px solid var(--border); display: grid; grid-template-columns: repeat(4,1fr); z-index: 100; box-shadow: 0 -4px 16px rgba(44,74,138,0.06); }
+    .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: var(--text-muted); font-family: 'Sora', sans-serif; font-size: 10px; font-weight: 600; transition: color 0.2s; border: none; background: none; cursor: pointer; }
+    .nav-item svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.8; }
     .nav-item.active { color: var(--navy-mid); }
 
     /* WhatsApp popup */
     .wa-popup {
-      position: fixed;
-      bottom: calc(var(--nav-h) + 12px);
-      left: 16px; right: 16px;
-      background: white;
-      border: 1.5px solid var(--border);
-      border-radius: 16px;
-      padding: 16px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      box-shadow: 0 8px 32px rgba(26,58,107,0.14);
-      z-index: 90;
-      transform: translateY(20px);
-      opacity: 0;
-      transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
-      pointer-events: none;
+      position: fixed; bottom: calc(var(--nav-h) + 12px); left: 16px; right: 16px;
+      background: white; border: 1.5px solid var(--border); border-radius: 18px;
+      padding: 16px; display: flex; align-items: center; gap: 12px;
+      box-shadow: 0 8px 32px rgba(44,74,138,0.14); z-index: 90;
+      transform: translateY(20px); opacity: 0;
+      transition: all 0.4s cubic-bezier(0.4,0,0.2,1); pointer-events: none;
     }
-
-    .wa-popup.show {
-      transform: translateY(0);
-      opacity: 1;
-      pointer-events: all;
-    }
-
-    .wa-popup-icon {
-      width: 42px; height: 42px;
-      background: #25d366;
-      border-radius: 12px;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .wa-popup-icon svg {
-      width: 22px; height: 22px; fill: white;
-    }
-
+    .wa-popup.show { transform: translateY(0); opacity: 1; pointer-events: all; }
+    .wa-popup-icon { width: 44px; height: 44px; background: #25d366; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .wa-popup-icon svg { width: 22px; height: 22px; fill: white; }
     .wa-popup-text { flex: 1; }
-
-    .wa-popup-title {
-      font-family: 'Sora', sans-serif;
-      font-size: 13px; font-weight: 700; color: var(--navy);
-    }
-
-    .wa-popup-sub {
-      font-size: 11px; color: var(--text-muted); margin-top: 1px;
-    }
-
-    .wa-popup-btns {
-      display: flex; flex-direction: column; gap: 6px;
-    }
-
-    .btn-wa-join {
-      padding: 7px 14px;
-      background: #25d366;
-      color: white; border: none;
-      border-radius: 8px;
-      font-family: 'Sora', sans-serif;
-      font-size: 12px; font-weight: 600;
-      cursor: pointer; white-space: nowrap;
-      text-decoration: none;
-      display: block; text-align: center;
-    }
-
-    .btn-wa-close {
-      padding: 6px 14px;
-      background: none;
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      font-family: 'Sora', sans-serif;
-      font-size: 12px; font-weight: 600;
-      color: var(--text-muted);
-      cursor: pointer;
-    }
+    .wa-popup-title { font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 700; color: var(--navy); }
+    .wa-popup-sub { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+    .wa-popup-btns { display: flex; flex-direction: column; gap: 6px; }
+    .btn-wa-join { padding: 7px 14px; background: #25d366; color: white; border: none; border-radius: 8px; font-family: 'Sora', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; text-decoration: none; display: block; text-align: center; }
+    .btn-wa-close { padding: 6px 14px; background: none; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Sora', sans-serif; font-size: 12px; font-weight: 600; color: var(--text-muted); cursor: pointer; }
 
     /* Spinner */
-    .spinner-overlay {
-      position: fixed; inset: 0;
-      background: rgba(255,255,255,0.92);
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      z-index: 999; opacity: 0; pointer-events: none;
-      transition: opacity 0.2s;
-    }
-
+    .spinner-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.92); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
     .spinner-overlay.show { opacity: 1; pointer-events: all; }
-
-    .spinner-ring {
-      width: 52px; height: 52px;
-      border: 3px solid var(--border);
-      border-top-color: var(--navy-mid);
-      border-radius: 50%;
-      animation: spin 0.75s linear infinite;
-    }
-
-    .spinner-text {
-      margin-top: 14px;
-      font-family: 'Sora', sans-serif;
-      font-size: 14px; font-weight: 600; color: var(--navy);
-    }
+    .spinner-ring { width: 52px; height: 52px; border: 3px solid var(--border); border-top-color: var(--navy-mid); border-radius: 50%; animation: spin 0.75s linear infinite; }
+    .spinner-text { margin-top: 14px; font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600; color: var(--navy); }
 
     @keyframes spin { to { transform: rotate(360deg); } }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(14px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+    @keyframes fadeUp { from { opacity:0; transform: translateY(14px); } to { opacity:1; transform: translateY(0); } }
   </style>
 </head>
 <body>
 
-  <div class="top-bar"></div>
+<div class="top-bar"></div>
 
-  <div class="spinner-overlay" id="spinnerOverlay">
-    <div class="spinner-ring"></div>
-    <div class="spinner-text">A carregar...</div>
+<div class="spinner-overlay" id="spinnerOverlay">
+  <div class="spinner-ring"></div>
+  <div class="spinner-text">A carregar...</div>
+</div>
+
+<!-- WhatsApp popup -->
+<div class="wa-popup" id="waPopup">
+  <div class="wa-popup-icon">
+    <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.532 5.858L.057 23.5l5.779-1.516A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.794 9.794 0 01-5.003-1.374l-.359-.213-3.43.9.915-3.34-.234-.375A9.79 9.79 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>
+  </div>
+  <div class="wa-popup-text">
+    <div class="wa-popup-title">Comunidade Kaixepa</div>
+    <div class="wa-popup-sub">Junte-se ao grupo oficial no WhatsApp</div>
+  </div>
+  <div class="wa-popup-btns">
+    <a class="btn-wa-join" href="https://chat.whatsapp.com/CEMTe2E7x0jIrr9wjTZ602?mode=gi_t" target="_blank" onclick="fecharWaPopup()">Entrar</a>
+    <button class="btn-wa-close" onclick="fecharWaPopup()">Agora nao</button>
+  </div>
+</div>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-brand">
+      <div class="hero-logo"><img src="https://i.postimg.cc/d1YH4jN9/1774713423099.jpg" alt="Kaixepa SA" /></div>
+      <div class="hero-name">Kaixepa SA<span>Sociedade Mineira</span></div>
+    </div>
+    <button class="hero-notif" onclick="toggleWaPopup()">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      <div class="notif-dot"></div>
+    </button>
+  </div>
+  <div class="hero-greeting">Bem-vindo de volta,</div>
+  <div class="hero-username" id="heroUsername">Carregando...</div>
+
+  <div class="balance-card">
+    <div class="balance-label">Saldo disponivel</div>
+    <div class="balance-main" id="heroSaldo">-- Kz</div>
+    <div class="balance-row">
+      <div class="balance-mini">
+        <div class="balance-mini-lbl">Bonus</div>
+        <div class="balance-mini-val green" id="heroBonus">-- Kz</div>
+      </div>
+      <div class="balance-mini">
+        <div class="balance-mini-lbl">Capital investido</div>
+        <div class="balance-mini-val orange" id="heroCapital">-- Kz</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Main -->
+<div class="main">
+
+  <!-- Acesso rapido -->
+  <div class="quick-grid" style="margin-top:4px">
+    <a class="quick-item" href="deposito.html">
+      <div class="quick-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg></div>
+      <span class="quick-label">Deposito</span>
+    </a>
+    <a class="quick-item" href="levantamento.html">
+      <div class="quick-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg></div>
+      <span class="quick-label">Levantar</span>
+    </a>
+    <a class="quick-item" href="convite.html">
+      <div class="quick-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
+      <span class="quick-label">Convidar</span>
+    </a>
+    <a class="quick-item" href="historico.html">
+      <div class="quick-icon"><svg viewBox="0 0 24 24"><polyline points="12 8 12 12 14 14"/><path d="M3.05 11a9 9 0 1 0 .5-4.5"/><polyline points="3 3 3 7 7 7"/></svg></div>
+      <span class="quick-label">Historico</span>
+    </a>
   </div>
 
-  <!-- WhatsApp popup -->
-  <div class="wa-popup" id="waPopup">
-    <div class="wa-popup-icon">
-      <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.532 5.858L.057 23.5l5.779-1.516A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.794 9.794 0 01-5.003-1.374l-.359-.213-3.43.9.915-3.34-.234-.375A9.79 9.79 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>
+  <!-- Investimento -->
+  <div class="sec-header">
+    <div class="sec-title">Investimento activo</div>
+    <a class="sec-link" href="compra.html">Ver planos →</a>
+  </div>
+  <div id="investSection"></div>
+
+  <!-- Sobre -->
+  <div class="sec-header" style="margin-top:4px">
+    <div class="sec-title">Sobre o Kaixepa</div>
+  </div>
+  <div class="about-card">
+    <div class="about-head">
+      <div class="about-head-title">Sociedade Mineira do Kaixepa S.A.</div>
+      <div class="about-head-sub">Fundada em Angola — Exploracao de Diamantes</div>
     </div>
-    <div class="wa-popup-text">
-      <div class="wa-popup-title">Comunidade Kaixepa</div>
-      <div class="wa-popup-sub">Junte-se ao grupo oficial no WhatsApp</div>
-    </div>
-    <div class="wa-popup-btns">
-      <a class="btn-wa-join" href="https://chat.whatsapp.com/CEMTe2E7x0jIrr9wjTZ602?mode=gi_t" target="_blank" onclick="fecharWaPopup()">Entrar</a>
-      <button class="btn-wa-close" onclick="fecharWaPopup()">Agora nao</button>
+    <div class="about-body">
+      <div class="about-text">A Sociedade Mineira do Kaixepa S.A. e uma empresa angolana com longa trajetoria na exploracao e comercializacao de diamantes nas regioes de Lunda Norte e Lunda Sul. Com mais de duas decadas de actividade, a empresa consolida a sua posicao como referencia no sector mineiro nacional, contribuindo para o desenvolvimento economico de Angola e gerando oportunidades de investimento sustentaveis para os seus parceiros e accionistas.</div>
     </div>
   </div>
 
-  <!-- Hero -->
-  <div class="hero">
-    <div class="hero-top">
-      <div class="hero-brand">
-        <div class="hero-logo">
-          <img src="https://i.postimg.cc/d1YH4jN9/1774713423099.jpg" alt="Kaixepa SA" />
-        </div>
-        <div class="hero-name">
-          Kaixepa SA
-          <span>Sociedade Mineira</span>
-        </div>
+  <!-- Info tiles -->
+  <div class="info-tiles">
+    <div class="info-tile">
+      <div class="info-tile-icon"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+      <div>
+        <div class="info-tile-title">Investimento Seguro</div>
+        <div class="info-tile-sub">Fundos garantidos pela actividade mineira real da empresa</div>
       </div>
-      <button class="hero-notif" onclick="toggleWaPopup()">
-        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-        <div class="notif-dot"></div>
-      </button>
     </div>
-
-    <div class="hero-greeting">Bem-vindo de volta,</div>
-    <div class="hero-username" id="heroUsername">Carregando...</div>
+    <div class="info-tile">
+      <div class="info-tile-icon green"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+      <div>
+        <div class="info-tile-title">Ganhos Diarios</div>
+        <div class="info-tile-sub">Rendimentos creditados diariamente na sua conta</div>
+      </div>
+    </div>
+    <div class="info-tile">
+      <div class="info-tile-icon orange"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
+      <div>
+        <div class="info-tile-title">Programa de Referencia</div>
+        <div class="info-tile-sub">Ganhe 10% de comissao sobre cada amigo que investir</div>
+      </div>
+    </div>
   </div>
 
-  <!-- Main -->
-  <div class="main">
+</div>
 
-    <!-- Acesso rapido -->
-    <div class="quick-grid" style="margin-top:4px">
-      <a class="quick-item" href="deposito.html">
-        <div class="quick-icon">
-          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
-        </div>
-        <span class="quick-label">Deposito</span>
-      </a>
-      <a class="quick-item" href="levantamento.html">
-        <div class="quick-icon">
-          <svg viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
-        </div>
-        <span class="quick-label">Levantar</span>
-      </a>
-      <a class="quick-item" href="convite.html">
-        <div class="quick-icon">
-          <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-        </div>
-        <span class="quick-label">Convidar</span>
-      </a>
-      <a class="quick-item" href="historico.html">
-        <div class="quick-icon">
-          <svg viewBox="0 0 24 24"><polyline points="12 8 12 12 14 14"/><path d="M3.05 11a9 9 0 1 0 .5-4.5"/><polyline points="3 3 3 7 7 7"/></svg>
-        </div>
-        <span class="quick-label">Historico</span>
-      </a>
-    </div>
+<!-- Nav -->
+<nav class="bottom-nav">
+  <a class="nav-item active" href="index.html">
+    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    Inicio
+  </a>
+  <a class="nav-item" href="compra.html">
+    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 001.95-1.57l1.65-7.43H6"/></svg>
+    Compra
+  </a>
+  <a class="nav-item" href="ganhos.html">
+    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+    Ganhos
+  </a>
+  <a class="nav-item" href="conta.html">
+    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    Conta
+  </a>
+</nav>
 
-    <!-- Sobre a empresa -->
-    <div class="sec-header">
-      <div class="sec-title">Sobre o Kaixepa</div>
-    </div>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    <div class="about-card" style="margin-bottom:16px">
-      <div class="about-header">
-        <div class="about-header-title">Sociedade Mineira do Kaixepa S.A.</div>
-        <div class="about-header-sub">Fundada em Angola - Exploracao de Diamantes</div>
-      </div>
-      <div class="about-body">
-        <div class="about-text">
-          A Sociedade Mineira do Kaixepa S.A. e uma empresa angolana com longa trajetoria na exploracao e comercializacao de diamantes nas regioes de Lunda Norte e Lunda Sul. Com mais de duas decadas de actividade, a empresa consolida a sua posicao como referencia no sector mineiro nacional, contribuindo para o desenvolvimento economico de Angola e gerando oportunidades de investimento sustentaveis para os seus parceiros e accionistas.
-        </div>
-      </div>
-    </div>
+  const app = initializeApp({
+    apiKey: "AIzaSyBp8X1PPp3FqiQ6OXErr8Mu11GEp6MZ2-U",
+    authDomain: "ascend-34bf0.firebaseapp.com",
+    projectId: "ascend-34bf0",
+    storageBucket: "ascend-34bf0.firebasestorage.app",
+    messagingSenderId: "592623076677",
+    appId: "1:592623076677:web:c5615719870aefdabf6a2c"
+  });
 
-    <!-- Tiles info -->
-    <div class="info-tiles">
-      <div class="info-tile">
-        <div class="info-tile-icon">
-          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        </div>
-        <div>
-          <div class="info-tile-title">Investimento Seguro</div>
-          <div class="info-tile-sub">Fundos garantidos pela actividade mineira real da empresa</div>
-        </div>
-      </div>
-      <div class="info-tile">
-        <div class="info-tile-icon">
-          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-        </div>
-        <div>
-          <div class="info-tile-title">Ganhos Diarios</div>
-          <div class="info-tile-sub">Rendimentos creditados diariamente na sua conta</div>
-        </div>
-      </div>
-      <div class="info-tile">
-        <div class="info-tile-icon">
-          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-        </div>
-        <div>
-          <div class="info-tile-title">Programa de Referencia</div>
-          <div class="info-tile-sub">Ganhe 10% de comissao sobre cada amigo que investir</div>
-        </div>
-      </div>
-    </div>
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-  </div>
+  function fmt(n) { return (n || 0).toLocaleString('pt-AO') + ' Kz'; }
 
-  <!-- Nav inferior -->
-  <nav class="bottom-nav">
-    <a class="nav-item active" href="index.html">
-      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-      Inicio
-    </a>
-    <a class="nav-item" href="compra.html">
-      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 001.95-1.57l1.65-7.43H6"/></svg>
-      Compra
-    </a>
-    <a class="nav-item" href="ganhos.html">
-      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-      Ganhos
-    </a>
-    <a class="nav-item" href="conta.html">
-      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      Conta
-    </a>
-  </nav>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-    const app = initializeApp({
-      apiKey: "AIzaSyBp8X1PPp3FqiQ6OXErr8Mu11GEp6MZ2-U",
-      authDomain: "ascend-34bf0.firebaseapp.com",
-      projectId: "ascend-34bf0",
-      storageBucket: "ascend-34bf0.firebasestorage.app",
-      messagingSenderId: "592623076677",
-      appId: "1:592623076677:web:c5615719870aefdabf6a2c"
-    });
-
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    function fmt(n) {
-      return (n || 0).toLocaleString('pt-AO') + ' Kz';
+  function renderInvestSection(inv) {
+    const el = document.getElementById('investSection');
+    if (!inv) {
+      el.innerHTML = `
+        <div class="no-invest">
+          <div class="no-invest-icon"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+          <div class="no-invest-title">Sem investimento activo</div>
+          <div class="no-invest-sub">Adquira um plano de investimento para comecar a receber ganhos diarios.</div>
+          <a class="btn-invest" href="compra.html"><svg viewBox="0 0 24 24"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>Escolher plano</a>
+        </div>`;
+      return;
     }
 
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) { window.location.href = 'auth.html'; return; }
+    const isCurto = inv.tipo === 'curto';
+    const stat2Label = isCurto ? 'Retorno/parcela' : 'Ganho diario';
+    const stat2Val = isCurto ? fmt(inv.retorno25 || 0) : fmt(inv.diario || 0);
 
-      const snap = await getDoc(doc(db, 'users', user.uid));
-      document.getElementById('spinnerOverlay').classList.remove('show');
+    el.innerHTML = `
+      <a class="active-invest" href="ganhos.html">
+        <div class="ai-top">
+          <div class="ai-name">${inv.nome}</div>
+          <div class="ai-badge">${isCurto ? 'Curto Prazo' : 'Activo'}</div>
+        </div>
+        <div class="ai-stats">
+          <div class="ai-stat">
+            <div class="ai-stat-lbl">Capital</div>
+            <div class="ai-stat-val">${fmt(inv.valor)}</div>
+          </div>
+          <div class="ai-stat">
+            <div class="ai-stat-lbl">${stat2Label}</div>
+            <div class="ai-stat-val green">${stat2Val}</div>
+          </div>
+        </div>
+        <div class="ai-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </a>`;
+  }
 
-      if (!snap.exists()) return;
-      const d = snap.data();
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) { window.location.href = 'auth.html'; return; }
+    const snap = await getDoc(doc(db, 'users', user.uid));
+    document.getElementById('spinnerOverlay').classList.remove('show');
+    if (!snap.exists()) return;
+    const d = snap.data();
 
-      // Nome
-      const primeiroNome = (d.nome || 'Investidor').split(' ')[0];
-      document.getElementById('heroUsername').textContent = primeiroNome;
+    document.getElementById('heroUsername').textContent = (d.nome || 'Investidor').split(' ')[0];
+    document.getElementById('heroSaldo').textContent = fmt(d.saldo);
+    document.getElementById('heroBonus').textContent = fmt(d.bonus);
+    document.getElementById('heroCapital').textContent = fmt(d.capital);
 
-      // Mostrar popup WhatsApp apos 2.5s
-      setTimeout(() => {
-        if (!localStorage.getItem('wa_popup_dismissed')) {
-          document.getElementById('waPopup').classList.add('show');
-        }
-      }, 2500);
-    });
+    renderInvestSection(d.investimentoActivo || null);
 
-    document.getElementById('spinnerOverlay').classList.add('show');
-  </script>
+    setTimeout(() => {
+      if (!localStorage.getItem('wa_popup_dismissed')) {
+        document.getElementById('waPopup').classList.add('show');
+      }
+    }, 2500);
+  });
 
-  <script>
-    window.toggleWaPopup = function() {
-      document.getElementById('waPopup').classList.toggle('show');
-    };
+  document.getElementById('spinnerOverlay').classList.add('show');
+</script>
 
-    window.fecharWaPopup = function() {
-      document.getElementById('waPopup').classList.remove('show');
-      localStorage.setItem('wa_popup_dismissed', '1');
-    };
-  </script>
+<script>
+  window.toggleWaPopup = () => document.getElementById('waPopup').classList.toggle('show');
+  window.fecharWaPopup = () => {
+    document.getElementById('waPopup').classList.remove('show');
+    localStorage.setItem('wa_popup_dismissed', '1');
+  };
+</script>
 
 </body>
 </html>
