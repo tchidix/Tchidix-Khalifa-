@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kaixepa SA - Planos de Investimento</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy: #1a3a6b;
+      --navy-mid: #1e4d8c;
+      --navy-light: #2560a8;
+      --sky-blue: #1e4d8c;
+      --sky-mid: #2560a8;
+      --sky-light: #5b8fd4;
+      --orange: #f57c00;
+      --orange-light: #ff9800;
+      --white: #ffffff;
+      --off-white: #f8faff;
+      --text-dark: #0d0d0d;
+      --text-muted: #5a6a7e;
+      --border: #dce6f5;
+      --success: #2e7d32;
+      --error: #c62828;
+      --nav-h: 64px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--off-white);
+      color: var(--text-dark);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background:
+        radial-gradient(ellipse 70% 40% at 0% 0%, rgba(26,58,107,0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 100% 80%, rgba(30,77,140,0.04) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .top-bar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--navy), var(--sky-blue), var(--sky-light), var(--navy));
+      z-index: 200;
+    }
+
+    /* Header */
+    .header {
+      position: fixed;
+      top: 3px; left: 0; right: 0;
+      height: 56px;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      z-index: 100;
+    }
+
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-icon {
+      width: 34px;
+      height: 34px;
+      background: linear-gradient(135deg, var(--navy), var(--sky-blue));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .header-icon svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: white;
+      stroke-width: 1.8;
+    }
+
+    .header-title {
+      font-family: 'Sora', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--navy);
+    }
+
+    .header-right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .saldo-chip {
+      background: #e3f2fd;
+      border: 1px solid #bbdefb;
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--sky-blue);
+      font-family: 'Sora', sans-serif;
+    }
+
+    /* Conteudo principal */
+    .main {
+      position: relative;
+      z-index: 1;
+      padding: 75px 16px calc(var(--nav-h) + 20px);
+    }
+
+    /* Tabs curto/longo prazo */
+    .section-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .stab {
+      flex: 1;
+      padding: 10px 8px;
+      border-radius: 12px;
+      border: 1.5px solid var(--border);
+      background: white;
+      font-family: 'Sora', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .stab.active {
+      background: var(--navy);
+      border-color: var(--navy);
+      color: white;
+    }
+
+    /* Label de secção */
+    .section-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .section-label-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--sky-blue);
+    }
+
+    .section-label-text {
+      font-family: 'Sora', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    .section-label-badge {
+      margin-left: auto;
+      background: #fff3cd;
+      border: 1px solid #ffe082;
+      border-radius: 20px;
+      padding: 2px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #e65100;
+    }
+
+    /* Cards de plano */
+    .plans-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 8px;
+    }
+
+    .plan-card {
+      background: white;
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: 18px 16px;
+      position: relative;
+      overflow: hidden;
+      transition: box-shadow 0.2s, transform 0.2s;
+      animation: fadeUp 0.4s ease both;
+    }
+
+    .plan-card:hover {
+      box-shadow: 0 6px 24px rgba(26,58,107,0.13);
+      transform: translateY(-2px);
+    }
+
+    .plan-card.featured {
+      border-color: var(--navy-mid);
+    }
+
+    .plan-card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .plan-card-header-icon {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      overflow: hidden;
+      flex-shrink: 0;
+      border: 1.5px solid var(--border);
+    }
+
+    .plan-card-header-icon img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+
+    .plan-card-header-text { flex: 1; }
+
+    .plan-card-header-name {
+      font-family: 'Sora', sans-serif;
+      font-size: 15px; font-weight: 700; color: var(--navy);
+    }
+
+    .plan-card-header-sub {
+      font-size: 11px; color: var(--text-muted); margin-top: 1px;
+    }
+
+    .plan-badge {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      background: linear-gradient(135deg, var(--orange), var(--orange-light));
+      color: white;
+      font-family: 'Sora', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 20px;
+      letter-spacing: 0.3px;
+    }
+
+    .plan-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .plan-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--navy), var(--sky-blue));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .plan-icon svg {
+      width: 20px;
+      height: 20px;
+      fill: none;
+      stroke: white;
+      stroke-width: 1.8;
+    }
+
+    .plan-name {
+      font-family: 'Sora', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 2px;
+    }
+
+    .plan-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .plan-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .stat-box {
+      background: var(--off-white);
+      border-radius: 10px;
+      padding: 10px 8px;
+      text-align: center;
+    }
+
+    .stat-val {
+      font-family: 'Sora', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 2px;
+    }
+
+    .stat-val.green {
+      color: var(--success);
+    }
+
+    .stat-label {
+      font-size: 10px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .btn-buy {
+      width: 100%;
+      padding: 13px;
+      background: linear-gradient(135deg, var(--navy), var(--sky-blue));
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-family: 'Sora', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+
+    .btn-buy:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    .btn-buy:active {
+      transform: translateY(0);
+    }
+
+    /* Spinner */
+    .spinner-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(255,255,255,0.88);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    .spinner-overlay.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .spinner-ring {
+      width: 52px;
+      height: 52px;
+      border: 3px solid var(--border);
+      border-top-color: var(--sky-blue);
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+    }
+
+    .spinner-text {
+      margin-top: 14px;
+      font-family: 'Sora', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--navy);
+    }
+
+    /* Modal confirmacao / resultado */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10,22,40,0.5);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+
+    .modal-overlay.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal-sheet {
+      width: 100%;
+      max-width: 480px;
+      background: white;
+      border-radius: 24px 24px 0 0;
+      padding: 28px 24px 40px;
+      transform: translateY(100%);
+      transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .modal-overlay.show .modal-sheet {
+      transform: translateY(0);
+    }
+
+    .modal-handle {
+      width: 40px;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      margin: 0 auto 20px;
+    }
+
+    .modal-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 14px;
+    }
+
+    .modal-icon.confirm { background: #e3f2fd; }
+    .modal-icon.success { background: #e8f5e9; }
+    .modal-icon.error   { background: #ffebee; }
+
+    .modal-icon svg {
+      width: 26px;
+      height: 26px;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .modal-title {
+      font-family: 'Sora', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--navy);
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .modal-msg {
+      font-size: 14px;
+      color: var(--text-muted);
+      text-align: center;
+      line-height: 1.6;
+      margin-bottom: 18px;
+    }
+
+    .modal-plan-box {
+      background: var(--off-white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 18px;
+    }
+
+    .modal-plan-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 0;
+    }
+
+    .modal-plan-row:not(:last-child) {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+      margin-bottom: 8px;
+    }
+
+    .modal-plan-key {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .modal-plan-val {
+      font-family: 'Sora', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--navy);
+    }
+
+    .modal-plan-val.green { color: var(--success); }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-cancel {
+      flex: 1;
+      padding: 13px;
+      background: none;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      font-family: 'Sora', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .btn-confirm {
+      flex: 2;
+      padding: 13px;
+      background: linear-gradient(135deg, var(--navy), var(--sky-blue));
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-family: 'Sora', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-close-modal {
+      width: 100%;
+      padding: 13px;
+      background: var(--navy);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-family: 'Sora', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Aviso saldo insuficiente */
+    .alert-box {
+      background: #fff8e1;
+      border: 1px solid #ffe082;
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 13px;
+      color: #e65100;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .alert-box.show { display: block; }
+
+    /* Nav inferior */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: var(--nav-h);
+      background: white;
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      z-index: 100;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-family: 'Sora', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      transition: color 0.2s;
+      cursor: pointer;
+      border: none;
+      background: none;
+    }
+
+    .nav-item svg {
+      width: 22px;
+      height: 22px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.8;
+    }
+
+    .nav-item.active {
+      color: var(--sky-blue);
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar"></div>
+
+  <!-- Spinner -->
+  <div class="spinner-overlay" id="spinnerOverlay">
+    <div class="spinner-ring"></div>
+    <div class="spinner-text" id="spinnerText">A processar...</div>
+  </div>
+
+  <!-- Modal confirmacao / resultado -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-sheet" id="modalSheet">
+      <div class="modal-handle"></div>
+      <div class="modal-icon" id="modalIcon">
+        <svg id="modalIconSvg" viewBox="0 0 24 24"></svg>
+      </div>
+      <div class="modal-title" id="modalTitle"></div>
+      <div class="modal-msg" id="modalMsg"></div>
+      <div class="modal-plan-box" id="modalPlanBox">
+        <div class="modal-plan-row">
+          <span class="modal-plan-key">Plano</span>
+          <span class="modal-plan-val" id="mPlano"></span>
+        </div>
+        <div class="modal-plan-row">
+          <span class="modal-plan-key">Valor</span>
+          <span class="modal-plan-val" id="mValor"></span>
+        </div>
+        <div class="modal-plan-row">
+          <span class="modal-plan-key">Ganho diario</span>
+          <span class="modal-plan-val green" id="mDiario"></span>
+        </div>
+        <div class="modal-plan-row">
+          <span class="modal-plan-key">Duracao</span>
+          <span class="modal-plan-val" id="mDuracao"></span>
+        </div>
+      </div>
+      <div id="modalActionsConfirm" class="modal-actions">
+        <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+        <button class="btn-confirm" id="btnConfirmBuy" onclick="confirmarCompra()">Confirmar Compra</button>
+      </div>
+      <div id="modalActionsResult" style="display:none">
+        <button class="btn-close-modal" onclick="closeModal()">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-logo">
+      <div class="header-icon">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+          <polyline points="2 17 12 22 22 17"/>
+          <polyline points="2 12 12 17 22 12"/>
+        </svg>
+      </div>
+      <span class="header-title">Planos de Investimento</span>
+    </div>
+    <div class="header-right">
+      <div class="saldo-chip" id="saldoChip">Saldo: -- Kz</div>
+    </div>
+  </div>
+
+  <!-- Conteudo -->
+  <div class="main">
+
+    <!-- Tabs -->
+    <div class="section-tabs">
+      <button class="stab active" id="tabCurto" onclick="showSection('curto')">Curto Prazo</button>
+      <button class="stab" id="tabLongo" onclick="showSection('longo')">Longo Prazo</button>
+    </div>
+
+    <!-- CURTO PRAZO -->
+    <div id="sectionCurto">
+      <div class="section-label">
+        <div class="section-label-dot"></div>
+        <span class="section-label-text">Diamantes - 50 dias</span>
+        <span class="section-label-badge">Curto Prazo</span>
+      </div>
+
+      <div class="plans-grid" id="plansCurto"></div>
+    </div>
+
+    <!-- LONGO PRAZO -->
+    <div id="sectionLongo" style="display:none">
+      <div class="section-label">
+        <div class="section-label-dot"></div>
+        <span class="section-label-text">Minas - Longo Prazo</span>
+        <span class="section-label-badge">Alto Retorno</span>
+      </div>
+
+      <div class="plans-grid" id="plansLongo"></div>
+    </div>
+
+  </div>
+
+  <!-- Nav inferior -->
+  <nav class="bottom-nav">
+    <a class="nav-item" href="index.html">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Inicio
+    </a>
+    <a class="nav-item active" href="compra.html">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 001.95-1.57l1.65-7.43H6"/></svg>
+      Compra
+    </a>
+    <a class="nav-item" href="ganhos.html">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+      Ganhos
+    </a>
+    <a class="nav-item" href="conta.html">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Conta
+    </a>
+  </nav>
+
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+      getFirestore, doc, getDoc, setDoc, updateDoc,
+      collection, addDoc, serverTimestamp, query, where, getDocs
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBp8X1PPp3FqiQ6OXErr8Mu11GEp6MZ2-U",
+      authDomain: "ascend-34bf0.firebaseapp.com",
+      projectId: "ascend-34bf0",
+      storageBucket: "ascend-34bf0.firebasestorage.app",
+      messagingSenderId: "592623076677",
+      appId: "1:592623076677:web:c5615719870aefdabf6a2c"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUser = null;
+    let userData = null;
+    let planSelecionado = null;
+
+    // Planos
+    const planosCurto = [
+      { id: 'diamante1kl', nome: 'Diamante 1KL', valor: 6000, diario: 350, dias: 50, tipo: 'curto', featured: false },
+      { id: 'diamante2ml', nome: 'Diamante 2ML', valor: 12000, diario: 700, dias: 50, tipo: 'curto', featured: true },
+      { id: 'diamante3kl', nome: 'Diamante 3KL', valor: 18000, diario: 1050, dias: 50, tipo: 'curto', featured: false },
+      { id: 'diamante4kl', nome: 'Diamante 4KL', valor: 24000, diario: 1400, dias: 50, tipo: 'curto', featured: false },
+    ];
+
+    const planosLongo = [
+      { id: 'mina_s1', nome: 'Mina S1', valor: 10000, diario: 500, dias: null, tipo: 'longo', featured: false },
+      { id: 'mina_s2', nome: 'Mina S2', valor: 15000, diario: 800, dias: null, tipo: 'longo', featured: false },
+      { id: 'mina_s3', nome: 'Mina S3', valor: 27000, diario: 1600, dias: null, tipo: 'longo', featured: true },
+      { id: 'mina_s4', nome: 'Mina S4', valor: 37000, diario: 2500, dias: null, tipo: 'longo', featured: false },
+      { id: 'mina_s5', nome: 'Mina S5', valor: 50000, diario: 3500, dias: null, tipo: 'longo', featured: false },
+    ];
+
+    function fmt(n) {
+      return n.toLocaleString('pt-AO') + ' Kz';
+    }
+
+    function renderPlanos(planos, containerId) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+      planos.forEach((p, i) => {
+        const totalRetorno = p.dias ? p.diario * p.dias : null;
+        const card = document.createElement('div');
+        card.className = 'plan-card' + (p.featured ? ' featured' : '');
+        card.style.animationDelay = (i * 0.07) + 's';
+        card.innerHTML = `
+          ${p.featured ? '<div class="plan-badge">Popular</div>' : ''}
+          <div class="plan-card-header">
+            <div class="plan-card-header-icon">
+              <img src="https://i.postimg.cc/d1YH4jN9/1774713423099.jpg" alt="${p.nome}" />
+            </div>
+            <div class="plan-card-header-text">
+              <div class="plan-card-header-name">${p.nome}</div>
+              <div class="plan-card-header-sub">${p.tipo === 'curto' ? 'Curto prazo - 50 dias' : 'Longo prazo'}</div>
+            </div>
+          </div>
+          <div class="plan-stats">
+            <div class="stat-box">
+              <div class="stat-val">${fmt(p.valor)}</div>
+              <div class="stat-label">Investimento</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-val green">${fmt(p.diario)}</div>
+              <div class="stat-label">Ganho Diario</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-val">${totalRetorno ? fmt(totalRetorno) : 'Ilimitado'}</div>
+              <div class="stat-label">${p.dias ? 'Retorno Total' : 'Tipo'}</div>
+            </div>
+          </div>
+          <button class="btn-buy" onclick="iniciarCompra('${p.id}')">Comprar este plano</button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    window.iniciarCompra = function(planId) {
+      const todos = [...planosCurto, ...planosLongo];
+      planSelecionado = todos.find(p => p.id === planId);
+      if (!planSelecionado) return;
+
+      if (!currentUser) {
+        window.location.href = 'auth.html';
+        return;
+      }
+
+      document.getElementById('mPlano').textContent = planSelecionado.nome;
+      document.getElementById('mValor').textContent = fmt(planSelecionado.valor);
+      document.getElementById('mDiario').textContent = fmt(planSelecionado.diario) + '/dia';
+      document.getElementById('mDuracao').textContent = planSelecionado.dias ? planSelecionado.dias + ' dias' : 'Longo prazo';
+
+      // Mostrar modal confirmacao
+      const icon = document.getElementById('modalIcon');
+      const iconSvg = document.getElementById('modalIconSvg');
+      icon.className = 'modal-icon confirm';
+      iconSvg.setAttribute('stroke', '#1565c0');
+      iconSvg.innerHTML = '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>';
+      document.getElementById('modalTitle').textContent = 'Confirmar Investimento';
+      document.getElementById('modalMsg').textContent = 'Reveja os detalhes do plano antes de confirmar. O valor sera debitado do seu saldo disponivel.';
+      document.getElementById('modalPlanBox').style.display = 'block';
+      document.getElementById('modalActionsConfirm').style.display = 'flex';
+      document.getElementById('modalActionsResult').style.display = 'none';
+
+      document.getElementById('modalOverlay').classList.add('show');
+    };
+
+    window.confirmarCompra = async function() {
+      if (!planSelecionado || !currentUser) return;
+
+      closeModal();
+      showSpinner('A processar investimento...');
+
+      try {
+        const userRef = doc(db, 'users', currentUser.uid);
+        const snap = await getDoc(userRef);
+        const data = snap.data();
+
+        if (data.saldo < planSelecionado.valor) {
+          hideSpinner();
+          mostrarResultado('error',
+            'Saldo insuficiente',
+            `O seu saldo disponivel e insuficiente para adquirir o plano ${planSelecionado.nome}. Por favor efectue um deposito e tente novamente.`
+          );
+          return;
+        }
+
+        const novoSaldo = data.saldo - planSelecionado.valor;
+        const novoCapital = (data.capital || 0) + planSelecionado.valor;
+
+        await updateDoc(userRef, {
+          saldo: novoSaldo,
+          capital: novoCapital,
+          investimentoActivo: {
+            planId: planSelecionado.id,
+            nome: planSelecionado.nome,
+            valor: planSelecionado.valor,
+            diario: planSelecionado.diario,
+            tipo: planSelecionado.tipo,
+            dias: planSelecionado.dias || null,
+            iniciadoEm: serverTimestamp(),
+            ultimoGanho: null
+          }
+        });
+
+        // Registar no historico
+        await addDoc(collection(db, 'users', currentUser.uid, 'historico'), {
+          tipo: 'investimento',
+          descricao: 'Compra do plano ' + planSelecionado.nome,
+          valor: -planSelecionado.valor,
+          data: serverTimestamp()
+        });
+
+        // Verificar e processar comissao de referencia (10% do 1o investimento)
+        const refPendSnap = await getDoc(doc(db, 'referrals_pending', currentUser.uid));
+        if (refPendSnap.exists() && !refPendSnap.data().processado) {
+          const refData = refPendSnap.data();
+          const comissao = Math.floor(planSelecionado.valor * 0.10);
+
+          // Encontrar referente pelo referralId
+          const refQuery = query(collection(db, 'users'), where('referralId', '==', refData.convidadoPor));
+          const refDocs = await getDocs(refQuery);
+          if (!refDocs.empty) {
+            const refDoc = refDocs.docs[0];
+            const refSaldo = (refDoc.data().saldo || 0) + comissao;
+            await updateDoc(doc(db, 'users', refDoc.id), { saldo: refSaldo });
+            await addDoc(collection(db, 'users', refDoc.id, 'historico'), {
+              tipo: 'comissao',
+              descricao: 'Comissao de referencia - 10% de ' + planSelecionado.nome,
+              valor: comissao,
+              data: serverTimestamp()
+            });
+          }
+          await updateDoc(doc(db, 'referrals_pending', currentUser.uid), { processado: true });
+        }
+
+        document.getElementById('saldoChip').textContent = 'Saldo: ' + novoSaldo.toLocaleString('pt-AO') + ' Kz';
+
+        hideSpinner();
+        mostrarResultado('success',
+          'Investimento confirmado!',
+          `O plano ${planSelecionado.nome} foi activado com sucesso. O seu ganho diario de ${fmt(planSelecionado.diario)} ja esta a ser contabilizado.`
+        );
+
+      } catch (e) {
+        hideSpinner();
+        mostrarResultado('error',
+          'Erro ao processar',
+          'Ocorreu um erro inesperado. Verifique a sua ligacao e tente novamente.'
+        );
+      }
+    };
+
+    function mostrarResultado(tipo, titulo, msg) {
+      const icon = document.getElementById('modalIcon');
+      const iconSvg = document.getElementById('modalIconSvg');
+      icon.className = 'modal-icon ' + tipo;
+      if (tipo === 'success') {
+        iconSvg.setAttribute('stroke', '#2e7d32');
+        iconSvg.innerHTML = '<polyline points="20 6 9 17 4 12"/>';
+      } else {
+        iconSvg.setAttribute('stroke', '#c62828');
+        iconSvg.innerHTML = '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>';
+      }
+      document.getElementById('modalTitle').textContent = titulo;
+      document.getElementById('modalMsg').textContent = msg;
+      document.getElementById('modalPlanBox').style.display = 'none';
+      document.getElementById('modalActionsConfirm').style.display = 'none';
+      document.getElementById('modalActionsResult').style.display = 'block';
+      document.getElementById('modalOverlay').classList.add('show');
+    }
+
+    window.closeModal = function() {
+      document.getElementById('modalOverlay').classList.remove('show');
+    };
+
+    function showSpinner(msg) {
+      document.getElementById('spinnerText').textContent = msg;
+      document.getElementById('spinnerOverlay').classList.add('show');
+    }
+
+    function hideSpinner() {
+      document.getElementById('spinnerOverlay').classList.remove('show');
+    }
+
+    // Auth check
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = 'auth.html';
+        return;
+      }
+      currentUser = user;
+      const snap = await getDoc(doc(db, 'users', user.uid));
+      if (snap.exists()) {
+        userData = snap.data();
+        document.getElementById('saldoChip').textContent = 'Saldo: ' + (userData.saldo || 0).toLocaleString('pt-AO') + ' Kz';
+      }
+    });
+
+    // Render inicial
+    renderPlanos(planosCurto, 'plansCurto');
+    renderPlanos(planosLongo, 'plansLongo');
+  </script>
+
+  <script>
+    window.showSection = function(sec) {
+      document.getElementById('sectionCurto').style.display = sec === 'curto' ? 'block' : 'none';
+      document.getElementById('sectionLongo').style.display = sec === 'longo' ? 'block' : 'none';
+      document.getElementById('tabCurto').classList.toggle('active', sec === 'curto');
+      document.getElementById('tabLongo').classList.toggle('active', sec === 'longo');
+    };
+  </script>
+
+</body>
+</html>

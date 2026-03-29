@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kaixepa SA - Conta</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy: #1a3a6b;
+      --navy-mid: #1e4d8c;
+      --navy-light: #2560a8;
+      --orange: #f57c00;
+      --orange-light: #ff9800;
+      --white: #ffffff;
+      --off-white: #f8faff;
+      --text-dark: #0d0d0d;
+      --text-muted: #5a6a7e;
+      --border: #dce6f5;
+      --success: #2e7d32;
+      --error: #c62828;
+      --nav-h: 64px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      min-height: 100%;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--off-white);
+      color: var(--text-dark);
+      overflow-x: hidden;
+    }
+
+    .top-bar {
+      position: fixed;
+      top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--navy), var(--navy-mid), var(--navy-light), var(--navy));
+      z-index: 200;
+    }
+
+    /* Hero perfil */
+    .hero {
+      background: linear-gradient(160deg, var(--navy) 0%, var(--navy-mid) 70%, var(--navy-light) 100%);
+      padding: 36px 20px 20px;
+      position: relative; overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -40px; right: -40px;
+      width: 160px; height: 160px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.04);
+    }
+
+    .hero-avatar {
+      width: 52px; height: 52px;
+      background: rgba(255,255,255,0.15);
+      border: 2px solid rgba(255,255,255,0.25);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 10px;
+    }
+
+    .hero-avatar svg {
+      width: 30px; height: 30px;
+      fill: none; stroke: white; stroke-width: 1.8;
+    }
+
+    .hero-name {
+      font-family: 'Sora', sans-serif;
+      font-size: 17px; font-weight: 800; color: white;
+      margin-bottom: 4px;
+    }
+
+    .hero-email {
+      font-size: 13px; color: rgba(255,255,255,0.65);
+      margin-bottom: 16px;
+    }
+
+    /* Mini card saldo */
+    .mini-card {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 14px;
+      padding: 14px 16px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+
+    .mc-item { text-align: center; }
+
+    .mc-item:not(:last-child) {
+      border-right: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .mc-label {
+      font-size: 10px; color: rgba(255,255,255,0.6);
+      text-transform: uppercase; letter-spacing: 0.4px;
+      margin-bottom: 4px;
+    }
+
+    .mc-val {
+      font-family: 'Sora', sans-serif;
+      font-size: 13px; font-weight: 700; color: white;
+    }
+
+    .mc-val.green { color: #69f0ae; }
+
+    /* Main */
+    .main {
+      padding: 20px 16px calc(var(--nav-h) + 16px);
+    }
+
+    /* Secao menu */
+    .menu-section {
+      margin-bottom: 20px;
+    }
+
+    .menu-section-label {
+      font-family: 'Sora', sans-serif;
+      font-size: 11px; font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 0.6px;
+      margin-bottom: 8px;
+      padding-left: 4px;
+    }
+
+    .menu-list {
+      background: white;
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 15px 16px;
+      text-decoration: none;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+      cursor: pointer;
+      background: none; border-left: none; border-right: none; border-top: none;
+      width: 100%;
+    }
+
+    .menu-item:last-child { border-bottom: none; }
+    .menu-item:hover { background: var(--off-white); }
+
+    .menu-item-icon {
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      background: #eef3fb;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .menu-item-icon svg {
+      width: 18px; height: 18px;
+      fill: none; stroke: var(--navy-mid);
+      stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+    }
+
+    .menu-item-icon.orange { background: #fff3e0; }
+    .menu-item-icon.orange svg { stroke: var(--orange); }
+    .menu-item-icon.red { background: #ffebee; }
+    .menu-item-icon.red svg { stroke: var(--error); }
+    .menu-item-icon.green { background: #e8f5e9; }
+    .menu-item-icon.green svg { stroke: var(--success); }
+
+    .menu-item-text { flex: 1; }
+
+    .menu-item-title {
+      font-family: 'Sora', sans-serif;
+      font-size: 14px; font-weight: 600; color: var(--text-dark);
+    }
+
+    .menu-item-sub {
+      font-size: 12px; color: var(--text-muted); margin-top: 1px;
+    }
+
+    .menu-item-arrow {
+      width: 18px; height: 18px;
+      fill: none; stroke: var(--border);
+      stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+      flex-shrink: 0;
+    }
+
+    .menu-item-badge {
+      background: var(--orange-light);
+      color: white;
+      font-family: 'Sora', sans-serif;
+      font-size: 10px; font-weight: 700;
+      padding: 2px 8px; border-radius: 20px;
+      margin-right: 4px;
+    }
+
+    /* Nav */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: var(--nav-h);
+      background: white;
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      z-index: 100;
+      box-shadow: 0 -4px 16px rgba(26,58,107,0.06);
+    }
+
+    .nav-item {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 4px; text-decoration: none;
+      color: var(--text-muted);
+      font-family: 'Sora', sans-serif;
+      font-size: 10px; font-weight: 600;
+      transition: color 0.2s;
+      border: none; background: none; cursor: pointer;
+    }
+
+    .nav-item svg {
+      width: 22px; height: 22px;
+      stroke: currentColor; fill: none; stroke-width: 1.8;
+    }
+
+    .nav-item.active { color: var(--navy-mid); }
+
+    /* Spinner */
+    .spinner-overlay {
+      position: fixed; inset: 0;
+      background: rgba(255,255,255,0.92);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      z-index: 999; opacity: 0; pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .spinner-overlay.show { opacity: 1; pointer-events: all; }
+    .spinner-ring {
+      width: 52px; height: 52px;
+      border: 3px solid var(--border);
+      border-top-color: var(--navy-mid);
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+    }
+
+    /* Modal confirmacao sair */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(10,22,40,0.5);
+      display: flex; align-items: flex-end; justify-content: center;
+      z-index: 1000; opacity: 0; pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .modal-overlay.show { opacity: 1; pointer-events: all; }
+    .modal-sheet {
+      width: 100%; max-width: 480px;
+      background: white; border-radius: 24px 24px 0 0;
+      padding: 28px 24px 44px;
+      transform: translateY(100%);
+      transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+    }
+    .modal-overlay.show .modal-sheet { transform: translateY(0); }
+    .modal-handle {
+      width: 40px; height: 4px;
+      background: var(--border); border-radius: 2px;
+      margin: 0 auto 22px;
+    }
+    .modal-title {
+      font-family: 'Sora', sans-serif;
+      font-size: 18px; font-weight: 700; color: var(--navy);
+      text-align: center; margin-bottom: 8px;
+    }
+    .modal-msg {
+      font-size: 14px; color: var(--text-muted);
+      text-align: center; line-height: 1.6; margin-bottom: 22px;
+    }
+    .modal-btns { display: flex; gap: 10px; }
+    .btn-cancel {
+      flex: 1; padding: 13px;
+      background: none; border: 1.5px solid var(--border);
+      border-radius: 12px;
+      font-family: 'Sora', sans-serif;
+      font-size: 14px; font-weight: 600; color: var(--text-muted);
+      cursor: pointer;
+    }
+    .btn-logout {
+      flex: 2; padding: 13px;
+      background: var(--error); color: white; border: none;
+      border-radius: 12px;
+      font-family: 'Sora', sans-serif;
+      font-size: 14px; font-weight: 600; cursor: pointer;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar"></div>
+
+  <div class="spinner-overlay" id="spinnerOverlay">
+    <div class="spinner-ring"></div>
+  </div>
+
+  <!-- Modal logout -->
+  <div class="modal-overlay" id="modalLogout">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title">Terminar Sessao</div>
+      <div class="modal-msg">Tem a certeza que pretende sair da sua conta Kaixepa?</div>
+      <div class="modal-btns">
+        <button class="btn-cancel" onclick="document.getElementById('modalLogout').classList.remove('show')">Cancelar</button>
+        <button class="btn-logout" onclick="confirmarLogout()">Sair</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-avatar">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+      </svg>
+    </div>
+    <div class="hero-name" id="heroName">Carregando...</div>
+    <div class="hero-email" id="heroEmail">--</div>
+    <div class="mini-card">
+      <div class="mc-item">
+        <div class="mc-label">Saldo</div>
+        <div class="mc-val" id="mcSaldo">--</div>
+      </div>
+      <div class="mc-item">
+        <div class="mc-label">Bonus</div>
+        <div class="mc-val green" id="mcBonus">--</div>
+      </div>
+      <div class="mc-item">
+        <div class="mc-label">Capital</div>
+        <div class="mc-val" id="mcCapital">--</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- Financeiro -->
+    <div class="menu-section">
+      <div class="menu-section-label">Financeiro</div>
+      <div class="menu-list">
+        <a class="menu-item" href="deposito.html">
+          <div class="menu-item-icon">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+          </div>
+          <div class="menu-item-text">
+            <div class="menu-item-title">Deposito</div>
+            <div class="menu-item-sub">Carregar saldo na conta</div>
+          </div>
+          <svg class="menu-item-arrow" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+        <a class="menu-item" href="levantamento.html">
+          <div class="menu-item-icon">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+          </div>
+          <div class="menu-item-text">
+            <div class="menu-item-title">Levantamento</div>
+            <div class="menu-item-sub">Solicitar levantamento de fundos</div>
+          </div>
+          <svg class="menu-item-arrow" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+        <a class="menu-item" href="historico.html">
+          <div class="menu-item-icon">
+            <svg viewBox="0 0 24 24"><polyline points="12 8 12 12 14 14"/><path d="M3.05 11a9 9 0 1 0 .5-4.5"/><polyline points="3 3 3 7 7 7"/></svg>
+          </div>
+          <div class="menu-item-text">
+            <div class="menu-item-title">Historico</div>
+            <div class="menu-item-sub">Ver todos os movimentos</div>
+          </div>
+          <svg class="menu-item-arrow" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+        <a class="menu-item" href="cartao-bancario.html">
+          <div class="menu-item-icon">
+            <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          </div>
+          <div class="menu-item-text">
+            <div class="menu-item-title">Cartao Bancario</div>
+            <div class="menu-item-sub">Adicionar conta bancaria</div>
+          </div>
+          <svg class="menu-item-arrow" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- Investimentos -->
+    <div class="menu-section">
+      <div class="menu-section-label">Investimentos</div>
+      <div class="menu-list">
+        <a class="menu-item" href="activos.html">
+          <div class="menu-item-icon green">
+            <svg viewBox="0 0 24 24"><path d="M2 20h20M6 20V10l6-8 6 8v10"/></svg>
+          </div>
+          <div class="menu-item-text">
+            <div class="menu-item-title">Meus Activos</div>
+            <div class="menu-item-sub">Ver investimentos activos</div>
+          </div>
+          <svg class="menu-item-arrow" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+        <a class="menu-item" href="rh.html">
+          <div class="menu-item-icon orange">
+            <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          </div>
+          <div class="menu-item-text">
+            <div class="menu-item-title">Recursos Humanos</div>
+            <div class="menu-item-sub">Planos rapidos de alto retorno</div>
+          </div>
+          <div class="menu-item-badge">Hot</div>
+          <svg class="menu-item-arrow" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+        <a class="menu-item" href="convite.html">
+          <div class="menu-item-icon">
+            <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+          </div>
+          <div class="menu-item-text">
+            <div class="menu-item-title">Convidar Amigos</div>
+            <div class="menu-item-sub">Ganhe 10% de comissao por referencia</div>
+          </div>
+          <svg class="menu-item-arrow" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- Suporte -->
+    <div class="menu-section">
+      <div class="menu-section-label">Suporte</div>
+      <div class="menu-list">
+        <a class="menu-item" href="https://wa.me/937359561" target="_blank">
+          <div class="menu-item-icon green">
+            <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a3 3 0 00-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/></svg>
+          </div>
+          <div class="menu-item-text">
+            <div class="menu-item-title">Supervisor / Suporte</div>
+            <div class="menu-item-sub">Falar com o supervisor via WhatsApp</div>
+          </div>
+          <svg class="menu-item-arrow" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- Sessao -->
+    <div class="menu-section">
+      <div class="menu-section-label">Sessao</div>
+      <div class="menu-list">
+        <button class="menu-item" onclick="document.getElementById('modalLogout').classList.add('show')">
+          <div class="menu-item-icon red">
+            <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          </div>
+          <div class="menu-item-text">
+            <div class="menu-item-title" style="color:var(--error)">Terminar Sessao</div>
+            <div class="menu-item-sub">Sair da conta</div>
+          </div>
+          <svg class="menu-item-arrow" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Nav inferior -->
+  <nav class="bottom-nav">
+    <a class="nav-item" href="index.html">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Inicio
+    </a>
+    <a class="nav-item" href="compra.html">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 001.95-1.57l1.65-7.43H6"/></svg>
+      Compra
+    </a>
+    <a class="nav-item" href="ganhos.html">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+      Ganhos
+    </a>
+    <a class="nav-item active" href="conta.html">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Conta
+    </a>
+  </nav>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const app = initializeApp({
+      apiKey: "AIzaSyBp8X1PPp3FqiQ6OXErr8Mu11GEp6MZ2-U",
+      authDomain: "ascend-34bf0.firebaseapp.com",
+      projectId: "ascend-34bf0",
+      storageBucket: "ascend-34bf0.firebasestorage.app",
+      messagingSenderId: "592623076667",
+      appId: "1:592623076677:web:c5615719870aefdabf6a2c"
+    });
+
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    function fmt(n) { return (n || 0).toLocaleString('pt-AO') + ' Kz'; }
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) { window.location.href = 'auth.html'; return; }
+
+      const snap = await getDoc(doc(db, 'users', user.uid));
+      document.getElementById('spinnerOverlay').classList.remove('show');
+
+      if (!snap.exists()) return;
+      const d = snap.data();
+
+      document.getElementById('heroName').textContent = d.nome || 'Investidor';
+      document.getElementById('heroEmail').textContent = user.email;
+      document.getElementById('mcSaldo').textContent = fmt(d.saldo);
+      document.getElementById('mcBonus').textContent = fmt(d.bonus);
+      document.getElementById('mcCapital').textContent = fmt(d.capital);
+    });
+
+    window.confirmarLogout = async function() {
+      document.getElementById('modalLogout').classList.remove('show');
+      document.getElementById('spinnerOverlay').classList.add('show');
+      await signOut(auth);
+      window.location.href = 'auth.html';
+    };
+
+    document.getElementById('spinnerOverlay').classList.add('show');
+  </script>
+
+</body>
+</html>

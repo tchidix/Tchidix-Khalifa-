@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kaixepa SA - Autenticacao</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy: #1a3a6b;
+      --navy-mid: #1e4d8c;
+      --navy-light: #2560a8;
+      --sky-blue: #1e4d8c;
+      --sky-mid: #2560a8;
+      --sky-light: #5b8fd4;
+      --orange: #f57c00;
+      --orange-light: #ff9800;
+      --white: #ffffff;
+      --off-white: #f8faff;
+      --text-dark: #0d0d0d;
+      --text-muted: #5a6a7e;
+      --border: #dce6f5;
+      --success: #2e7d32;
+      --error: #c62828;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--off-white);
+      color: var(--text-dark);
+      overflow-x: hidden;
+    }
+
+    /* Background decorativo */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background:
+        radial-gradient(ellipse 80% 40% at 10% 0%, rgba(26, 58, 107, 0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 90% 100%, rgba(30, 77, 140, 0.05) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Linha decorativa superior */
+    .top-bar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--navy), var(--sky-blue), var(--sky-light), var(--navy));
+      z-index: 100;
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 20px 40px;
+    }
+
+    /* Logo / Header */
+    .brand {
+      text-align: center;
+      margin-bottom: 32px;
+      animation: fadeDown 0.6s ease both;
+    }
+
+    .brand-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      overflow: hidden;
+      margin: 0 auto 14px;
+      box-shadow: 0 8px 24px rgba(26, 58, 107, 0.2);
+    }
+
+    .brand-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .brand-name {
+      font-family: 'Sora', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--navy);
+      letter-spacing: 0.5px;
+    }
+
+    .brand-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 400;
+      margin-top: 2px;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+
+    /* Card principal */
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--white);
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 32px rgba(10, 22, 40, 0.08);
+      overflow: hidden;
+      animation: fadeUp 0.6s ease 0.1s both;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: #f0f4fb;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tab-btn {
+      padding: 16px;
+      font-family: 'Sora', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.25s;
+      position: relative;
+    }
+
+    .tab-btn.active {
+      color: var(--navy);
+      background: var(--white);
+    }
+
+    .tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--sky-blue), var(--sky-light));
+    }
+
+    /* Paineis de formulario */
+    .panel {
+      display: none;
+      padding: 28px 28px 24px;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    .panel-title {
+      font-family: 'Sora', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 4px;
+    }
+
+    .panel-sub {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 22px;
+    }
+
+    /* Campos */
+    .field {
+      margin-bottom: 16px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--navy);
+      margin-bottom: 6px;
+      letter-spacing: 0.3px;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      color: var(--text-dark);
+      background: var(--off-white);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .field input:focus {
+      border-color: var(--sky-blue);
+      box-shadow: 0 0 0 3px rgba(21, 101, 192, 0.1);
+      background: white;
+    }
+
+    .field input.error {
+      border-color: var(--error);
+    }
+
+    .field-error {
+      font-size: 11px;
+      color: var(--error);
+      margin-top: 4px;
+      display: none;
+    }
+
+    .field-error.show {
+      display: block;
+    }
+
+    /* Botao principal */
+    .btn-primary {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--navy), var(--sky-blue));
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-family: 'Sora', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s;
+      margin-top: 6px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.92;
+      transform: translateY(-1px);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Spinner loader */
+    .spinner-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(255,255,255,0.85);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    .spinner-overlay.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .spinner-ring {
+      width: 52px;
+      height: 52px;
+      border: 3px solid var(--border);
+      border-top-color: var(--sky-blue);
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+    }
+
+    .spinner-text {
+      margin-top: 14px;
+      font-family: 'Sora', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--navy);
+    }
+
+    /* Modal de resultado */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10,22,40,0.5);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+
+    .modal-overlay.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal-sheet {
+      width: 100%;
+      max-width: 480px;
+      background: white;
+      border-radius: 24px 24px 0 0;
+      padding: 32px 28px 40px;
+      transform: translateY(100%);
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .modal-overlay.show .modal-sheet {
+      transform: translateY(0);
+    }
+
+    .modal-handle {
+      width: 40px;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      margin: 0 auto 24px;
+    }
+
+    .modal-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+    }
+
+    .modal-icon.success {
+      background: #e8f5e9;
+    }
+
+    .modal-icon.error {
+      background: #ffebee;
+    }
+
+    .modal-icon svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .modal-title {
+      font-family: 'Sora', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--navy);
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .modal-msg {
+      font-size: 14px;
+      color: var(--text-muted);
+      text-align: center;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .modal-bonus {
+      background: linear-gradient(135deg, #fff8e1, #fff3cd);
+      border: 1px solid #ffe082;
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .modal-bonus span {
+      font-family: 'Sora', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: #e65100;
+    }
+
+    .btn-whatsapp {
+      width: 100%;
+      padding: 14px;
+      background: #25d366;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-family: 'Sora', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      text-decoration: none;
+    }
+
+    .btn-whatsapp svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .btn-secondary {
+      width: 100%;
+      padding: 13px;
+      background: none;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      font-family: 'Sora', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--navy);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-secondary:hover {
+      background: var(--off-white);
+    }
+
+    /* Password toggle */
+    .field-wrap {
+      position: relative;
+    }
+
+    .field-wrap input {
+      padding-right: 42px;
+    }
+
+    .toggle-pass {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      padding: 4px;
+    }
+
+    .toggle-pass svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Info nota */
+    .info-note {
+      background: #e3f2fd;
+      border-left: 3px solid var(--sky-blue);
+      border-radius: 0 8px 8px 0;
+      padding: 10px 12px;
+      font-size: 12px;
+      color: var(--sky-blue);
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    /* Animacoes */
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Rodape */
+    .footer-note {
+      margin-top: 20px;
+      font-size: 11px;
+      color: var(--text-muted);
+      text-align: center;
+      animation: fadeUp 0.6s ease 0.3s both;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar"></div>
+
+  <!-- Spinner global -->
+  <div class="spinner-overlay" id="spinnerOverlay">
+    <div class="spinner-ring"></div>
+    <div class="spinner-text" id="spinnerText">A processar...</div>
+  </div>
+
+  <!-- Modal de resultado -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-icon" id="modalIcon">
+        <svg id="modalIconSvg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg>
+      </div>
+      <div class="modal-title" id="modalTitle"></div>
+      <div class="modal-msg" id="modalMsg"></div>
+      <div class="modal-bonus" id="modalBonus" style="display:none">
+        <span id="modalBonusText"></span>
+      </div>
+      <a class="btn-whatsapp" id="btnWhatsapp" href="https://chat.whatsapp.com/CEMTe2E7x0jIrr9wjTZ602?mode=gi_t" target="_blank" style="display:none">
+        <svg viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.532 5.858L.057 23.5l5.779-1.516A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.794 9.794 0 01-5.003-1.374l-.359-.213-3.43.9.915-3.34-.234-.375A9.79 9.79 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>
+        Entrar no grupo Kaixepa
+      </a>
+      <button class="btn-secondary" id="modalCloseBtn" onclick="closeModal()">Continuar</button>
+    </div>
+  </div>
+
+  <div class="page">
+
+    <!-- Brand -->
+    <div class="brand">
+      <div class="brand-icon">
+        <img src="https://i.postimg.cc/d1YH4jN9/1774713423099.jpg" alt="Kaixepa SA" />
+      </div>
+      <div class="brand-name">Sociedade Mineira do Kaixepa</div>
+      <div class="brand-sub">S.A. - Plataforma de Investimentos</div>
+    </div>
+
+    <!-- Card com tabs -->
+    <div class="card">
+
+      <div class="tabs">
+        <button class="tab-btn active" id="tabLogin" onclick="switchTab('login')">Iniciar Sessao</button>
+        <button class="tab-btn" id="tabRegister" onclick="switchTab('register')">Criar Conta</button>
+      </div>
+
+      <!-- PAINEL LOGIN -->
+      <div class="panel active" id="panelLogin">
+        <div class="panel-title">Bem-vindo de volta</div>
+        <div class="panel-sub">Entre na sua conta para continuar</div>
+
+        <div class="field">
+          <label>Email</label>
+          <input type="email" id="loginEmail" placeholder="exemplo@email.com" autocomplete="email" />
+          <div class="field-error" id="loginEmailErr">Formato de email invalido</div>
+        </div>
+
+        <div class="field">
+          <label>Senha</label>
+          <div class="field-wrap">
+            <input type="password" id="loginPass" placeholder="A sua senha" autocomplete="current-password" />
+            <button class="toggle-pass" type="button" onclick="togglePass('loginPass', this)" tabindex="-1">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <div class="field-error" id="loginPassErr">Senha incorreta ou conta inexistente</div>
+        </div>
+
+        <button class="btn-primary" id="btnLogin" onclick="doLogin()">Entrar</button>
+      </div>
+
+      <!-- PAINEL REGISTO -->
+      <div class="panel" id="panelRegister">
+        <div class="panel-title">Criar conta</div>
+        <div class="panel-sub">Preencha os dados para se registar</div>
+
+        <div class="info-note">
+          Ao criar a sua conta recebera um bonus de boas-vindas de <strong>2.000 Kz</strong>, disponivel na seccao de bonus.
+        </div>
+
+        <div class="field">
+          <label>Nome Completo</label>
+          <input type="text" id="regName" placeholder="Primeiro e ultimo nome" autocomplete="name" />
+          <div class="field-error" id="regNameErr">Introduza o seu nome completo (sem numeros)</div>
+        </div>
+
+        <div class="field">
+          <label>Email</label>
+          <input type="email" id="regEmail" placeholder="exemplo@email.com" autocomplete="email" />
+          <div class="field-error" id="regEmailErr">Formato de email invalido</div>
+        </div>
+
+        <div class="field">
+          <label>Senha</label>
+          <div class="field-wrap">
+            <input type="password" id="regPass" placeholder="Minimo 6 caracteres" autocomplete="new-password" />
+            <button class="toggle-pass" type="button" onclick="togglePass('regPass', this)" tabindex="-1">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <div class="field-error" id="regPassErr">A senha deve ter pelo menos 6 caracteres</div>
+        </div>
+
+        <div class="field">
+          <label>ID de Convite <span style="color:var(--text-muted);font-weight:400">(opcional)</span></label>
+          <input type="text" id="regInvite" placeholder="ID do seu convidante" autocomplete="off" />
+        </div>
+
+        <button class="btn-primary" id="btnRegister" onclick="doRegister()">Criar Conta</button>
+      </div>
+
+    </div>
+
+    <div class="footer-note">
+      Sociedade Mineira do Kaixepa S.A. - Todos os direitos reservados
+    </div>
+
+  </div>
+
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getAuth,
+      signInWithEmailAndPassword,
+      createUserWithEmailAndPassword,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      setDoc,
+      getDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBp8X1PPp3FqiQ6OXErr8Mu11GEp6MZ2-U",
+      authDomain: "ascend-34bf0.firebaseapp.com",
+      projectId: "ascend-34bf0",
+      storageBucket: "ascend-34bf0.firebasestorage.app",
+      messagingSenderId: "592623076677",
+      appId: "1:592623076677:web:c5615719870aefdabf6a2c"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Flag para bloquear redirect durante o registo
+    let _registandoAgora = false;
+
+    // Verificar se ja esta logado (so redireciona se nao estiver em processo de registo)
+    onAuthStateChanged(auth, (user) => {
+      if (user && !_registandoAgora) {
+        window.location.href = 'index.html';
+      }
+    });
+
+    // Ler ID de convite da URL automaticamente
+    const urlParams = new URLSearchParams(window.location.search);
+    const inviteParam = urlParams.get('ref');
+    if (inviteParam) {
+      const regInviteField = document.getElementById('regInvite');
+      if (regInviteField) {
+        regInviteField.value = inviteParam;
+      }
+      switchTab('register');
+    }
+
+    // Login
+    window.doLogin = async function() {
+      const email = document.getElementById('loginEmail').value.trim();
+      const pass = document.getElementById('loginPass').value;
+      let valid = true;
+
+      clearErrors(['loginEmailErr', 'loginPassErr']);
+
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showError('loginEmailErr', 'loginEmail'); valid = false;
+      }
+      if (!pass) {
+        showError('loginPassErr', 'loginPass'); valid = false;
+      }
+      if (!valid) return;
+
+      showSpinner('A verificar credenciais...');
+      try {
+        await signInWithEmailAndPassword(auth, email, pass);
+        hideSpinner();
+        window.location.href = 'index.html';
+      } catch (e) {
+        hideSpinner();
+        showModal('error', 'Acesso negado', 'Email ou senha incorretos. Verifique os seus dados e tente novamente.', false);
+      }
+    };
+
+    // Registo
+    window.doRegister = async function() {
+      const name = document.getElementById('regName').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const pass = document.getElementById('regPass').value;
+      const invite = document.getElementById('regInvite').value.trim();
+      let valid = true;
+
+      clearErrors(['regNameErr', 'regEmailErr', 'regPassErr']);
+
+      if (!name || /\d/.test(name) || name.split(' ').length < 2) {
+        showError('regNameErr', 'regName'); valid = false;
+      }
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showError('regEmailErr', 'regEmail'); valid = false;
+      }
+      if (!pass || pass.length < 6) {
+        showError('regPassErr', 'regPass'); valid = false;
+      }
+      if (!valid) return;
+
+      showSpinner('A criar a sua conta...');
+      _registandoAgora = true;
+      try {
+        const userCred = await createUserWithEmailAndPassword(auth, email, pass);
+        const uid = userCred.user.uid;
+
+        // Gerar ID unico de convite
+        const referralId = uid.substring(0, 8).toUpperCase();
+
+        await setDoc(doc(db, 'users', uid), {
+          nome: name,
+          email: email,
+          saldo: 0,
+          bonus: 2000,
+          capital: 0,
+          referralId: referralId,
+          convidadoPor: invite || null,
+          investimentoActivo: null,
+          contaBancaria: null,
+          criadoEm: serverTimestamp()
+        });
+
+        // Se foi convidado, registar referencia pendente
+        if (invite) {
+          await setDoc(doc(db, 'referrals_pending', uid), {
+            convidadoPor: invite,
+            uid: uid,
+            processado: false
+          });
+        }
+
+        // Dados guardados com sucesso - mostrar modal
+        _registandoAgora = false;
+        hideSpinner();
+        showModal(
+          'success',
+          'Conta criada com sucesso!',
+          'Bem-vindo ao Kaixepa. A sua conta foi criada e recebeu um bonus de boas-vindas de 2.000 Kz, disponivel na seccao de bonus.',
+          true
+        );
+      } catch (e) {
+        _registandoAgora = false;
+        hideSpinner();
+        let msg = 'Ocorreu um erro ao criar a conta. Tente novamente.';
+        if (e.code === 'auth/email-already-in-use') msg = 'Este email ja esta associado a uma conta existente.';
+        showModal('error', 'Erro ao criar conta', msg, false);
+      }
+    };
+
+    window._isSuccessModal = false;
+
+    window.closeModal = function() {
+      const overlay = document.getElementById('modalOverlay');
+      overlay.classList.remove('show');
+      if (window._isSuccessModal) {
+        window.location.href = 'index.html';
+      }
+    };
+  </script>
+
+  <script>
+    function switchTab(tab) {
+      document.getElementById('panelLogin').classList.toggle('active', tab === 'login');
+      document.getElementById('panelRegister').classList.toggle('active', tab === 'register');
+      document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
+      document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
+    }
+
+    function showSpinner(msg) {
+      document.getElementById('spinnerText').textContent = msg || 'A processar...';
+      document.getElementById('spinnerOverlay').classList.add('show');
+    }
+
+    function hideSpinner() {
+      document.getElementById('spinnerOverlay').classList.remove('show');
+    }
+
+    function showError(errId, inputId) {
+      document.getElementById(errId).classList.add('show');
+      if (inputId) document.getElementById(inputId).classList.add('error');
+    }
+
+    function clearErrors(errIds) {
+      errIds.forEach(id => {
+        document.getElementById(id).classList.remove('show');
+      });
+      document.querySelectorAll('input.error').forEach(el => el.classList.remove('error'));
+    }
+
+    function showModal(type, title, msg, isRegister) {
+      const overlay = document.getElementById('modalOverlay');
+      const icon = document.getElementById('modalIcon');
+      const iconSvg = document.getElementById('modalIconSvg');
+      const bonus = document.getElementById('modalBonus');
+      const whatsapp = document.getElementById('btnWhatsapp');
+
+      document.getElementById('modalTitle').textContent = title;
+      document.getElementById('modalMsg').textContent = msg;
+
+      icon.className = 'modal-icon ' + type;
+
+      if (type === 'success') {
+        iconSvg.setAttribute('stroke', '#2e7d32');
+        iconSvg.innerHTML = '<polyline points="20 6 9 17 4 12"/>';
+      } else {
+        iconSvg.setAttribute('stroke', '#c62828');
+        iconSvg.innerHTML = '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>';
+      }
+
+      if (isRegister) {
+        bonus.style.display = 'block';
+        document.getElementById('modalBonusText').textContent = 'Bonus de boas-vindas: 2.000 Kz creditados na sua conta';
+        whatsapp.style.display = 'flex';
+        window._isSuccessModal = true;
+      } else {
+        bonus.style.display = 'none';
+        whatsapp.style.display = 'none';
+        window._isSuccessModal = false;
+      }
+
+      overlay.classList.add('show');
+    }
+
+    function togglePass(inputId, btn) {
+      const input = document.getElementById(inputId);
+      const isPass = input.type === 'password';
+      input.type = isPass ? 'text' : 'password';
+      btn.querySelector('svg').innerHTML = isPass
+        ? '<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>'
+        : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+    }
+
+    // Enter para submeter
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        const loginActive = document.getElementById('panelLogin').classList.contains('active');
+        if (loginActive) doLogin();
+        else doRegister();
+      }
+    });
+  </script>
+
+</body>
+</html>

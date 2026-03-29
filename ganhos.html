@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kaixepa SA - Ganhos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy: #1a3a6b;
+      --navy-mid: #1e4d8c;
+      --navy-light: #2560a8;
+      --orange: #f57c00;
+      --orange-light: #ff9800;
+      --white: #ffffff;
+      --off-white: #f8faff;
+      --text-dark: #0d0d0d;
+      --text-muted: #5a6a7e;
+      --border: #dce6f5;
+      --success: #2e7d32;
+      --green-bright: #00c853;
+      --error: #c62828;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      min-height: 100%;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--off-white);
+      color: var(--text-dark);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background:
+        radial-gradient(ellipse 70% 40% at 0% 0%, rgba(26,58,107,0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 100% 80%, rgba(30,77,140,0.04) 0%, transparent 60%);
+      pointer-events: none; z-index: 0;
+    }
+
+    .top-bar {
+      position: fixed;
+      top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--navy), var(--navy-mid), var(--navy-light), var(--navy));
+      z-index: 200;
+    }
+
+    .header {
+      position: fixed;
+      top: 3px; left: 0; right: 0; height: 56px;
+      background: rgba(255,255,255,0.96);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center;
+      padding: 0 16px; gap: 12px; z-index: 100;
+    }
+
+    .btn-back {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: white;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .btn-back:hover { background: var(--off-white); }
+    .btn-back svg {
+      width: 18px; height: 18px;
+      fill: none; stroke: var(--navy);
+      stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+    }
+
+    .header-title {
+      font-family: 'Sora', sans-serif;
+      font-size: 15px; font-weight: 700; color: var(--navy);
+    }
+
+    .main {
+      position: relative; z-index: 1;
+      padding: 75px 16px 40px;
+    }
+
+    /* Sem investimento */
+    .no-invest-card {
+      background: white;
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: 32px 20px;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .no-invest-icon {
+      width: 56px; height: 56px;
+      background: #eef3fb; border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 14px;
+    }
+
+    .no-invest-icon svg {
+      width: 28px; height: 28px;
+      fill: none; stroke: var(--navy-mid); stroke-width: 1.8;
+    }
+
+    .no-invest-title {
+      font-family: 'Sora', sans-serif;
+      font-size: 16px; font-weight: 700; color: var(--navy); margin-bottom: 6px;
+    }
+
+    .no-invest-sub {
+      font-size: 13px; color: var(--text-muted); margin-bottom: 18px;
+    }
+
+    .btn-primary {
+      display: inline-block;
+      padding: 12px 28px;
+      background: linear-gradient(135deg, var(--navy), var(--navy-mid));
+      color: white; border: none; border-radius: 12px;
+      font-family: 'Sora', sans-serif;
+      font-size: 14px; font-weight: 600;
+      cursor: pointer; text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .btn-primary:hover { opacity: 0.9; }
+
+    /* Header do plano activo */
+    .plan-header {
+      background: linear-gradient(135deg, var(--navy), var(--navy-mid));
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+      position: relative; overflow: hidden;
+    }
+
+    .plan-header::after {
+      content: '';
+      position: absolute;
+      right: -20px; top: -20px;
+      width: 90px; height: 90px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.05);
+    }
+
+    .plan-header-top {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .plan-header-name {
+      font-family: 'Sora', sans-serif;
+      font-size: 18px; font-weight: 800; color: white;
+    }
+
+    .plan-header-badge {
+      background: rgba(0,200,83,0.2);
+      border: 1px solid rgba(0,200,83,0.4);
+      border-radius: 20px;
+      padding: 3px 12px;
+      font-family: 'Sora', sans-serif;
+      font-size: 11px; font-weight: 600; color: #69f0ae;
+    }
+
+    .plan-header-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .ph-stat {
+      background: rgba(255,255,255,0.1);
+      border-radius: 10px; padding: 10px 12px;
+    }
+
+    .ph-stat-label {
+      font-size: 10px; color: rgba(255,255,255,0.6); margin-bottom: 3px;
+    }
+
+    .ph-stat-val {
+      font-family: 'Sora', sans-serif;
+      font-size: 15px; font-weight: 700; color: white;
+    }
+
+    .ph-stat-val.green { color: #69f0ae; }
+
+    /* Contagem regressiva */
+    .countdown-card {
+      background: white;
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .countdown-header {
+      background: linear-gradient(135deg, var(--navy), var(--navy-mid));
+      padding: 14px 16px;
+    }
+
+    .countdown-header-title {
+      font-family: 'Sora', sans-serif;
+      font-size: 14px; font-weight: 700; color: white;
+    }
+
+    .countdown-header-sub {
+      font-size: 12px; color: rgba(255,255,255,0.7); margin-top: 2px;
+    }
+
+    .countdown-body {
+      padding: 20px;
+    }
+
+    .countdown-display {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .cd-unit {
+      text-align: center;
+      flex: 1;
+    }
+
+    .cd-num {
+      font-family: 'Sora', sans-serif;
+      font-size: 32px; font-weight: 800; color: var(--navy);
+      background: var(--off-white);
+      border-radius: 12px; padding: 10px 4px;
+      line-height: 1;
+      display: block;
+      min-width: 60px;
+    }
+
+    .cd-num.active { color: var(--navy-mid); }
+
+    .cd-label {
+      font-size: 10px; font-weight: 600;
+      color: var(--text-muted); margin-top: 5px;
+      text-transform: uppercase; letter-spacing: 0.4px;
+    }
+
+    .cd-sep {
+      font-family: 'Sora', sans-serif;
+      font-size: 24px; font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+
+    /* Barra de progresso */
+    .progress-wrap {
+      margin-bottom: 14px;
+    }
+
+    .progress-label {
+      display: flex; justify-content: space-between;
+      font-size: 12px; color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--navy), var(--navy-light));
+      border-radius: 4px;
+      transition: width 1s ease;
+    }
+
+    .ganho-status {
+      text-align: center;
+      padding: 10px;
+      border-radius: 10px;
+      font-family: 'Sora', sans-serif;
+      font-size: 13px; font-weight: 600;
+    }
+
+    .ganho-status.pronto {
+      background: #e8f5e9;
+      color: var(--success);
+    }
+
+    .ganho-status.aguardar {
+      background: #e8f0fb;
+      color: var(--navy-mid);
+    }
+
+    /* Botao resgatar */
+    .btn-resgatar {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--green-bright), #00e676);
+      color: white; border: none;
+      border-radius: 12px;
+      font-family: 'Sora', sans-serif;
+      font-size: 15px; font-weight: 700;
+      cursor: pointer;
+      margin-top: 14px;
+      transition: opacity 0.2s, transform 0.15s;
+      display: none;
+    }
+
+    .btn-resgatar.show { display: block; }
+    .btn-resgatar:hover { opacity: 0.9; transform: translateY(-1px); }
+
+    /* Info salarios e ganhos */
+    .info-card {
+      background: white;
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .info-card-header {
+      background: linear-gradient(135deg, var(--navy), var(--navy-mid));
+      padding: 14px 16px;
+    }
+
+    .info-card-header-title {
+      font-family: 'Sora', sans-serif;
+      font-size: 14px; font-weight: 700; color: white;
+    }
+
+    .info-card-header-sub {
+      font-size: 12px; color: rgba(255,255,255,0.7); margin-top: 2px;
+    }
+
+    .info-card-body { padding: 16px; }
+
+    .salary-table {
+      width: 100%; border-collapse: collapse;
+    }
+
+    .salary-table th {
+      font-family: 'Sora', sans-serif;
+      font-size: 11px; font-weight: 600;
+      color: var(--text-muted);
+      text-align: left; padding: 6px 0;
+      border-bottom: 1px solid var(--border);
+      text-transform: uppercase; letter-spacing: 0.4px;
+    }
+
+    .salary-table td {
+      font-size: 13px; color: var(--text-dark);
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .salary-table tr:last-child td { border-bottom: none; }
+
+    .salary-table td:last-child {
+      font-family: 'Sora', sans-serif;
+      font-weight: 700; color: var(--navy);
+      text-align: right;
+    }
+
+    .salary-table td.green { color: var(--success); }
+
+    /* Spinner */
+    .spinner-overlay {
+      position: fixed; inset: 0;
+      background: rgba(255,255,255,0.9);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      z-index: 999; opacity: 0; pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .spinner-overlay.show { opacity: 1; pointer-events: all; }
+    .spinner-ring {
+      width: 52px; height: 52px;
+      border: 3px solid var(--border);
+      border-top-color: var(--navy-mid);
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+    }
+    .spinner-text {
+      margin-top: 14px;
+      font-family: 'Sora', sans-serif;
+      font-size: 14px; font-weight: 600; color: var(--navy);
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(10,22,40,0.5);
+      display: flex; align-items: flex-end; justify-content: center;
+      z-index: 1000; opacity: 0; pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .modal-overlay.show { opacity: 1; pointer-events: all; }
+    .modal-sheet {
+      width: 100%; max-width: 480px;
+      background: white;
+      border-radius: 24px 24px 0 0;
+      padding: 28px 24px 44px;
+      transform: translateY(100%);
+      transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+    }
+    .modal-overlay.show .modal-sheet { transform: translateY(0); }
+    .modal-handle {
+      width: 40px; height: 4px;
+      background: var(--border); border-radius: 2px;
+      margin: 0 auto 22px;
+    }
+    .modal-icon {
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 16px;
+    }
+    .modal-icon.success { background: #e8f5e9; }
+    .modal-icon svg {
+      width: 28px; height: 28px;
+      fill: none; stroke-width: 2;
+      stroke-linecap: round; stroke-linejoin: round;
+    }
+    .modal-title {
+      font-family: 'Sora', sans-serif;
+      font-size: 18px; font-weight: 700; color: var(--navy);
+      text-align: center; margin-bottom: 8px;
+    }
+    .modal-msg {
+      font-size: 14px; color: var(--text-muted);
+      text-align: center; line-height: 1.6; margin-bottom: 20px;
+    }
+    .modal-amount {
+      background: #e8f5e9;
+      border: 1px solid #a5d6a7;
+      border-radius: 12px; padding: 14px;
+      text-align: center; margin-bottom: 20px;
+    }
+    .modal-amount-label { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
+    .modal-amount-val {
+      font-family: 'Sora', sans-serif;
+      font-size: 22px; font-weight: 800; color: var(--success);
+    }
+    .btn-modal-close {
+      width: 100%; padding: 14px;
+      background: linear-gradient(135deg, var(--navy), var(--navy-mid));
+      color: white; border: none; border-radius: 12px;
+      font-family: 'Sora', sans-serif;
+      font-size: 14px; font-weight: 600; cursor: pointer;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar"></div>
+
+  <div class="spinner-overlay" id="spinnerOverlay">
+    <div class="spinner-ring"></div>
+    <div class="spinner-text">A carregar...</div>
+  </div>
+
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-icon success">
+        <svg viewBox="0 0 24 24" stroke="#2e7d32"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="modal-title">Ganho creditado!</div>
+      <div class="modal-msg">O seu ganho diario foi creditado com sucesso na sua conta.</div>
+      <div class="modal-amount">
+        <div class="modal-amount-label">Valor creditado</div>
+        <div class="modal-amount-val" id="modalAmountVal">-- Kz</div>
+      </div>
+      <button class="btn-modal-close" onclick="closeModal()">Fechar</button>
+    </div>
+  </div>
+
+  <div class="header">
+    <button class="btn-back" onclick="history.back()">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <span class="header-title">Ganhos Diarios</span>
+  </div>
+
+  <div class="main" id="mainContent">
+    <!-- Preenchido pelo JS -->
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+      getFirestore, doc, getDoc, updateDoc,
+      addDoc, collection, serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const app = initializeApp({
+      apiKey: "AIzaSyBp8X1PPp3FqiQ6OXErr8Mu11GEp6MZ2-U",
+      authDomain: "ascend-34bf0.firebaseapp.com",
+      projectId: "ascend-34bf0",
+      storageBucket: "ascend-34bf0.firebasestorage.app",
+      messagingSenderId: "592623076677",
+      appId: "1:592623076677:web:c5615719870aefdabf6a2c"
+    });
+
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let countdownInterval = null;
+    let currentUser = null;
+    let userData = null;
+
+    function fmt(n) {
+      return (n || 0).toLocaleString('pt-AO') + ' Kz';
+    }
+
+    function renderSemInvestimento() {
+      document.getElementById('mainContent').innerHTML = `
+        <div class="no-invest-card">
+          <div class="no-invest-icon">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="1" x2="12" y2="23"/>
+              <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+            </svg>
+          </div>
+          <div class="no-invest-title">Nenhum investimento de longo prazo activo</div>
+          <div class="no-invest-sub">A contagem regressiva funciona apenas com planos de longo prazo (Mina S1 a S5). Adquira um plano para comecar a receber ganhos diarios.</div>
+          <a class="btn-primary" href="compra.html">Escolher plano</a>
+        </div>
+        ${renderInfoCards()}
+      `;
+    }
+
+    function renderInfoCards() {
+      return '';
+    }
+
+    function renderComInvestimento(inv) {
+      const main = document.getElementById('mainContent');
+      main.innerHTML = `
+        <div class="plan-header">
+          <div class="plan-header-top">
+            <div class="plan-header-name">${inv.nome}</div>
+            <div class="plan-header-badge">Activo</div>
+          </div>
+          <div class="plan-header-stats">
+            <div class="ph-stat">
+              <div class="ph-stat-label">Capital</div>
+              <div class="ph-stat-val">${fmt(inv.valor)}</div>
+            </div>
+            <div class="ph-stat">
+              <div class="ph-stat-label">Ganho diario</div>
+              <div class="ph-stat-val green">${fmt(inv.diario)}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="countdown-card">
+          <div class="countdown-header">
+            <div class="countdown-header-title">Proximo ganho em</div>
+            <div class="countdown-header-sub">Contagem regressiva para creditar o proximo ganho diario</div>
+          </div>
+          <div class="countdown-body">
+            <div class="countdown-display">
+              <div class="cd-unit">
+                <span class="cd-num" id="cdH">00</span>
+                <div class="cd-label">Horas</div>
+              </div>
+              <div class="cd-sep">:</div>
+              <div class="cd-unit">
+                <span class="cd-num" id="cdM">00</span>
+                <div class="cd-label">Min</div>
+              </div>
+              <div class="cd-sep">:</div>
+              <div class="cd-unit">
+                <span class="cd-num" id="cdS">00</span>
+                <div class="cd-label">Seg</div>
+              </div>
+            </div>
+            <div class="progress-wrap">
+              <div class="progress-label">
+                <span>Inicio do ciclo</span>
+                <span id="progressPct">0%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width:0%"></div>
+              </div>
+            </div>
+            <div class="ganho-status aguardar" id="ganhoStatus">A aguardar o proximo ganho diario...</div>
+            <button class="btn-resgatar" id="btnResgatar" onclick="resgatarGanho()">
+              Resgatar ${fmt(inv.diario)} agora
+            </button>
+          </div>
+        </div>
+
+        ${renderInfoCards()}
+      `;
+
+      iniciarContagem(inv);
+    }
+
+    function iniciarContagem(inv) {
+      if (countdownInterval) clearInterval(countdownInterval);
+
+      function tick() {
+        const agora = Date.now();
+        // Ciclo de 24h a partir do ultimo ganho ou inicio do investimento
+        const base = inv.ultimoGanho
+          ? inv.ultimoGanho.toMillis ? inv.ultimoGanho.toMillis() : Number(inv.ultimoGanho)
+          : inv.iniciadoEm
+            ? inv.iniciadoEm.toMillis ? inv.iniciadoEm.toMillis() : Number(inv.iniciadoEm)
+            : agora;
+
+        const ciclo = 24 * 60 * 60 * 1000;
+        const proximoGanho = base + ciclo;
+        const restante = proximoGanho - agora;
+        const progresso = Math.min(100, ((ciclo - Math.max(0, restante)) / ciclo) * 100);
+
+        if (restante <= 0) {
+          // Pronto para resgatar
+          document.getElementById('cdH').textContent = '00';
+          document.getElementById('cdM').textContent = '00';
+          document.getElementById('cdS').textContent = '00';
+          document.getElementById('progressFill').style.width = '100%';
+          document.getElementById('progressPct').textContent = '100%';
+          document.getElementById('ganhoStatus').textContent = 'O seu ganho diario esta pronto para ser resgatado!';
+          document.getElementById('ganhoStatus').className = 'ganho-status pronto';
+          document.getElementById('btnResgatar').classList.add('show');
+          clearInterval(countdownInterval);
+        } else {
+          const h = Math.floor(restante / 3600000);
+          const m = Math.floor((restante % 3600000) / 60000);
+          const s = Math.floor((restante % 60000) / 1000);
+          document.getElementById('cdH').textContent = String(h).padStart(2, '0');
+          document.getElementById('cdM').textContent = String(m).padStart(2, '0');
+          document.getElementById('cdS').textContent = String(s).padStart(2, '0');
+          document.getElementById('progressFill').style.width = progresso.toFixed(1) + '%';
+          document.getElementById('progressPct').textContent = progresso.toFixed(0) + '%';
+        }
+      }
+
+      tick();
+      countdownInterval = setInterval(tick, 1000);
+    }
+
+    window.resgatarGanho = async function() {
+      if (!currentUser || !userData) return;
+      const inv = userData.investimentoActivo;
+      if (!inv) return;
+
+      document.getElementById('spinnerOverlay').classList.add('show');
+
+      try {
+        const novoSaldo = (userData.saldo || 0) + inv.diario;
+        const userRef = doc(db, 'users', currentUser.uid);
+
+        await updateDoc(userRef, {
+          saldo: novoSaldo,
+          'investimentoActivo.ultimoGanho': serverTimestamp()
+        });
+
+        await addDoc(collection(db, 'users', currentUser.uid, 'historico'), {
+          tipo: 'ganho_diario',
+          descricao: 'Ganho diario - ' + inv.nome,
+          valor: inv.diario,
+          data: serverTimestamp()
+        });
+
+        userData.saldo = novoSaldo;
+        userData.investimentoActivo.ultimoGanho = { toMillis: () => Date.now() };
+
+        document.getElementById('spinnerOverlay').classList.remove('show');
+        document.getElementById('modalAmountVal').textContent = fmt(inv.diario);
+        document.getElementById('modalOverlay').classList.add('show');
+
+        document.getElementById('btnResgatar').classList.remove('show');
+        document.getElementById('ganhoStatus').textContent = 'A aguardar o proximo ganho diario...';
+        document.getElementById('ganhoStatus').className = 'ganho-status aguardar';
+
+        iniciarContagem(userData.investimentoActivo);
+
+      } catch(e) {
+        document.getElementById('spinnerOverlay').classList.remove('show');
+        alert('Erro ao resgatar ganho. Tente novamente.');
+      }
+    };
+
+    window.closeModal = function() {
+      document.getElementById('modalOverlay').classList.remove('show');
+    };
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) { window.location.href = 'auth.html'; return; }
+      currentUser = user;
+
+      const snap = await getDoc(doc(db, 'users', user.uid));
+      document.getElementById('spinnerOverlay').classList.remove('show');
+
+      if (!snap.exists()) return;
+      userData = snap.data();
+
+      const inv = userData.investimentoActivo;
+      // Contagem so funciona com planos de longo prazo
+      if (!inv || inv.tipo !== 'longo') {
+        renderSemInvestimento();
+      } else {
+        renderComInvestimento(inv);
+      }
+    });
+
+    document.getElementById('spinnerOverlay').classList.add('show');
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kaixepa SA - Historico</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy: #1a3a6b; --navy-mid: #1e4d8c; --navy-light: #2560a8;
+      --orange: #f57c00; --off-white: #f8faff;
+      --text-dark: #0d0d0d; --text-muted: #5a6a7e;
+      --border: #dce6f5; --success: #2e7d32; --error: #c62828;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { min-height: 100%; font-family: 'DM Sans', sans-serif; background: var(--off-white); }
+    body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(ellipse 70% 40% at 0% 0%, rgba(26,58,107,0.05) 0%, transparent 60%); pointer-events: none; z-index: 0; }
+    .top-bar { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--navy), var(--navy-mid), var(--navy-light), var(--navy)); z-index: 200; }
+    .header { position: fixed; top: 3px; left: 0; right: 0; height: 56px; background: rgba(255,255,255,0.96); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 16px; gap: 12px; z-index: 100; }
+    .btn-back { width: 36px; height: 36px; border-radius: 10px; border: 1.5px solid var(--border); background: white; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.2s; }
+    .btn-back:hover { background: var(--off-white); }
+    .btn-back svg { width: 18px; height: 18px; fill: none; stroke: var(--navy); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .header-title { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; color: var(--navy); }
+    .main { position: relative; z-index: 1; padding: 75px 16px 40px; }
+
+    /* Filtros */
+    .filters { display: flex; gap: 8px; margin-bottom: 18px; overflow-x: auto; padding-bottom: 2px; }
+    .filters::-webkit-scrollbar { display: none; }
+    .filter-btn { padding: 7px 16px; border-radius: 20px; border: 1.5px solid var(--border); background: white; font-family: 'Sora', sans-serif; font-size: 12px; font-weight: 600; color: var(--text-muted); cursor: pointer; white-space: nowrap; transition: all 0.2s; flex-shrink: 0; }
+    .filter-btn.active { background: var(--navy); border-color: var(--navy); color: white; }
+
+    /* Lista */
+    .hist-list { display: flex; flex-direction: column; gap: 10px; }
+
+    .hist-item { background: white; border: 1.5px solid var(--border); border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; animation: fadeUp 0.3s ease both; }
+
+    .hist-icon { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .hist-icon svg { width: 20px; height: 20px; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .hist-icon.deposito { background: #e3f2fd; }
+    .hist-icon.deposito svg { stroke: #1565c0; }
+    .hist-icon.levantamento { background: #e8f5e9; }
+    .hist-icon.levantamento svg { stroke: var(--success); }
+    .hist-icon.ganho { background: #e8f5e9; }
+    .hist-icon.ganho svg { stroke: var(--success); }
+    .hist-icon.investimento { background: #eef3fb; }
+    .hist-icon.investimento svg { stroke: var(--navy-mid); }
+    .hist-icon.comissao { background: #fff8e1; }
+    .hist-icon.comissao svg { stroke: var(--orange); }
+    .hist-icon.bonus { background: #fff8e1; }
+    .hist-icon.bonus svg { stroke: var(--orange); }
+    .hist-icon.rh { background: #fce4ec; }
+    .hist-icon.rh svg { stroke: #c2185b; }
+
+    .hist-info { flex: 1; min-width: 0; }
+    .hist-desc { font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 600; color: var(--text-dark); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .hist-date { font-size: 11px; color: var(--text-muted); }
+
+    .hist-amount { font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 700; flex-shrink: 0; }
+    .hist-amount.positivo { color: var(--success); }
+    .hist-amount.negativo { color: var(--error); }
+    .hist-amount.neutro { color: var(--navy); }
+
+    .hist-estado { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px; margin-top: 3px; display: inline-block; }
+    .hist-estado.pendente { background: #fff3e0; color: var(--orange); }
+    .hist-estado.concluido { background: #e8f5e9; color: var(--success); }
+
+    /* Vazio */
+    .empty { background: white; border: 1.5px solid var(--border); border-radius: 16px; padding: 40px 20px; text-align: center; }
+    .empty-icon { width: 52px; height: 52px; background: #eef3fb; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; }
+    .empty-icon svg { width: 26px; height: 26px; fill: none; stroke: var(--navy-mid); stroke-width: 1.8; }
+    .empty-title { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+    .empty-sub { font-size: 13px; color: var(--text-muted); }
+
+    /* Spinner */
+    .spinner-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.92); display: flex; align-items: center; justify-content: center; z-index: 999; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+    .spinner-overlay.show { opacity: 1; pointer-events: all; }
+    .spinner-ring { width: 48px; height: 48px; border: 3px solid var(--border); border-top-color: var(--navy-mid); border-radius: 50%; animation: spin 0.75s linear infinite; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body>
+  <div class="top-bar"></div>
+  <div class="spinner-overlay" id="spinnerOverlay"><div class="spinner-ring"></div></div>
+
+  <div class="header">
+    <button class="btn-back" onclick="history.back()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <span class="header-title">Historico de Movimentos</span>
+  </div>
+
+  <div class="main">
+    <div class="filters">
+      <button class="filter-btn active" onclick="filtrar('todos', this)">Todos</button>
+      <button class="filter-btn" onclick="filtrar('deposito_pendente', this)">Depositos</button>
+      <button class="filter-btn" onclick="filtrar('levantamento_pendente', this)">Levantamentos</button>
+      <button class="filter-btn" onclick="filtrar('ganho_diario', this)">Ganhos</button>
+      <button class="filter-btn" onclick="filtrar('investimento', this)">Investimentos</button>
+      <button class="filter-btn" onclick="filtrar('comissao', this)">Comissoes</button>
+    </div>
+    <div class="hist-list" id="histList"></div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, doc, collection, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const app = initializeApp({ apiKey: "AIzaSyBp8X1PPp3FqiQ6OXErr8Mu11GEp6MZ2-U", authDomain: "ascend-34bf0.firebaseapp.com", projectId: "ascend-34bf0", storageBucket: "ascend-34bf0.firebasestorage.app", messagingSenderId: "592623076677", appId: "1:592623076677:web:c5615719870aefdabf6a2c" });
+    const auth = getAuth(app), db = getFirestore(app);
+
+    let todosMovimentos = [];
+
+    function fmt(n) { return Math.abs(n || 0).toLocaleString('pt-AO') + ' Kz'; }
+
+    function tipoParaClasse(tipo) {
+      if (tipo === 'deposito_pendente') return 'deposito';
+      if (tipo === 'levantamento_pendente') return 'levantamento';
+      if (tipo === 'ganho_diario') return 'ganho';
+      if (tipo === 'investimento') return 'investimento';
+      if (tipo === 'comissao') return 'comissao';
+      if (tipo === 'rh_investimento') return 'rh';
+      return 'bonus';
+    }
+
+    function tipoParaIcone(tipo) {
+      if (tipo === 'deposito_pendente') return '<line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/>';
+      if (tipo === 'levantamento_pendente') return '<line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/>';
+      if (tipo === 'ganho_diario') return '<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>';
+      if (tipo === 'investimento') return '<path d="M2 20h20M6 20V10l6-8 6 8v10"/>';
+      if (tipo === 'comissao') return '<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>';
+      if (tipo === 'rh_investimento') return '<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>';
+      return '<circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>';
+    }
+
+    function valorClasse(valor, tipo) {
+      if (tipo === 'deposito_pendente') return 'neutro';
+      if (valor > 0) return 'positivo';
+      if (valor < 0) return 'negativo';
+      return 'neutro';
+    }
+
+    function formatarData(ts) {
+      if (!ts) return '--';
+      const d = ts.toDate ? ts.toDate() : new Date(ts);
+      return d.toLocaleDateString('pt-AO', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    }
+
+    function renderLista(movimentos) {
+      const list = document.getElementById('histList');
+      if (!movimentos.length) {
+        list.innerHTML = `
+          <div class="empty">
+            <div class="empty-icon"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="12 8 12 12 14 14"/><path d="M3.05 11a9 9 0 1 0 .5-4.5"/><polyline points="3 3 3 7 7 7"/></svg></div>
+            <div class="empty-title">Sem movimentos</div>
+            <div class="empty-sub">Nenhum movimento encontrado para este filtro.</div>
+          </div>`;
+        return;
+      }
+      list.innerHTML = movimentos.map((m, i) => {
+        const cls = tipoParaClasse(m.tipo);
+        const sinal = m.valor > 0 ? '+' : '';
+        const valCls = valorClasse(m.valor, m.tipo);
+        const estado = m.estado === 'pendente'
+          ? '<span class="hist-estado pendente">Pendente</span>'
+          : m.estado === 'concluido'
+            ? '<span class="hist-estado concluido">Concluido</span>'
+            : '';
+        return `
+          <div class="hist-item" style="animation-delay:${i * 0.04}s">
+            <div class="hist-icon ${cls}">
+              <svg viewBox="0 0 24 24">${tipoParaIcone(m.tipo)}</svg>
+            </div>
+            <div class="hist-info">
+              <div class="hist-desc">${m.descricao || m.tipo}</div>
+              <div class="hist-date">${formatarData(m.data)}</div>
+              ${estado}
+            </div>
+            <div class="hist-amount ${valCls}">
+              ${m.tipo === 'deposito_pendente' ? '' : sinal}${fmt(m.valor)}
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    window.filtrar = function(tipo, btn) {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const filtrados = tipo === 'todos'
+        ? todosMovimentos
+        : todosMovimentos.filter(m => m.tipo === tipo);
+      renderLista(filtrados);
+    };
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) { window.location.href = 'auth.html'; return; }
+
+      try {
+        const q = query(collection(db, 'users', user.uid, 'historico'), orderBy('data', 'desc'));
+        const snap = await getDocs(q);
+        todosMovimentos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderLista(todosMovimentos);
+      } catch(e) {
+        document.getElementById('histList').innerHTML = `<div class="empty"><div class="empty-title">Erro ao carregar</div><div class="empty-sub">Verifique a sua ligacao e recarregue a pagina.</div></div>`;
+      }
+
+      document.getElementById('spinnerOverlay').classList.remove('show');
+    });
+
+    document.getElementById('spinnerOverlay').classList.add('show');
+  </script>
+</body>
+</html>

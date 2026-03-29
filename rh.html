@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kaixepa SA - Recursos Humanos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy: #1a3a6b; --navy-mid: #1e4d8c; --navy-light: #2560a8;
+      --orange: #f57c00; --orange-light: #ff9800;
+      --off-white: #f8faff; --text-dark: #0d0d0d; --text-muted: #5a6a7e;
+      --border: #dce6f5; --success: #2e7d32; --error: #c62828;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { min-height: 100%; font-family: 'DM Sans', sans-serif; background: var(--off-white); color: var(--text-dark); }
+    body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(ellipse 70% 40% at 0% 0%, rgba(26,58,107,0.06) 0%, transparent 60%); pointer-events: none; z-index: 0; }
+    .top-bar { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--navy), var(--navy-mid), var(--navy-light), var(--navy)); z-index: 200; }
+    .header { position: fixed; top: 3px; left: 0; right: 0; height: 56px; background: rgba(255,255,255,0.96); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 16px; gap: 12px; z-index: 100; }
+    .btn-back { width: 36px; height: 36px; border-radius: 10px; border: 1.5px solid var(--border); background: white; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .btn-back svg { width: 18px; height: 18px; fill: none; stroke: var(--navy); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .header-title { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; color: var(--navy); }
+    .header-saldo { margin-left: auto; background: #e8f0fb; border: 1px solid #c5d8f5; border-radius: 20px; padding: 5px 12px; font-size: 12px; font-weight: 600; color: var(--navy); font-family: 'Sora', sans-serif; }
+    .main { position: relative; z-index: 1; padding: 75px 16px 40px; }
+
+    .hero-banner { background: linear-gradient(135deg, var(--orange), var(--orange-light)); border-radius: 16px; padding: 20px; margin-bottom: 20px; text-align: center; position: relative; overflow: hidden; }
+    .hero-banner::after { content: ''; position: absolute; right: -20px; top: -20px; width: 100px; height: 100px; border-radius: 50%; background: rgba(255,255,255,0.1); }
+    .hero-banner-title { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 800; color: white; margin-bottom: 6px; }
+    .hero-banner-sub { font-size: 13px; color: rgba(255,255,255,0.85); line-height: 1.6; }
+    .hero-banner-chip { display: inline-block; margin-top: 12px; background: rgba(255,255,255,0.2); border-radius: 20px; padding: 5px 16px; font-family: 'Sora', sans-serif; font-size: 12px; font-weight: 700; color: white; }
+
+    .sec-title { font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .sec-title::before { content: ''; display: block; width: 3px; height: 16px; background: var(--navy-mid); border-radius: 2px; }
+
+    .plan-card { background: white; border: 1.5px solid var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 12px; transition: box-shadow 0.2s, transform 0.2s; }
+    .plan-card:hover { box-shadow: 0 6px 24px rgba(26,58,107,0.1); transform: translateY(-2px); }
+    .plan-card-body { padding: 16px; display: flex; align-items: center; gap: 14px; }
+    .plan-card-img { width: 52px; height: 52px; border-radius: 12px; overflow: hidden; flex-shrink: 0; border: 1.5px solid var(--border); }
+    .plan-card-img img { width: 100%; height: 100%; object-fit: cover; }
+    .plan-info { flex: 1; }
+    .plan-invest-val { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 800; color: var(--navy); margin-bottom: 2px; }
+    .plan-retorno-label { font-size: 11px; color: var(--text-muted); margin-bottom: 1px; }
+    .plan-retorno-val { font-family: 'Sora', sans-serif; font-size: 17px; font-weight: 800; color: var(--success); }
+    .plan-prazo { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+    .btn-comprar { padding: 11px 18px; background: linear-gradient(135deg, var(--navy), var(--navy-mid)); color: white; border: none; border-radius: 10px; font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; flex-shrink: 0; transition: opacity 0.2s; }
+    .btn-comprar:hover { opacity: 0.9; }
+
+    /* Modal */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(10,22,40,0.5); display: flex; align-items: flex-end; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+    .modal-overlay.show { opacity: 1; pointer-events: all; }
+    .modal-sheet { width: 100%; max-width: 480px; background: white; border-radius: 24px 24px 0 0; padding: 28px 24px 44px; transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.4,0,0.2,1); }
+    .modal-overlay.show .modal-sheet { transform: translateY(0); }
+    .modal-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 22px; }
+    .modal-icon { width: 58px; height: 58px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; }
+    .modal-icon.confirm { background: #e3f2fd; } .modal-icon.success { background: #e8f5e9; } .modal-icon.error { background: #ffebee; }
+    .modal-icon svg { width: 26px; height: 26px; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .modal-title { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 700; color: var(--navy); text-align: center; margin-bottom: 8px; }
+    .modal-msg { font-size: 14px; color: var(--text-muted); text-align: center; line-height: 1.6; margin-bottom: 18px; }
+    .modal-plan-box { background: var(--off-white); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; margin-bottom: 18px; }
+    .modal-plan-row { display: flex; justify-content: space-between; padding: 5px 0; }
+    .modal-plan-row:not(:last-child) { border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 8px; }
+    .modal-plan-key { font-size: 13px; color: var(--text-muted); } .modal-plan-val { font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 700; color: var(--navy); } .modal-plan-val.green { color: var(--success); }
+    .modal-actions { display: flex; gap: 10px; }
+    .btn-cancel { flex: 1; padding: 13px; background: none; border: 1.5px solid var(--border); border-radius: 12px; font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600; color: var(--text-muted); cursor: pointer; }
+    .btn-confirm { flex: 2; padding: 13px; background: linear-gradient(135deg, var(--navy), var(--navy-mid)); color: white; border: none; border-radius: 12px; font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; }
+    .btn-close { width: 100%; padding: 13px; background: linear-gradient(135deg, var(--navy), var(--navy-mid)); color: white; border: none; border-radius: 12px; font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; }
+
+    .spinner-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+    .spinner-overlay.show { opacity: 1; pointer-events: all; }
+    .spinner-ring { width: 52px; height: 52px; border: 3px solid var(--border); border-top-color: var(--navy-mid); border-radius: 50%; animation: spin 0.75s linear infinite; }
+    .spinner-text { margin-top: 14px; font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600; color: var(--navy); }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="top-bar"></div>
+  <div class="spinner-overlay" id="spinnerOverlay"><div class="spinner-ring"></div><div class="spinner-text" id="spinnerText">A processar...</div></div>
+
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-icon" id="modalIcon"><svg id="modalIconSvg" viewBox="0 0 24 24"></svg></div>
+      <div class="modal-title" id="modalTitle"></div>
+      <div class="modal-msg" id="modalMsg"></div>
+      <div class="modal-plan-box" id="modalPlanBox">
+        <div class="modal-plan-row"><span class="modal-plan-key">Investimento</span><span class="modal-plan-val" id="mInvest"></span></div>
+        <div class="modal-plan-row"><span class="modal-plan-key">Retorno</span><span class="modal-plan-val green" id="mRetorno"></span></div>
+        <div class="modal-plan-row"><span class="modal-plan-key">Prazo</span><span class="modal-plan-val" id="mPrazo"></span></div>
+      </div>
+      <div id="actionsConfirm" class="modal-actions">
+        <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+        <button class="btn-confirm" onclick="confirmar()">Confirmar</button>
+      </div>
+      <div id="actionsResult" style="display:none">
+        <button class="btn-close" onclick="closeModal()">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="header">
+    <button class="btn-back" onclick="history.back()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <span class="header-title">Recursos Humanos</span>
+    <div class="header-saldo" id="headerSaldo">-- Kz</div>
+  </div>
+
+  <div class="main">
+    <div class="sec-title">Planos disponiveis</div>
+    <div id="plansContainer"></div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, doc, getDoc, updateDoc, addDoc, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const app = initializeApp({ apiKey: "AIzaSyBp8X1PPp3FqiQ6OXErr8Mu11GEp6MZ2-U", authDomain: "ascend-34bf0.firebaseapp.com", projectId: "ascend-34bf0", storageBucket: "ascend-34bf0.firebasestorage.app", messagingSenderId: "592623076677", appId: "1:592623076677:web:c5615719870aefdabf6a2c" });
+    const auth = getAuth(app), db = getFirestore(app);
+    let currentUser = null, userData = null, planSel = null;
+
+    const planos = [
+      { inv: 10000, ret: 20000 }, { inv: 20000, ret: 40000 }, { inv: 30000, ret: 60000 },
+      { inv: 100000, ret: 200000 }, { inv: 200000, ret: 400000 }, { inv: 1000000, ret: 2000000 },
+      { inv: 5700000, ret: 11400000 }, { inv: 10000000, ret: 20000000 }, { inv: 50000000, ret: 100000000 }
+    ];
+
+    function fmt(n) { return (n || 0).toLocaleString('pt-AO') + ' Kz'; }
+
+    function renderPlanos() {
+      const cont = document.getElementById('plansContainer');
+      cont.innerHTML = planos.map((p, i) => `
+        <div class="plan-card" style="animation: fadeUp 0.3s ease ${i*0.05}s both">
+          <div class="plan-card-body">
+            <div class="plan-card-img">
+              <img src="https://i.postimg.cc/d1YH4jN9/1774713423099.jpg" alt="plano" />
+            </div>
+            <div class="plan-info">
+              <div class="plan-invest-val">${fmt(p.inv)}</div>
+              <div class="plan-retorno-label">Retorno total</div>
+              <div class="plan-retorno-val">${fmt(p.ret)}</div>
+              <div class="plan-prazo">Processado em 72 horas</div>
+            </div>
+            <button class="btn-comprar" onclick="iniciar(${i})">Adquirir</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    window.iniciar = function(idx) {
+      if (!currentUser) { window.location.href = 'auth.html'; return; }
+      planSel = planos[idx];
+      document.getElementById('mInvest').textContent = fmt(planSel.inv);
+      document.getElementById('mRetorno').textContent = fmt(planSel.ret);
+      document.getElementById('mPrazo').textContent = '72 horas';
+      const icon = document.getElementById('modalIcon'), svg = document.getElementById('modalIconSvg');
+      icon.className = 'modal-icon confirm';
+      svg.setAttribute('stroke', '#1e4d8c');
+      svg.innerHTML = '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>';
+      document.getElementById('modalTitle').textContent = 'Confirmar investimento';
+      document.getElementById('modalMsg').textContent = 'Confirme o plano de investimento rapido. O valor sera debitado do seu saldo disponivel.';
+      document.getElementById('modalPlanBox').style.display = 'block';
+      document.getElementById('actionsConfirm').style.display = 'flex';
+      document.getElementById('actionsResult').style.display = 'none';
+      document.getElementById('modalOverlay').classList.add('show');
+    };
+
+    window.confirmar = async function() {
+      if (!planSel || !currentUser) return;
+      closeModal();
+      document.getElementById('spinnerText').textContent = 'A processar...';
+      document.getElementById('spinnerOverlay').classList.add('show');
+      try {
+        const snap = await getDoc(doc(db, 'users', currentUser.uid));
+        const d = snap.data();
+        if ((d.saldo || 0) < planSel.inv) {
+          document.getElementById('spinnerOverlay').classList.remove('show');
+          mostrarResultado('error', 'Saldo insuficiente', 'O seu saldo e insuficiente para este plano. Efectue um deposito e tente novamente.');
+          return;
+        }
+        await updateDoc(doc(db, 'users', currentUser.uid), { saldo: (d.saldo - planSel.inv), capital: (d.capital || 0) + planSel.inv });
+        await addDoc(collection(db, 'rh_investimentos'), { uid: currentUser.uid, investimento: planSel.inv, retorno: planSel.ret, estado: 'pendente', criadoEm: serverTimestamp() });
+        await addDoc(collection(db, 'users', currentUser.uid, 'historico'), { tipo: 'rh_investimento', descricao: 'Plano RH - ' + fmt(planSel.inv), valor: -planSel.inv, data: serverTimestamp() });
+        document.getElementById('headerSaldo').textContent = ((d.saldo - planSel.inv) || 0).toLocaleString('pt-AO') + ' Kz';
+        document.getElementById('spinnerOverlay').classList.remove('show');
+        mostrarResultado('success', 'Investimento confirmado!', 'O seu plano de ' + fmt(planSel.inv) + ' foi activado. O retorno de ' + fmt(planSel.ret) + ' sera processado em 72 horas.');
+      } catch(e) {
+        document.getElementById('spinnerOverlay').classList.remove('show');
+        mostrarResultado('error', 'Erro ao processar', 'Ocorreu um erro. Tente novamente.');
+      }
+    };
+
+    function mostrarResultado(tipo, titulo, msg) {
+      const icon = document.getElementById('modalIcon'), svg = document.getElementById('modalIconSvg');
+      icon.className = 'modal-icon ' + tipo;
+      if (tipo === 'success') { svg.setAttribute('stroke', '#2e7d32'); svg.innerHTML = '<polyline points="20 6 9 17 4 12"/>'; }
+      else { svg.setAttribute('stroke', '#c62828'); svg.innerHTML = '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>'; }
+      document.getElementById('modalTitle').textContent = titulo;
+      document.getElementById('modalMsg').textContent = msg;
+      document.getElementById('modalPlanBox').style.display = 'none';
+      document.getElementById('actionsConfirm').style.display = 'none';
+      document.getElementById('actionsResult').style.display = 'block';
+      document.getElementById('modalOverlay').classList.add('show');
+    }
+
+    window.closeModal = () => document.getElementById('modalOverlay').classList.remove('show');
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) { window.location.href = 'auth.html'; return; }
+      currentUser = user;
+      const snap = await getDoc(doc(db, 'users', user.uid));
+      document.getElementById('spinnerOverlay').classList.remove('show');
+      if (snap.exists()) { userData = snap.data(); document.getElementById('headerSaldo').textContent = (userData.saldo || 0).toLocaleString('pt-AO') + ' Kz'; }
+    });
+
+    renderPlanos();
+    document.getElementById('spinnerOverlay').classList.add('show');
+
+    const style = document.createElement('style');
+    style.textContent = '@keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }';
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>
