@@ -2,23 +2,25 @@
 <html lang="pt">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Kaixepa SA - Conta</title>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --navy: #1a3a6b;
-      --navy-mid: #1e4d8c;
-      --navy-light: #2560a8;
-      --orange: #f57c00;
-      --orange-light: #ff9800;
-      --white: #ffffff;
-      --off-white: #f8faff;
-      --text-dark: #0d0d0d;
-      --text-muted: #5a6a7e;
-      --border: #dce6f5;
-      --success: #2e7d32;
-      --error: #c62828;
+      --blue: #1A56DB;
+      --blue-dark: #1240A8;
+      --blue-light: #E8F0FE;
+      --blue-pale: #F0F5FF;
+      --orange: #E07B39;
+      --orange-dark: #C4612A;
+      --orange-light: #FFF4EC;
+      --bg: #F5F8FF;
+      --text: #0D1F3C;
+      --muted: #6B7FA3;
+      --border: #D6E4FF;
+      --success: #16A34A;
+      --error: #DC2626;
+      --white: #FFFFFF;
       --nav-h: 64px;
     }
 
@@ -27,23 +29,62 @@
     html, body {
       min-height: 100%;
       font-family: 'DM Sans', sans-serif;
-      background: var(--off-white);
-      color: var(--text-dark);
+      background: var(--bg);
+      color: var(--text);
       overflow-x: hidden;
     }
 
-    .top-bar {
+    /* Header fixo com safe-area — igual ao index */
+    .header {
       position: fixed;
-      top: 0; left: 0; right: 0; height: 3px;
-      background: linear-gradient(90deg, var(--navy), var(--navy-mid), var(--navy-light), var(--navy));
-      z-index: 200;
+      top: 0; left: 0; right: 0;
+      padding-top: env(safe-area-inset-top);
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(26,86,219,0.06);
     }
 
-    /* Hero perfil */
+    .header-inner {
+      height: 56px;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 10px;
+    }
+
+    /* Logo imagem — igual ao index */
+    .header-logo {
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .header-logo img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+
+    .header-name {
+      font-family: 'Sora', sans-serif;
+      font-size: 14px; font-weight: 700; color: var(--text);
+      line-height: 1.2;
+    }
+
+    .header-name span {
+      display: block;
+      font-size: 10px; font-weight: 400;
+      color: var(--muted);
+    }
+
+    /* Hero — começa logo abaixo do header */
     .hero {
-      background: linear-gradient(160deg, var(--navy) 0%, var(--navy-mid) 70%, var(--navy-light) 100%);
-      padding: 36px 20px 20px;
-      position: relative; overflow: hidden;
+      background: linear-gradient(160deg, var(--blue-dark) 0%, var(--blue) 70%, #2060b8 100%);
+      padding: 20px 20px 20px;
+      margin-top: calc(env(safe-area-inset-top) + 56px);
+      position: relative;
+      overflow: hidden;
     }
 
     .hero::before {
@@ -55,134 +96,121 @@
       background: rgba(255,255,255,0.04);
     }
 
-    .hero-avatar {
-      width: 52px; height: 52px;
-      background: rgba(255,255,255,0.15);
-      border: 2px solid rgba(255,255,255,0.25);
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      margin-bottom: 10px;
-    }
-
-    .hero-avatar svg {
-      width: 30px; height: 30px;
-      fill: none; stroke: white; stroke-width: 1.8;
-    }
-
-    .hero-name {
-      font-family: 'Sora', sans-serif;
-      font-size: 17px; font-weight: 800; color: white;
-      margin-bottom: 4px;
-    }
-
-    .hero-email {
-      font-size: 13px; color: rgba(255,255,255,0.65);
+    /* Linha com imagem + nome + email — igual ao index */
+    .hero-top-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
       margin-bottom: 16px;
     }
 
-    /* Mini card saldo */
+    .hero-img {
+      width: 46px; height: 46px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 2px solid rgba(255,255,255,0.3);
+      flex-shrink: 0;
+    }
+
+    .hero-img img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+
+    .hero-info { flex: 1; }
+
+    .hero-name {
+      font-family: 'Sora', sans-serif;
+      font-size: 16px; font-weight: 800; color: white;
+      margin-bottom: 2px;
+    }
+
+    .hero-email {
+      font-size: 12px; color: rgba(255,255,255,0.6);
+    }
+
+    /* Mini card saldos */
     .mini-card {
       background: rgba(255,255,255,0.1);
       border: 1px solid rgba(255,255,255,0.15);
       border-radius: 14px;
-      padding: 14px 16px;
+      padding: 12px 16px;
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
       gap: 8px;
     }
 
     .mc-item { text-align: center; }
-
-    .mc-item:not(:last-child) {
-      border-right: 1px solid rgba(255,255,255,0.12);
-    }
-
-    .mc-label {
-      font-size: 10px; color: rgba(255,255,255,0.6);
-      text-transform: uppercase; letter-spacing: 0.4px;
-      margin-bottom: 4px;
-    }
-
-    .mc-val {
-      font-family: 'Sora', sans-serif;
-      font-size: 13px; font-weight: 700; color: white;
-    }
-
-    .mc-val.green { color: #69f0ae; }
+    .mc-item:not(:last-child) { border-right: 1px solid rgba(255,255,255,0.12); }
+    .mc-label { font-size: 10px; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 3px; }
+    .mc-val { font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 700; }
+    .mc-val.orange { color: #fdba74; }
+    .mc-val.green  { color: #6ee7b7; }
 
     /* Main */
-    .main {
-      padding: 20px 16px calc(var(--nav-h) + 16px);
-    }
+    .main { padding: 16px 16px calc(var(--nav-h) + 16px); }
 
-    /* Secao menu */
-    .menu-section {
-      margin-bottom: 20px;
-    }
+    .menu-section { margin-bottom: 18px; }
 
     .menu-section-label {
       font-family: 'Sora', sans-serif;
       font-size: 11px; font-weight: 600;
-      color: var(--text-muted);
+      color: var(--muted);
       text-transform: uppercase; letter-spacing: 0.6px;
-      margin-bottom: 8px;
-      padding-left: 4px;
+      margin-bottom: 8px; padding-left: 4px;
     }
 
     .menu-list {
-      background: white;
+      background: var(--white);
       border: 1.5px solid var(--border);
       border-radius: 16px;
       overflow: hidden;
     }
 
     .menu-item {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 15px 16px;
+      display: flex; align-items: center;
+      gap: 14px; padding: 14px 16px;
       text-decoration: none;
       border-bottom: 1px solid var(--border);
       transition: background 0.15s;
       cursor: pointer;
-      background: none; border-left: none; border-right: none; border-top: none;
+      background: none;
+      border-left: none; border-right: none; border-top: none;
       width: 100%;
     }
 
     .menu-item:last-child { border-bottom: none; }
-    .menu-item:hover { background: var(--off-white); }
+    .menu-item:hover { background: var(--blue-pale); }
 
     .menu-item-icon {
       width: 38px; height: 38px;
       border-radius: 10px;
-      background: #eef3fb;
+      background: var(--blue-light);
       display: flex; align-items: center; justify-content: center;
       flex-shrink: 0;
     }
 
     .menu-item-icon svg {
       width: 18px; height: 18px;
-      fill: none; stroke: var(--navy-mid);
+      fill: none; stroke: var(--blue);
       stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
     }
 
-    .menu-item-icon.orange { background: #fff3e0; }
+    .menu-item-icon.orange { background: var(--orange-light); }
     .menu-item-icon.orange svg { stroke: var(--orange); }
-    .menu-item-icon.red { background: #ffebee; }
+    .menu-item-icon.red { background: #fee2e2; }
     .menu-item-icon.red svg { stroke: var(--error); }
-    .menu-item-icon.green { background: #e8f5e9; }
+    .menu-item-icon.green { background: #dcfce7; }
     .menu-item-icon.green svg { stroke: var(--success); }
 
     .menu-item-text { flex: 1; }
 
     .menu-item-title {
       font-family: 'Sora', sans-serif;
-      font-size: 14px; font-weight: 600; color: var(--text-dark);
+      font-size: 14px; font-weight: 600; color: var(--text);
     }
 
-    .menu-item-sub {
-      font-size: 12px; color: var(--text-muted); margin-top: 1px;
-    }
+    .menu-item-sub { font-size: 12px; color: var(--muted); margin-top: 1px; }
 
     .menu-item-arrow {
       width: 18px; height: 18px;
@@ -192,7 +220,7 @@
     }
 
     .menu-item-badge {
-      background: var(--orange-light);
+      background: var(--orange);
       color: white;
       font-family: 'Sora', sans-serif;
       font-size: 10px; font-weight: 700;
@@ -200,24 +228,24 @@
       margin-right: 4px;
     }
 
-    /* Nav */
+    /* Nav inferior */
     .bottom-nav {
       position: fixed;
       bottom: 0; left: 0; right: 0;
       height: var(--nav-h);
-      background: white;
+      background: var(--white);
       border-top: 1px solid var(--border);
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       z-index: 100;
-      box-shadow: 0 -4px 16px rgba(26,58,107,0.06);
+      box-shadow: 0 -4px 16px rgba(26,86,219,0.06);
     }
 
     .nav-item {
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
       gap: 4px; text-decoration: none;
-      color: var(--text-muted);
+      color: var(--muted);
       font-family: 'Sora', sans-serif;
       font-size: 10px; font-weight: 600;
       transition: color 0.2s;
@@ -229,30 +257,29 @@
       stroke: currentColor; fill: none; stroke-width: 1.8;
     }
 
-    .nav-item.active { color: var(--navy-mid); }
+    .nav-item.active { color: var(--blue); }
 
     /* Spinner */
     .spinner-overlay {
       position: fixed; inset: 0;
       background: rgba(255,255,255,0.92);
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
+      display: flex; align-items: center; justify-content: center;
       z-index: 999; opacity: 0; pointer-events: none;
       transition: opacity 0.2s;
     }
     .spinner-overlay.show { opacity: 1; pointer-events: all; }
     .spinner-ring {
-      width: 52px; height: 52px;
+      width: 48px; height: 48px;
       border: 3px solid var(--border);
-      border-top-color: var(--navy-mid);
+      border-top-color: var(--blue);
       border-radius: 50%;
       animation: spin 0.75s linear infinite;
     }
 
-    /* Modal confirmacao sair */
+    /* Modal logout */
     .modal-overlay {
       position: fixed; inset: 0;
-      background: rgba(10,22,40,0.5);
+      background: rgba(13,31,60,0.5);
       display: flex; align-items: flex-end; justify-content: center;
       z-index: 1000; opacity: 0; pointer-events: none;
       transition: opacity 0.3s;
@@ -266,49 +293,22 @@
       transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
     }
     .modal-overlay.show .modal-sheet { transform: translateY(0); }
-    .modal-handle {
-      width: 40px; height: 4px;
-      background: var(--border); border-radius: 2px;
-      margin: 0 auto 22px;
-    }
-    .modal-title {
-      font-family: 'Sora', sans-serif;
-      font-size: 18px; font-weight: 700; color: var(--navy);
-      text-align: center; margin-bottom: 8px;
-    }
-    .modal-msg {
-      font-size: 14px; color: var(--text-muted);
-      text-align: center; line-height: 1.6; margin-bottom: 22px;
-    }
+    .modal-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 22px; }
+    .modal-title { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 700; color: var(--text); text-align: center; margin-bottom: 8px; }
+    .modal-msg { font-size: 14px; color: var(--muted); text-align: center; line-height: 1.6; margin-bottom: 22px; }
     .modal-btns { display: flex; gap: 10px; }
-    .btn-cancel {
-      flex: 1; padding: 13px;
-      background: none; border: 1.5px solid var(--border);
-      border-radius: 12px;
-      font-family: 'Sora', sans-serif;
-      font-size: 14px; font-weight: 600; color: var(--text-muted);
-      cursor: pointer;
-    }
-    .btn-logout {
-      flex: 2; padding: 13px;
-      background: var(--error); color: white; border: none;
-      border-radius: 12px;
-      font-family: 'Sora', sans-serif;
-      font-size: 14px; font-weight: 600; cursor: pointer;
-    }
+    .btn-cancel { flex: 1; padding: 13px; background: none; border: 1.5px solid var(--border); border-radius: 12px; font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600; color: var(--muted); cursor: pointer; }
+    .btn-logout { flex: 2; padding: 13px; background: var(--error); color: white; border: none; border-radius: 12px; font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; }
 
     @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
 
-  <div class="top-bar"></div>
-
   <div class="spinner-overlay" id="spinnerOverlay">
     <div class="spinner-ring"></div>
   </div>
 
-  <!-- Modal logout -->
   <div class="modal-overlay" id="modalLogout">
     <div class="modal-sheet">
       <div class="modal-handle"></div>
@@ -321,20 +321,34 @@
     </div>
   </div>
 
+  <!-- Header fixo igual ao index -->
+  <div class="header">
+    <div class="header-inner">
+      <div class="header-logo">
+        <img src="https://i.postimg.cc/d1YH4jN9/1774713423099.jpg" alt="Kaixepa SA" />
+      </div>
+      <div class="header-name">
+        Kaixepa SA
+        <span>Sociedade Mineira</span>
+      </div>
+    </div>
+  </div>
+
   <!-- Hero -->
   <div class="hero">
-    <div class="hero-avatar">
-      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
-        <circle cx="12" cy="7" r="4"/>
-      </svg>
+    <div class="hero-top-row">
+      <div class="hero-img">
+        <img src="https://i.postimg.cc/d1YH4jN9/1774713423099.jpg" alt="perfil" />
+      </div>
+      <div class="hero-info">
+        <div class="hero-name" id="heroName">Carregando...</div>
+        <div class="hero-email" id="heroEmail">--</div>
+      </div>
     </div>
-    <div class="hero-name" id="heroName">Carregando...</div>
-    <div class="hero-email" id="heroEmail">--</div>
     <div class="mini-card">
       <div class="mc-item">
         <div class="mc-label">Saldo</div>
-        <div class="mc-val" id="mcSaldo">--</div>
+        <div class="mc-val orange" id="mcSaldo">--</div>
       </div>
       <div class="mc-item">
         <div class="mc-label">Bonus</div>
@@ -342,7 +356,7 @@
       </div>
       <div class="mc-item">
         <div class="mc-label">Capital</div>
-        <div class="mc-val" id="mcCapital">--</div>
+        <div class="mc-val orange" id="mcCapital">--</div>
       </div>
     </div>
   </div>
@@ -500,7 +514,7 @@
       authDomain: "ascend-34bf0.firebaseapp.com",
       projectId: "ascend-34bf0",
       storageBucket: "ascend-34bf0.firebasestorage.app",
-      messagingSenderId: "592623076667",
+      messagingSenderId: "592623076677",
       appId: "1:592623076677:web:c5615719870aefdabf6a2c"
     });
 
@@ -511,13 +525,10 @@
 
     onAuthStateChanged(auth, async (user) => {
       if (!user) { window.location.href = 'auth.html'; return; }
-
       const snap = await getDoc(doc(db, 'users', user.uid));
       document.getElementById('spinnerOverlay').classList.remove('show');
-
       if (!snap.exists()) return;
       const d = snap.data();
-
       document.getElementById('heroName').textContent = d.nome || 'Investidor';
       document.getElementById('heroEmail').textContent = user.email;
       document.getElementById('mcSaldo').textContent = fmt(d.saldo);
