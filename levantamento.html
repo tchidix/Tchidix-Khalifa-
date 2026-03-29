@@ -11,7 +11,7 @@
       --navy-mid: #3a5fa0;
       --navy-light: #4a72b5;
       --orange: #f57c00;
-      --orange-light: #ff9800;
+      --orange-dark: #e65100;
       --white: #ffffff;
       --off-white: #F5F8FF;
       --text-dark: #0D1F3C;
@@ -22,26 +22,20 @@
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    html, body {
-      min-height: 100%;
-      font-family: 'DM Sans', sans-serif;
-      background: var(--off-white);
-      color: var(--text-dark);
-    }
+    html, body { min-height: 100%; font-family: 'DM Sans', sans-serif; background: var(--off-white); color: var(--text-dark); }
 
     body::before {
       content: '';
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background:
-        radial-gradient(ellipse 70% 40% at 0% 0%, rgba(44,74,138,0.06) 0%, transparent 60%),
-        radial-gradient(ellipse 50% 40% at 100% 80%, rgba(58,95,160,0.04) 0%, transparent 60%);
+        radial-gradient(ellipse 60% 50% at 10% 0%, rgba(44,74,138,0.07) 0%, transparent 55%),
+        radial-gradient(ellipse 40% 40% at 90% 100%, rgba(245,124,0,0.04) 0%, transparent 55%);
       pointer-events: none; z-index: 0;
     }
 
     .top-bar {
       position: fixed; top: 0; left: 0; right: 0; height: 3px;
-      background: linear-gradient(90deg, var(--navy), var(--navy-mid), var(--navy-light), var(--navy));
+      background: linear-gradient(90deg, var(--navy), var(--navy-mid), var(--navy-light), var(--orange));
       z-index: 200;
     }
 
@@ -62,91 +56,131 @@
     .btn-back:hover { background: var(--off-white); }
     .btn-back svg { width: 18px; height: 18px; fill: none; stroke: var(--navy); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
-    .header-title { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; color: #0d0d0d; }
+    .header-title { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; color: var(--text-dark); }
 
     .header-saldo {
       margin-left: auto; background: #fff3e0; border: 1px solid #ffcc80;
       border-radius: 20px; padding: 5px 12px;
-      font-size: 12px; font-weight: 600; color: #e65100; font-family: 'Sora', sans-serif;
+      font-size: 12px; font-weight: 600; color: var(--orange-dark); font-family: 'Sora', sans-serif;
     }
 
     .main { position: relative; z-index: 1; padding: 75px 16px 40px; }
 
-    .horario-banner {
-      background: linear-gradient(135deg, var(--navy), var(--navy-mid));
-      border-radius: 16px; padding: 18px; margin-bottom: 16px;
-      position: relative; overflow: hidden;
+    /* ── Saldo Hero Card ── */
+    .balance-hero {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 60%, var(--navy-light) 100%);
+      border-radius: 20px;
+      padding: 22px 20px;
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
     }
-    .horario-banner::after {
-      content: ''; position: absolute; right: -15px; top: -15px;
-      width: 80px; height: 80px; border-radius: 50%; background: rgba(255,255,255,0.05);
+    .balance-hero::before {
+      content: '';
+      position: absolute; top: -30px; right: -30px;
+      width: 120px; height: 120px; border-radius: 50%;
+      background: rgba(255,255,255,0.06);
     }
-    .horario-banner-title { font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 700; color: white; margin-bottom: 6px; }
-    .horario-banner-text { font-size: 12px; color: rgba(255,255,255,0.8); line-height: 1.6; }
-    .horario-chips { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
-    .horario-chip {
-      background: rgba(255,255,255,0.12); border-radius: 20px;
-      padding: 4px 12px; font-family: 'Sora', sans-serif;
-      font-size: 11px; font-weight: 600; color: white;
+    .balance-hero::after {
+      content: '';
+      position: absolute; bottom: -20px; left: 20px;
+      width: 80px; height: 80px; border-radius: 50%;
+      background: rgba(255,255,255,0.03);
     }
-    .horario-chip.active { background: rgba(0,200,83,0.25); color: #69f0ae; }
+    .balance-hero-label { font-size: 11px; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+    .balance-hero-val { font-family: 'Sora', sans-serif; font-size: 28px; font-weight: 800; color: white; margin-bottom: 14px; }
+    .balance-hero-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+    .bhc {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 20px; padding: 5px 12px;
+      font-family: 'Sora', sans-serif; font-size: 11px; font-weight: 600; color: white;
+    }
+    .bhc.active { background: rgba(110,231,183,0.25); border-color: rgba(110,231,183,0.4); color: #6ee7b7; }
+    .bhc.warn { background: rgba(253,186,116,0.25); border-color: rgba(253,186,116,0.4); color: #fdba74; }
 
-    .alert-no-invest {
-      background: #fff8e1; border: 1px solid #ffe082;
-      border-radius: 12px; padding: 14px 16px;
-      margin-bottom: 16px; display: none;
+    /* ── Horario card ── */
+    .horario-card {
+      background: white; border: 1.5px solid var(--border);
+      border-radius: 16px; padding: 16px; margin-bottom: 16px;
     }
-    .alert-no-invest.show { display: block; }
-    .alert-no-invest-title { font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 700; color: #e65100; margin-bottom: 4px; }
-    .alert-no-invest-text { font-size: 12px; color: #e65100; line-height: 1.5; }
-
-    .alert-horario {
-      background: #ffebee; border: 1px solid #ffcdd2;
-      border-radius: 12px; padding: 14px 16px;
-      margin-bottom: 16px; display: none;
+    .horario-card-title {
+      font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 700; color: var(--text-dark);
+      margin-bottom: 12px; display: flex; align-items: center; gap: 6px;
     }
-    .alert-horario.show { display: block; }
-    .alert-horario-title { font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 700; color: var(--error); margin-bottom: 4px; }
-    .alert-horario-text { font-size: 12px; color: var(--error); line-height: 1.5; }
+    .horario-card-title svg { width: 16px; height: 16px; fill: none; stroke: var(--navy-mid); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+    .horario-rows { display: flex; flex-direction: column; gap: 8px; }
+    .horario-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 9px 12px; border-radius: 10px; background: var(--off-white);
+    }
+    .horario-row-label { font-size: 12px; color: var(--text-muted); }
+    .horario-row-val { font-family: 'Sora', sans-serif; font-size: 12px; font-weight: 600; color: var(--navy); }
+    .horario-row-val.green { color: var(--success); }
 
+    /* ── Alerts ── */
+    .alert-box {
+      border-radius: 14px; padding: 14px 16px; margin-bottom: 16px; display: none;
+      border-left: 4px solid;
+    }
+    .alert-box.show { display: block; }
+    .alert-box.warning { background: #fff8e1; border-color: #f57c00; }
+    .alert-box.danger { background: #ffebee; border-color: var(--error); }
+    .alert-box-title { font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+    .alert-box.warning .alert-box-title { color: var(--orange-dark); }
+    .alert-box.danger .alert-box-title { color: var(--error); }
+    .alert-box-text { font-size: 12px; line-height: 1.5; }
+    .alert-box.warning .alert-box-text { color: var(--orange-dark); }
+    .alert-box.danger .alert-box-text { color: var(--error); }
+
+    /* ── Form card ── */
     .form-card {
       background: white; border: 1.5px solid var(--border);
-      border-radius: 16px; padding: 20px 16px; margin-bottom: 16px;
+      border-radius: 20px; overflow: hidden; margin-bottom: 16px;
     }
 
-    .card-header { margin-bottom: 18px; }
-    .card-header-title { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; color: #0d0d0d; }
-    .card-header-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .form-card-header {
+      background: linear-gradient(135deg, var(--navy), var(--navy-mid));
+      padding: 16px 18px;
+    }
+    .form-card-header-title { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; color: white; }
+    .form-card-header-sub { font-size: 12px; color: rgba(255,255,255,0.65); margin-top: 2px; }
+
+    .form-card-body { padding: 18px 16px; }
 
     .field { margin-bottom: 16px; }
     .field label { display: block; font-size: 12px; font-weight: 600; color: var(--navy); margin-bottom: 6px; }
-    .field input {
-      width: 100%; padding: 12px 14px;
-      border: 1.5px solid var(--border); border-radius: 10px;
-      font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text-dark);
+
+    .input-wrap { position: relative; }
+    .input-wrap input {
+      width: 100%; padding: 13px 14px 13px 44px;
+      border: 1.5px solid var(--border); border-radius: 12px;
+      font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; color: var(--text-dark);
       background: var(--off-white); outline: none;
       transition: border-color 0.2s, box-shadow 0.2s;
     }
-    .field input:focus { border-color: var(--navy-mid); box-shadow: 0 0 0 3px rgba(58,95,160,0.1); background: white; }
-    .field-note { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+    .input-wrap input:focus { border-color: var(--navy-mid); box-shadow: 0 0 0 3px rgba(58,95,160,0.1); background: white; }
+    .input-currency {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      font-family: 'Sora', sans-serif; font-size: 12px; font-weight: 700; color: var(--navy-mid);
+    }
+    .field-note { font-size: 11px; color: var(--text-muted); margin-top: 5px; }
     .field-error { font-size: 11px; color: var(--error); margin-top: 4px; display: none; }
     .field-error.show { display: block; }
 
-    .taxa-row {
-      background: #F5F8FF; border: 1px solid var(--border);
-      border-radius: 10px; padding: 12px 14px;
-      margin-bottom: 16px; display: none;
+    /* ── Resumo taxa ── */
+    .taxa-card {
+      background: var(--off-white); border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px; margin-bottom: 16px; display: none;
     }
-    .taxa-row.show { display: block; }
-    .taxa-line {
-      display: flex; justify-content: space-between;
-      padding: 4px 0; font-size: 13px;
-    }
-    .taxa-line:not(:last-child) { border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 8px; }
-    .taxa-key { color: var(--text-muted); }
-    .taxa-val { font-family: 'Sora', sans-serif; font-weight: 700; color: var(--navy); }
+    .taxa-card.show { display: block; }
+    .taxa-card-title { font-family: 'Sora', sans-serif; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+    .taxa-line { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; }
+    .taxa-line:not(:last-child) { border-bottom: 1px dashed var(--border); }
+    .taxa-key { font-size: 13px; color: var(--text-muted); }
+    .taxa-val { font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 700; color: var(--navy); }
     .taxa-val.orange { color: var(--orange); }
-    .taxa-val.green { color: var(--success); }
+    .taxa-val.green { color: var(--success); font-size: 15px; }
 
     .btn-primary {
       width: 100%; padding: 14px;
@@ -154,10 +188,13 @@
       color: white; border: none; border-radius: 12px;
       font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 600;
       cursor: pointer; transition: opacity 0.2s, transform 0.15s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
     }
+    .btn-primary svg { width: 18px; height: 18px; fill: none; stroke: white; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
     .btn-primary:hover { opacity: 0.92; transform: translateY(-1px); }
-    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
 
+    /* ── Spinner ── */
     .spinner-overlay {
       position: fixed; inset: 0; background: rgba(255,255,255,0.9);
       display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -171,6 +208,7 @@
     }
     .spinner-text { margin-top: 14px; font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600; color: var(--navy); }
 
+    /* ── Modal ── */
     .modal-overlay {
       position: fixed; inset: 0; background: rgba(10,22,40,0.5);
       display: flex; align-items: flex-end; justify-content: center;
@@ -188,9 +226,9 @@
     .modal-icon.success { background: #e8f5e9; }
     .modal-icon.error { background: #ffebee; }
     .modal-icon svg { width: 26px; height: 26px; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-    .modal-title { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 700; color: #0d0d0d; text-align: center; margin-bottom: 8px; }
+    .modal-title { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 700; color: var(--text-dark); text-align: center; margin-bottom: 8px; }
     .modal-msg { font-size: 14px; color: var(--text-muted); text-align: center; line-height: 1.6; margin-bottom: 20px; }
-    .modal-ref { background: #F5F8FF; border: 1px solid var(--border); border-radius: 10px; padding: 12px; text-align: center; margin-bottom: 20px; }
+    .modal-ref { background: var(--off-white); border: 1px solid var(--border); border-radius: 10px; padding: 12px; text-align: center; margin-bottom: 20px; }
     .modal-ref-label { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
     .modal-ref-val { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; color: var(--navy); }
     .btn-modal-close { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--navy), var(--navy-mid)); color: white; border: none; border-radius: 12px; font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; }
@@ -231,55 +269,86 @@
 
   <div class="main">
 
-    <div class="horario-banner">
-      <div class="horario-banner-title">Horario de levantamentos</div>
-      <div class="horario-banner-text">Os levantamentos sao processados de segunda a sexta-feira e ao fim de semana dentro do horario indicado.</div>
-      <div class="horario-chips">
-        <div class="horario-chip" id="chipSemana">Seg - Sex: Qualquer hora</div>
-        <div class="horario-chip" id="chipFds">Sab - Dom: 08h30 - 12h30</div>
-        <div class="horario-chip active" id="chipEstado">A verificar...</div>
+    <!-- Saldo hero -->
+    <div class="balance-hero">
+      <div class="balance-hero-label">Saldo disponivel</div>
+      <div class="balance-hero-val" id="heroSaldo">-- Kz</div>
+      <div class="balance-hero-chips">
+        <div class="bhc" id="chipSemana">Seg–Sex: Qualquer hora</div>
+        <div class="bhc warn" id="chipFds">Sab–Dom: 08h30–12h30</div>
+        <div class="bhc" id="chipEstado">A verificar...</div>
       </div>
     </div>
 
-    <div class="alert-no-invest" id="alertNoInvest">
-      <div class="alert-no-invest-title">Sem investimento activo</div>
-      <div class="alert-no-invest-text">Necessita de ter um investimento activo para poder solicitar um levantamento. Adquira um plano na seccao de Compra.</div>
+    <!-- Horario -->
+    <div class="horario-card">
+      <div class="horario-card-title">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Horario de levantamentos
+      </div>
+      <div class="horario-rows">
+        <div class="horario-row">
+          <span class="horario-row-label">Segunda a Sexta</span>
+          <span class="horario-row-val green">Qualquer hora</span>
+        </div>
+        <div class="horario-row">
+          <span class="horario-row-label">Sabado e Domingo</span>
+          <span class="horario-row-val">08h30 – 12h30</span>
+        </div>
+      </div>
     </div>
 
-    <div class="alert-horario" id="alertHorario">
-      <div class="alert-horario-title">Fora do horario</div>
-      <div class="alert-horario-text">Ao fim de semana os levantamentos so sao processados das 08h30 ate as 12h30. Tente novamente dentro do horario permitido.</div>
+    <!-- Alerts -->
+    <div class="alert-box warning" id="alertNoInvest">
+      <div class="alert-box-title">Sem investimento activo</div>
+      <div class="alert-box-text">Necessita de ter um investimento activo para solicitar levantamentos. Adquira um plano na seccao de Compra.</div>
     </div>
 
+    <div class="alert-box danger" id="alertHorario">
+      <div class="alert-box-title">Fora do horario permitido</div>
+      <div class="alert-box-text">Ao fim de semana os levantamentos so sao processados das 08h30 ate as 12h30. Tente novamente dentro do horario.</div>
+    </div>
+
+    <!-- Formulario -->
     <div class="form-card" id="formCard">
-      <div class="card-header">
-        <div class="card-header-title">Solicitar levantamento</div>
-        <div class="card-header-sub">Taxa de 15% sobre o valor solicitado</div>
+      <div class="form-card-header">
+        <div class="form-card-header-title">Solicitar levantamento</div>
+        <div class="form-card-header-sub">Taxa de 15% aplicada sobre o valor solicitado</div>
       </div>
+      <div class="form-card-body">
 
-      <div class="field">
-        <label>Valor a levantar (Kz)</label>
-        <input type="number" id="valorLevantar" placeholder="Minimo 1.800 Kz" min="1800" oninput="calcularTaxa()" />
-        <div class="field-note">Valor minimo: 1.800 Kz</div>
-        <div class="field-error" id="errValor">Valor invalido (minimo 1.800 Kz)</div>
+        <div class="field">
+          <label>Valor a levantar</label>
+          <div class="input-wrap">
+            <span class="input-currency">Kz</span>
+            <input type="number" id="valorLevantar" placeholder="Minimo 1.800" min="1800" oninput="calcularTaxa()" />
+          </div>
+          <div class="field-note">Valor minimo: 1.800 Kz</div>
+          <div class="field-error" id="errValor">Valor invalido — minimo de 1.800 Kz</div>
+        </div>
+
+        <div class="taxa-card" id="taxaRow">
+          <div class="taxa-card-title">Resumo do pedido</div>
+          <div class="taxa-line">
+            <span class="taxa-key">Valor solicitado</span>
+            <span class="taxa-val" id="taxaValor">--</span>
+          </div>
+          <div class="taxa-line">
+            <span class="taxa-key">Taxa de servico (15%)</span>
+            <span class="taxa-val orange" id="taxaValorTaxa">--</span>
+          </div>
+          <div class="taxa-line">
+            <span class="taxa-key">Valor a receber</span>
+            <span class="taxa-val green" id="taxaValorLiquido">--</span>
+          </div>
+        </div>
+
+        <button class="btn-primary" id="btnLevantar" onclick="submeterLevantamento()">
+          <svg viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+          Solicitar levantamento
+        </button>
+
       </div>
-
-      <div class="taxa-row" id="taxaRow">
-        <div class="taxa-line">
-          <span class="taxa-key">Valor solicitado</span>
-          <span class="taxa-val" id="taxaValor">-- Kz</span>
-        </div>
-        <div class="taxa-line">
-          <span class="taxa-key">Taxa (15%)</span>
-          <span class="taxa-val orange" id="taxaValorTaxa">-- Kz</span>
-        </div>
-        <div class="taxa-line">
-          <span class="taxa-key">Valor a receber</span>
-          <span class="taxa-val green" id="taxaValorLiquido">-- Kz</span>
-        </div>
-      </div>
-
-      <button class="btn-primary" id="btnLevantar" onclick="submeterLevantamento()">Solicitar levantamento</button>
     </div>
 
   </div>
@@ -308,11 +377,9 @@
 
     function verificarHorario() {
       const agora = new Date();
-      const diaSemana = agora.getDay();
-      const hora = agora.getHours();
-      const min = agora.getMinutes();
-      const totalMin = hora * 60 + min;
-      const isWeekend = diaSemana === 0 || diaSemana === 6;
+      const dia = agora.getDay();
+      const totalMin = agora.getHours() * 60 + agora.getMinutes();
+      const isWeekend = dia === 0 || dia === 6;
       if (!isWeekend) return true;
       return totalMin >= 510 && totalMin <= 750;
     }
@@ -334,7 +401,7 @@
       if (!val || val < 1800) { document.getElementById('errValor').classList.add('show'); return; }
       if (!podeLevantar) return;
       if ((userData.saldo || 0) < val) {
-        showModal('error', 'Saldo insuficiente', 'O seu saldo disponivel e insuficiente para este levantamento. Valor disponivel: ' + fmt(userData.saldo));
+        showModal('error', 'Saldo insuficiente', 'O seu saldo disponivel e insuficiente para este levantamento. Disponivel: ' + fmt(userData.saldo));
         return;
       }
       showSpinner('A enviar pedido...');
@@ -353,12 +420,12 @@
         document.getElementById('valorLevantar').value = '';
         document.getElementById('taxaRow').classList.remove('show');
         showModal('success', 'Pedido enviado!',
-          'O seu pedido de levantamento de ' + fmt(liquido) + ' (apos taxa) foi registado. Sera processado em breve.',
+          'O seu pedido de ' + fmt(liquido) + ' (apos taxa) foi registado com sucesso e sera processado em breve.',
           pedidoRef.id.substring(0, 10).toUpperCase()
         );
       } catch(e) {
         hideSpinner();
-        showModal('error', 'Erro ao processar', 'Ocorreu um erro ao enviar o pedido. Tente novamente.');
+        showModal('error', 'Erro ao processar', 'Ocorreu um erro ao enviar o pedido. Verifique a sua ligacao e tente novamente.');
       }
     };
 
@@ -377,7 +444,6 @@
     }
 
     window.closeModal = () => document.getElementById('modalOverlay').classList.remove('show');
-
     function showSpinner(msg) { document.getElementById('spinnerText').textContent = msg; document.getElementById('spinnerOverlay').classList.add('show'); }
     function hideSpinner() { document.getElementById('spinnerOverlay').classList.remove('show'); }
 
@@ -388,21 +454,25 @@
       hideSpinner();
       if (!snap.exists()) return;
       userData = snap.data();
-      document.getElementById('headerSaldo').textContent = fmt(userData.saldo);
+      const saldoFmt = fmt(userData.saldo);
+      document.getElementById('headerSaldo').textContent = saldoFmt;
+      document.getElementById('heroSaldo').textContent = saldoFmt;
+
       if (!userData.investimentoActivo) {
         document.getElementById('alertNoInvest').classList.add('show');
         document.getElementById('formCard').style.display = 'none';
         return;
       }
+
       const horarioOk = verificarHorario();
       const chipEstado = document.getElementById('chipEstado');
       if (horarioOk) {
-        chipEstado.textContent = 'Levantamentos disponiveis agora';
-        chipEstado.className = 'horario-chip active';
+        chipEstado.textContent = 'Disponiveis agora';
+        chipEstado.className = 'bhc active';
         podeLevantar = true;
       } else {
-        chipEstado.textContent = 'Fora do horario permitido';
-        chipEstado.className = 'horario-chip';
+        chipEstado.textContent = 'Fora do horario';
+        chipEstado.className = 'bhc warn';
         document.getElementById('alertHorario').classList.add('show');
         document.getElementById('btnLevantar').disabled = true;
         podeLevantar = false;
