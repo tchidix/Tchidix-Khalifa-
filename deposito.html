@@ -7,16 +7,16 @@
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --navy: #1a3a6b;
-      --navy-mid: #1e4d8c;
-      --navy-light: #2560a8;
+      --navy: #2c4a8a;
+      --navy-mid: #3a5fa0;
+      --navy-light: #4a72b5;
       --orange: #f57c00;
       --orange-light: #ff9800;
       --white: #ffffff;
-      --off-white: #f8faff;
-      --text-dark: #0d0d0d;
-      --text-muted: #5a6a7e;
-      --border: #dce6f5;
+      --off-white: #F5F8FF;
+      --text-dark: #0D1F3C;
+      --text-muted: #6B7FA3;
+      --border: #D6E4FF;
       --success: #2e7d32;
       --error: #c62828;
     }
@@ -36,8 +36,8 @@
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
       background:
-        radial-gradient(ellipse 70% 40% at 0% 0%, rgba(26,58,107,0.06) 0%, transparent 60%),
-        radial-gradient(ellipse 50% 40% at 100% 80%, rgba(30,77,140,0.04) 0%, transparent 60%);
+        radial-gradient(ellipse 70% 40% at 0% 0%, rgba(44,74,138,0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 100% 80%, rgba(58,95,160,0.04) 0%, transparent 60%);
       pointer-events: none;
       z-index: 0;
     }
@@ -62,6 +62,7 @@
       padding: 0 16px;
       gap: 12px;
       z-index: 100;
+      box-shadow: 0 2px 12px rgba(44,74,138,0.06);
     }
 
     .btn-back {
@@ -74,47 +75,29 @@
       transition: background 0.2s;
     }
     .btn-back:hover { background: var(--off-white); }
-    .btn-back svg {
-      width: 18px; height: 18px;
-      fill: none; stroke: var(--navy);
-      stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
-    }
+    .btn-back svg { width: 18px; height: 18px; fill: none; stroke: var(--navy); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
-    .header-title {
-      font-family: 'Sora', sans-serif;
-      font-size: 15px; font-weight: 700; color: var(--navy);
-    }
+    .header-title { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; color: #0d0d0d; }
 
     .header-saldo {
       margin-left: auto;
-      background: #e8f0fb;
-      border: 1px solid #c5d8f5;
+      background: #fff3e0;
+      border: 1px solid #ffcc80;
       border-radius: 20px;
       padding: 5px 12px;
       font-size: 12px; font-weight: 600;
-      color: var(--navy);
+      color: #e65100;
       font-family: 'Sora', sans-serif;
     }
 
-    .main {
-      position: relative; z-index: 1;
-      padding: 75px 16px 48px;
-    }
+    .main { position: relative; z-index: 1; padding: 75px 16px 48px; }
 
-    /* ---- STEPPER ---- */
-    .stepper {
-      display: flex;
-      align-items: center;
-      margin-bottom: 28px;
-    }
+    /* STEPPER */
+    .stepper { display: flex; align-items: center; margin-bottom: 28px; }
 
     .step {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      flex: 1;
-      position: relative;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 6px; flex: 1; position: relative;
     }
 
     .step-circle {
@@ -126,468 +109,187 @@
       font-family: 'Sora', sans-serif;
       font-size: 13px; font-weight: 700;
       color: var(--text-muted);
-      transition: all 0.3s;
-      z-index: 1;
+      transition: all 0.3s; z-index: 1;
     }
 
-    .step.active .step-circle {
-      background: linear-gradient(135deg, var(--navy), var(--navy-mid));
-      border-color: var(--navy-mid);
-      color: white;
-    }
-
-    .step.done .step-circle {
-      background: var(--success);
-      border-color: var(--success);
-      color: white;
-    }
+    .step.active .step-circle { background: linear-gradient(135deg, var(--navy), var(--navy-mid)); border-color: var(--navy-mid); color: white; }
+    .step.done .step-circle { background: var(--success); border-color: var(--success); color: white; }
 
     .step-label {
-      font-size: 10px;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-align: center;
-      font-family: 'Sora', sans-serif;
-      white-space: nowrap;
+      font-size: 10px; font-weight: 600; color: var(--text-muted);
+      text-align: center; font-family: 'Sora', sans-serif; white-space: nowrap;
     }
 
     .step.active .step-label { color: var(--navy); }
     .step.done .step-label { color: var(--success); }
 
-    .step-line {
-      flex: 1;
-      height: 2px;
-      background: var(--border);
-      margin-bottom: 20px;
-      transition: background 0.3s;
-    }
-
+    .step-line { flex: 1; height: 2px; background: var(--border); margin-bottom: 20px; transition: background 0.3s; }
     .step-line.done { background: var(--success); }
 
-    /* ---- PAINEIS ---- */
     .panel { display: none; animation: fadeUp 0.3s ease; }
     .panel.active { display: block; }
 
-    /* Cards gerais */
-    .card {
-      background: white;
-      border: 1.5px solid var(--border);
-      border-radius: 16px;
-      overflow: hidden;
-      margin-bottom: 16px;
-    }
+    .card { background: white; border: 1.5px solid var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 16px; }
 
-    .card-header {
-      background: linear-gradient(135deg, var(--navy), var(--navy-mid));
-      padding: 16px;
-    }
+    .card-header { background: linear-gradient(135deg, var(--navy), var(--navy-mid)); padding: 16px; }
+    .card-header-title { font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 700; color: white; }
+    .card-header-sub { font-size: 12px; color: rgba(255,255,255,0.75); margin-top: 2px; }
 
-    .card-header-title {
-      font-family: 'Sora', sans-serif;
-      font-size: 14px; font-weight: 700; color: white;
-    }
-
-    .card-header-sub {
-      font-size: 12px; color: rgba(255,255,255,0.75); margin-top: 2px;
-    }
-
-    /* Seleccao banco */
-    .banks-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 16px;
-    }
+    .banks-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
 
     .bank-card {
-      background: white;
-      border: 2px solid var(--border);
-      border-radius: 14px;
-      padding: 16px 12px;
-      cursor: pointer;
-      transition: all 0.2s;
-      text-align: center;
+      background: white; border: 2px solid var(--border);
+      border-radius: 14px; padding: 16px 12px;
+      cursor: pointer; transition: all 0.2s; text-align: center;
     }
+    .bank-card.selected { border-color: var(--navy-mid); background: #eef3fb; }
+    .bank-card-name { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 800; color: var(--navy); margin-bottom: 4px; }
+    .bank-card-label { font-size: 10px; color: var(--text-muted); }
 
-    .bank-card.selected {
-      border-color: var(--navy-mid);
-      background: #eef3fb;
-    }
-
-    .bank-card-name {
-      font-family: 'Sora', sans-serif;
-      font-size: 18px; font-weight: 800; color: var(--navy);
-      margin-bottom: 4px;
-    }
-
-    .bank-card-label {
-      font-size: 10px; color: var(--text-muted);
-    }
-
-    /* Dados do banco */
     .bank-details {
-      background: white;
-      border: 1.5px solid var(--border);
-      border-radius: 16px;
-      overflow: hidden;
-      margin-bottom: 16px;
-      display: none;
+      background: white; border: 1.5px solid var(--border);
+      border-radius: 16px; overflow: hidden; margin-bottom: 16px; display: none;
       animation: fadeUp 0.3s ease;
     }
-
     .bank-details.show { display: block; }
 
     .bank-detail-row {
-      padding: 13px 16px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 10px;
+      padding: 13px 16px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
     }
-
     .bank-detail-row:last-child { border-bottom: none; }
-
-    .bank-detail-key {
-      font-size: 12px; color: var(--text-muted);
-      width: 60px; flex-shrink: 0;
-    }
-
-    .bank-detail-val {
-      font-family: 'Sora', sans-serif;
-      font-size: 13px; font-weight: 600; color: var(--navy);
-      flex: 1; word-break: break-all;
-    }
+    .bank-detail-key { font-size: 12px; color: var(--text-muted); width: 60px; flex-shrink: 0; }
+    .bank-detail-val { font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 600; color: var(--navy); flex: 1; word-break: break-all; }
 
     .btn-copy {
-      flex-shrink: 0;
-      width: 32px; height: 32px;
-      border-radius: 8px;
-      border: 1.5px solid var(--border);
-      background: var(--off-white);
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer;
-      transition: all 0.2s;
+      flex-shrink: 0; width: 32px; height: 32px;
+      border-radius: 8px; border: 1.5px solid var(--border);
+      background: var(--off-white); display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.2s;
     }
-
     .btn-copy:hover { background: #e8f0fb; border-color: var(--navy-mid); }
     .btn-copy.copied { background: #e8f5e9; border-color: #a5d6a7; }
-
-    .btn-copy svg {
-      width: 15px; height: 15px;
-      fill: none; stroke: var(--text-muted);
-      stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
-    }
-
+    .btn-copy svg { width: 15px; height: 15px; fill: none; stroke: var(--text-muted); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
     .btn-copy.copied svg { stroke: var(--success); }
 
     .alert-bank {
-      background: #fff3e0;
-      border: 1px solid #ffcc80;
-      border-radius: 10px;
-      padding: 11px 14px;
-      font-size: 13px; color: #e65100;
-      margin-bottom: 14px;
-      display: none;
+      background: #fff3e0; border: 1px solid #ffcc80;
+      border-radius: 10px; padding: 11px 14px;
+      font-size: 13px; color: #e65100; margin-bottom: 14px; display: none;
     }
-
     .alert-bank.show { display: block; }
 
-    /* Etapa 2 - valor */
     .field { margin-bottom: 16px; }
-
-    .field label {
-      display: block;
-      font-size: 12px; font-weight: 600;
-      color: var(--navy);
-      margin-bottom: 6px;
-    }
-
+    .field label { display: block; font-size: 12px; font-weight: 600; color: var(--navy); margin-bottom: 6px; }
     .field input {
-      width: 100%;
-      padding: 12px 14px;
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px; color: var(--text-dark);
-      background: var(--off-white);
-      outline: none;
+      width: 100%; padding: 12px 14px;
+      border: 1.5px solid var(--border); border-radius: 10px;
+      font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text-dark);
+      background: var(--off-white); outline: none;
       transition: border-color 0.2s, box-shadow 0.2s;
     }
-
-    .field input:focus {
-      border-color: var(--navy-mid);
-      box-shadow: 0 0 0 3px rgba(30,77,140,0.1);
-      background: white;
-    }
-
+    .field input:focus { border-color: var(--navy-mid); box-shadow: 0 0 0 3px rgba(58,95,160,0.1); background: white; }
     .field-note { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
-
-    .field-error {
-      font-size: 11px; color: var(--error);
-      margin-top: 4px; display: none;
-    }
-
+    .field-error { font-size: 11px; color: var(--error); margin-top: 4px; display: none; }
     .field-error.show { display: block; }
 
-    /* Etapa 3 - comprovativo */
     .upload-area {
-      border: 2px dashed var(--border);
-      border-radius: 14px;
-      padding: 32px 20px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.2s;
-      background: white;
-      margin-bottom: 16px;
-      position: relative;
+      border: 2px dashed var(--border); border-radius: 14px;
+      padding: 32px 20px; text-align: center; cursor: pointer;
+      transition: all 0.2s; background: white; margin-bottom: 16px; position: relative;
     }
-
-    .upload-area:hover, .upload-area.dragover {
-      border-color: var(--navy-mid);
-      background: #eef3fb;
-    }
-
-    .upload-area.has-file {
-      border-color: var(--success);
-      background: #f1f8f2;
-    }
-
-    .upload-area input[type="file"] {
-      position: absolute; inset: 0;
-      opacity: 0; cursor: pointer;
-      width: 100%; height: 100%;
-    }
+    .upload-area:hover, .upload-area.dragover { border-color: var(--navy-mid); background: #eef3fb; }
+    .upload-area.has-file { border-color: var(--success); background: #f1f8f2; }
+    .upload-area input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
 
     .upload-icon {
-      width: 48px; height: 48px;
-      border-radius: 12px;
-      background: #e8f0fb;
-      display: flex; align-items: center; justify-content: center;
+      width: 48px; height: 48px; border-radius: 12px;
+      background: #E8F0FE; display: flex; align-items: center; justify-content: center;
       margin: 0 auto 12px;
     }
-
-    .upload-icon svg {
-      width: 24px; height: 24px;
-      fill: none; stroke: var(--navy-mid);
-      stroke-width: 1.8;
-    }
-
-    .upload-area.has-file .upload-icon {
-      background: #e8f5e9;
-    }
-
+    .upload-icon svg { width: 24px; height: 24px; fill: none; stroke: var(--navy-mid); stroke-width: 1.8; }
+    .upload-area.has-file .upload-icon { background: #e8f5e9; }
     .upload-area.has-file .upload-icon svg { stroke: var(--success); }
 
-    .upload-title {
-      font-family: 'Sora', sans-serif;
-      font-size: 14px; font-weight: 700;
-      color: var(--navy); margin-bottom: 4px;
-    }
-
-    .upload-sub {
-      font-size: 12px; color: var(--text-muted);
-    }
-
-    .upload-filename {
-      font-family: 'Sora', sans-serif;
-      font-size: 13px; font-weight: 600;
-      color: var(--success); margin-top: 8px;
-      display: none;
-    }
-
+    .upload-title { font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 700; color: #0d0d0d; margin-bottom: 4px; }
+    .upload-sub { font-size: 12px; color: var(--text-muted); }
+    .upload-filename { font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 600; color: var(--success); margin-top: 8px; display: none; }
     .upload-filename.show { display: block; }
 
-    /* Resumo etapa 3 */
     .resumo-box {
-      background: #e8f0fb;
-      border: 1px solid #c5d8f5;
-      border-radius: 12px;
-      padding: 14px 16px;
-      margin-bottom: 16px;
+      background: #F5F8FF; border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px 16px; margin-bottom: 16px;
     }
-
-    .resumo-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 4px 0;
-    }
-
-    .resumo-row:not(:last-child) {
-      border-bottom: 1px solid #c5d8f5;
-      padding-bottom: 8px; margin-bottom: 8px;
-    }
-
+    .resumo-row { display: flex; justify-content: space-between; padding: 4px 0; }
+    .resumo-row:not(:last-child) { border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 8px; }
     .resumo-key { font-size: 12px; color: var(--text-muted); }
+    .resumo-val { font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 700; color: var(--navy); }
 
-    .resumo-val {
-      font-family: 'Sora', sans-serif;
-      font-size: 13px; font-weight: 700; color: var(--navy);
-    }
-
-    /* Botoes navegacao */
-    .nav-btns {
-      display: flex; gap: 10px;
-      margin-top: 4px;
-    }
+    .nav-btns { display: flex; gap: 10px; margin-top: 4px; }
 
     .btn-prev {
-      flex: 1;
-      padding: 13px;
-      background: none;
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      font-family: 'Sora', sans-serif;
-      font-size: 14px; font-weight: 600;
-      color: var(--text-muted);
-      cursor: pointer;
-      transition: background 0.2s;
+      flex: 1; padding: 13px; background: none;
+      border: 1.5px solid var(--border); border-radius: 12px;
+      font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600;
+      color: var(--text-muted); cursor: pointer; transition: background 0.2s;
     }
-
     .btn-prev:hover { background: var(--off-white); }
 
     .btn-next {
-      flex: 2;
-      padding: 13px;
+      flex: 2; padding: 13px;
       background: linear-gradient(135deg, var(--navy), var(--navy-mid));
-      color: white;
-      border: none;
-      border-radius: 12px;
-      font-family: 'Sora', sans-serif;
-      font-size: 14px; font-weight: 600;
-      cursor: pointer;
-      transition: opacity 0.2s, transform 0.15s;
+      color: white; border: none; border-radius: 12px;
+      font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: opacity 0.2s, transform 0.15s;
     }
-
     .btn-next:hover { opacity: 0.9; transform: translateY(-1px); }
     .btn-next:active { transform: translateY(0); }
     .btn-next:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
 
-    /* Spinner */
     .spinner-overlay {
-      position: fixed; inset: 0;
-      background: rgba(255,255,255,0.9);
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      z-index: 999; opacity: 0; pointer-events: none;
-      transition: opacity 0.2s;
+      position: fixed; inset: 0; background: rgba(255,255,255,0.9);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      z-index: 999; opacity: 0; pointer-events: none; transition: opacity 0.2s;
     }
-
     .spinner-overlay.show { opacity: 1; pointer-events: all; }
+    .spinner-ring { width: 52px; height: 52px; border: 3px solid var(--border); border-top-color: var(--navy-mid); border-radius: 50%; animation: spin 0.75s linear infinite; }
+    .spinner-text { margin-top: 14px; font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600; color: var(--navy); }
 
-    .spinner-ring {
-      width: 52px; height: 52px;
-      border: 3px solid var(--border);
-      border-top-color: var(--navy-mid);
-      border-radius: 50%;
-      animation: spin 0.75s linear infinite;
-    }
-
-    .spinner-text {
-      margin-top: 14px;
-      font-family: 'Sora', sans-serif;
-      font-size: 14px; font-weight: 600; color: var(--navy);
-    }
-
-    /* Modal */
     .modal-overlay {
-      position: fixed; inset: 0;
-      background: rgba(10,22,40,0.5);
+      position: fixed; inset: 0; background: rgba(10,22,40,0.5);
       display: flex; align-items: flex-end; justify-content: center;
-      z-index: 1000; opacity: 0; pointer-events: none;
-      transition: opacity 0.3s;
+      z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s;
     }
-
     .modal-overlay.show { opacity: 1; pointer-events: all; }
-
     .modal-sheet {
-      width: 100%; max-width: 480px;
-      background: white;
-      border-radius: 24px 24px 0 0;
-      padding: 28px 24px 44px;
-      transform: translateY(100%);
-      transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+      width: 100%; max-width: 480px; background: white;
+      border-radius: 24px 24px 0 0; padding: 28px 24px 44px;
+      transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
     }
-
     .modal-overlay.show .modal-sheet { transform: translateY(0); }
-
-    .modal-handle {
-      width: 40px; height: 4px;
-      background: var(--border); border-radius: 2px;
-      margin: 0 auto 22px;
-    }
-
-    .modal-icon {
-      width: 60px; height: 60px;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 16px;
-    }
-
+    .modal-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 22px; }
+    .modal-icon { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
     .modal-icon.success { background: #e8f5e9; }
-    .modal-icon.error   { background: #ffebee; }
-
-    .modal-icon svg {
-      width: 28px; height: 28px;
-      fill: none; stroke-width: 2;
-      stroke-linecap: round; stroke-linejoin: round;
-    }
-
-    .modal-title {
-      font-family: 'Sora', sans-serif;
-      font-size: 18px; font-weight: 700; color: var(--navy);
-      text-align: center; margin-bottom: 8px;
-    }
-
-    .modal-msg {
-      font-size: 14px; color: var(--text-muted);
-      text-align: center; line-height: 1.6; margin-bottom: 20px;
-    }
-
-    .modal-refbox {
-      background: #e8f0fb;
-      border: 1px solid #c5d8f5;
-      border-radius: 10px;
-      padding: 12px;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
+    .modal-icon.error { background: #ffebee; }
+    .modal-icon svg { width: 28px; height: 28px; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .modal-title { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 700; color: #0d0d0d; text-align: center; margin-bottom: 8px; }
+    .modal-msg { font-size: 14px; color: var(--text-muted); text-align: center; line-height: 1.6; margin-bottom: 20px; }
+    .modal-refbox { background: #F5F8FF; border: 1px solid var(--border); border-radius: 10px; padding: 12px; text-align: center; margin-bottom: 20px; }
     .modal-refbox-label { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
-
-    .modal-refbox-val {
-      font-family: 'Sora', sans-serif;
-      font-size: 15px; font-weight: 700; color: var(--navy);
-    }
-
-    .btn-modal-close {
-      width: 100%;
-      padding: 14px;
-      background: linear-gradient(135deg, var(--navy), var(--navy-mid));
-      color: white; border: none;
-      border-radius: 12px;
-      font-family: 'Sora', sans-serif;
-      font-size: 14px; font-weight: 600;
-      cursor: pointer;
-    }
+    .modal-refbox-val { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; color: var(--navy); }
+    .btn-modal-close { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--navy), var(--navy-mid)); color: white; border: none; border-radius: 12px; font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; }
 
     .toast {
       position: fixed; bottom: 30px; left: 50%;
       transform: translateX(-50%) translateY(20px);
       background: var(--navy); color: white;
       padding: 10px 20px; border-radius: 30px;
-      font-family: 'Sora', sans-serif;
-      font-size: 13px; font-weight: 600;
-      opacity: 0; transition: all 0.3s;
-      z-index: 2000; white-space: nowrap;
+      font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 600;
+      opacity: 0; transition: all 0.3s; z-index: 2000; white-space: nowrap;
     }
-
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(14px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
@@ -604,9 +306,7 @@
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal-sheet">
       <div class="modal-handle"></div>
-      <div class="modal-icon" id="modalIcon">
-        <svg id="modalIconSvg" viewBox="0 0 24 24"></svg>
-      </div>
+      <div class="modal-icon" id="modalIcon"><svg id="modalIconSvg" viewBox="0 0 24 24"></svg></div>
       <div class="modal-title" id="modalTitle"></div>
       <div class="modal-msg" id="modalMsg"></div>
       <div class="modal-refbox" id="modalRefBox" style="display:none">
@@ -617,7 +317,6 @@
     </div>
   </div>
 
-  <!-- Header -->
   <div class="header">
     <button class="btn-back" onclick="voltarOuSair()">
       <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
@@ -628,25 +327,15 @@
 
   <div class="main">
 
-    <!-- Stepper -->
     <div class="stepper">
-      <div class="step active" id="s1">
-        <div class="step-circle" id="sc1">1</div>
-        <div class="step-label">Banco</div>
-      </div>
+      <div class="step active" id="s1"><div class="step-circle" id="sc1">1</div><div class="step-label">Banco</div></div>
       <div class="step-line" id="sl1"></div>
-      <div class="step" id="s2">
-        <div class="step-circle" id="sc2">2</div>
-        <div class="step-label">Valor</div>
-      </div>
+      <div class="step" id="s2"><div class="step-circle" id="sc2">2</div><div class="step-label">Valor</div></div>
       <div class="step-line" id="sl2"></div>
-      <div class="step" id="s3">
-        <div class="step-circle" id="sc3">3</div>
-        <div class="step-label">Comprovativo</div>
-      </div>
+      <div class="step" id="s3"><div class="step-circle" id="sc3">3</div><div class="step-label">Comprovativo</div></div>
     </div>
 
-    <!-- ETAPA 1: Seleccao de banco -->
+    <!-- ETAPA 1 -->
     <div class="panel active" id="panel1">
       <div class="card">
         <div class="card-header">
@@ -668,7 +357,6 @@
 
       <div class="alert-bank" id="alertBank">Seleccione um banco para continuar.</div>
 
-      <!-- Dados BAI -->
       <div class="bank-details" id="detailsBAI">
         <div class="card-header">
           <div class="card-header-title">BAI - Dados para transferencia</div>
@@ -677,27 +365,20 @@
         <div class="bank-detail-row">
           <span class="bank-detail-key">Titular</span>
           <span class="bank-detail-val">Domingos</span>
-          <button class="btn-copy" onclick="copiar('Domingos', this)">
-            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-          </button>
+          <button class="btn-copy" onclick="copiar('Domingos', this)"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>
         </div>
         <div class="bank-detail-row">
           <span class="bank-detail-key">IBAN</span>
           <span class="bank-detail-val">0040.0000.5823.3661.1013.5</span>
-          <button class="btn-copy" onclick="copiar('0040000058233661101350', this)">
-            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-          </button>
+          <button class="btn-copy" onclick="copiar('0040000058233661101350', this)"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>
         </div>
         <div class="bank-detail-row">
           <span class="bank-detail-key">Banco</span>
           <span class="bank-detail-val">BAI</span>
-          <button class="btn-copy" onclick="copiar('BAI', this)">
-            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-          </button>
+          <button class="btn-copy" onclick="copiar('BAI', this)"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>
         </div>
       </div>
 
-      <!-- Dados BFA -->
       <div class="bank-details" id="detailsBFA">
         <div class="card-header">
           <div class="card-header-title">BFA - Dados para transferencia</div>
@@ -706,23 +387,17 @@
         <div class="bank-detail-row">
           <span class="bank-detail-key">Titular</span>
           <span class="bank-detail-val">Domingos</span>
-          <button class="btn-copy" onclick="copiar('Domingos', this)">
-            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-          </button>
+          <button class="btn-copy" onclick="copiar('Domingos', this)"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>
         </div>
         <div class="bank-detail-row">
           <span class="bank-detail-key">IBAN</span>
           <span class="bank-detail-val">0006.0000.9095.7416.3015.7</span>
-          <button class="btn-copy" onclick="copiar('0006000090957416301570', this)">
-            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-          </button>
+          <button class="btn-copy" onclick="copiar('0006000090957416301570', this)"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>
         </div>
         <div class="bank-detail-row">
           <span class="bank-detail-key">Banco</span>
           <span class="bank-detail-val">BFA</span>
-          <button class="btn-copy" onclick="copiar('BFA', this)">
-            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-          </button>
+          <button class="btn-copy" onclick="copiar('BFA', this)"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>
         </div>
       </div>
 
@@ -731,7 +406,7 @@
       </div>
     </div>
 
-    <!-- ETAPA 2: Valor -->
+    <!-- ETAPA 2 -->
     <div class="panel" id="panel2">
       <div class="card">
         <div class="card-header">
@@ -760,7 +435,7 @@
       </div>
     </div>
 
-    <!-- ETAPA 3: Comprovativo -->
+    <!-- ETAPA 3 -->
     <div class="panel" id="panel3">
       <div class="card">
         <div class="card-header">
@@ -769,23 +444,12 @@
         </div>
       </div>
 
-      <!-- Resumo -->
       <div class="resumo-box" id="resumoBox">
-        <div class="resumo-row">
-          <span class="resumo-key">Banco</span>
-          <span class="resumo-val" id="resumoBanco">--</span>
-        </div>
-        <div class="resumo-row">
-          <span class="resumo-key">Valor</span>
-          <span class="resumo-val" id="resumoValor">--</span>
-        </div>
-        <div class="resumo-row">
-          <span class="resumo-key">Titular</span>
-          <span class="resumo-val" id="resumoNome">--</span>
-        </div>
+        <div class="resumo-row"><span class="resumo-key">Banco</span><span class="resumo-val" id="resumoBanco">--</span></div>
+        <div class="resumo-row"><span class="resumo-key">Valor</span><span class="resumo-val" id="resumoValor">--</span></div>
+        <div class="resumo-row"><span class="resumo-key">Titular</span><span class="resumo-val" id="resumoNome">--</span></div>
       </div>
 
-      <!-- Upload -->
       <div class="upload-area" id="uploadArea">
         <input type="file" id="fileInput" accept="image/*,.pdf" onchange="onFileSelected(this)" />
         <div class="upload-icon" id="uploadIcon">
@@ -800,7 +464,7 @@
         <div class="upload-filename" id="uploadFilename"></div>
       </div>
 
-      <div class="field-error show" id="errFile" style="display:none; margin-bottom:12px;">Anexe o comprovativo para continuar</div>
+      <div class="field-error" id="errFile" style="margin-bottom:12px;">Anexe o comprovativo para continuar</div>
 
       <div class="nav-btns">
         <button class="btn-prev" onclick="irParaEtapa(2)">Voltar</button>
@@ -810,17 +474,11 @@
 
   </div>
 
-  <!-- Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import {
-      getFirestore, doc, getDoc, addDoc,
-      collection, serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-    import {
-      getStorage, ref, uploadBytes, getDownloadURL
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+    import { getFirestore, doc, getDoc, addDoc, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
     const app = initializeApp({
       apiKey: "AIzaSyBp8X1PPp3FqiQ6OXErr8Mu11GEp6MZ2-U",
@@ -834,7 +492,6 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
     const storage = getStorage(app);
-
     let currentUser = null;
     let selectedFile = null;
 
@@ -844,19 +501,14 @@
       const snap = await getDoc(doc(db, 'users', user.uid));
       if (snap.exists()) {
         const d = snap.data();
-        document.getElementById('headerSaldo').textContent =
-          (d.saldo || 0).toLocaleString('pt-AO') + ' Kz';
+        document.getElementById('headerSaldo').textContent = (d.saldo || 0).toLocaleString('pt-AO') + ' Kz';
       }
     });
 
     window.onFileSelected = function(input) {
       const file = input.files[0];
       if (!file) return;
-      if (file.size > 5 * 1024 * 1024) {
-        alert('Ficheiro demasiado grande. Maximo 5MB.');
-        input.value = '';
-        return;
-      }
+      if (file.size > 5 * 1024 * 1024) { alert('Ficheiro demasiado grande. Maximo 5MB.'); input.value = ''; return; }
       selectedFile = file;
       const area = document.getElementById('uploadArea');
       area.classList.add('has-file');
@@ -869,55 +521,32 @@
     };
 
     window.enviarDeposito = async function() {
-      if (!selectedFile) {
-        document.getElementById('errFile').style.display = 'block';
-        return;
-      }
+      if (!selectedFile) { document.getElementById('errFile').style.display = 'block'; return; }
       if (!currentUser) { window.location.href = 'auth.html'; return; }
-
       const valor = parseFloat(document.getElementById('valorDeposito').value);
       const nome = document.getElementById('nomeRemetente').value.trim();
       const banco = window._selectedBank;
-
       showSpinner('A enviar comprovativo...');
-
       try {
-        // Upload do comprovativo
         const ext = selectedFile.name.split('.').pop();
         const storageRef = ref(storage, `comprovativos/${currentUser.uid}_${Date.now()}.${ext}`);
         await uploadBytes(storageRef, selectedFile);
         const downloadURL = await getDownloadURL(storageRef);
-
         showSpinner('A registar pedido...');
-
-        // Guardar pedido
         const pedidoRef = await addDoc(collection(db, 'depositos'), {
-          uid: currentUser.uid,
-          valor, banco,
-          nomeTitular: nome,
-          comprovantivoURL: downloadURL,
-          estado: 'pendente',
-          criadoEm: serverTimestamp()
+          uid: currentUser.uid, valor, banco, nomeTitular: nome,
+          comprovantivoURL: downloadURL, estado: 'pendente', criadoEm: serverTimestamp()
         });
-
-        // Historico
         await addDoc(collection(db, 'users', currentUser.uid, 'historico'), {
-          tipo: 'deposito_pendente',
-          descricao: 'Pedido de deposito via ' + banco,
-          valor, estado: 'pendente',
-          data: serverTimestamp()
+          tipo: 'deposito_pendente', descricao: 'Pedido de deposito via ' + banco,
+          valor, estado: 'pendente', data: serverTimestamp()
         });
-
         hideSpinner();
-        showModal('success',
-          'Pedido enviado com sucesso!',
+        showModal('success', 'Pedido enviado com sucesso!',
           'O seu comprovativo foi recebido. A equipa Kaixepa ira validar e creditar o valor na sua conta em breve.',
           pedidoRef.id.substring(0, 10).toUpperCase()
         );
-
-        // Reset
-        selectedFile = null;
-        window._selectedBank = null;
+        selectedFile = null; window._selectedBank = null;
         irParaEtapa(1);
         document.getElementById('cardBAI').classList.remove('selected');
         document.getElementById('cardBFA').classList.remove('selected');
@@ -930,7 +559,6 @@
         document.getElementById('uploadSub').textContent = 'Imagem (JPG, PNG) ou PDF - max 5MB';
         document.getElementById('uploadFilename').classList.remove('show');
         document.getElementById('fileInput').value = '';
-
       } catch(e) {
         hideSpinner();
         showModal('error', 'Erro ao enviar', 'Nao foi possivel enviar o comprovativo. Verifique a sua ligacao e tente novamente.', null);
@@ -941,39 +569,19 @@
       const icon = document.getElementById('modalIcon');
       const svg = document.getElementById('modalIconSvg');
       icon.className = 'modal-icon ' + tipo;
-      if (tipo === 'success') {
-        svg.setAttribute('stroke', '#2e7d32');
-        svg.innerHTML = '<polyline points="20 6 9 17 4 12"/>';
-      } else {
-        svg.setAttribute('stroke', '#c62828');
-        svg.innerHTML = '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>';
-      }
+      if (tipo === 'success') { svg.setAttribute('stroke', '#2e7d32'); svg.innerHTML = '<polyline points="20 6 9 17 4 12"/>'; }
+      else { svg.setAttribute('stroke', '#c62828'); svg.innerHTML = '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>'; }
       document.getElementById('modalTitle').textContent = titulo;
       document.getElementById('modalMsg').textContent = msg;
       const refBox = document.getElementById('modalRefBox');
-      if (refId) {
-        refBox.style.display = 'block';
-        document.getElementById('modalRefVal').textContent = refId;
-      } else {
-        refBox.style.display = 'none';
-      }
+      if (refId) { refBox.style.display = 'block'; document.getElementById('modalRefVal').textContent = refId; }
+      else { refBox.style.display = 'none'; }
       document.getElementById('modalOverlay').classList.add('show');
     }
 
     window.closeModal = () => document.getElementById('modalOverlay').classList.remove('show');
-
-    function showSpinner(msg) {
-      document.getElementById('spinnerText').textContent = msg;
-      document.getElementById('spinnerOverlay').classList.add('show');
-    }
-
-    function hideSpinner() {
-      document.getElementById('spinnerOverlay').classList.remove('show');
-    }
-
-    // Expor para uso global
-    window._db = db;
-    window._auth = auth;
+    function showSpinner(msg) { document.getElementById('spinnerText').textContent = msg; document.getElementById('spinnerOverlay').classList.add('show'); }
+    function hideSpinner() { document.getElementById('spinnerOverlay').classList.remove('show'); }
   </script>
 
   <script>
@@ -990,10 +598,7 @@
     };
 
     window.irParaEtapa2 = function() {
-      if (!window._selectedBank) {
-        document.getElementById('alertBank').classList.add('show');
-        return;
-      }
+      if (!window._selectedBank) { document.getElementById('alertBank').classList.add('show'); return; }
       irParaEtapa(2);
     };
 
@@ -1001,28 +606,18 @@
       const valor = parseFloat(document.getElementById('valorDeposito').value);
       const nome = document.getElementById('nomeRemetente').value.trim();
       let valid = true;
-
       document.getElementById('errValor').classList.remove('show');
       document.getElementById('errNome').classList.remove('show');
-
-      if (!valor || valor < 6000) {
-        document.getElementById('errValor').classList.add('show'); valid = false;
-      }
-      if (!nome) {
-        document.getElementById('errNome').classList.add('show'); valid = false;
-      }
+      if (!valor || valor < 6000) { document.getElementById('errValor').classList.add('show'); valid = false; }
+      if (!nome) { document.getElementById('errNome').classList.add('show'); valid = false; }
       if (!valid) return;
-
-      // Preencher resumo
       document.getElementById('resumoBanco').textContent = window._selectedBank;
       document.getElementById('resumoValor').textContent = valor.toLocaleString('pt-AO') + ' Kz';
       document.getElementById('resumoNome').textContent = nome;
-
       irParaEtapa(3);
     };
 
     window.irParaEtapa = function(n) {
-      // Esconder todos
       for (let i = 1; i <= 3; i++) {
         document.getElementById('panel' + i).classList.remove('active');
         const s = document.getElementById('s' + i);
@@ -1031,17 +626,13 @@
       }
       document.getElementById('sl1').classList.remove('done');
       document.getElementById('sl2').classList.remove('done');
-
-      // Marcar etapas concluidas
       for (let i = 1; i < n; i++) {
         const s = document.getElementById('s' + i);
         s.classList.add('done');
-        document.getElementById('sc' + i).innerHTML =
-          '<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg>';
+        document.getElementById('sc' + i).innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg>';
         if (i === 1) document.getElementById('sl1').classList.add('done');
         if (i === 2) document.getElementById('sl2').classList.add('done');
       }
-
       document.getElementById('s' + n).classList.add('active');
       document.getElementById('panel' + n).classList.add('active');
       currentStep = n;
@@ -1049,11 +640,7 @@
     };
 
     window.voltarOuSair = function() {
-      if (currentStep > 1) {
-        irParaEtapa(currentStep - 1);
-      } else {
-        history.back();
-      }
+      if (currentStep > 1) { irParaEtapa(currentStep - 1); } else { history.back(); }
     };
 
     window.copiar = function(texto, btn) {
@@ -1065,8 +652,7 @@
         setTimeout(() => {
           t.classList.remove('show');
           btn.classList.remove('copied');
-          btn.querySelector('svg').innerHTML =
-            '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>';
+          btn.querySelector('svg').innerHTML = '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>';
         }, 2000);
       });
     };
