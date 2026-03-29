@@ -7,19 +7,19 @@
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --navy: #1a3a6b;
-      --navy-mid: #1e4d8c;
-      --navy-light: #2560a8;
-      --sky-blue: #1e4d8c;
-      --sky-mid: #2560a8;
-      --sky-light: #5b8fd4;
+      --navy: #2c4a8a;
+      --navy-mid: #3a5fa0;
+      --navy-light: #4a72b5;
+      --sky-blue: #3a5fa0;
+      --sky-mid: #4a72b5;
+      --sky-light: #6e8fc4;
       --orange: #f57c00;
       --orange-light: #ff9800;
       --white: #ffffff;
-      --off-white: #f8faff;
-      --text-dark: #0d0d0d;
-      --text-muted: #5a6a7e;
-      --border: #dce6f5;
+      --off-white: #F5F8FF;
+      --text-dark: #0D1F3C;
+      --text-muted: #6B7FA3;
+      --border: #D6E4FF;
       --success: #2e7d32;
       --error: #c62828;
       --nav-h: 64px;
@@ -41,8 +41,8 @@
       top: 0; left: 0;
       width: 100%; height: 100%;
       background:
-        radial-gradient(ellipse 70% 40% at 0% 0%, rgba(26,58,107,0.06) 0%, transparent 60%),
-        radial-gradient(ellipse 50% 40% at 100% 80%, rgba(30,77,140,0.04) 0%, transparent 60%);
+        radial-gradient(ellipse 70% 40% at 0% 0%, rgba(26,86,219,0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 100% 80%, rgba(18,64,168,0.04) 0%, transparent 60%);
       pointer-events: none;
       z-index: 0;
     }
@@ -68,6 +68,7 @@
       padding: 0 16px;
       gap: 10px;
       z-index: 100;
+      box-shadow: 0 2px 12px rgba(26,86,219,0.06);
     }
 
     .btn-back {
@@ -90,7 +91,7 @@
 
     .header-title {
       font-family: 'Sora', sans-serif;
-      font-size: 15px; font-weight: 700; color: var(--navy);
+      font-size: 15px; font-weight: 700; color: #0d0d0d;
     }
 
     .header-right {
@@ -99,12 +100,12 @@
     }
 
     .saldo-chip {
-      background: #e8f0fb;
-      border: 1px solid #c5d8f5;
+      background: #fff3e0;
+      border: 1px solid #ffcc80;
       border-radius: 20px;
       padding: 5px 12px;
       font-size: 12px; font-weight: 600;
-      color: var(--navy);
+      color: #e65100;
       font-family: 'Sora', sans-serif;
     }
 
@@ -198,7 +199,7 @@
     }
 
     .plan-card:hover {
-      box-shadow: 0 6px 24px rgba(26,58,107,0.13);
+      box-shadow: 0 6px 24px rgba(26,86,219,0.13);
       transform: translateY(-2px);
     }
 
@@ -230,7 +231,7 @@
 
     .plan-card-header-name {
       font-family: 'Sora', sans-serif;
-      font-size: 15px; font-weight: 700; color: var(--navy);
+      font-size: 15px; font-weight: 700; color: #0d0d0d;
     }
 
     .plan-card-header-sub {
@@ -249,45 +250,6 @@
       padding: 3px 9px;
       border-radius: 20px;
       letter-spacing: 0.3px;
-    }
-
-    .plan-top {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      margin-bottom: 14px;
-    }
-
-    .plan-icon {
-      width: 42px;
-      height: 42px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, var(--navy), var(--sky-blue));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .plan-icon svg {
-      width: 20px;
-      height: 20px;
-      fill: none;
-      stroke: white;
-      stroke-width: 1.8;
-    }
-
-    .plan-name {
-      font-family: 'Sora', sans-serif;
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--navy);
-      margin-bottom: 2px;
-    }
-
-    .plan-desc {
-      font-size: 12px;
-      color: var(--text-muted);
     }
 
     .plan-stats {
@@ -322,8 +284,10 @@
     }
 
     .btn-buy {
-      width: 100%;
-      padding: 10px;
+      display: block;
+      width: fit-content;
+      margin: 0 auto;
+      padding: 9px 28px;
       background: linear-gradient(135deg, var(--navy), var(--navy-mid));
       color: white;
       border: none;
@@ -379,7 +343,7 @@
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(10,22,40,0.5);
+      background: rgba(13,31,60,0.5);
       display: flex;
       align-items: flex-end;
       justify-content: center;
@@ -426,7 +390,7 @@
       margin: 0 auto 14px;
     }
 
-    .modal-icon.confirm { background: #e3f2fd; }
+    .modal-icon.confirm { background: #E8F0FE; }
     .modal-icon.success { background: #e8f5e9; }
     .modal-icon.error   { background: #ffebee; }
 
@@ -535,61 +499,6 @@
       cursor: pointer;
     }
 
-    /* Aviso saldo insuficiente */
-    .alert-box {
-      background: #fff8e1;
-      border: 1px solid #ffe082;
-      border-radius: 10px;
-      padding: 12px 14px;
-      font-size: 13px;
-      color: #e65100;
-      margin-bottom: 16px;
-      display: none;
-    }
-
-    .alert-box.show { display: block; }
-
-    /* Nav inferior */
-    .bottom-nav {
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      height: var(--nav-h);
-      background: white;
-      border-top: 1px solid var(--border);
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      z-index: 100;
-    }
-
-    .nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      text-decoration: none;
-      color: var(--text-muted);
-      font-family: 'Sora', sans-serif;
-      font-size: 10px;
-      font-weight: 600;
-      transition: color 0.2s;
-      cursor: pointer;
-      border: none;
-      background: none;
-    }
-
-    .nav-item svg {
-      width: 22px;
-      height: 22px;
-      stroke: currentColor;
-      fill: none;
-      stroke-width: 1.8;
-    }
-
-    .nav-item.active {
-      color: var(--sky-blue);
-    }
-
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(16px); }
       to   { opacity: 1; transform: translateY(0); }
@@ -677,7 +586,6 @@
         <span class="section-label-text">Diamantes - 50 dias</span>
         <span class="section-label-badge">Curto Prazo</span>
       </div>
-
       <div class="plans-grid" id="plansCurto"></div>
     </div>
 
@@ -688,7 +596,6 @@
         <span class="section-label-text">Minas - Longo Prazo</span>
         <span class="section-label-badge">Alto Retorno</span>
       </div>
-
       <div class="plans-grid" id="plansLongo"></div>
     </div>
 
@@ -699,7 +606,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import {
-      getFirestore, doc, getDoc, setDoc, updateDoc,
+      getFirestore, doc, getDoc, updateDoc,
       collection, addDoc, serverTimestamp, query, where, getDocs
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -720,7 +627,6 @@
     let userData = null;
     let planSelecionado = null;
 
-    // Planos
     const planosCurto = [
       { id: 'diamante1kl', nome: 'Diamante 1KL', valor: 6000, diario: 350, dias: 50, tipo: 'curto', featured: false },
       { id: 'diamante2ml', nome: 'Diamante 2ML', valor: 12000, diario: 700, dias: 50, tipo: 'curto', featured: true },
@@ -736,9 +642,7 @@
       { id: 'mina_s5', nome: 'Mina S5', valor: 50000, diario: 3500, dias: null, tipo: 'longo', featured: false },
     ];
 
-    function fmt(n) {
-      return n.toLocaleString('pt-AO') + ' Kz';
-    }
+    function fmt(n) { return n.toLocaleString('pt-AO') + ' Kz'; }
 
     function renderPlanos(planos, containerId) {
       const container = document.getElementById(containerId);
@@ -755,7 +659,7 @@
               <img src="https://i.postimg.cc/d1YH4jN9/1774713423099.jpg" alt="${p.nome}" />
             </div>
             <div class="plan-card-header-text">
-              <div class="plan-card-header-name" style="color:#0d0d0d">${p.nome}</div>
+              <div class="plan-card-header-name">${p.nome}</div>
               <div class="plan-card-header-sub">${p.tipo === 'curto' ? 'Curto prazo - 50 dias' : 'Longo prazo'}</div>
             </div>
           </div>
@@ -784,28 +688,23 @@
       planSelecionado = todos.find(p => p.id === planId);
       if (!planSelecionado) return;
 
-      if (!currentUser) {
-        window.location.href = 'auth.html';
-        return;
-      }
+      if (!currentUser) { window.location.href = 'auth.html'; return; }
 
       document.getElementById('mPlano').textContent = planSelecionado.nome;
       document.getElementById('mValor').textContent = fmt(planSelecionado.valor);
       document.getElementById('mDiario').textContent = fmt(planSelecionado.diario) + '/dia';
       document.getElementById('mDuracao').textContent = planSelecionado.dias ? planSelecionado.dias + ' dias' : 'Longo prazo';
 
-      // Mostrar modal confirmacao
       const icon = document.getElementById('modalIcon');
       const iconSvg = document.getElementById('modalIconSvg');
       icon.className = 'modal-icon confirm';
-      iconSvg.setAttribute('stroke', '#1565c0');
+      iconSvg.setAttribute('stroke', '#3a5fa0');
       iconSvg.innerHTML = '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>';
       document.getElementById('modalTitle').textContent = 'Confirmar Investimento';
       document.getElementById('modalMsg').textContent = 'Reveja os detalhes do plano antes de confirmar. O valor sera debitado do seu saldo disponivel.';
       document.getElementById('modalPlanBox').style.display = 'block';
       document.getElementById('modalActionsConfirm').style.display = 'flex';
       document.getElementById('modalActionsResult').style.display = 'none';
-
       document.getElementById('modalOverlay').classList.add('show');
     };
 
@@ -847,7 +746,6 @@
           }
         });
 
-        // Registar no historico
         await addDoc(collection(db, 'users', currentUser.uid, 'historico'), {
           tipo: 'investimento',
           descricao: 'Compra do plano ' + planSelecionado.nome,
@@ -855,13 +753,10 @@
           data: serverTimestamp()
         });
 
-        // Verificar e processar comissao de referencia (10% do 1o investimento)
         const refPendSnap = await getDoc(doc(db, 'referrals_pending', currentUser.uid));
         if (refPendSnap.exists() && !refPendSnap.data().processado) {
           const refData = refPendSnap.data();
           const comissao = Math.floor(planSelecionado.valor * 0.10);
-
-          // Encontrar referente pelo referralId
           const refQuery = query(collection(db, 'users'), where('referralId', '==', refData.convidadoPor));
           const refDocs = await getDocs(refQuery);
           if (!refDocs.empty) {
@@ -879,7 +774,6 @@
         }
 
         document.getElementById('saldoChip').textContent = 'Saldo: ' + novoSaldo.toLocaleString('pt-AO') + ' Kz';
-
         hideSpinner();
         mostrarResultado('success',
           'Investimento confirmado!',
@@ -888,10 +782,7 @@
 
       } catch (e) {
         hideSpinner();
-        mostrarResultado('error',
-          'Erro ao processar',
-          'Ocorreu um erro inesperado. Verifique a sua ligacao e tente novamente.'
-        );
+        mostrarResultado('error', 'Erro ao processar', 'Ocorreu um erro inesperado. Verifique a sua ligacao e tente novamente.');
       }
     };
 
@@ -927,12 +818,8 @@
       document.getElementById('spinnerOverlay').classList.remove('show');
     }
 
-    // Auth check
     onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        window.location.href = 'auth.html';
-        return;
-      }
+      if (!user) { window.location.href = 'auth.html'; return; }
       currentUser = user;
       const snap = await getDoc(doc(db, 'users', user.uid));
       if (snap.exists()) {
@@ -941,7 +828,6 @@
       }
     });
 
-    // Render inicial
     renderPlanos(planosCurto, 'plansCurto');
     renderPlanos(planosLongo, 'plansLongo');
   </script>
