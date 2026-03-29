@@ -7,16 +7,16 @@
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --navy: #1a3a6b;
-      --navy-mid: #1e4d8c;
-      --navy-light: #2560a8;
+      --navy: #2c4a8a;
+      --navy-mid: #3a5fa0;
+      --navy-light: #4a72b5;
       --orange: #f57c00;
       --orange-light: #ff9800;
       --white: #ffffff;
-      --off-white: #f8faff;
-      --text-dark: #0d0d0d;
-      --text-muted: #5a6a7e;
-      --border: #dce6f5;
+      --off-white: #F5F8FF;
+      --text-dark: #0D1F3C;
+      --text-muted: #6B7FA3;
+      --border: #D6E4FF;
       --success: #2e7d32;
       --error: #c62828;
     }
@@ -34,8 +34,8 @@
       content: '';
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background:
-        radial-gradient(ellipse 70% 40% at 0% 0%, rgba(26,58,107,0.06) 0%, transparent 60%),
-        radial-gradient(ellipse 50% 40% at 100% 80%, rgba(30,77,140,0.04) 0%, transparent 60%);
+        radial-gradient(ellipse 70% 40% at 0% 0%, rgba(44,74,138,0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 100% 80%, rgba(58,95,160,0.04) 0%, transparent 60%);
       pointer-events: none; z-index: 0;
     }
 
@@ -50,6 +50,7 @@
       background: rgba(255,255,255,0.96); backdrop-filter: blur(10px);
       border-bottom: 1px solid var(--border);
       display: flex; align-items: center; padding: 0 16px; gap: 12px; z-index: 100;
+      box-shadow: 0 2px 12px rgba(44,74,138,0.06);
     }
 
     .btn-back {
@@ -61,17 +62,16 @@
     .btn-back:hover { background: var(--off-white); }
     .btn-back svg { width: 18px; height: 18px; fill: none; stroke: var(--navy); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
-    .header-title { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; color: var(--navy); }
+    .header-title { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; color: #0d0d0d; }
 
     .header-saldo {
-      margin-left: auto; background: #e8f0fb; border: 1px solid #c5d8f5;
+      margin-left: auto; background: #fff3e0; border: 1px solid #ffcc80;
       border-radius: 20px; padding: 5px 12px;
-      font-size: 12px; font-weight: 600; color: var(--navy); font-family: 'Sora', sans-serif;
+      font-size: 12px; font-weight: 600; color: #e65100; font-family: 'Sora', sans-serif;
     }
 
     .main { position: relative; z-index: 1; padding: 75px 16px 40px; }
 
-    /* Banner horario */
     .horario-banner {
       background: linear-gradient(135deg, var(--navy), var(--navy-mid));
       border-radius: 16px; padding: 18px; margin-bottom: 16px;
@@ -91,7 +91,6 @@
     }
     .horario-chip.active { background: rgba(0,200,83,0.25); color: #69f0ae; }
 
-    /* Alerta investimento */
     .alert-no-invest {
       background: #fff8e1; border: 1px solid #ffe082;
       border-radius: 12px; padding: 14px 16px;
@@ -101,7 +100,6 @@
     .alert-no-invest-title { font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 700; color: #e65100; margin-bottom: 4px; }
     .alert-no-invest-text { font-size: 12px; color: #e65100; line-height: 1.5; }
 
-    /* Alerta horario */
     .alert-horario {
       background: #ffebee; border: 1px solid #ffcdd2;
       border-radius: 12px; padding: 14px 16px;
@@ -111,16 +109,13 @@
     .alert-horario-title { font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 700; color: var(--error); margin-bottom: 4px; }
     .alert-horario-text { font-size: 12px; color: var(--error); line-height: 1.5; }
 
-    /* Formulario */
     .form-card {
       background: white; border: 1.5px solid var(--border);
       border-radius: 16px; padding: 20px 16px; margin-bottom: 16px;
     }
 
-    .card-header {
-      margin-bottom: 18px;
-    }
-    .card-header-title { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; color: var(--navy); }
+    .card-header { margin-bottom: 18px; }
+    .card-header-title { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; color: #0d0d0d; }
     .card-header-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
 
     .field { margin-bottom: 16px; }
@@ -132,14 +127,13 @@
       background: var(--off-white); outline: none;
       transition: border-color 0.2s, box-shadow 0.2s;
     }
-    .field input:focus { border-color: var(--navy-mid); box-shadow: 0 0 0 3px rgba(30,77,140,0.1); background: white; }
+    .field input:focus { border-color: var(--navy-mid); box-shadow: 0 0 0 3px rgba(58,95,160,0.1); background: white; }
     .field-note { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
     .field-error { font-size: 11px; color: var(--error); margin-top: 4px; display: none; }
     .field-error.show { display: block; }
 
-    /* Taxa */
     .taxa-row {
-      background: #e8f0fb; border: 1px solid #c5d8f5;
+      background: #F5F8FF; border: 1px solid var(--border);
       border-radius: 10px; padding: 12px 14px;
       margin-bottom: 16px; display: none;
     }
@@ -148,7 +142,7 @@
       display: flex; justify-content: space-between;
       padding: 4px 0; font-size: 13px;
     }
-    .taxa-line:not(:last-child) { border-bottom: 1px solid #c5d8f5; padding-bottom: 8px; margin-bottom: 8px; }
+    .taxa-line:not(:last-child) { border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 8px; }
     .taxa-key { color: var(--text-muted); }
     .taxa-val { font-family: 'Sora', sans-serif; font-weight: 700; color: var(--navy); }
     .taxa-val.orange { color: var(--orange); }
@@ -164,7 +158,6 @@
     .btn-primary:hover { opacity: 0.92; transform: translateY(-1px); }
     .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-    /* Spinner */
     .spinner-overlay {
       position: fixed; inset: 0; background: rgba(255,255,255,0.9);
       display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -178,7 +171,6 @@
     }
     .spinner-text { margin-top: 14px; font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600; color: var(--navy); }
 
-    /* Modal */
     .modal-overlay {
       position: fixed; inset: 0; background: rgba(10,22,40,0.5);
       display: flex; align-items: flex-end; justify-content: center;
@@ -196,9 +188,9 @@
     .modal-icon.success { background: #e8f5e9; }
     .modal-icon.error { background: #ffebee; }
     .modal-icon svg { width: 26px; height: 26px; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-    .modal-title { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 700; color: var(--navy); text-align: center; margin-bottom: 8px; }
+    .modal-title { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 700; color: #0d0d0d; text-align: center; margin-bottom: 8px; }
     .modal-msg { font-size: 14px; color: var(--text-muted); text-align: center; line-height: 1.6; margin-bottom: 20px; }
-    .modal-ref { background: #e8f0fb; border: 1px solid #c5d8f5; border-radius: 10px; padding: 12px; text-align: center; margin-bottom: 20px; }
+    .modal-ref { background: #F5F8FF; border: 1px solid var(--border); border-radius: 10px; padding: 12px; text-align: center; margin-bottom: 20px; }
     .modal-ref-label { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
     .modal-ref-val { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; color: var(--navy); }
     .btn-modal-close { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--navy), var(--navy-mid)); color: white; border: none; border-radius: 12px; font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; }
@@ -239,7 +231,6 @@
 
   <div class="main">
 
-    <!-- Horario -->
     <div class="horario-banner">
       <div class="horario-banner-title">Horario de levantamentos</div>
       <div class="horario-banner-text">Os levantamentos sao processados de segunda a sexta-feira e ao fim de semana dentro do horario indicado.</div>
@@ -260,7 +251,6 @@
       <div class="alert-horario-text">Ao fim de semana os levantamentos so sao processados das 08h30 ate as 12h30. Tente novamente dentro do horario permitido.</div>
     </div>
 
-    <!-- Formulario -->
     <div class="form-card" id="formCard">
       <div class="card-header">
         <div class="card-header-title">Solicitar levantamento</div>
@@ -297,10 +287,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import {
-      getFirestore, doc, getDoc, addDoc,
-      collection, serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, addDoc, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const app = initializeApp({
       apiKey: "AIzaSyBp8X1PPp3FqiQ6OXErr8Mu11GEp6MZ2-U",
@@ -321,24 +308,18 @@
 
     function verificarHorario() {
       const agora = new Date();
-      const diaSemana = agora.getDay(); // 0=Dom, 6=Sab
+      const diaSemana = agora.getDay();
       const hora = agora.getHours();
       const min = agora.getMinutes();
       const totalMin = hora * 60 + min;
-
       const isWeekend = diaSemana === 0 || diaSemana === 6;
-
-      if (!isWeekend) return true; // Sem-semana: sempre permitido
-      // Fim de semana: 08h30 - 12h30
+      if (!isWeekend) return true;
       return totalMin >= 510 && totalMin <= 750;
     }
 
     window.calcularTaxa = function() {
       const val = parseFloat(document.getElementById('valorLevantar').value);
-      if (!val || val < 1800) {
-        document.getElementById('taxaRow').classList.remove('show');
-        return;
-      }
+      if (!val || val < 1800) { document.getElementById('taxaRow').classList.remove('show'); return; }
       const taxa = val * 0.15;
       const liquido = val - taxa;
       document.getElementById('taxaValor').textContent = fmt(val);
@@ -350,51 +331,31 @@
     window.submeterLevantamento = async function() {
       const val = parseFloat(document.getElementById('valorLevantar').value);
       document.getElementById('errValor').classList.remove('show');
-
-      if (!val || val < 1800) {
-        document.getElementById('errValor').classList.add('show'); return;
-      }
-
+      if (!val || val < 1800) { document.getElementById('errValor').classList.add('show'); return; }
       if (!podeLevantar) return;
-
       if ((userData.saldo || 0) < val) {
         showModal('error', 'Saldo insuficiente', 'O seu saldo disponivel e insuficiente para este levantamento. Valor disponivel: ' + fmt(userData.saldo));
         return;
       }
-
       showSpinner('A enviar pedido...');
-
       try {
         const taxa = val * 0.15;
         const liquido = val - taxa;
-
         const pedidoRef = await addDoc(collection(db, 'levantamentos'), {
-          uid: currentUser.uid,
-          valorSolicitado: val,
-          taxa: taxa,
-          valorLiquido: liquido,
-          estado: 'pendente',
-          criadoEm: serverTimestamp()
+          uid: currentUser.uid, valorSolicitado: val, taxa, valorLiquido: liquido,
+          estado: 'pendente', criadoEm: serverTimestamp()
         });
-
         await addDoc(collection(db, 'users', currentUser.uid, 'historico'), {
-          tipo: 'levantamento_pendente',
-          descricao: 'Pedido de levantamento',
-          valor: -val,
-          estado: 'pendente',
-          data: serverTimestamp()
+          tipo: 'levantamento_pendente', descricao: 'Pedido de levantamento',
+          valor: -val, estado: 'pendente', data: serverTimestamp()
         });
-
         hideSpinner();
         document.getElementById('valorLevantar').value = '';
         document.getElementById('taxaRow').classList.remove('show');
-
-        showModal('success',
-          'Pedido enviado!',
+        showModal('success', 'Pedido enviado!',
           'O seu pedido de levantamento de ' + fmt(liquido) + ' (apos taxa) foi registado. Sera processado em breve.',
           pedidoRef.id.substring(0, 10).toUpperCase()
         );
-
       } catch(e) {
         hideSpinner();
         showModal('error', 'Erro ao processar', 'Ocorreu um erro ao enviar o pedido. Tente novamente.');
@@ -405,13 +366,8 @@
       const icon = document.getElementById('modalIcon');
       const svg = document.getElementById('modalIconSvg');
       icon.className = 'modal-icon ' + tipo;
-      if (tipo === 'success') {
-        svg.setAttribute('stroke', '#2e7d32');
-        svg.innerHTML = '<polyline points="20 6 9 17 4 12"/>';
-      } else {
-        svg.setAttribute('stroke', '#c62828');
-        svg.innerHTML = '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>';
-      }
+      if (tipo === 'success') { svg.setAttribute('stroke', '#2e7d32'); svg.innerHTML = '<polyline points="20 6 9 17 4 12"/>'; }
+      else { svg.setAttribute('stroke', '#c62828'); svg.innerHTML = '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>'; }
       document.getElementById('modalTitle').textContent = titulo;
       document.getElementById('modalMsg').textContent = msg;
       const refEl = document.getElementById('modalRef');
@@ -422,36 +378,24 @@
 
     window.closeModal = () => document.getElementById('modalOverlay').classList.remove('show');
 
-    function showSpinner(msg) {
-      document.getElementById('spinnerText').textContent = msg;
-      document.getElementById('spinnerOverlay').classList.add('show');
-    }
+    function showSpinner(msg) { document.getElementById('spinnerText').textContent = msg; document.getElementById('spinnerOverlay').classList.add('show'); }
     function hideSpinner() { document.getElementById('spinnerOverlay').classList.remove('show'); }
 
     onAuthStateChanged(auth, async (user) => {
       if (!user) { window.location.href = 'auth.html'; return; }
       currentUser = user;
-
       const snap = await getDoc(doc(db, 'users', user.uid));
       hideSpinner();
-
       if (!snap.exists()) return;
       userData = snap.data();
       document.getElementById('headerSaldo').textContent = fmt(userData.saldo);
-
-      // Verificar investimento activo
       if (!userData.investimentoActivo) {
         document.getElementById('alertNoInvest').classList.add('show');
         document.getElementById('formCard').style.display = 'none';
         return;
       }
-
-      // Verificar horario
       const horarioOk = verificarHorario();
-      const agora = new Date();
-      const isWeekend = agora.getDay() === 0 || agora.getDay() === 6;
       const chipEstado = document.getElementById('chipEstado');
-
       if (horarioOk) {
         chipEstado.textContent = 'Levantamentos disponiveis agora';
         chipEstado.className = 'horario-chip active';
