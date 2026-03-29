@@ -537,7 +537,11 @@
           <span class="modal-plan-key">Valor</span>
           <span class="modal-plan-val" id="mValor"></span>
         </div>
-        <div class="modal-plan-row">
+        <div class="modal-plan-row" id="rowRetorno25" style="display:none">
+          <span class="modal-plan-key">Retorno 25 dias</span>
+          <span class="modal-plan-val green" id="mRetorno25"></span>
+        </div>
+        <div class="modal-plan-row" id="rowDiario" style="display:none">
           <span class="modal-plan-key">Ganho diario</span>
           <span class="modal-plan-val green" id="mDiario"></span>
         </div>
@@ -627,11 +631,12 @@
     let userData = null;
     let planSelecionado = null;
 
+    // Curto prazo: 50 dias, retorno em 2 parcelas de 25 dias (sem ganhos diarios fixos)
     const planosCurto = [
-      { id: 'diamante1kl', nome: 'Diamante 1KL', valor: 6000, diario: 350, dias: 50, tipo: 'curto', featured: false },
-      { id: 'diamante2ml', nome: 'Diamante 2ML', valor: 12000, diario: 700, dias: 50, tipo: 'curto', featured: true },
-      { id: 'diamante3kl', nome: 'Diamante 3KL', valor: 18000, diario: 1050, dias: 50, tipo: 'curto', featured: false },
-      { id: 'diamante4kl', nome: 'Diamante 4KL', valor: 24000, diario: 1400, dias: 50, tipo: 'curto', featured: false },
+      { id: 'diamante1kl', nome: 'Diamante 1KL', valor: 6000,  retorno25: 9000,  retornoTotal: 18000,  dias: 50, tipo: 'curto', featured: false },
+      { id: 'diamante2ml', nome: 'Diamante 2ML', valor: 12000, retorno25: 18000,  retornoTotal: 32000, dias: 50, tipo: 'curto', featured: true },
+      { id: 'diamante3kl', nome: 'Diamante 3KL', valor: 18000, retorno25: 27000,  retornoTotal: 54000, dias: 50, tipo: 'curto', featured: false },
+      { id: 'diamante4kl', nome: 'Diamante 4KL', valor: 24000, retorno25: 36000, retornoTotal: 72000, dias: 50, tipo: 'curto', featured: false },
     ];
 
     const planosLongo = [
@@ -648,22 +653,26 @@
       const container = document.getElementById(containerId);
       container.innerHTML = '';
       planos.forEach((p, i) => {
-        const totalRetorno = p.dias ? p.diario * p.dias : null;
         const card = document.createElement('div');
         card.className = 'plan-card' + (p.featured ? ' featured' : '');
         card.style.animationDelay = (i * 0.07) + 's';
-        card.innerHTML = `
-          ${p.featured ? '<div class="plan-badge">Popular</div>' : ''}
-          <div class="plan-card-header">
-            <div class="plan-card-header-icon">
-              <img src="https://i.postimg.cc/d1YH4jN9/1774713423099.jpg" alt="${p.nome}" />
+        let statsHtml = '';
+        if (p.tipo === 'curto') {
+          statsHtml = `
+            <div class="stat-box">
+              <div class="stat-val">${fmt(p.valor)}</div>
+              <div class="stat-label">Investimento</div>
             </div>
-            <div class="plan-card-header-text">
-              <div class="plan-card-header-name">${p.nome}</div>
-              <div class="plan-card-header-sub">${p.tipo === 'curto' ? 'Curto prazo - 50 dias' : 'Longo prazo'}</div>
+            <div class="stat-box">
+              <div class="stat-val orange">${fmt(p.retorno25)}</div>
+              <div class="stat-label">Retorno 25 dias</div>
             </div>
-          </div>
-          <div class="plan-stats">
+            <div class="stat-box">
+              <div class="stat-val green">${fmt(p.retornoTotal)}</div>
+              <div class="stat-label">Total 50 dias</div>
+            </div>`;
+        } else {
+          statsHtml = `
             <div class="stat-box">
               <div class="stat-val">${fmt(p.valor)}</div>
               <div class="stat-label">Investimento</div>
@@ -673,10 +682,22 @@
               <div class="stat-label">Ganho Diario</div>
             </div>
             <div class="stat-box">
-              <div class="stat-val green">${totalRetorno ? fmt(totalRetorno) : 'Ilimitado'}</div>
-              <div class="stat-label">${p.dias ? 'Retorno Total' : 'Retorno'}</div>
+              <div class="stat-val green">Ilimitado</div>
+              <div class="stat-label">Retorno</div>
+            </div>`;
+        }
+        card.innerHTML = `
+          ${p.featured ? '<div class="plan-badge">Popular</div>' : ''}
+          <div class="plan-card-header">
+            <div class="plan-card-header-icon">
+              <img src="https://i.postimg.cc/d1YH4jN9/1774713423099.jpg" alt="${p.nome}" />
+            </div>
+            <div class="plan-card-header-text">
+              <div class="plan-card-header-name">${p.nome}</div>
+              <div class="plan-card-header-sub">${p.tipo === 'curto' ? 'Retorno: 25 dias + 25 dias' : 'Longo prazo'}</div>
             </div>
           </div>
+          <div class="plan-stats">${statsHtml}</div>
           <button class="btn-buy" onclick="iniciarCompra('${p.id}')">Comprar este plano</button>
         `;
         container.appendChild(card);
@@ -692,8 +713,17 @@
 
       document.getElementById('mPlano').textContent = planSelecionado.nome;
       document.getElementById('mValor').textContent = fmt(planSelecionado.valor);
-      document.getElementById('mDiario').textContent = fmt(planSelecionado.diario) + '/dia';
-      document.getElementById('mDuracao').textContent = planSelecionado.dias ? planSelecionado.dias + ' dias' : 'Longo prazo';
+      if (planSelecionado.tipo === 'curto') {
+        document.getElementById('rowRetorno25').style.display = 'flex';
+        document.getElementById('mRetorno25').textContent = fmt(planSelecionado.retorno25) + ' / parcela';
+        document.getElementById('rowDiario').style.display = 'none';
+        document.getElementById('mDuracao').textContent = '50 dias (2x 25 dias)';
+      } else {
+        document.getElementById('rowRetorno25').style.display = 'none';
+        document.getElementById('rowDiario').style.display = 'flex';
+        document.getElementById('mDiario').textContent = fmt(planSelecionado.diario) + '/dia';
+        document.getElementById('mDuracao').textContent = 'Longo prazo';
+      }
 
       const icon = document.getElementById('modalIcon');
       const iconSvg = document.getElementById('modalIconSvg');
