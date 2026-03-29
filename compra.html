@@ -55,7 +55,6 @@
       z-index: 200;
     }
 
-    /* Header */
     .header {
       position: fixed;
       top: 0; left: 0; right: 0;
@@ -109,14 +108,12 @@
       font-family: 'Sora', sans-serif;
     }
 
-    /* Conteudo principal */
     .main {
       position: relative;
       z-index: 1;
       padding: 72px 16px 32px;
     }
 
-    /* Tabs curto/longo prazo */
     .section-tabs {
       display: flex;
       gap: 8px;
@@ -144,7 +141,6 @@
       color: white;
     }
 
-    /* Label de secção */
     .section-label {
       display: flex;
       align-items: center;
@@ -179,7 +175,6 @@
       color: #e65100;
     }
 
-    /* Cards de plano */
     .plans-grid {
       display: flex;
       flex-direction: column;
@@ -191,7 +186,7 @@
       background: white;
       border: 1.5px solid var(--border);
       border-radius: 16px;
-      padding: 18px 16px;
+      padding: 16px;
       position: relative;
       overflow: hidden;
       transition: box-shadow 0.2s, transform 0.2s;
@@ -207,7 +202,8 @@
       border-color: var(--navy-mid);
     }
 
-    .plan-card-header {
+    /* Top row: icon+name LEFT, button RIGHT */
+    .plan-card-top {
       display: flex;
       align-items: center;
       gap: 12px;
@@ -227,7 +223,7 @@
       object-fit: cover;
     }
 
-    .plan-card-header-text { flex: 1; }
+    .plan-card-header-text { flex: 1; min-width: 0; }
 
     .plan-card-header-name {
       font-family: 'Sora', sans-serif;
@@ -237,6 +233,24 @@
     .plan-card-header-sub {
       font-size: 11px; color: var(--text-muted); margin-top: 1px;
     }
+
+    .btn-buy {
+      flex-shrink: 0;
+      padding: 9px 16px;
+      background: linear-gradient(135deg, var(--navy), var(--navy-mid));
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Sora', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s;
+      white-space: nowrap;
+    }
+
+    .btn-buy:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-buy:active { transform: translateY(0); }
 
     .plan-badge {
       position: absolute;
@@ -256,7 +270,6 @@
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
       gap: 8px;
-      margin-bottom: 14px;
     }
 
     .stat-box {
@@ -268,7 +281,7 @@
 
     .stat-val {
       font-family: 'Sora', sans-serif;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 700;
       color: #DC2626;
       margin-bottom: 2px;
@@ -282,25 +295,6 @@
       color: var(--text-muted);
       font-weight: 500;
     }
-
-    .btn-buy {
-      display: block;
-      width: fit-content;
-      margin: 0 auto;
-      padding: 9px 28px;
-      background: linear-gradient(135deg, var(--navy), var(--navy-mid));
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-family: 'Sora', sans-serif;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: opacity 0.2s, transform 0.15s;
-    }
-
-    .btn-buy:hover { opacity: 0.9; transform: translateY(-1px); }
-    .btn-buy:active { transform: translateY(0); }
 
     /* Spinner */
     .spinner-overlay {
@@ -339,7 +333,7 @@
       color: var(--navy);
     }
 
-    /* Modal confirmacao / resultado */
+    /* Modal */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -513,13 +507,11 @@
 
   <div class="top-bar"></div>
 
-  <!-- Spinner -->
   <div class="spinner-overlay" id="spinnerOverlay">
     <div class="spinner-ring"></div>
     <div class="spinner-text" id="spinnerText">A processar...</div>
   </div>
 
-  <!-- Modal confirmacao / resultado -->
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal-sheet" id="modalSheet">
       <div class="modal-handle"></div>
@@ -560,7 +552,6 @@
     </div>
   </div>
 
-  <!-- Header -->
   <div class="header">
     <button class="btn-back" onclick="history.back()">
       <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
@@ -574,16 +565,13 @@
     </div>
   </div>
 
-  <!-- Conteudo -->
   <div class="main">
 
-    <!-- Tabs -->
     <div class="section-tabs">
       <button class="stab active" id="tabCurto" onclick="showSection('curto')">Curto Prazo</button>
       <button class="stab" id="tabLongo" onclick="showSection('longo')">Longo Prazo</button>
     </div>
 
-    <!-- CURTO PRAZO -->
     <div id="sectionCurto">
       <div class="section-label">
         <div class="section-label-dot"></div>
@@ -593,7 +581,6 @@
       <div class="plans-grid" id="plansCurto"></div>
     </div>
 
-    <!-- LONGO PRAZO -->
     <div id="sectionLongo" style="display:none">
       <div class="section-label">
         <div class="section-label-dot"></div>
@@ -605,7 +592,6 @@
 
   </div>
 
-  <!-- Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -614,16 +600,15 @@
       collection, addDoc, serverTimestamp, query, where, getDocs
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    const firebaseConfig = {
+    const app = initializeApp({
       apiKey: "AIzaSyBp8X1PPp3FqiQ6OXErr8Mu11GEp6MZ2-U",
       authDomain: "ascend-34bf0.firebaseapp.com",
       projectId: "ascend-34bf0",
       storageBucket: "ascend-34bf0.firebasestorage.app",
       messagingSenderId: "592623076677",
       appId: "1:592623076677:web:c5615719870aefdabf6a2c"
-    };
+    });
 
-    const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
@@ -631,17 +616,16 @@
     let userData = null;
     let planSelecionado = null;
 
-    // Curto prazo: 50 dias, retorno em 2 parcelas de 25 dias (sem ganhos diarios fixos)
     const planosCurto = [
-      { id: 'diamante1kl', nome: 'Diamante 1KL', valor: 6000,  retorno25: 9000,  retornoTotal: 18000,  dias: 50, tipo: 'curto', featured: false },
-      { id: 'diamante2ml', nome: 'Diamante 2ML', valor: 12000, retorno25: 18000,  retornoTotal: 32000, dias: 50, tipo: 'curto', featured: true },
-      { id: 'diamante3kl', nome: 'Diamante 3KL', valor: 18000, retorno25: 27000,  retornoTotal: 54000, dias: 50, tipo: 'curto', featured: false },
+      { id: 'diamante1kl', nome: 'Diamante 1KL', valor: 6000,  retorno25: 9000,  retornoTotal: 18000, dias: 50, tipo: 'curto', featured: false },
+      { id: 'diamante2ml', nome: 'Diamante 2ML', valor: 12000, retorno25: 18000, retornoTotal: 32000, dias: 50, tipo: 'curto', featured: true },
+      { id: 'diamante3kl', nome: 'Diamante 3KL', valor: 18000, retorno25: 27000, retornoTotal: 54000, dias: 50, tipo: 'curto', featured: false },
       { id: 'diamante4kl', nome: 'Diamante 4KL', valor: 24000, retorno25: 36000, retornoTotal: 72000, dias: 50, tipo: 'curto', featured: false },
     ];
 
     const planosLongo = [
-      { id: 'mina_s1', nome: 'Mina S1', valor: 10000, diario: 500, dias: null, tipo: 'longo', featured: false },
-      { id: 'mina_s2', nome: 'Mina S2', valor: 15000, diario: 800, dias: null, tipo: 'longo', featured: false },
+      { id: 'mina_s1', nome: 'Mina S1', valor: 10000, diario: 500,  dias: null, tipo: 'longo', featured: false },
+      { id: 'mina_s2', nome: 'Mina S2', valor: 15000, diario: 800,  dias: null, tipo: 'longo', featured: false },
       { id: 'mina_s3', nome: 'Mina S3', valor: 27000, diario: 1600, dias: null, tipo: 'longo', featured: true },
       { id: 'mina_s4', nome: 'Mina S4', valor: 37000, diario: 2500, dias: null, tipo: 'longo', featured: false },
       { id: 'mina_s5', nome: 'Mina S5', valor: 50000, diario: 3500, dias: null, tipo: 'longo', featured: false },
@@ -656,6 +640,7 @@
         const card = document.createElement('div');
         card.className = 'plan-card' + (p.featured ? ' featured' : '');
         card.style.animationDelay = (i * 0.07) + 's';
+
         let statsHtml = '';
         if (p.tipo === 'curto') {
           statsHtml = `
@@ -665,11 +650,11 @@
             </div>
             <div class="stat-box">
               <div class="stat-val orange">${fmt(p.retorno25)}</div>
-              <div class="stat-label">Retorno 25 dias</div>
+              <div class="stat-label">Retorno 25d</div>
             </div>
             <div class="stat-box">
               <div class="stat-val green">${fmt(p.retornoTotal)}</div>
-              <div class="stat-label">Total 50 dias</div>
+              <div class="stat-label">Total 50d</div>
             </div>`;
         } else {
           statsHtml = `
@@ -686,19 +671,20 @@
               <div class="stat-label">Retorno</div>
             </div>`;
         }
+
         card.innerHTML = `
-          ${p.featured ? '<div class="plan-badge">Popular</div>' : ''}
-          <div class="plan-card-header">
+          <div class="plan-card-top">
             <div class="plan-card-header-icon">
               <img src="https://i.postimg.cc/d1YH4jN9/1774713423099.jpg" alt="${p.nome}" />
             </div>
             <div class="plan-card-header-text">
               <div class="plan-card-header-name">${p.nome}</div>
-              <div class="plan-card-header-sub">${p.tipo === 'curto' ? 'Retorno: 25 dias + 25 dias' : 'Longo prazo'}</div>
+              <div class="plan-card-header-sub">${p.tipo === 'curto' ? '25d + 25d' : 'Longo prazo'}</div>
             </div>
+            <button class="btn-buy" onclick="iniciarCompra('${p.id}')">Comprar</button>
           </div>
           <div class="plan-stats">${statsHtml}</div>
-          <button class="btn-buy" onclick="iniciarCompra('${p.id}')">Comprar este plano</button>
+          ${p.featured ? '<div class="plan-badge">Popular</div>' : ''}
         `;
         container.appendChild(card);
       });
@@ -708,11 +694,11 @@
       const todos = [...planosCurto, ...planosLongo];
       planSelecionado = todos.find(p => p.id === planId);
       if (!planSelecionado) return;
-
       if (!currentUser) { window.location.href = 'auth.html'; return; }
 
       document.getElementById('mPlano').textContent = planSelecionado.nome;
       document.getElementById('mValor').textContent = fmt(planSelecionado.valor);
+
       if (planSelecionado.tipo === 'curto') {
         document.getElementById('rowRetorno25').style.display = 'flex';
         document.getElementById('mRetorno25').textContent = fmt(planSelecionado.retorno25) + ' / parcela';
@@ -731,7 +717,7 @@
       iconSvg.setAttribute('stroke', '#3a5fa0');
       iconSvg.innerHTML = '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>';
       document.getElementById('modalTitle').textContent = 'Confirmar Investimento';
-      document.getElementById('modalMsg').textContent = 'Reveja os detalhes do plano antes de confirmar. O valor sera debitado do seu saldo disponivel.';
+      document.getElementById('modalMsg').textContent = 'Reveja os detalhes antes de confirmar. O valor sera debitado do seu saldo.';
       document.getElementById('modalPlanBox').style.display = 'block';
       document.getElementById('modalActionsConfirm').style.display = 'flex';
       document.getElementById('modalActionsResult').style.display = 'none';
@@ -747,33 +733,49 @@
       try {
         const userRef = doc(db, 'users', currentUser.uid);
         const snap = await getDoc(userRef);
+        if (!snap.exists()) {
+          hideSpinner();
+          mostrarResultado('error', 'Erro', 'Utilizador nao encontrado. Tente novamente.');
+          return;
+        }
         const data = snap.data();
 
-        if (data.saldo < planSelecionado.valor) {
+        if ((data.saldo || 0) < planSelecionado.valor) {
           hideSpinner();
           mostrarResultado('error',
             'Saldo insuficiente',
-            `O seu saldo disponivel e insuficiente para adquirir o plano ${planSelecionado.nome}. Por favor efectue um deposito e tente novamente.`
+            `Saldo disponivel insuficiente para adquirir o plano ${planSelecionado.nome}. Por favor efectue um deposito e tente novamente.`
           );
           return;
         }
 
-        const novoSaldo = data.saldo - planSelecionado.valor;
+        const novoSaldo = (data.saldo || 0) - planSelecionado.valor;
         const novoCapital = (data.capital || 0) + planSelecionado.valor;
+
+        // Build investimento activo — handle both curto and longo correctly
+        const investimentoActivo = {
+          planId: planSelecionado.id,
+          nome: planSelecionado.nome,
+          valor: planSelecionado.valor,
+          tipo: planSelecionado.tipo,
+          iniciadoEm: serverTimestamp(),
+          ultimoGanho: null
+        };
+
+        if (planSelecionado.tipo === 'curto') {
+          investimentoActivo.retorno25 = planSelecionado.retorno25;
+          investimentoActivo.retornoTotal = planSelecionado.retornoTotal;
+          investimentoActivo.dias = planSelecionado.dias;
+          investimentoActivo.diario = null;
+        } else {
+          investimentoActivo.diario = planSelecionado.diario;
+          investimentoActivo.dias = null;
+        }
 
         await updateDoc(userRef, {
           saldo: novoSaldo,
           capital: novoCapital,
-          investimentoActivo: {
-            planId: planSelecionado.id,
-            nome: planSelecionado.nome,
-            valor: planSelecionado.valor,
-            diario: planSelecionado.diario,
-            tipo: planSelecionado.tipo,
-            dias: planSelecionado.dias || null,
-            iniciadoEm: serverTimestamp(),
-            ultimoGanho: null
-          }
+          investimentoActivo
         });
 
         await addDoc(collection(db, 'users', currentUser.uid, 'historico'), {
@@ -783,34 +785,42 @@
           data: serverTimestamp()
         });
 
-        const refPendSnap = await getDoc(doc(db, 'referrals_pending', currentUser.uid));
-        if (refPendSnap.exists() && !refPendSnap.data().processado) {
-          const refData = refPendSnap.data();
-          const comissao = Math.floor(planSelecionado.valor * 0.10);
-          const refQuery = query(collection(db, 'users'), where('referralId', '==', refData.convidadoPor));
-          const refDocs = await getDocs(refQuery);
-          if (!refDocs.empty) {
-            const refDoc = refDocs.docs[0];
-            const refSaldo = (refDoc.data().saldo || 0) + comissao;
-            await updateDoc(doc(db, 'users', refDoc.id), { saldo: refSaldo });
-            await addDoc(collection(db, 'users', refDoc.id, 'historico'), {
-              tipo: 'comissao',
-              descricao: 'Comissao de referencia - 10% de ' + planSelecionado.nome,
-              valor: comissao,
-              data: serverTimestamp()
-            });
+        // Processar comissao de referencia se aplicavel
+        try {
+          const refPendSnap = await getDoc(doc(db, 'referrals_pending', currentUser.uid));
+          if (refPendSnap.exists() && !refPendSnap.data().processado) {
+            const refData = refPendSnap.data();
+            const comissao = Math.floor(planSelecionado.valor * 0.10);
+            const refQuery = query(collection(db, 'users'), where('referralId', '==', refData.convidadoPor));
+            const refDocs = await getDocs(refQuery);
+            if (!refDocs.empty) {
+              const refDoc = refDocs.docs[0];
+              await updateDoc(doc(db, 'users', refDoc.id), { saldo: (refDoc.data().saldo || 0) + comissao });
+              await addDoc(collection(db, 'users', refDoc.id, 'historico'), {
+                tipo: 'comissao',
+                descricao: 'Comissao de referencia - 10% de ' + planSelecionado.nome,
+                valor: comissao,
+                data: serverTimestamp()
+              });
+            }
+            await updateDoc(doc(db, 'referrals_pending', currentUser.uid), { processado: true });
           }
-          await updateDoc(doc(db, 'referrals_pending', currentUser.uid), { processado: true });
+        } catch(refErr) {
+          // referral error nao deve bloquear o investimento
+          console.warn('Referral processing error:', refErr);
         }
 
         document.getElementById('saldoChip').textContent = 'Saldo: ' + novoSaldo.toLocaleString('pt-AO') + ' Kz';
         hideSpinner();
-        mostrarResultado('success',
-          'Investimento confirmado!',
-          `O plano ${planSelecionado.nome} foi activado com sucesso. O seu ganho diario de ${fmt(planSelecionado.diario)} ja esta a ser contabilizado.`
-        );
+
+        const successMsg = planSelecionado.tipo === 'curto'
+          ? `O plano ${planSelecionado.nome} foi activado. O primeiro retorno de ${fmt(planSelecionado.retorno25)} sera creditado em 25 dias.`
+          : `O plano ${planSelecionado.nome} foi activado. O seu ganho diario de ${fmt(planSelecionado.diario)} ja esta a ser contabilizado.`;
+
+        mostrarResultado('success', 'Investimento confirmado!', successMsg);
 
       } catch (e) {
+        console.error('Erro ao comprar plano:', e);
         hideSpinner();
         mostrarResultado('error', 'Erro ao processar', 'Ocorreu um erro inesperado. Verifique a sua ligacao e tente novamente.');
       }
