@@ -310,21 +310,20 @@
     .stat-box {
       background: var(--off-white);
       border-radius: 10px;
-      padding: 10px 8px;
+      padding: 8px 6px;
       text-align: center;
     }
 
     .stat-val {
       font-family: 'Sora', sans-serif;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 700;
-      color: var(--navy);
+      color: #DC2626;
       margin-bottom: 2px;
     }
 
-    .stat-val.green {
-      color: var(--success);
-    }
+    .stat-val.green { color: #16a34a; }
+    .stat-val.orange { color: #E07B39; }
 
     .stat-label {
       font-size: 10px;
@@ -334,26 +333,20 @@
 
     .btn-buy {
       width: 100%;
-      padding: 13px;
-      background: linear-gradient(135deg, var(--navy), var(--sky-blue));
+      padding: 10px;
+      background: linear-gradient(135deg, var(--navy), var(--navy-mid));
       color: white;
       border: none;
-      border-radius: 12px;
+      border-radius: 8px;
       font-family: 'Sora', sans-serif;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
       cursor: pointer;
       transition: opacity 0.2s, transform 0.15s;
     }
 
-    .btn-buy:hover {
-      opacity: 0.9;
-      transform: translateY(-1px);
-    }
-
-    .btn-buy:active {
-      transform: translateY(0);
-    }
+    .btn-buy:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-buy:active { transform: translateY(0); }
 
     /* Spinner */
     .spinner-overlay {
@@ -795,7 +788,7 @@
               <img src="https://i.postimg.cc/d1YH4jN9/1774713423099.jpg" alt="${p.nome}" />
             </div>
             <div class="plan-card-header-text">
-              <div class="plan-card-header-name">${p.nome}</div>
+              <div class="plan-card-header-name" style="color:#0d0d0d">${p.nome}</div>
               <div class="plan-card-header-sub">${p.tipo === 'curto' ? 'Curto prazo - 50 dias' : 'Longo prazo'}</div>
             </div>
           </div>
@@ -805,12 +798,12 @@
               <div class="stat-label">Investimento</div>
             </div>
             <div class="stat-box">
-              <div class="stat-val green">${fmt(p.diario)}</div>
+              <div class="stat-val orange">${fmt(p.diario)}</div>
               <div class="stat-label">Ganho Diario</div>
             </div>
             <div class="stat-box">
-              <div class="stat-val">${totalRetorno ? fmt(totalRetorno) : 'Ilimitado'}</div>
-              <div class="stat-label">${p.dias ? 'Retorno Total' : 'Tipo'}</div>
+              <div class="stat-val green">${totalRetorno ? fmt(totalRetorno) : 'Ilimitado'}</div>
+              <div class="stat-label">${p.dias ? 'Retorno Total' : 'Retorno'}</div>
             </div>
           </div>
           <button class="btn-buy" onclick="iniciarCompra('${p.id}')">Comprar este plano</button>
