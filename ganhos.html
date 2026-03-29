@@ -7,594 +7,393 @@
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --navy: #1a3a6b;
-      --navy-mid: #1e4d8c;
-      --navy-light: #2560a8;
+      --navy: #2c4a8a;
+      --navy-mid: #3a5fa0;
+      --navy-light: #4a72b5;
       --orange: #f57c00;
       --orange-light: #ff9800;
       --white: #ffffff;
-      --off-white: #f8faff;
-      --text-dark: #0d0d0d;
-      --text-muted: #5a6a7e;
-      --border: #dce6f5;
+      --off-white: #F5F8FF;
+      --text-dark: #0D1F3C;
+      --text-muted: #6B7FA3;
+      --border: #D6E4FF;
       --success: #2e7d32;
       --green-bright: #00c853;
       --error: #c62828;
+      --nav-h: 64px;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    html, body {
-      min-height: 100%;
-      font-family: 'DM Sans', sans-serif;
-      background: var(--off-white);
-      color: var(--text-dark);
-      overflow-x: hidden;
-    }
+    html, body { min-height: 100%; font-family: 'DM Sans', sans-serif; background: var(--off-white); color: var(--text-dark); overflow-x: hidden; }
 
     body::before {
-      content: '';
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background:
-        radial-gradient(ellipse 70% 40% at 0% 0%, rgba(26,58,107,0.06) 0%, transparent 60%),
-        radial-gradient(ellipse 50% 40% at 100% 80%, rgba(30,77,140,0.04) 0%, transparent 60%);
+      content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: radial-gradient(ellipse 70% 40% at 0% 0%, rgba(44,74,138,0.06) 0%, transparent 60%),
+                  radial-gradient(ellipse 50% 40% at 100% 80%, rgba(58,95,160,0.04) 0%, transparent 60%);
       pointer-events: none; z-index: 0;
     }
 
-    .top-bar {
-      position: fixed;
-      top: 0; left: 0; right: 0; height: 3px;
-      background: linear-gradient(90deg, var(--navy), var(--navy-mid), var(--navy-light), var(--navy));
-      z-index: 200;
-    }
+    .top-bar { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--navy), var(--navy-mid), var(--navy-light), var(--navy)); z-index: 200; }
 
     .header {
-      position: fixed;
-      top: 3px; left: 0; right: 0; height: 56px;
-      background: rgba(255,255,255,0.96);
-      backdrop-filter: blur(10px);
+      position: fixed; top: 3px; left: 0; right: 0; height: 56px;
+      background: rgba(255,255,255,0.96); backdrop-filter: blur(10px);
       border-bottom: 1px solid var(--border);
-      display: flex; align-items: center;
-      padding: 0 16px; gap: 12px; z-index: 100;
+      display: flex; align-items: center; padding: 0 16px; gap: 12px; z-index: 100;
+      box-shadow: 0 2px 12px rgba(44,74,138,0.06);
     }
-
-    .btn-back {
-      width: 36px; height: 36px;
-      border-radius: 10px;
-      border: 1.5px solid var(--border);
-      background: white;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; transition: background 0.2s;
-    }
+    .btn-back { width: 36px; height: 36px; border-radius: 10px; border: 1.5px solid var(--border); background: white; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.2s; }
     .btn-back:hover { background: var(--off-white); }
-    .btn-back svg {
-      width: 18px; height: 18px;
-      fill: none; stroke: var(--navy);
-      stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
-    }
+    .btn-back svg { width: 18px; height: 18px; fill: none; stroke: var(--navy); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .header-title { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; color: var(--text-dark); }
+    .header-badge { margin-left: auto; background: #E8F0FE; border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; font-family: 'Sora', sans-serif; font-size: 11px; font-weight: 600; color: var(--navy-mid); }
 
-    .header-title {
-      font-family: 'Sora', sans-serif;
-      font-size: 15px; font-weight: 700; color: var(--navy);
-    }
+    .main { position: relative; z-index: 1; padding: 75px 16px calc(var(--nav-h) + 16px); }
 
-    .main {
-      position: relative; z-index: 1;
-      padding: 75px 16px 40px;
-    }
-
-    /* Sem investimento */
-    .no-invest-card {
-      background: white;
-      border: 1.5px solid var(--border);
-      border-radius: 16px;
-      padding: 32px 20px;
-      text-align: center;
-      margin-bottom: 16px;
-    }
-
-    .no-invest-icon {
-      width: 56px; height: 56px;
-      background: #eef3fb; border-radius: 16px;
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 14px;
-    }
-
-    .no-invest-icon svg {
-      width: 28px; height: 28px;
-      fill: none; stroke: var(--navy-mid); stroke-width: 1.8;
-    }
-
-    .no-invest-title {
-      font-family: 'Sora', sans-serif;
-      font-size: 16px; font-weight: 700; color: var(--navy); margin-bottom: 6px;
-    }
-
-    .no-invest-sub {
-      font-size: 13px; color: var(--text-muted); margin-bottom: 18px;
-    }
-
-    .btn-primary {
-      display: inline-block;
-      padding: 12px 28px;
+    /* ── No invest ── */
+    .no-invest-wrap { animation: fadeUp 0.4s ease; }
+    .no-invest-hero {
       background: linear-gradient(135deg, var(--navy), var(--navy-mid));
-      color: white; border: none; border-radius: 12px;
-      font-family: 'Sora', sans-serif;
-      font-size: 14px; font-weight: 600;
-      cursor: pointer; text-decoration: none;
-      transition: opacity 0.2s;
+      border-radius: 20px; padding: 28px 20px; text-align: center; margin-bottom: 16px; position: relative; overflow: hidden;
     }
-    .btn-primary:hover { opacity: 0.9; }
+    .no-invest-hero::before { content: ''; position: absolute; top: -30px; right: -30px; width: 110px; height: 110px; border-radius: 50%; background: rgba(255,255,255,0.05); }
+    .ni-icon { width: 64px; height: 64px; background: rgba(255,255,255,0.12); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
+    .ni-icon svg { width: 32px; height: 32px; fill: none; stroke: white; stroke-width: 1.8; }
+    .ni-title { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 800; color: white; margin-bottom: 8px; }
+    .ni-sub { font-size: 13px; color: rgba(255,255,255,0.7); line-height: 1.6; margin-bottom: 20px; }
+    .btn-start { display: inline-flex; align-items: center; gap: 6px; padding: 12px 24px; background: rgba(255,255,255,0.15); border: 1.5px solid rgba(255,255,255,0.3); color: white; border-radius: 12px; font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600; text-decoration: none; transition: background 0.2s; }
+    .btn-start:hover { background: rgba(255,255,255,0.25); }
+    .btn-start svg { width: 16px; height: 16px; fill: none; stroke: white; stroke-width: 2; }
 
-    /* Header do plano activo */
-    .plan-header {
-      background: linear-gradient(135deg, var(--navy), var(--navy-mid));
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 16px;
-      position: relative; overflow: hidden;
+    /* info tiles no-invest */
+    .how-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+    .how-card { background: white; border: 1.5px solid var(--border); border-radius: 14px; padding: 14px 12px; }
+    .how-card-icon { width: 36px; height: 36px; border-radius: 10px; background: #E8F0FE; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+    .how-card-icon svg { width: 18px; height: 18px; fill: none; stroke: var(--navy-mid); stroke-width: 1.8; }
+    .how-card-title { font-family: 'Sora', sans-serif; font-size: 12px; font-weight: 700; color: var(--text-dark); margin-bottom: 3px; }
+    .how-card-sub { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
+
+    /* ── LONGO PRAZO ── */
+    .longo-wrap { animation: fadeUp 0.4s ease; }
+
+    /* Plan Hero */
+    .plan-hero {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 60%, var(--navy-light) 100%);
+      border-radius: 20px; padding: 20px; margin-bottom: 14px; position: relative; overflow: hidden;
     }
+    .plan-hero::before { content: ''; position: absolute; top: -30px; right: -30px; width: 100px; height: 100px; border-radius: 50%; background: rgba(255,255,255,0.05); }
+    .plan-hero::after { content: ''; position: absolute; bottom: -20px; left: -10px; width: 70px; height: 70px; border-radius: 50%; background: rgba(255,255,255,0.03); }
+    .ph-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .ph-name { font-family: 'Sora', sans-serif; font-size: 19px; font-weight: 800; color: white; }
+    .ph-badge { background: rgba(110,231,183,0.2); border: 1px solid rgba(110,231,183,0.4); border-radius: 20px; padding: 4px 12px; font-family: 'Sora', sans-serif; font-size: 11px; font-weight: 600; color: #6ee7b7; }
+    .ph-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+    .ph-stat { background: rgba(255,255,255,0.1); border-radius: 10px; padding: 10px 8px; text-align: center; }
+    .ph-stat-lbl { font-size: 10px; color: rgba(255,255,255,0.6); margin-bottom: 3px; }
+    .ph-stat-val { font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 700; color: white; }
+    .ph-stat-val.green { color: #6ee7b7; }
+    .ph-stat-val.orange { color: #fdba74; }
 
-    .plan-header::after {
-      content: '';
-      position: absolute;
-      right: -20px; top: -20px;
-      width: 90px; height: 90px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.05);
-    }
-
-    .plan-header-top {
-      display: flex; align-items: center;
-      justify-content: space-between;
-      margin-bottom: 14px;
-    }
-
-    .plan-header-name {
-      font-family: 'Sora', sans-serif;
-      font-size: 18px; font-weight: 800; color: white;
-    }
-
-    .plan-header-badge {
-      background: rgba(0,200,83,0.2);
-      border: 1px solid rgba(0,200,83,0.4);
-      border-radius: 20px;
-      padding: 3px 12px;
-      font-family: 'Sora', sans-serif;
-      font-size: 11px; font-weight: 600; color: #69f0ae;
-    }
-
-    .plan-header-stats {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .ph-stat {
-      background: rgba(255,255,255,0.1);
-      border-radius: 10px; padding: 10px 12px;
-    }
-
-    .ph-stat-label {
-      font-size: 10px; color: rgba(255,255,255,0.6); margin-bottom: 3px;
-    }
-
-    .ph-stat-val {
-      font-family: 'Sora', sans-serif;
-      font-size: 15px; font-weight: 700; color: white;
-    }
-
-    .ph-stat-val.green { color: #69f0ae; }
-
-    /* Contagem regressiva */
-    .countdown-card {
-      background: white;
-      border: 1.5px solid var(--border);
-      border-radius: 16px;
-      overflow: hidden;
-      margin-bottom: 16px;
-    }
-
-    .countdown-header {
-      background: linear-gradient(135deg, var(--navy), var(--navy-mid));
-      padding: 14px 16px;
-    }
-
-    .countdown-header-title {
-      font-family: 'Sora', sans-serif;
-      font-size: 14px; font-weight: 700; color: white;
-    }
-
-    .countdown-header-sub {
-      font-size: 12px; color: rgba(255,255,255,0.7); margin-top: 2px;
-    }
-
-    .countdown-body {
-      padding: 20px;
-    }
-
-    .countdown-display {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      margin-bottom: 16px;
-    }
-
-    .cd-unit {
-      text-align: center;
-      flex: 1;
-    }
-
-    .cd-num {
-      font-family: 'Sora', sans-serif;
-      font-size: 32px; font-weight: 800; color: var(--navy);
-      background: var(--off-white);
-      border-radius: 12px; padding: 10px 4px;
-      line-height: 1;
-      display: block;
-      min-width: 60px;
-    }
-
-    .cd-num.active { color: var(--navy-mid); }
-
-    .cd-label {
-      font-size: 10px; font-weight: 600;
-      color: var(--text-muted); margin-top: 5px;
-      text-transform: uppercase; letter-spacing: 0.4px;
-    }
-
-    .cd-sep {
-      font-family: 'Sora', sans-serif;
-      font-size: 24px; font-weight: 700;
-      color: var(--text-muted);
-      margin-bottom: 14px;
-    }
-
-    /* Barra de progresso */
-    .progress-wrap {
-      margin-bottom: 14px;
-    }
-
-    .progress-label {
-      display: flex; justify-content: space-between;
-      font-size: 12px; color: var(--text-muted);
-      margin-bottom: 6px;
-    }
-
-    .progress-bar {
-      height: 8px;
-      background: var(--border);
-      border-radius: 4px;
-      overflow: hidden;
-    }
-
-    .progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--navy), var(--navy-light));
-      border-radius: 4px;
-      transition: width 1s ease;
-    }
-
-    .ganho-status {
-      text-align: center;
-      padding: 10px;
-      border-radius: 10px;
-      font-family: 'Sora', sans-serif;
-      font-size: 13px; font-weight: 600;
-    }
-
-    .ganho-status.pronto {
-      background: #e8f5e9;
-      color: var(--success);
-    }
-
-    .ganho-status.aguardar {
-      background: #e8f0fb;
-      color: var(--navy-mid);
-    }
-
-    /* Botao resgatar */
-    .btn-resgatar {
-      width: 100%;
-      padding: 14px;
-      background: linear-gradient(135deg, var(--green-bright), #00e676);
-      color: white; border: none;
-      border-radius: 12px;
-      font-family: 'Sora', sans-serif;
-      font-size: 15px; font-weight: 700;
-      cursor: pointer;
-      margin-top: 14px;
-      transition: opacity 0.2s, transform 0.15s;
-      display: none;
-    }
-
+    /* Countdown card */
+    .cd-card { background: white; border: 1.5px solid var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 14px; }
+    .cd-card-head { background: linear-gradient(135deg, var(--navy), var(--navy-mid)); padding: 14px 16px; }
+    .cd-card-head-title { font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 700; color: white; }
+    .cd-card-head-sub { font-size: 12px; color: rgba(255,255,255,0.7); margin-top: 2px; }
+    .cd-body { padding: 18px 16px; }
+    .cd-display { display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 16px; }
+    .cd-unit { text-align: center; flex: 1; }
+    .cd-num { font-family: 'Sora', sans-serif; font-size: 30px; font-weight: 800; color: var(--navy); background: var(--off-white); border-radius: 12px; padding: 10px 4px; line-height: 1; display: block; }
+    .cd-lbl { font-size: 10px; font-weight: 600; color: var(--text-muted); margin-top: 5px; text-transform: uppercase; letter-spacing: 0.4px; }
+    .cd-sep { font-family: 'Sora', sans-serif; font-size: 22px; font-weight: 700; color: var(--text-muted); padding-bottom: 14px; }
+    .prog-wrap { margin-bottom: 14px; }
+    .prog-labels { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+    .prog-bar { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+    .prog-fill { height: 100%; background: linear-gradient(90deg, var(--navy), var(--navy-light)); border-radius: 4px; transition: width 1s ease; }
+    .ganho-status { text-align: center; padding: 10px; border-radius: 10px; font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 600; }
+    .ganho-status.pronto { background: #e8f5e9; color: var(--success); }
+    .ganho-status.aguardar { background: #E8F0FE; color: var(--navy-mid); }
+    .btn-resgatar { width: 100%; padding: 14px; background: linear-gradient(135deg, #00c853, #00e676); color: white; border: none; border-radius: 12px; font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 14px; transition: opacity 0.2s, transform 0.15s; display: none; }
     .btn-resgatar.show { display: block; }
     .btn-resgatar:hover { opacity: 0.9; transform: translateY(-1px); }
 
-    /* Info salarios e ganhos */
-    .info-card {
-      background: white;
-      border: 1.5px solid var(--border);
-      border-radius: 16px;
-      overflow: hidden;
-      margin-bottom: 16px;
+    /* Chart card */
+    .chart-card { background: white; border: 1.5px solid var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 14px; }
+    .chart-card-head { background: linear-gradient(135deg, var(--navy), var(--navy-mid)); padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; }
+    .chart-card-head-title { font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 700; color: white; }
+    .chart-card-head-sub { font-size: 11px; color: rgba(255,255,255,0.7); margin-top: 1px; }
+    .chart-body { padding: 16px; }
+    .chart-total { font-family: 'Sora', sans-serif; font-size: 22px; font-weight: 800; color: var(--navy); margin-bottom: 4px; }
+    .chart-total-label { font-size: 12px; color: var(--text-muted); margin-bottom: 14px; }
+    canvas { display: block; width: 100% !important; }
+
+    /* Stats row */
+    .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+    .stat-card { background: white; border: 1.5px solid var(--border); border-radius: 14px; padding: 14px; }
+    .stat-card-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+    .stat-card-icon.blue { background: #E8F0FE; }
+    .stat-card-icon.green { background: #dcfce7; }
+    .stat-card-icon.orange { background: #fff3e0; }
+    .stat-card-icon.purple { background: #f3e8ff; }
+    .stat-card-icon svg { width: 18px; height: 18px; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .stat-card-icon.blue svg { stroke: var(--navy-mid); }
+    .stat-card-icon.green svg { stroke: var(--success); }
+    .stat-card-icon.orange svg { stroke: var(--orange); }
+    .stat-card-icon.purple svg { stroke: #9333ea; }
+    .stat-card-val { font-family: 'Sora', sans-serif; font-size: 17px; font-weight: 800; color: var(--text-dark); margin-bottom: 2px; }
+    .stat-card-lbl { font-size: 11px; color: var(--text-muted); }
+
+    /* ── CURTO PRAZO ── */
+    .curto-wrap { animation: fadeUp 0.4s ease; }
+
+    .curto-hero {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 50%, #6b4fa0 100%);
+      border-radius: 20px; padding: 20px; margin-bottom: 14px; position: relative; overflow: hidden;
     }
+    .curto-hero::before { content: ''; position: absolute; top: -20px; right: -20px; width: 90px; height: 90px; border-radius: 50%; background: rgba(255,255,255,0.06); }
 
-    .info-card-header {
-      background: linear-gradient(135deg, var(--navy), var(--navy-mid));
-      padding: 14px 16px;
-    }
+    /* Timeline parcelas */
+    .parcelas-card { background: white; border: 1.5px solid var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 14px; }
+    .parcelas-head { background: linear-gradient(135deg, var(--navy), var(--navy-mid)); padding: 14px 16px; }
+    .parcelas-head-title { font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 700; color: white; }
+    .parcelas-head-sub { font-size: 12px; color: rgba(255,255,255,0.7); margin-top: 2px; }
+    .parcelas-body { padding: 16px; }
 
-    .info-card-header-title {
-      font-family: 'Sora', sans-serif;
-      font-size: 14px; font-weight: 700; color: white;
-    }
+    .timeline { position: relative; padding-left: 24px; }
+    .timeline::before { content: ''; position: absolute; left: 10px; top: 8px; bottom: 8px; width: 2px; background: var(--border); }
+    .tl-item { position: relative; margin-bottom: 18px; }
+    .tl-item:last-child { margin-bottom: 0; }
+    .tl-dot { position: absolute; left: -22px; top: 4px; width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--border); background: white; z-index: 1; }
+    .tl-dot.done { background: var(--success); border-color: var(--success); }
+    .tl-dot.active { background: var(--navy-mid); border-color: var(--navy-mid); box-shadow: 0 0 0 4px rgba(58,95,160,0.15); }
+    .tl-dot.pending { background: white; border-color: var(--border); }
+    .tl-content { background: var(--off-white); border-radius: 12px; padding: 12px 14px; }
+    .tl-content.done { background: #f0fdf4; border: 1px solid #a7f3d0; }
+    .tl-content.active { background: #E8F0FE; border: 1px solid var(--border); }
+    .tl-title { font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 700; color: var(--text-dark); margin-bottom: 2px; }
+    .tl-sub { font-size: 12px; color: var(--text-muted); }
+    .tl-val { font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 700; color: var(--navy); margin-top: 6px; }
+    .tl-val.green { color: var(--success); }
+    .tl-badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 600; margin-top: 4px; }
+    .tl-badge.done { background: #dcfce7; color: var(--success); }
+    .tl-badge.active { background: #E8F0FE; color: var(--navy-mid); }
+    .tl-badge.pending { background: #f1f5f9; color: var(--text-muted); }
 
-    .info-card-header-sub {
-      font-size: 12px; color: rgba(255,255,255,0.7); margin-top: 2px;
-    }
+    /* Curto countdown */
+    .curto-cd-card { background: white; border: 1.5px solid var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 14px; }
+    .curto-cd-head { padding: 14px 16px; background: linear-gradient(135deg, var(--navy), var(--navy-mid)); }
+    .curto-cd-title { font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 700; color: white; }
+    .curto-cd-sub { font-size: 12px; color: rgba(255,255,255,0.7); margin-top: 2px; }
+    .curto-cd-body { padding: 18px 16px; }
 
-    .info-card-body { padding: 16px; }
+    /* Curto progress arc */
+    .arc-wrap { display: flex; flex-direction: column; align-items: center; margin-bottom: 16px; position: relative; }
+    .arc-svg { width: 140px; height: 80px; overflow: visible; }
+    .arc-label { font-family: 'Sora', sans-serif; font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 8px; }
+    .arc-days { position: absolute; top: 40px; left: 50%; transform: translateX(-50%); text-align: center; pointer-events: none; }
+    .arc-days-num { font-family: 'Sora', sans-serif; font-size: 26px; font-weight: 800; color: var(--navy); line-height: 1; }
+    .arc-days-lbl { font-size: 11px; color: var(--text-muted); }
 
-    .salary-table {
-      width: 100%; border-collapse: collapse;
-    }
+    .curto-info-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+    .curto-info-box { background: var(--off-white); border-radius: 12px; padding: 12px; text-align: center; }
+    .curto-info-lbl { font-size: 11px; color: var(--text-muted); margin-bottom: 3px; }
+    .curto-info-val { font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 700; color: var(--navy); }
+    .curto-info-val.green { color: var(--success); }
+    .curto-info-val.orange { color: var(--orange); }
 
-    .salary-table th {
-      font-family: 'Sora', sans-serif;
-      font-size: 11px; font-weight: 600;
-      color: var(--text-muted);
-      text-align: left; padding: 6px 0;
-      border-bottom: 1px solid var(--border);
-      text-transform: uppercase; letter-spacing: 0.4px;
-    }
-
-    .salary-table td {
-      font-size: 13px; color: var(--text-dark);
-      padding: 10px 0;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .salary-table tr:last-child td { border-bottom: none; }
-
-    .salary-table td:last-child {
-      font-family: 'Sora', sans-serif;
-      font-weight: 700; color: var(--navy);
-      text-align: right;
-    }
-
-    .salary-table td.green { color: var(--success); }
-
-    /* Spinner */
-    .spinner-overlay {
-      position: fixed; inset: 0;
-      background: rgba(255,255,255,0.9);
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      z-index: 999; opacity: 0; pointer-events: none;
-      transition: opacity 0.2s;
-    }
+    /* ── Spinner / Modal ── */
+    .spinner-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
     .spinner-overlay.show { opacity: 1; pointer-events: all; }
-    .spinner-ring {
-      width: 52px; height: 52px;
-      border: 3px solid var(--border);
-      border-top-color: var(--navy-mid);
-      border-radius: 50%;
-      animation: spin 0.75s linear infinite;
-    }
-    .spinner-text {
-      margin-top: 14px;
-      font-family: 'Sora', sans-serif;
-      font-size: 14px; font-weight: 600; color: var(--navy);
-    }
+    .spinner-ring { width: 52px; height: 52px; border: 3px solid var(--border); border-top-color: var(--navy-mid); border-radius: 50%; animation: spin 0.75s linear infinite; }
+    .spinner-text { margin-top: 14px; font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600; color: var(--navy); }
 
-    /* Modal */
-    .modal-overlay {
-      position: fixed; inset: 0;
-      background: rgba(10,22,40,0.5);
-      display: flex; align-items: flex-end; justify-content: center;
-      z-index: 1000; opacity: 0; pointer-events: none;
-      transition: opacity 0.3s;
-    }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(10,22,40,0.5); display: flex; align-items: flex-end; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
     .modal-overlay.show { opacity: 1; pointer-events: all; }
-    .modal-sheet {
-      width: 100%; max-width: 480px;
-      background: white;
-      border-radius: 24px 24px 0 0;
-      padding: 28px 24px 44px;
-      transform: translateY(100%);
-      transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
-    }
+    .modal-sheet { width: 100%; max-width: 480px; background: white; border-radius: 24px 24px 0 0; padding: 28px 24px 44px; transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.4,0,0.2,1); }
     .modal-overlay.show .modal-sheet { transform: translateY(0); }
-    .modal-handle {
-      width: 40px; height: 4px;
-      background: var(--border); border-radius: 2px;
-      margin: 0 auto 22px;
-    }
-    .modal-icon {
-      width: 60px; height: 60px;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 16px;
-    }
+    .modal-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 22px; }
+    .modal-icon { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
     .modal-icon.success { background: #e8f5e9; }
-    .modal-icon svg {
-      width: 28px; height: 28px;
-      fill: none; stroke-width: 2;
-      stroke-linecap: round; stroke-linejoin: round;
-    }
-    .modal-title {
-      font-family: 'Sora', sans-serif;
-      font-size: 18px; font-weight: 700; color: var(--navy);
-      text-align: center; margin-bottom: 8px;
-    }
-    .modal-msg {
-      font-size: 14px; color: var(--text-muted);
-      text-align: center; line-height: 1.6; margin-bottom: 20px;
-    }
-    .modal-amount {
-      background: #e8f5e9;
-      border: 1px solid #a5d6a7;
-      border-radius: 12px; padding: 14px;
-      text-align: center; margin-bottom: 20px;
-    }
+    .modal-icon svg { width: 28px; height: 28px; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .modal-title { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 700; color: var(--navy); text-align: center; margin-bottom: 8px; }
+    .modal-msg { font-size: 14px; color: var(--text-muted); text-align: center; line-height: 1.6; margin-bottom: 20px; }
+    .modal-amount { background: #e8f5e9; border: 1px solid #a5d6a7; border-radius: 12px; padding: 14px; text-align: center; margin-bottom: 20px; }
     .modal-amount-label { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
-    .modal-amount-val {
-      font-family: 'Sora', sans-serif;
-      font-size: 22px; font-weight: 800; color: var(--success);
-    }
-    .btn-modal-close {
-      width: 100%; padding: 14px;
-      background: linear-gradient(135deg, var(--navy), var(--navy-mid));
-      color: white; border: none; border-radius: 12px;
-      font-family: 'Sora', sans-serif;
-      font-size: 14px; font-weight: 600; cursor: pointer;
-    }
+    .modal-amount-val { font-family: 'Sora', sans-serif; font-size: 22px; font-weight: 800; color: var(--success); }
+    .btn-modal-close { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--navy), var(--navy-mid)); color: white; border: none; border-radius: 12px; font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; }
+
+    /* Nav */
+    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: var(--nav-h); background: white; border-top: 1px solid var(--border); display: grid; grid-template-columns: repeat(4,1fr); z-index: 100; box-shadow: 0 -4px 16px rgba(44,74,138,0.06); }
+    .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: var(--text-muted); font-family: 'Sora', sans-serif; font-size: 10px; font-weight: 600; transition: color 0.2s; border: none; background: none; cursor: pointer; }
+    .nav-item svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+    .nav-item.active { color: var(--navy-mid); }
 
     @keyframes spin { to { transform: rotate(360deg); } }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(14px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
 <body>
 
-  <div class="top-bar"></div>
+<div class="top-bar"></div>
 
-  <div class="spinner-overlay" id="spinnerOverlay">
-    <div class="spinner-ring"></div>
-    <div class="spinner-text">A carregar...</div>
-  </div>
+<div class="spinner-overlay" id="spinnerOverlay">
+  <div class="spinner-ring"></div>
+  <div class="spinner-text">A carregar...</div>
+</div>
 
-  <div class="modal-overlay" id="modalOverlay">
-    <div class="modal-sheet">
-      <div class="modal-handle"></div>
-      <div class="modal-icon success">
-        <svg viewBox="0 0 24 24" stroke="#2e7d32"><polyline points="20 6 9 17 4 12"/></svg>
-      </div>
-      <div class="modal-title">Ganho creditado!</div>
-      <div class="modal-msg">O seu ganho diario foi creditado com sucesso na sua conta.</div>
-      <div class="modal-amount">
-        <div class="modal-amount-label">Valor creditado</div>
-        <div class="modal-amount-val" id="modalAmountVal">-- Kz</div>
-      </div>
-      <button class="btn-modal-close" onclick="closeModal()">Fechar</button>
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-icon success">
+      <svg viewBox="0 0 24 24" stroke="#2e7d32"><polyline points="20 6 9 17 4 12"/></svg>
     </div>
+    <div class="modal-title">Ganho creditado!</div>
+    <div class="modal-msg">O seu ganho diario foi creditado com sucesso na sua conta.</div>
+    <div class="modal-amount">
+      <div class="modal-amount-label">Valor creditado</div>
+      <div class="modal-amount-val" id="modalAmountVal">-- Kz</div>
+    </div>
+    <button class="btn-modal-close" onclick="closeModal()">Fechar</button>
   </div>
+</div>
 
-  <div class="header">
-    <button class="btn-back" onclick="history.back()">
-      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-    </button>
-    <span class="header-title">Ganhos Diarios</span>
-  </div>
+<div class="header">
+  <button class="btn-back" onclick="history.back()">
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <span class="header-title">Ganhos</span>
+  <div class="header-badge" id="headerBadge" style="display:none"></div>
+</div>
 
-  <div class="main" id="mainContent">
-    <!-- Preenchido pelo JS -->
-  </div>
+<div class="main" id="mainContent"></div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import {
-      getFirestore, doc, getDoc, updateDoc,
-      addDoc, collection, serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+<nav class="bottom-nav">
+  <a class="nav-item" href="index.html">
+    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    Inicio
+  </a>
+  <a class="nav-item" href="compra.html">
+    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 001.95-1.57l1.65-7.43H6"/></svg>
+    Compra
+  </a>
+  <a class="nav-item active" href="ganhos.html">
+    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+    Ganhos
+  </a>
+  <a class="nav-item" href="conta.html">
+    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    Conta
+  </a>
+</nav>
 
-    const app = initializeApp({
-      apiKey: "AIzaSyBp8X1PPp3FqiQ6OXErr8Mu11GEp6MZ2-U",
-      authDomain: "ascend-34bf0.firebaseapp.com",
-      projectId: "ascend-34bf0",
-      storageBucket: "ascend-34bf0.firebasestorage.app",
-      messagingSenderId: "592623076677",
-      appId: "1:592623076677:web:c5615719870aefdabf6a2c"
-    });
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, doc, getDoc, updateDoc, addDoc, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+  const app = initializeApp({
+    apiKey: "AIzaSyBp8X1PPp3FqiQ6OXErr8Mu11GEp6MZ2-U",
+    authDomain: "ascend-34bf0.firebaseapp.com",
+    projectId: "ascend-34bf0",
+    storageBucket: "ascend-34bf0.firebasestorage.app",
+    messagingSenderId: "592623076677",
+    appId: "1:592623076677:web:c5615719870aefdabf6a2c"
+  });
 
-    let countdownInterval = null;
-    let currentUser = null;
-    let userData = null;
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  let cdInterval = null;
+  let currentUser = null;
+  let userData = null;
 
-    function fmt(n) {
-      return (n || 0).toLocaleString('pt-AO') + ' Kz';
-    }
+  function fmt(n) { return (n || 0).toLocaleString('pt-AO') + ' Kz'; }
+  function pad(n) { return String(Math.floor(n)).padStart(2,'0'); }
 
-    function renderSemInvestimento() {
-      document.getElementById('mainContent').innerHTML = `
-        <div class="no-invest-card">
-          <div class="no-invest-icon">
-            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="12" y1="1" x2="12" y2="23"/>
-              <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
-            </svg>
+  /* ─── NO INVEST ─── */
+  function renderSemInvestimento() {
+    document.getElementById('mainContent').innerHTML = `
+      <div class="no-invest-wrap">
+        <div class="no-invest-hero">
+          <div class="ni-icon">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
           </div>
-          <div class="no-invest-title">Nenhum investimento de longo prazo activo</div>
-          <div class="no-invest-sub">A contagem regressiva funciona apenas com planos de longo prazo (Mina S1 a S5). Adquira um plano para comecar a receber ganhos diarios.</div>
-          <a class="btn-primary" href="compra.html">Escolher plano</a>
+          <div class="ni-title">Comece a ganhar hoje</div>
+          <div class="ni-sub">Adquira um plano de investimento e acompanhe os seus ganhos aqui em tempo real.</div>
+          <a class="btn-start" href="compra.html">
+            <svg viewBox="0 0 24 24"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
+            Ver planos
+          </a>
         </div>
-        ${renderInfoCards()}
-      `;
-    }
-
-    function renderInfoCards() {
-      return '';
-    }
-
-    function renderComInvestimento(inv) {
-      const main = document.getElementById('mainContent');
-      main.innerHTML = `
-        <div class="plan-header">
-          <div class="plan-header-top">
-            <div class="plan-header-name">${inv.nome}</div>
-            <div class="plan-header-badge">Activo</div>
+        <div class="how-cards">
+          <div class="how-card">
+            <div class="how-card-icon"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+            <div class="how-card-title">Ganhos Diarios</div>
+            <div class="how-card-sub">Receba rendimentos todos os dias na sua conta</div>
           </div>
-          <div class="plan-header-stats">
+          <div class="how-card">
+            <div class="how-card-icon"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+            <div class="how-card-title">Fundo Garantido</div>
+            <div class="how-card-sub">Capital respaldado pela actividade mineira</div>
+          </div>
+          <div class="how-card">
+            <div class="how-card-icon"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+            <div class="how-card-title">Alto Retorno</div>
+            <div class="how-card-sub">Ate 3x o valor investido em 50 dias</div>
+          </div>
+          <div class="how-card">
+            <div class="how-card-icon"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
+            <div class="how-card-title">Referencias</div>
+            <div class="how-card-sub">10% de comissao por cada amigo</div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  /* ─── LONGO PRAZO ─── */
+  function renderLongoPrazo(inv) {
+    const badge = document.getElementById('headerBadge');
+    badge.textContent = 'Longo Prazo'; badge.style.display = 'block';
+
+    const totalEstimado30 = inv.diario * 30;
+    const totalEstimado7 = inv.diario * 7;
+
+    document.getElementById('mainContent').innerHTML = `
+      <div class="longo-wrap">
+        <div class="plan-hero">
+          <div class="ph-top">
+            <div class="ph-name">${inv.nome}</div>
+            <div class="ph-badge">Activo</div>
+          </div>
+          <div class="ph-stats">
             <div class="ph-stat">
-              <div class="ph-stat-label">Capital</div>
+              <div class="ph-stat-lbl">Capital</div>
               <div class="ph-stat-val">${fmt(inv.valor)}</div>
             </div>
             <div class="ph-stat">
-              <div class="ph-stat-label">Ganho diario</div>
+              <div class="ph-stat-lbl">Diario</div>
               <div class="ph-stat-val green">${fmt(inv.diario)}</div>
+            </div>
+            <div class="ph-stat">
+              <div class="ph-stat-lbl">Saldo actual</div>
+              <div class="ph-stat-val orange">${fmt(userData.saldo)}</div>
             </div>
           </div>
         </div>
 
-        <div class="countdown-card">
-          <div class="countdown-header">
-            <div class="countdown-header-title">Proximo ganho em</div>
-            <div class="countdown-header-sub">Contagem regressiva para creditar o proximo ganho diario</div>
+        <div class="cd-card">
+          <div class="cd-card-head">
+            <div class="cd-card-head-title">Proximo ganho</div>
+            <div class="cd-card-head-sub">Contagem regressiva do ciclo diario de 24h</div>
           </div>
-          <div class="countdown-body">
-            <div class="countdown-display">
-              <div class="cd-unit">
-                <span class="cd-num" id="cdH">00</span>
-                <div class="cd-label">Horas</div>
-              </div>
+          <div class="cd-body">
+            <div class="cd-display">
+              <div class="cd-unit"><span class="cd-num" id="cdH">00</span><div class="cd-lbl">Horas</div></div>
               <div class="cd-sep">:</div>
-              <div class="cd-unit">
-                <span class="cd-num" id="cdM">00</span>
-                <div class="cd-label">Min</div>
-              </div>
+              <div class="cd-unit"><span class="cd-num" id="cdM">00</span><div class="cd-lbl">Min</div></div>
               <div class="cd-sep">:</div>
-              <div class="cd-unit">
-                <span class="cd-num" id="cdS">00</span>
-                <div class="cd-label">Seg</div>
-              </div>
+              <div class="cd-unit"><span class="cd-num" id="cdS">00</span><div class="cd-lbl">Seg</div></div>
             </div>
-            <div class="progress-wrap">
-              <div class="progress-label">
-                <span>Inicio do ciclo</span>
-                <span id="progressPct">0%</span>
-              </div>
-              <div class="progress-bar">
-                <div class="progress-fill" id="progressFill" style="width:0%"></div>
-              </div>
+            <div class="prog-wrap">
+              <div class="prog-labels"><span>Inicio</span><span id="progPct">0%</span></div>
+              <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
             </div>
             <div class="ganho-status aguardar" id="ganhoStatus">A aguardar o proximo ganho diario...</div>
             <button class="btn-resgatar" id="btnResgatar" onclick="resgatarGanho()">
@@ -603,123 +402,379 @@
           </div>
         </div>
 
-        ${renderInfoCards()}
-      `;
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-card-icon blue"><svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+            <div class="stat-card-val">${fmt(totalEstimado7)}</div>
+            <div class="stat-card-lbl">Estimativa 7 dias</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-icon green"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+            <div class="stat-card-val">${fmt(totalEstimado30)}</div>
+            <div class="stat-card-lbl">Estimativa 30 dias</div>
+          </div>
+        </div>
 
-      iniciarContagem(inv);
-    }
+        <div class="chart-card">
+          <div class="chart-card-head">
+            <div>
+              <div class="chart-card-head-title">Projecao de crescimento</div>
+              <div class="chart-card-head-sub">Evolucao estimada nos proximos 14 dias</div>
+            </div>
+          </div>
+          <div class="chart-body">
+            <div class="chart-total">${fmt((userData.saldo || 0) + totalEstimado30)}</div>
+            <div class="chart-total-label">Saldo estimado em 30 dias</div>
+            <canvas id="chartLongo" height="130"></canvas>
+          </div>
+        </div>
+      </div>`;
 
-    function iniciarContagem(inv) {
-      if (countdownInterval) clearInterval(countdownInterval);
+    iniciarContagem(inv);
+    setTimeout(() => renderChartLongo(inv), 100);
+  }
 
-      function tick() {
-        const agora = Date.now();
-        // Ciclo de 24h a partir do ultimo ganho ou inicio do investimento
-        const base = inv.ultimoGanho
-          ? inv.ultimoGanho.toMillis ? inv.ultimoGanho.toMillis() : Number(inv.ultimoGanho)
-          : inv.iniciadoEm
-            ? inv.iniciadoEm.toMillis ? inv.iniciadoEm.toMillis() : Number(inv.iniciadoEm)
-            : agora;
+  function renderChartLongo(inv) {
+    const canvas = document.getElementById('chartLongo');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const W = canvas.offsetWidth; const H = 130;
+    canvas.width = W * window.devicePixelRatio;
+    canvas.height = H * window.devicePixelRatio;
+    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
 
-        const ciclo = 24 * 60 * 60 * 1000;
-        const proximoGanho = base + ciclo;
-        const restante = proximoGanho - agora;
-        const progresso = Math.min(100, ((ciclo - Math.max(0, restante)) / ciclo) * 100);
+    const days = 14;
+    const base = userData.saldo || 0;
+    const pts = Array.from({length: days+1}, (_,i) => base + inv.diario * i);
+    const max = Math.max(...pts); const min = Math.min(...pts);
+    const range = max - min || 1;
+    const pad = {t:10, r:10, b:28, l:10};
+    const w = W - pad.l - pad.r; const h = H - pad.t - pad.b;
 
-        if (restante <= 0) {
-          // Pronto para resgatar
-          document.getElementById('cdH').textContent = '00';
-          document.getElementById('cdM').textContent = '00';
-          document.getElementById('cdS').textContent = '00';
-          document.getElementById('progressFill').style.width = '100%';
-          document.getElementById('progressPct').textContent = '100%';
-          document.getElementById('ganhoStatus').textContent = 'O seu ganho diario esta pronto para ser resgatado!';
-          document.getElementById('ganhoStatus').className = 'ganho-status pronto';
-          document.getElementById('btnResgatar').classList.add('show');
-          clearInterval(countdownInterval);
-        } else {
-          const h = Math.floor(restante / 3600000);
-          const m = Math.floor((restante % 3600000) / 60000);
-          const s = Math.floor((restante % 60000) / 1000);
-          document.getElementById('cdH').textContent = String(h).padStart(2, '0');
-          document.getElementById('cdM').textContent = String(m).padStart(2, '0');
-          document.getElementById('cdS').textContent = String(s).padStart(2, '0');
-          document.getElementById('progressFill').style.width = progresso.toFixed(1) + '%';
-          document.getElementById('progressPct').textContent = progresso.toFixed(0) + '%';
-        }
-      }
+    function px(i) { return pad.l + (i / days) * w; }
+    function py(v) { return pad.t + h - ((v - min) / range) * h; }
 
-      tick();
-      countdownInterval = setInterval(tick, 1000);
-    }
+    // Gradient fill
+    const grad = ctx.createLinearGradient(0, pad.t, 0, pad.t + h);
+    grad.addColorStop(0, 'rgba(58,95,160,0.22)');
+    grad.addColorStop(1, 'rgba(58,95,160,0)');
+    ctx.beginPath();
+    ctx.moveTo(px(0), py(pts[0]));
+    for (let i=1; i<=days; i++) ctx.lineTo(px(i), py(pts[i]));
+    ctx.lineTo(px(days), H-pad.b); ctx.lineTo(px(0), H-pad.b);
+    ctx.closePath(); ctx.fillStyle = grad; ctx.fill();
 
-    window.resgatarGanho = async function() {
-      if (!currentUser || !userData) return;
-      const inv = userData.investimentoActivo;
-      if (!inv) return;
+    // Line
+    ctx.beginPath();
+    ctx.moveTo(px(0), py(pts[0]));
+    for (let i=1; i<=days; i++) ctx.lineTo(px(i), py(pts[i]));
+    ctx.strokeStyle = '#3a5fa0'; ctx.lineWidth = 2.5;
+    ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.stroke();
 
-      document.getElementById('spinnerOverlay').classList.add('show');
-
-      try {
-        const novoSaldo = (userData.saldo || 0) + inv.diario;
-        const userRef = doc(db, 'users', currentUser.uid);
-
-        await updateDoc(userRef, {
-          saldo: novoSaldo,
-          'investimentoActivo.ultimoGanho': serverTimestamp()
-        });
-
-        await addDoc(collection(db, 'users', currentUser.uid, 'historico'), {
-          tipo: 'ganho_diario',
-          descricao: 'Ganho diario - ' + inv.nome,
-          valor: inv.diario,
-          data: serverTimestamp()
-        });
-
-        userData.saldo = novoSaldo;
-        userData.investimentoActivo.ultimoGanho = { toMillis: () => Date.now() };
-
-        document.getElementById('spinnerOverlay').classList.remove('show');
-        document.getElementById('modalAmountVal').textContent = fmt(inv.diario);
-        document.getElementById('modalOverlay').classList.add('show');
-
-        document.getElementById('btnResgatar').classList.remove('show');
-        document.getElementById('ganhoStatus').textContent = 'A aguardar o proximo ganho diario...';
-        document.getElementById('ganhoStatus').className = 'ganho-status aguardar';
-
-        iniciarContagem(userData.investimentoActivo);
-
-      } catch(e) {
-        document.getElementById('spinnerOverlay').classList.remove('show');
-        alert('Erro ao resgatar ganho. Tente novamente.');
-      }
-    };
-
-    window.closeModal = function() {
-      document.getElementById('modalOverlay').classList.remove('show');
-    };
-
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) { window.location.href = 'auth.html'; return; }
-      currentUser = user;
-
-      const snap = await getDoc(doc(db, 'users', user.uid));
-      document.getElementById('spinnerOverlay').classList.remove('show');
-
-      if (!snap.exists()) return;
-      userData = snap.data();
-
-      const inv = userData.investimentoActivo;
-      // Contagem so funciona com planos de longo prazo
-      if (!inv || inv.tipo !== 'longo') {
-        renderSemInvestimento();
-      } else {
-        renderComInvestimento(inv);
-      }
+    // Dots at start, mid, end
+    [0, 7, 14].forEach(i => {
+      ctx.beginPath();
+      ctx.arc(px(i), py(pts[i]), 4, 0, Math.PI*2);
+      ctx.fillStyle = '#3a5fa0'; ctx.fill();
+      ctx.strokeStyle = 'white'; ctx.lineWidth = 2; ctx.stroke();
     });
 
-    document.getElementById('spinnerOverlay').classList.add('show');
-  </script>
+    // X labels
+    ctx.fillStyle = '#6B7FA3'; ctx.font = '10px DM Sans';
+    ctx.textAlign = 'center';
+    [0,7,14].forEach(i => ctx.fillText(`Dia ${i}`, px(i), H-8));
+  }
 
+  /* ─── CURTO PRAZO ─── */
+  function renderCurtoPrazo(inv) {
+    const badge = document.getElementById('headerBadge');
+    badge.textContent = 'Curto Prazo'; badge.style.display = 'block';
+
+    const agora = Date.now();
+    const inicio = inv.iniciadoEm ? (inv.iniciadoEm.toMillis ? inv.iniciadoEm.toMillis() : Number(inv.iniciadoEm)) : agora;
+    const diasPassados = Math.floor((agora - inicio) / 86400000);
+    const totalDias = inv.dias || 50;
+    const diasRestantes = Math.max(0, totalDias - diasPassados);
+    const pctGeral = Math.min(100, (diasPassados / totalDias) * 100);
+
+    // Parcelas: dia 25 e dia 50
+    const dia25ts = inicio + 25 * 86400000;
+    const dia50ts = inicio + 50 * 86400000;
+    const parcela1Paga = agora >= dia25ts;
+    const parcela2Paga = agora >= dia50ts;
+
+    // Qual parcela está a contar agora
+    let proximaParcelaTs = parcela1Paga ? dia50ts : dia25ts;
+    let parcelaNum = parcela1Paga ? 2 : 1;
+    const restanteMs = Math.max(0, proximaParcelaTs - agora);
+    const diasAteProxima = Math.floor(restanteMs / 86400000);
+    const horasAteProxima = Math.floor((restanteMs % 86400000) / 3600000);
+
+    document.getElementById('mainContent').innerHTML = `
+      <div class="curto-wrap">
+        <div class="curto-hero">
+          <div class="ph-top">
+            <div class="ph-name">${inv.nome}</div>
+            <div class="ph-badge">Activo</div>
+          </div>
+          <div class="ph-stats">
+            <div class="ph-stat">
+              <div class="ph-stat-lbl">Investido</div>
+              <div class="ph-stat-val">${fmt(inv.valor)}</div>
+            </div>
+            <div class="ph-stat">
+              <div class="ph-stat-lbl">Retorno/parcela</div>
+              <div class="ph-stat-val green">${fmt(inv.retorno25 || 0)}</div>
+            </div>
+            <div class="ph-stat">
+              <div class="ph-stat-lbl">Total 50d</div>
+              <div class="ph-stat-val orange">${fmt(inv.retornoTotal || 0)}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="curto-cd-card">
+          <div class="curto-cd-head">
+            <div class="curto-cd-title">Progresso do investimento</div>
+            <div class="curto-cd-sub">Duracao total: 50 dias — pagamento em 2 parcelas</div>
+          </div>
+          <div class="curto-cd-body">
+            <div class="arc-wrap">
+              <svg class="arc-svg" viewBox="0 0 140 80" id="arcSvg">
+                <path d="M 10 75 A 60 60 0 0 1 130 75" fill="none" stroke="#D6E4FF" stroke-width="10" stroke-linecap="round"/>
+                <path d="M 10 75 A 60 60 0 0 1 130 75" fill="none" stroke="url(#arcGrad)" stroke-width="10" stroke-linecap="round"
+                  stroke-dasharray="188.5" stroke-dashoffset="${188.5 - (pctGeral/100)*188.5}" id="arcFill"/>
+                <defs>
+                  <linearGradient id="arcGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#2c4a8a"/>
+                    <stop offset="100%" stop-color="#4a72b5"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+              <div class="arc-days" style="top:28px">
+                <div class="arc-days-num">${diasPassados}</div>
+                <div class="arc-days-lbl">de ${totalDias} dias</div>
+              </div>
+              <div class="arc-label">${pctGeral.toFixed(0)}% concluido</div>
+            </div>
+
+            <div class="curto-info-row">
+              <div class="curto-info-box">
+                <div class="curto-info-lbl">Dias restantes</div>
+                <div class="curto-info-val">${diasRestantes} dias</div>
+              </div>
+              <div class="curto-info-box">
+                <div class="curto-info-lbl">Proxima parcela em</div>
+                <div class="curto-info-val orange">${diasAteProxima}d ${horasAteProxima}h</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="parcelas-card">
+          <div class="parcelas-head">
+            <div class="parcelas-head-title">Calendario de pagamentos</div>
+            <div class="parcelas-head-sub">2 parcelas ao longo de 50 dias</div>
+          </div>
+          <div class="parcelas-body">
+            <div class="timeline">
+              <div class="tl-item">
+                <div class="tl-dot ${parcela1Paga ? 'done' : (parcelaNum===1 ? 'active' : 'pending')}"></div>
+                <div class="tl-content ${parcela1Paga ? 'done' : (parcelaNum===1 ? 'active' : '')}">
+                  <div class="tl-title">1.ª Parcela — Dia 25</div>
+                  <div class="tl-sub">${parcela1Paga ? 'Paga em ' + new Date(dia25ts).toLocaleDateString('pt-PT') : 'Prevista para ' + new Date(dia25ts).toLocaleDateString('pt-PT')}</div>
+                  <div class="tl-val ${parcela1Paga ? 'green' : ''}">${fmt(inv.retorno25 || 0)}</div>
+                  <div class="tl-badge ${parcela1Paga ? 'done' : (parcelaNum===1 ? 'active' : 'pending')}">${parcela1Paga ? 'Pago' : (parcelaNum===1 ? 'A aguardar' : 'Pendente')}</div>
+                </div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-dot ${parcela2Paga ? 'done' : (parcelaNum===2 ? 'active' : 'pending')}"></div>
+                <div class="tl-content ${parcela2Paga ? 'done' : (parcelaNum===2 ? 'active' : '')}">
+                  <div class="tl-title">2.ª Parcela — Dia 50</div>
+                  <div class="tl-sub">${parcela2Paga ? 'Paga em ' + new Date(dia50ts).toLocaleDateString('pt-PT') : 'Prevista para ' + new Date(dia50ts).toLocaleDateString('pt-PT')}</div>
+                  <div class="tl-val ${parcela2Paga ? 'green' : ''}">${fmt(inv.retorno25 || 0)}</div>
+                  <div class="tl-badge ${parcela2Paga ? 'done' : (parcelaNum===2 ? 'active' : 'pending')}">${parcela2Paga ? 'Pago' : (parcelaNum===2 ? 'A aguardar' : 'Pendente')}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-card-head">
+            <div>
+              <div class="chart-card-head-title">Evolucao do retorno</div>
+              <div class="chart-card-head-sub">Crescimento ao longo dos 50 dias</div>
+            </div>
+          </div>
+          <div class="chart-body">
+            <div class="chart-total">${fmt(inv.retornoTotal || 0)}</div>
+            <div class="chart-total-label">Retorno total estimado</div>
+            <canvas id="chartCurto" height="130"></canvas>
+          </div>
+        </div>
+
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-card-icon orange"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+            <div class="stat-card-val">${((((inv.retornoTotal||0) / (inv.valor||1)) - 1) * 100).toFixed(0)}%</div>
+            <div class="stat-card-lbl">Rendimento total</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-icon blue"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+            <div class="stat-card-val">${diasRestantes}d</div>
+            <div class="stat-card-lbl">Dias restantes</div>
+          </div>
+        </div>
+      </div>`;
+
+    setTimeout(() => renderChartCurto(inv, inicio), 100);
+  }
+
+  function renderChartCurto(inv, inicio) {
+    const canvas = document.getElementById('chartCurto');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const W = canvas.offsetWidth; const H = 130;
+    canvas.width = W * window.devicePixelRatio;
+    canvas.height = H * window.devicePixelRatio;
+    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+
+    // Pontos: dia 0=0, dia 25=retorno25, dia 50=retornoTotal
+    const agora = Date.now();
+    const diasPassados = Math.min(50, Math.floor((agora - inicio) / 86400000));
+    const checkpoints = [
+      {x:0, y:0},
+      {x:25, y: inv.retorno25 || 0},
+      {x:50, y: inv.retornoTotal || 0}
+    ];
+    const allDays = Array.from({length:51}, (_,i) => {
+      if (i<=25) return {x:i, y: ((inv.retorno25||0)/25)*i};
+      return {x:i, y: (inv.retorno25||0) + (((inv.retornoTotal||0)-(inv.retorno25||0))/25)*(i-25)};
+    });
+
+    const max = inv.retornoTotal || 1;
+    const padC = {t:10, r:10, b:28, l:10};
+    const w = W - padC.l - padC.r; const h = H - padC.t - padC.b;
+    const px = i => padC.l + (i/50)*w;
+    const py = v => padC.t + h - (v/max)*h;
+
+    // Gradient fill
+    const grad = ctx.createLinearGradient(0, padC.t, 0, padC.t+h);
+    grad.addColorStop(0, 'rgba(44,74,138,0.18)');
+    grad.addColorStop(1, 'rgba(44,74,138,0)');
+    ctx.beginPath();
+    ctx.moveTo(px(0), py(0));
+    allDays.forEach(p => ctx.lineTo(px(p.x), py(p.y)));
+    ctx.lineTo(px(50), H-padC.b); ctx.lineTo(px(0), H-padC.b);
+    ctx.closePath(); ctx.fillStyle = grad; ctx.fill();
+
+    // Full line (gray)
+    ctx.beginPath();
+    ctx.moveTo(px(0), py(0));
+    allDays.forEach(p => ctx.lineTo(px(p.x), py(p.y)));
+    ctx.strokeStyle = '#D6E4FF'; ctx.lineWidth = 2; ctx.lineJoin='round'; ctx.stroke();
+
+    // Progress line (navy)
+    const progress = allDays.filter(p => p.x <= diasPassados);
+    if (progress.length > 1) {
+      ctx.beginPath();
+      ctx.moveTo(px(progress[0].x), py(progress[0].y));
+      progress.forEach(p => ctx.lineTo(px(p.x), py(p.y)));
+      ctx.strokeStyle = '#2c4a8a'; ctx.lineWidth = 2.5; ctx.stroke();
+    }
+
+    // Milestone dots
+    checkpoints.forEach(cp => {
+      const isPast = diasPassados >= cp.x;
+      ctx.beginPath();
+      ctx.arc(px(cp.x), py(cp.y), 5, 0, Math.PI*2);
+      ctx.fillStyle = isPast ? '#2c4a8a' : '#D6E4FF'; ctx.fill();
+      ctx.strokeStyle = 'white'; ctx.lineWidth = 2; ctx.stroke();
+    });
+
+    // X labels
+    ctx.fillStyle = '#6B7FA3'; ctx.font = '10px DM Sans'; ctx.textAlign = 'center';
+    [0, 25, 50].forEach(i => ctx.fillText(`Dia ${i}`, px(i), H-8));
+  }
+
+  /* ─── COUNTDOWN (longo prazo) ─── */
+  function iniciarContagem(inv) {
+    if (cdInterval) clearInterval(cdInterval);
+    function tick() {
+      const agora = Date.now();
+      const base = inv.ultimoGanho
+        ? (inv.ultimoGanho.toMillis ? inv.ultimoGanho.toMillis() : Number(inv.ultimoGanho))
+        : inv.iniciadoEm ? (inv.iniciadoEm.toMillis ? inv.iniciadoEm.toMillis() : Number(inv.iniciadoEm))
+        : agora;
+      const ciclo = 24*60*60*1000;
+      const next = base + ciclo;
+      const rest = next - agora;
+      const prog = Math.min(100, ((ciclo - Math.max(0,rest))/ciclo)*100);
+      if (rest <= 0) {
+        document.getElementById('cdH').textContent = '00';
+        document.getElementById('cdM').textContent = '00';
+        document.getElementById('cdS').textContent = '00';
+        document.getElementById('progFill').style.width = '100%';
+        document.getElementById('progPct').textContent = '100%';
+        document.getElementById('ganhoStatus').textContent = 'Ganho pronto para resgatar!';
+        document.getElementById('ganhoStatus').className = 'ganho-status pronto';
+        document.getElementById('btnResgatar').classList.add('show');
+        clearInterval(cdInterval);
+      } else {
+        document.getElementById('cdH').textContent = pad(rest/3600000);
+        document.getElementById('cdM').textContent = pad((rest%3600000)/60000);
+        document.getElementById('cdS').textContent = pad((rest%60000)/1000);
+        document.getElementById('progFill').style.width = prog.toFixed(1)+'%';
+        document.getElementById('progPct').textContent = prog.toFixed(0)+'%';
+      }
+    }
+    tick(); cdInterval = setInterval(tick, 1000);
+  }
+
+  window.resgatarGanho = async function() {
+    if (!currentUser || !userData) return;
+    const inv = userData.investimentoActivo;
+    if (!inv) return;
+    document.getElementById('spinnerOverlay').classList.add('show');
+    try {
+      const novoSaldo = (userData.saldo || 0) + inv.diario;
+      const userRef = doc(db, 'users', currentUser.uid);
+      await updateDoc(userRef, { saldo: novoSaldo, 'investimentoActivo.ultimoGanho': serverTimestamp() });
+      await addDoc(collection(db, 'users', currentUser.uid, 'historico'), {
+        tipo: 'ganho_diario', descricao: 'Ganho diario - ' + inv.nome, valor: inv.diario, data: serverTimestamp()
+      });
+      userData.saldo = novoSaldo;
+      userData.investimentoActivo.ultimoGanho = { toMillis: () => Date.now() };
+      document.getElementById('spinnerOverlay').classList.remove('show');
+      document.getElementById('modalAmountVal').textContent = fmt(inv.diario);
+      document.getElementById('modalOverlay').classList.add('show');
+      document.getElementById('btnResgatar').classList.remove('show');
+      document.getElementById('ganhoStatus').textContent = 'A aguardar o proximo ganho diario...';
+      document.getElementById('ganhoStatus').className = 'ganho-status aguardar';
+      iniciarContagem(userData.investimentoActivo);
+    } catch(e) {
+      document.getElementById('spinnerOverlay').classList.remove('show');
+      alert('Erro ao resgatar. Tente novamente.');
+    }
+  };
+
+  window.closeModal = () => document.getElementById('modalOverlay').classList.remove('show');
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) { window.location.href = 'auth.html'; return; }
+    currentUser = user;
+    const snap = await getDoc(doc(db, 'users', user.uid));
+    document.getElementById('spinnerOverlay').classList.remove('show');
+    if (!snap.exists()) return;
+    userData = snap.data();
+    const inv = userData.investimentoActivo;
+    if (!inv) { renderSemInvestimento(); return; }
+    if (inv.tipo === 'longo') { renderLongoPrazo(inv); }
+    else { renderCurtoPrazo(inv); }
+  });
+
+  document.getElementById('spinnerOverlay').classList.add('show');
+</script>
 </body>
 </html>
