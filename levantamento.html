@@ -7,237 +7,124 @@
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --navy: #2c4a8a;
-      --navy-mid: #3a5fa0;
-      --navy-light: #4a72b5;
-      --orange: #f57c00;
-      --orange-dark: #e65100;
-      --white: #ffffff;
-      --off-white: #F5F8FF;
-      --text-dark: #0D1F3C;
-      --text-muted: #6B7FA3;
-      --border: #D6E4FF;
-      --success: #2e7d32;
-      --error: #c62828;
+      --navy: #2c4a8a; --navy-mid: #3a5fa0; --navy-light: #4a72b5;
+      --orange: #f57c00; --orange-dark: #e65100;
+      --off-white: #F5F8FF; --text-dark: #0D1F3C; --text-muted: #6B7FA3;
+      --border: #D6E4FF; --success: #2e7d32; --error: #c62828;
     }
-
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body { min-height: 100%; font-family: 'DM Sans', sans-serif; background: var(--off-white); color: var(--text-dark); }
 
-    body::before {
-      content: '';
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background:
-        radial-gradient(ellipse 60% 50% at 10% 0%, rgba(44,74,138,0.07) 0%, transparent 55%),
-        radial-gradient(ellipse 40% 40% at 90% 100%, rgba(245,124,0,0.04) 0%, transparent 55%);
-      pointer-events: none; z-index: 0;
-    }
+    .top-bar { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--navy), var(--navy-mid), var(--orange)); z-index: 200; }
 
-    .top-bar {
-      position: fixed; top: 0; left: 0; right: 0; height: 3px;
-      background: linear-gradient(90deg, var(--navy), var(--navy-mid), var(--navy-light), var(--orange));
-      z-index: 200;
-    }
-
-    .header {
-      position: fixed; top: 3px; left: 0; right: 0; height: 56px;
-      background: rgba(255,255,255,0.96); backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; padding: 0 16px; gap: 12px; z-index: 100;
-      box-shadow: 0 2px 12px rgba(44,74,138,0.06);
-    }
-
-    .btn-back {
-      width: 36px; height: 36px; border-radius: 10px;
-      border: 1.5px solid var(--border); background: white;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; transition: background 0.2s; flex-shrink: 0;
-    }
-    .btn-back:hover { background: var(--off-white); }
+    .header { position: fixed; top: 3px; left: 0; right: 0; height: 56px; background: rgba(255,255,255,0.96); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 16px; gap: 12px; z-index: 100; }
+    .btn-back { width: 36px; height: 36px; border-radius: 10px; border: 1.5px solid var(--border); background: white; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
     .btn-back svg { width: 18px; height: 18px; fill: none; stroke: var(--navy); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .header-title { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; color: #0d0d0d; }
+    .header-saldo { margin-left: auto; background: #fff3e0; border: 1px solid #ffcc80; border-radius: 20px; padding: 5px 12px; font-size: 12px; font-weight: 600; color: var(--orange-dark); font-family: 'Sora', sans-serif; }
 
-    .header-title { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; color: var(--text-dark); }
+    .main { padding: 72px 16px 48px; }
 
-    .header-saldo {
-      margin-left: auto; background: #fff3e0; border: 1px solid #ffcc80;
-      border-radius: 20px; padding: 5px 12px;
-      font-size: 12px; font-weight: 600; color: var(--orange-dark); font-family: 'Sora', sans-serif;
-    }
+    /* ── Horario ── */
+    .sec-label { font-family: 'Sora', sans-serif; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 10px; }
 
-    .main { position: relative; z-index: 1; padding: 75px 16px 40px; }
-
-    /* ── Saldo Hero Card ── */
-    .balance-hero {
-      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 60%, var(--navy-light) 100%);
-      border-radius: 20px;
-      padding: 22px 20px;
-      margin-bottom: 16px;
-      position: relative;
-      overflow: hidden;
-    }
-    .balance-hero::before {
-      content: '';
-      position: absolute; top: -30px; right: -30px;
-      width: 120px; height: 120px; border-radius: 50%;
-      background: rgba(255,255,255,0.06);
-    }
-    .balance-hero::after {
-      content: '';
-      position: absolute; bottom: -20px; left: 20px;
-      width: 80px; height: 80px; border-radius: 50%;
-      background: rgba(255,255,255,0.03);
-    }
-    .balance-hero-label { font-size: 11px; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
-    .balance-hero-val { font-family: 'Sora', sans-serif; font-size: 28px; font-weight: 800; color: white; margin-bottom: 14px; }
-    .balance-hero-chips { display: flex; gap: 8px; flex-wrap: wrap; }
-    .bhc {
-      background: rgba(255,255,255,0.12);
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 20px; padding: 5px 12px;
-      font-family: 'Sora', sans-serif; font-size: 11px; font-weight: 600; color: white;
-    }
-    .bhc.active { background: rgba(110,231,183,0.25); border-color: rgba(110,231,183,0.4); color: #6ee7b7; }
-    .bhc.warn { background: rgba(253,186,116,0.25); border-color: rgba(253,186,116,0.4); color: #fdba74; }
-
-    /* ── Horario card ── */
-    .horario-card {
-      background: white; border: 1.5px solid var(--border);
-      border-radius: 16px; padding: 16px; margin-bottom: 16px;
-    }
-    .horario-card-title {
-      font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 700; color: var(--text-dark);
-      margin-bottom: 12px; display: flex; align-items: center; gap: 6px;
-    }
-    .horario-card-title svg { width: 16px; height: 16px; fill: none; stroke: var(--navy-mid); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
-    .horario-rows { display: flex; flex-direction: column; gap: 8px; }
-    .horario-row {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 9px 12px; border-radius: 10px; background: var(--off-white);
-    }
-    .horario-row-label { font-size: 12px; color: var(--text-muted); }
-    .horario-row-val { font-family: 'Sora', sans-serif; font-size: 12px; font-weight: 600; color: var(--navy); }
-    .horario-row-val.green { color: var(--success); }
+    .horario-rows { margin-bottom: 24px; }
+    .horario-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .horario-row:last-child { border-bottom: none; }
+    .hr-left { display: flex; align-items: center; gap: 10px; }
+    .hr-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .hr-dot.green { background: #16a34a; }
+    .hr-dot.orange { background: var(--orange); }
+    .hr-label { font-size: 13px; color: var(--text-dark); }
+    .hr-val { font-family: 'Sora', sans-serif; font-size: 12px; font-weight: 700; }
+    .hr-val.green { color: #16a34a; }
+    .hr-val.orange { color: var(--orange-dark); }
+    .estado-badge { display: inline-flex; align-items: center; gap: 6px; font-family: 'Sora', sans-serif; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px; }
+    .estado-badge.active { background: #dcfce7; color: #16a34a; }
+    .estado-badge.warn { background: #fff3e0; color: var(--orange-dark); }
+    .estado-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 
     /* ── Alerts ── */
-    .alert-box {
-      border-radius: 14px; padding: 14px 16px; margin-bottom: 16px; display: none;
-      border-left: 4px solid;
-    }
+    .alert-box { border-radius: 12px; padding: 13px 16px; margin-bottom: 20px; display: none; border-left: 4px solid; }
     .alert-box.show { display: block; }
     .alert-box.warning { background: #fff8e1; border-color: #f57c00; }
     .alert-box.danger { background: #ffebee; border-color: var(--error); }
-    .alert-box-title { font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 700; margin-bottom: 4px; }
-    .alert-box.warning .alert-box-title { color: var(--orange-dark); }
-    .alert-box.danger .alert-box-title { color: var(--error); }
+    .alert-box-title { font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+    .alert-box.warning .alert-box-title, .alert-box.warning .alert-box-text { color: var(--orange-dark); }
+    .alert-box.danger .alert-box-title, .alert-box.danger .alert-box-text { color: var(--error); }
     .alert-box-text { font-size: 12px; line-height: 1.5; }
-    .alert-box.warning .alert-box-text { color: var(--orange-dark); }
-    .alert-box.danger .alert-box-text { color: var(--error); }
 
-    /* ── Form card ── */
-    .form-card {
-      background: white; border: 1.5px solid var(--border);
-      border-radius: 20px; overflow: hidden; margin-bottom: 16px;
-    }
-
-    .form-card-header {
-      background: linear-gradient(135deg, var(--navy), var(--navy-mid));
-      padding: 16px 18px;
-    }
-    .form-card-header-title { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; color: white; }
-    .form-card-header-sub { font-size: 12px; color: rgba(255,255,255,0.65); margin-top: 2px; }
-
-    .form-card-body { padding: 18px 16px; }
-
-    .field { margin-bottom: 16px; }
-    .field label { display: block; font-size: 12px; font-weight: 600; color: var(--navy); margin-bottom: 6px; }
-
-    .input-wrap { position: relative; }
+    /* ── Input ── */
+    .input-row { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+    .input-wrap { position: relative; width: 200px; flex-shrink: 0; }
     .input-wrap input {
-      width: 100%; padding: 13px 14px 13px 44px;
-      border: 1.5px solid var(--border); border-radius: 12px;
-      font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; color: var(--text-dark);
-      background: var(--off-white); outline: none;
+      width: 100%; padding: 13px 12px 13px 42px;
+      border: 2px solid var(--border); border-radius: 14px;
+      font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 800;
+      color: var(--text-dark); background: white; outline: none;
       transition: border-color 0.2s, box-shadow 0.2s;
     }
-    .input-wrap input:focus { border-color: var(--navy-mid); box-shadow: 0 0 0 3px rgba(58,95,160,0.1); background: white; }
-    .input-currency {
-      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
-      font-family: 'Sora', sans-serif; font-size: 12px; font-weight: 700; color: var(--navy-mid);
-    }
-    .field-note { font-size: 11px; color: var(--text-muted); margin-top: 5px; }
+    .input-wrap input:focus { border-color: var(--navy-mid); box-shadow: 0 0 0 3px rgba(58,95,160,0.08); }
+    .input-wrap input.has-value { color: var(--orange-dark); }
+    .input-prefix { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); font-family: 'Sora', sans-serif; font-size: 12px; font-weight: 700; color: var(--text-muted); pointer-events: none; }
+    .min-badge { background: #fff3e0; border: 1px solid #ffcc80; border-radius: 20px; padding: 4px 10px; font-family: 'Sora', sans-serif; font-size: 10px; font-weight: 700; color: var(--orange-dark); white-space: nowrap; }
     .field-error { font-size: 11px; color: var(--error); margin-top: 4px; display: none; }
     .field-error.show { display: block; }
 
-    /* ── Resumo taxa ── */
-    .taxa-card {
-      background: var(--off-white); border: 1px solid var(--border);
-      border-radius: 12px; padding: 14px; margin-bottom: 16px; display: none;
-    }
-    .taxa-card.show { display: block; }
-    .taxa-card-title { font-family: 'Sora', sans-serif; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
-    .taxa-line { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; }
-    .taxa-line:not(:last-child) { border-bottom: 1px dashed var(--border); }
-    .taxa-key { font-size: 13px; color: var(--text-muted); }
-    .taxa-val { font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 700; color: var(--navy); }
-    .taxa-val.orange { color: var(--orange); }
-    .taxa-val.green { color: var(--success); font-size: 15px; }
+    /* ── Taxa resumo ── */
+    .taxa-section { display: none; margin: 18px 0; }
+    .taxa-section.show { display: block; }
+    .taxa-row { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--border); }
+    .taxa-row:last-child { border-bottom: none; }
+    .tr-key { font-size: 13px; color: var(--text-muted); }
+    .tr-val { font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 700; color: var(--navy); }
+    .tr-val.orange { color: var(--orange-dark); }
+    .tr-val.green { font-size: 15px; color: #16a34a; }
 
-    .btn-primary {
-      width: 100%; padding: 14px;
-      background: linear-gradient(135deg, var(--navy), var(--navy-mid));
-      color: white; border: none; border-radius: 12px;
-      font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 600;
-      cursor: pointer; transition: opacity 0.2s, transform 0.15s;
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-    }
-    .btn-primary svg { width: 18px; height: 18px; fill: none; stroke: white; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-    .btn-primary:hover { opacity: 0.92; transform: translateY(-1px); }
-    .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+    /* ── Botao ── */
+    .btn-wrap { margin-top: 20px; }
+    .btn-action { display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; background: #fff3e0; color: var(--orange-dark); border: 1.5px solid #ffcc80; border-radius: 14px; font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; white-space: nowrap; }
+    .btn-action svg { width: 16px; height: 16px; fill: none; stroke: var(--orange-dark); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .btn-action:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* ── Divisor ── */
+    .divider { height: 1px; background: var(--border); margin: 28px 0; }
+
+    /* ── Informacoes ── */
+    .info-title { font-family: 'Sora', sans-serif; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 16px; }
+    .info-item { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px; }
+    .info-item:last-child { margin-bottom: 0; }
+    .info-icon { width: 34px; height: 34px; border-radius: 10px; background: #F5F8FF; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .info-icon svg { width: 15px; height: 15px; fill: none; stroke: var(--navy-mid); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .info-item-title { font-family: 'Sora', sans-serif; font-size: 12px; font-weight: 700; color: var(--text-dark); margin-bottom: 2px; }
+    .info-item-text { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
 
     /* ── Spinner ── */
-    .spinner-overlay {
-      position: fixed; inset: 0; background: rgba(255,255,255,0.9);
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      z-index: 999; opacity: 0; pointer-events: none; transition: opacity 0.2s;
-    }
+    .spinner-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
     .spinner-overlay.show { opacity: 1; pointer-events: all; }
-    .spinner-ring {
-      width: 52px; height: 52px; border: 3px solid var(--border);
-      border-top-color: var(--navy-mid); border-radius: 50%;
-      animation: spin 0.75s linear infinite;
-    }
-    .spinner-text { margin-top: 14px; font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600; color: var(--navy); }
+    .spinner-ring { width: 48px; height: 48px; border: 3px solid var(--border); border-top-color: var(--navy-mid); border-radius: 50%; animation: spin 0.75s linear infinite; }
+    .spinner-text { margin-top: 12px; font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 600; color: var(--navy); }
 
     /* ── Modal ── */
-    .modal-overlay {
-      position: fixed; inset: 0; background: rgba(10,22,40,0.5);
-      display: flex; align-items: flex-end; justify-content: center;
-      z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s;
-    }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(10,22,40,0.5); display: flex; align-items: flex-end; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
     .modal-overlay.show { opacity: 1; pointer-events: all; }
-    .modal-sheet {
-      width: 100%; max-width: 480px; background: white;
-      border-radius: 24px 24px 0 0; padding: 28px 24px 44px;
-      transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
-    }
+    .modal-sheet { width: 100%; max-width: 480px; background: white; border-radius: 24px 24px 0 0; padding: 28px 24px 44px; transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.4,0,0.2,1); }
     .modal-overlay.show .modal-sheet { transform: translateY(0); }
     .modal-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 22px; }
-    .modal-icon { width: 58px; height: 58px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; }
-    .modal-icon.success { background: #e8f5e9; }
-    .modal-icon.error { background: #ffebee; }
-    .modal-icon svg { width: 26px; height: 26px; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .modal-icon { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; }
+    .modal-icon.success { background: #e8f5e9; } .modal-icon.error { background: #ffebee; }
+    .modal-icon svg { width: 24px; height: 24px; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
     .modal-title { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 700; color: var(--text-dark); text-align: center; margin-bottom: 8px; }
     .modal-msg { font-size: 14px; color: var(--text-muted); text-align: center; line-height: 1.6; margin-bottom: 20px; }
     .modal-ref { background: var(--off-white); border: 1px solid var(--border); border-radius: 10px; padding: 12px; text-align: center; margin-bottom: 20px; }
     .modal-ref-label { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
-    .modal-ref-val { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; color: var(--navy); }
-    .btn-modal-close { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--navy), var(--navy-mid)); color: white; border: none; border-radius: 12px; font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; }
+    .modal-ref-val { font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 700; color: var(--navy); }
+    .btn-modal-close { width: 100%; padding: 13px; background: linear-gradient(135deg, var(--navy), var(--navy-mid)); color: white; border: none; border-radius: 12px; font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; }
 
     @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
-
   <div class="top-bar"></div>
 
   <div class="spinner-overlay" id="spinnerOverlay">
@@ -260,40 +147,29 @@
   </div>
 
   <div class="header">
-    <button class="btn-back" onclick="history.back()">
-      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-    </button>
+    <button class="btn-back" onclick="history.back()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
     <span class="header-title">Levantamento</span>
     <div class="header-saldo" id="headerSaldo">-- Kz</div>
   </div>
 
   <div class="main">
 
-    <!-- Saldo hero -->
-    <div class="balance-hero">
-      <div class="balance-hero-label">Saldo disponivel</div>
-      <div class="balance-hero-val" id="heroSaldo">-- Kz</div>
-      <div class="balance-hero-chips">
-        <div class="bhc" id="chipSemana">Seg–Sex: Qualquer hora</div>
-        <div class="bhc warn" id="chipFds">Sab–Dom: 08h30–12h30</div>
-        <div class="bhc" id="chipEstado">A verificar...</div>
-      </div>
-    </div>
-
     <!-- Horario -->
-    <div class="horario-card">
-      <div class="horario-card-title">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        Horario de levantamentos
+    <div class="sec-label">Horario</div>
+    <div class="horario-rows">
+      <div class="horario-row">
+        <div class="hr-left"><div class="hr-dot green"></div><span class="hr-label">Segunda a Sexta</span></div>
+        <span class="hr-val green">Qualquer hora</span>
       </div>
-      <div class="horario-rows">
-        <div class="horario-row">
-          <span class="horario-row-label">Segunda a Sexta</span>
-          <span class="horario-row-val green">Qualquer hora</span>
-        </div>
-        <div class="horario-row">
-          <span class="horario-row-label">Sabado e Domingo</span>
-          <span class="horario-row-val">08h30 – 12h30</span>
+      <div class="horario-row">
+        <div class="hr-left"><div class="hr-dot orange"></div><span class="hr-label">Sabado e Domingo</span></div>
+        <span class="hr-val orange">08h30 – 12h30</span>
+      </div>
+      <div class="horario-row" id="rowEstado" style="display:none">
+        <span style="font-size:12px;color:var(--text-muted)">Estado actual</span>
+        <div class="estado-badge" id="estadoBadge">
+          <div class="estado-badge-dot"></div>
+          <span id="estadoText">--</span>
         </div>
       </div>
     </div>
@@ -301,53 +177,98 @@
     <!-- Alerts -->
     <div class="alert-box warning" id="alertNoInvest">
       <div class="alert-box-title">Sem investimento activo</div>
-      <div class="alert-box-text">Necessita de ter um investimento activo para solicitar levantamentos. Adquira um plano na seccao de Compra.</div>
+      <div class="alert-box-text">Necessita de ter um investimento activo para solicitar levantamentos.</div>
     </div>
-
     <div class="alert-box danger" id="alertHorario">
       <div class="alert-box-title">Fora do horario permitido</div>
-      <div class="alert-box-text">Ao fim de semana os levantamentos so sao processados das 08h30 ate as 12h30. Tente novamente dentro do horario.</div>
+      <div class="alert-box-text">Ao fim de semana os levantamentos so sao processados das 08h30 ate as 12h30.</div>
     </div>
 
     <!-- Formulario -->
-    <div class="form-card" id="formCard">
-      <div class="form-card-header">
-        <div class="form-card-header-title">Solicitar levantamento</div>
-        <div class="form-card-header-sub">Taxa de 15% aplicada sobre o valor solicitado</div>
+    <div id="formSection">
+      <div class="sec-label">Valor a levantar</div>
+      <div class="input-row">
+        <div class="input-wrap">
+          <span class="input-prefix">Kz</span>
+          <input type="number" id="valorLevantar" placeholder="0" min="1800" oninput="calcularTaxa()" />
+        </div>
+        <span class="min-badge">Min. 1.800 Kz</span>
       </div>
-      <div class="form-card-body">
+      <div class="field-error" id="errValor">Minimo de 1.800 Kz</div>
 
-        <div class="field">
-          <label>Valor a levantar</label>
-          <div class="input-wrap">
-            <span class="input-currency">Kz</span>
-            <input type="number" id="valorLevantar" placeholder="Minimo 1.800" min="1800" oninput="calcularTaxa()" />
-          </div>
-          <div class="field-note">Valor minimo: 1.800 Kz</div>
-          <div class="field-error" id="errValor">Valor invalido — minimo de 1.800 Kz</div>
-        </div>
+      <div class="taxa-section" id="taxaSection">
+        <div class="taxa-row"><span class="tr-key">Valor solicitado</span><span class="tr-val" id="taxaValor">--</span></div>
+        <div class="taxa-row"><span class="tr-key">Taxa (15%)</span><span class="tr-val orange" id="taxaValorTaxa">--</span></div>
+        <div class="taxa-row"><span class="tr-key">Valor a receber</span><span class="tr-val green" id="taxaValorLiquido">--</span></div>
+      </div>
 
-        <div class="taxa-card" id="taxaRow">
-          <div class="taxa-card-title">Resumo do pedido</div>
-          <div class="taxa-line">
-            <span class="taxa-key">Valor solicitado</span>
-            <span class="taxa-val" id="taxaValor">--</span>
-          </div>
-          <div class="taxa-line">
-            <span class="taxa-key">Taxa de servico (15%)</span>
-            <span class="taxa-val orange" id="taxaValorTaxa">--</span>
-          </div>
-          <div class="taxa-line">
-            <span class="taxa-key">Valor a receber</span>
-            <span class="taxa-val green" id="taxaValorLiquido">--</span>
-          </div>
-        </div>
-
-        <button class="btn-primary" id="btnLevantar" onclick="submeterLevantamento()">
+      <div class="btn-wrap">
+        <button class="btn-action" id="btnLevantar" onclick="submeterLevantamento()">
           <svg viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
           Solicitar levantamento
         </button>
+      </div>
+    </div>
 
+    <!-- Divisor -->
+    <div class="divider"></div>
+
+    <!-- Informacoes -->
+    <div class="info-title">Informacoes importantes</div>
+
+    <div class="info-item">
+      <div class="info-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+      <div>
+        <div class="info-item-title">Prazo de processamento</div>
+        <div class="info-item-text">Os levantamentos sao processados em ate 24 horas uteis apos aprovacao pelo supervisor.</div>
+      </div>
+    </div>
+
+    <div class="info-item">
+      <div class="info-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+      <div>
+        <div class="info-item-title">Taxa de servico de 15%</div>
+        <div class="info-item-text">E aplicada uma taxa de 15% sobre o valor solicitado. O valor liquido e transferido para a sua conta bancaria registada.</div>
+      </div>
+    </div>
+
+    <div class="info-item">
+      <div class="info-icon"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
+      <div>
+        <div class="info-item-title">Conta bancaria obrigatoria</div>
+        <div class="info-item-text">Para receber o levantamento necessita de ter uma conta bancaria validada. Adicione em Cartao Bancario na sua conta.</div>
+      </div>
+    </div>
+
+    <div class="info-item">
+      <div class="info-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+      <div>
+        <div class="info-item-title">Valor minimo de 1.800 Kz</div>
+        <div class="info-item-text">O valor minimo por levantamento e de 1.800 Kz. Nao existe limite maximo desde que o saldo disponivel seja suficiente.</div>
+      </div>
+    </div>
+
+    <div class="info-item">
+      <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M2 20h20M6 20V10l6-8 6 8v10"/></svg></div>
+      <div>
+        <div class="info-item-title">Investimento activo necessario</div>
+        <div class="info-item-text">So e possivel levantar fundos se tiver um plano de investimento activo. Adquira um plano na seccao de Compra.</div>
+      </div>
+    </div>
+
+    <div class="info-item">
+      <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.18 2.18 2 2 0 012.18 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.1a16 16 0 006 6l.56-.56a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg></div>
+      <div>
+        <div class="info-item-title">Suporte via WhatsApp</div>
+        <div class="info-item-text">Para questoes sobre levantamentos contacte o supervisor via WhatsApp. Disponivel de segunda a sexta em horario comercial.</div>
+      </div>
+    </div>
+
+    <div class="info-item">
+      <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+      <div>
+        <div class="info-item-title">Seguranca dos seus fundos</div>
+        <div class="info-item-text">Todos os pedidos de levantamento sao verificados manualmente pela equipa Kaixepa antes de serem processados, garantindo a seguranca da sua conta.</div>
       </div>
     </div>
 
@@ -358,41 +279,26 @@
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import { getFirestore, doc, getDoc, addDoc, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    const app = initializeApp({
-      apiKey: "AIzaSyBp8X1PPp3FqiQ6OXErr8Mu11GEp6MZ2-U",
-      authDomain: "ascend-34bf0.firebaseapp.com",
-      projectId: "ascend-34bf0",
-      storageBucket: "ascend-34bf0.firebasestorage.app",
-      messagingSenderId: "592623076677",
-      appId: "1:592623076677:web:c5615719870aefdabf6a2c"
-    });
-
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    let currentUser = null;
-    let userData = null;
-    let podeLevantar = false;
+    const app = initializeApp({ apiKey: "AIzaSyBp8X1PPp3FqiQ6OXErr8Mu11GEp6MZ2-U", authDomain: "ascend-34bf0.firebaseapp.com", projectId: "ascend-34bf0", storageBucket: "ascend-34bf0.firebasestorage.app", messagingSenderId: "592623076677", appId: "1:592623076677:web:c5615719870aefdabf6a2c" });
+    const auth = getAuth(app), db = getFirestore(app);
+    let currentUser = null, userData = null, podeLevantar = false;
 
     function fmt(n) { return (n || 0).toLocaleString('pt-AO') + ' Kz'; }
-
     function verificarHorario() {
-      const agora = new Date();
-      const dia = agora.getDay();
-      const totalMin = agora.getHours() * 60 + agora.getMinutes();
-      const isWeekend = dia === 0 || dia === 6;
-      if (!isWeekend) return true;
-      return totalMin >= 510 && totalMin <= 750;
+      const a = new Date(), d = a.getDay(), m = a.getHours() * 60 + a.getMinutes();
+      return (d !== 0 && d !== 6) || (m >= 510 && m <= 750);
     }
 
     window.calcularTaxa = function() {
-      const val = parseFloat(document.getElementById('valorLevantar').value);
-      if (!val || val < 1800) { document.getElementById('taxaRow').classList.remove('show'); return; }
-      const taxa = val * 0.15;
-      const liquido = val - taxa;
+      const inp = document.getElementById('valorLevantar');
+      const val = parseFloat(inp.value);
+      inp.classList.toggle('has-value', !!(val && val > 0));
+      const sec = document.getElementById('taxaSection');
+      if (!val || val < 1800) { sec.classList.remove('show'); return; }
       document.getElementById('taxaValor').textContent = fmt(val);
-      document.getElementById('taxaValorTaxa').textContent = '- ' + fmt(taxa);
-      document.getElementById('taxaValorLiquido').textContent = fmt(liquido);
-      document.getElementById('taxaRow').classList.add('show');
+      document.getElementById('taxaValorTaxa').textContent = '- ' + fmt(val * 0.15);
+      document.getElementById('taxaValorLiquido').textContent = fmt(val * 0.85);
+      sec.classList.add('show');
     };
 
     window.submeterLevantamento = async function() {
@@ -400,46 +306,27 @@
       document.getElementById('errValor').classList.remove('show');
       if (!val || val < 1800) { document.getElementById('errValor').classList.add('show'); return; }
       if (!podeLevantar) return;
-      if ((userData.saldo || 0) < val) {
-        showModal('error', 'Saldo insuficiente', 'O seu saldo disponivel e insuficiente para este levantamento. Disponivel: ' + fmt(userData.saldo));
-        return;
-      }
-      showSpinner('A enviar pedido...');
+      if ((userData?.saldo || 0) < val) { showModal('error', 'Saldo insuficiente', 'Disponivel: ' + fmt(userData?.saldo)); return; }
+      showSpinner('A enviar...');
       try {
-        const taxa = val * 0.15;
-        const liquido = val - taxa;
-        const pedidoRef = await addDoc(collection(db, 'levantamentos'), {
-          uid: currentUser.uid, valorSolicitado: val, taxa, valorLiquido: liquido,
-          estado: 'pendente', criadoEm: serverTimestamp()
-        });
-        await addDoc(collection(db, 'users', currentUser.uid, 'historico'), {
-          tipo: 'levantamento_pendente', descricao: 'Pedido de levantamento',
-          valor: -val, estado: 'pendente', data: serverTimestamp()
-        });
+        const ref = await addDoc(collection(db, 'levantamentos'), { uid: currentUser.uid, valorSolicitado: val, taxa: val * 0.15, valorLiquido: val * 0.85, estado: 'pendente', criadoEm: serverTimestamp() });
+        await addDoc(collection(db, 'users', currentUser.uid, 'historico'), { tipo: 'levantamento_pendente', descricao: 'Pedido de levantamento', valor: -val, data: serverTimestamp() });
         hideSpinner();
         document.getElementById('valorLevantar').value = '';
-        document.getElementById('taxaRow').classList.remove('show');
-        showModal('success', 'Pedido enviado!',
-          'O seu pedido de ' + fmt(liquido) + ' (apos taxa) foi registado com sucesso e sera processado em breve.',
-          pedidoRef.id.substring(0, 10).toUpperCase()
-        );
-      } catch(e) {
-        hideSpinner();
-        showModal('error', 'Erro ao processar', 'Ocorreu um erro ao enviar o pedido. Verifique a sua ligacao e tente novamente.');
-      }
+        document.getElementById('taxaSection').classList.remove('show');
+        showModal('success', 'Pedido enviado!', 'Pedido de ' + fmt(val * 0.85) + ' registado. Sera processado em breve.', ref.id.substring(0,10).toUpperCase());
+      } catch(e) { hideSpinner(); showModal('error', 'Erro', 'Ocorreu um erro. Tente novamente.'); }
     };
 
     function showModal(tipo, titulo, msg, refId) {
-      const icon = document.getElementById('modalIcon');
-      const svg = document.getElementById('modalIconSvg');
+      const icon = document.getElementById('modalIcon'), svg = document.getElementById('modalIconSvg');
       icon.className = 'modal-icon ' + tipo;
-      if (tipo === 'success') { svg.setAttribute('stroke', '#2e7d32'); svg.innerHTML = '<polyline points="20 6 9 17 4 12"/>'; }
-      else { svg.setAttribute('stroke', '#c62828'); svg.innerHTML = '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>'; }
+      svg.setAttribute('stroke', tipo === 'success' ? '#2e7d32' : '#c62828');
+      svg.innerHTML = tipo === 'success' ? '<polyline points="20 6 9 17 4 12"/>' : '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>';
       document.getElementById('modalTitle').textContent = titulo;
       document.getElementById('modalMsg').textContent = msg;
       const refEl = document.getElementById('modalRef');
-      if (refId) { refEl.style.display = 'block'; document.getElementById('modalRefVal').textContent = refId; }
-      else { refEl.style.display = 'none'; }
+      if (refId) { refEl.style.display = 'block'; document.getElementById('modalRefVal').textContent = refId; } else { refEl.style.display = 'none'; }
       document.getElementById('modalOverlay').classList.add('show');
     }
 
@@ -454,33 +341,28 @@
       hideSpinner();
       if (!snap.exists()) return;
       userData = snap.data();
-      const saldoFmt = fmt(userData.saldo);
-      document.getElementById('headerSaldo').textContent = saldoFmt;
-      document.getElementById('heroSaldo').textContent = saldoFmt;
+      document.getElementById('headerSaldo').textContent = fmt(userData.saldo);
 
       if (!userData.investimentoActivo) {
         document.getElementById('alertNoInvest').classList.add('show');
-        document.getElementById('formCard').style.display = 'none';
+        document.getElementById('formSection').style.display = 'none';
         return;
       }
 
-      const horarioOk = verificarHorario();
-      const chipEstado = document.getElementById('chipEstado');
-      if (horarioOk) {
-        chipEstado.textContent = 'Disponiveis agora';
-        chipEstado.className = 'bhc active';
-        podeLevantar = true;
-      } else {
-        chipEstado.textContent = 'Fora do horario';
-        chipEstado.className = 'bhc warn';
+      const ok = verificarHorario();
+      document.getElementById('rowEstado').style.display = 'flex';
+      const badge = document.getElementById('estadoBadge');
+      badge.className = 'estado-badge ' + (ok ? 'active' : 'warn');
+      document.getElementById('estadoText').textContent = ok ? 'Aberto agora' : 'Fora do horario';
+      if (!ok) {
         document.getElementById('alertHorario').classList.add('show');
         document.getElementById('btnLevantar').disabled = true;
-        podeLevantar = false;
+      } else {
+        podeLevantar = true;
       }
     });
 
     showSpinner('A verificar...');
   </script>
-
 </body>
 </html>
