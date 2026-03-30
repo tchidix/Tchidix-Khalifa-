@@ -30,77 +30,24 @@
       pointer-events: none; z-index: 0;
     }
 
-    /* ── HERO — cabeçalho limpo sem fundo azul ── */
+    /* ── HERO ── */
     .hero {
       background: white;
       border-bottom: 1.5px solid var(--border);
       padding: max(48px, env(safe-area-inset-top, 0px) + 16px) 20px 20px;
-      position: relative;
-      z-index: 10;
+      position: relative; z-index: 10;
       box-shadow: 0 2px 12px rgba(44,74,138,0.06);
     }
-
-    .hero-top {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      position: relative;
-    }
-
-    /* Logo grande */
-    .hero-logo {
-      width: 64px;
-      height: 64px;
-      border-radius: 18px;
-      overflow: hidden;
-      flex-shrink: 0;
-      border: 2px solid var(--border);
-      box-shadow: 0 4px 14px rgba(44,74,138,0.12);
-    }
+    .hero-top { display: flex; align-items: center; gap: 16px; position: relative; }
+    .hero-logo { width: 64px; height: 64px; border-radius: 18px; overflow: hidden; flex-shrink: 0; border: 2px solid var(--border); box-shadow: 0 4px 14px rgba(44,74,138,0.12); }
     .hero-logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
-
-    /* Nome grande */
     .hero-brand { flex: 1; min-width: 0; }
-    .hero-brand-name {
-      font-family: 'Sora', sans-serif;
-      font-size: 22px;
-      font-weight: 800;
-      color: var(--navy);
-      line-height: 1.15;
-      letter-spacing: -0.3px;
-    }
-    .hero-brand-sub {
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--text-muted);
-      margin-top: 2px;
-    }
-
-    /* Sininho */
-    .hero-notif {
-      width: 44px; height: 44px;
-      background: var(--off-white);
-      border: 1.5px solid var(--border);
-      border-radius: 13px;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer;
-      position: relative;
-      flex-shrink: 0;
-      transition: background 0.2s, box-shadow 0.2s;
-    }
+    .hero-brand-name { font-family: 'Sora', sans-serif; font-size: 22px; font-weight: 800; color: var(--navy); line-height: 1.15; letter-spacing: -0.3px; }
+    .hero-brand-sub { font-size: 12px; font-weight: 500; color: var(--text-muted); margin-top: 2px; }
+    .hero-notif { width: 44px; height: 44px; background: var(--off-white); border: 1.5px solid var(--border); border-radius: 13px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; flex-shrink: 0; transition: background 0.2s; }
     .hero-notif:active { background: #e8f0fe; }
-    .hero-notif svg {
-      width: 20px; height: 20px;
-      fill: none; stroke: var(--navy);
-      stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
-    }
-    .notif-dot {
-      position: absolute; top: 8px; right: 8px;
-      width: 7px; height: 7px;
-      background: var(--orange-light);
-      border-radius: 50%;
-      border: 1.5px solid white;
-    }
+    .hero-notif svg { width: 20px; height: 20px; fill: none; stroke: var(--navy); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .notif-dot { position: absolute; top: 8px; right: 8px; width: 7px; height: 7px; background: var(--orange-light); border-radius: 50%; border: 1.5px solid white; }
 
     /* ── MAIN ── */
     .main { position: relative; z-index: 1; padding: 20px 16px calc(var(--nav-h) + 16px); }
@@ -110,16 +57,14 @@
     .quick-item { display: flex; flex-direction: column; align-items: center; gap: 7px; text-decoration: none; cursor: pointer; animation: fadeUp 0.4s ease both; }
     .quick-item:nth-child(1){animation-delay:.05s} .quick-item:nth-child(2){animation-delay:.10s}
     .quick-item:nth-child(3){animation-delay:.15s} .quick-item:nth-child(4){animation-delay:.20s}
-    .quick-icon {
-      width: 54px; height: 54px; border-radius: 16px;
-      display: flex; align-items: center; justify-content: center;
-      background: white;
-      border: 1.5px solid var(--border);
-      box-shadow: 0 2px 10px rgba(44,74,138,0.08);
-      transition: all 0.2s;
-    }
+    .quick-icon { width: 54px; height: 54px; border-radius: 16px; display: flex; align-items: center; justify-content: center; border: 1.5px solid var(--border); box-shadow: 0 2px 10px rgba(44,74,138,0.08); transition: all 0.2s; }
+    /* cores individuais dos quick icons */
+    .quick-icon.blue   { background: #E8F0FE; border-color: #c7d9f9; }
+    .quick-icon.green  { background: #dcfce7; border-color: #bbf7d0; }
+    .quick-icon.orange { background: #fff3e0; border-color: #ffe0b2; }
+    .quick-icon.purple { background: #f3e8ff; border-color: #e9d5ff; }
     .quick-item:hover .quick-icon { transform: translateY(-3px); box-shadow: 0 8px 18px rgba(44,74,138,0.14); }
-    .quick-icon svg { width: 24px; height: 24px; }
+    .quick-icon svg { width: 26px; height: 26px; }
     .quick-label { font-family: 'Sora', sans-serif; font-size: 10px; font-weight: 600; color: var(--text-muted); text-align: center; }
 
     /* Section header */
@@ -128,18 +73,12 @@
 
     /* ── EMPRESAS ── */
     .companies-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
-    .company-card {
-      background: white; border: 1.5px solid var(--border); border-radius: 14px;
-      padding: 12px 14px; display: flex; align-items: center; gap: 12px;
-      animation: fadeUp 0.4s ease both; cursor: pointer;
-      transition: box-shadow 0.2s, transform 0.15s;
-    }
+    .company-card { background: white; border: 1.5px solid var(--border); border-radius: 14px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; animation: fadeUp 0.4s ease both; cursor: pointer; transition: box-shadow 0.2s, transform 0.15s; }
     .company-card:active { transform: scale(0.98); }
     .company-card:hover  { box-shadow: 0 4px 16px rgba(44,74,138,0.10); }
     .company-card:nth-child(1){animation-delay:.05s} .company-card:nth-child(2){animation-delay:.10s}
     .company-card:nth-child(3){animation-delay:.15s} .company-card:nth-child(4){animation-delay:.20s}
     .company-card:nth-child(5){animation-delay:.25s} .company-card:nth-child(6){animation-delay:.30s}
-
     .co-logo { width: 46px; height: 46px; border-radius: 12px; overflow: hidden; flex-shrink: 0; border: 1.5px solid var(--border); background: white; }
     .co-logo img { width: 100%; height: 100%; object-fit: contain; padding: 4px; display: block; }
     .co-info { flex: 1; min-width: 0; }
@@ -192,27 +131,43 @@
     .co-sheet-stat-val { font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 700; color: var(--navy); }
     .btn-co-close { width: 100%; padding: 13px; background: linear-gradient(135deg, var(--navy), var(--navy-mid)); color: white; border: none; border-radius: 12px; font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; }
 
-    /* ── NOTIFICACAO TOAST ── */
-    .notif-toast {
-      position: fixed;
-      /* acima da nav, sem sobreposição com WhatsApp popup */
-      bottom: calc(var(--nav-h) + 14px);
-      left: 50%; transform: translateX(-50%) translateY(20px);
-      background: white; border: 1.5px solid var(--border); border-radius: 16px;
-      padding: 14px 20px; min-width: 260px; max-width: calc(100vw - 32px);
-      box-shadow: 0 8px 32px rgba(44,74,138,0.16);
-      z-index: 800; /* acima do WhatsApp popup (z-index 90) */
+    /* ── NOTIFICACAO MODAL — centro do ecra ── */
+    .notif-overlay {
+      position: fixed; inset: 0;
+      background: rgba(13,31,60,0.45);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 900;
       opacity: 0; pointer-events: none;
-      transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
-      display: flex; align-items: flex-start; gap: 10px;
+      transition: opacity 0.3s;
+      padding: 24px;
     }
-    .notif-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: all; }
-    .notif-toast-icon { width: 36px; height: 36px; background: #E8F0FE; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .notif-toast-icon svg { width: 18px; height: 18px; fill: none; stroke: var(--navy-mid); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-    .notif-toast-content { flex: 1; }
-    .notif-toast-title { font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 700; color: var(--text-dark); margin-bottom: 2px; }
-    .notif-toast-msg   { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
-    .notif-toast-close { background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 16px; padding: 0; line-height: 1; }
+    .notif-overlay.show { opacity: 1; pointer-events: all; }
+    .notif-modal {
+      background: white;
+      border-radius: 20px;
+      padding: 24px 20px 20px;
+      width: 100%; max-width: 340px;
+      box-shadow: 0 16px 48px rgba(13,31,60,0.2);
+      transform: scale(0.92) translateY(10px);
+      transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    .notif-overlay.show .notif-modal { transform: scale(1) translateY(0); }
+    .notif-modal-icon {
+      width: 52px; height: 52px;
+      background: #E8F0FE; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 14px;
+    }
+    .notif-modal-icon svg { width: 26px; height: 26px; fill: none; stroke: var(--navy-mid); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .notif-modal-title { font-family: 'Sora', sans-serif; font-size: 16px; font-weight: 800; color: var(--navy); text-align: center; margin-bottom: 6px; }
+    .notif-modal-msg { font-size: 13px; color: var(--text-muted); text-align: center; line-height: 1.65; margin-bottom: 20px; }
+    .notif-modal-close {
+      width: 100%; padding: 12px;
+      background: linear-gradient(135deg, var(--navy), var(--navy-mid));
+      color: white; border: none; border-radius: 12px;
+      font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600;
+      cursor: pointer;
+    }
 
     /* ── WHATSAPP POPUP ── */
     .wa-popup {
@@ -252,16 +207,16 @@
   <div class="spinner-text">A carregar...</div>
 </div>
 
-<!-- Toast Notificacao -->
-<div class="notif-toast" id="notifToast">
-  <div class="notif-toast-icon">
-    <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+<!-- Notificacao modal — centro do ecra -->
+<div class="notif-overlay" id="notifOverlay" onclick="fecharNotif(event)">
+  <div class="notif-modal" id="notifModal">
+    <div class="notif-modal-icon">
+      <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+    </div>
+    <div class="notif-modal-title">Kaixepa SA</div>
+    <div class="notif-modal-msg">Bem-vindo à plataforma Kaixepa SA! Acompanhe os seus investimentos e ganhos diários aqui.</div>
+    <button class="notif-modal-close" onclick="fecharNotif()">Fechar</button>
   </div>
-  <div class="notif-toast-content">
-    <div class="notif-toast-title">Kaixepa SA</div>
-    <div class="notif-toast-msg" id="notifToastMsg">Bem-vindo! Aceda ao grupo oficial da comunidade.</div>
-  </div>
-  <button class="notif-toast-close" onclick="fecharNotif()">×</button>
 </div>
 
 <!-- WhatsApp popup -->
@@ -274,7 +229,7 @@
     <div class="wa-sub">Junte-se ao grupo oficial no WhatsApp</div>
   </div>
   <div class="wa-btns">
-    <a class="btn-wa-join" href="https://chat.whatsapp.com/CEMTe2E7x0jIrr9wjTZ602?mode=gi_t" target="_blank" onclick="fecharWaPopup()">Entrar</a>
+    <a class="btn-wa-join" href="https://chat.whatsapp.com/JQCb9VYQdICLJ6LGbe8nMc?mode=gi_t" target="_blank" onclick="fecharWaPopup()">Entrar</a>
     <button class="btn-wa-close" onclick="fecharWaPopup()">Agora nao</button>
   </div>
 </div>
@@ -296,14 +251,14 @@
   </div>
 </div>
 
-<!-- ── HERO: fundo branco, logo + nome grandes ── -->
+<!-- HERO -->
 <div class="hero">
   <div class="hero-top">
     <div class="hero-logo">
       <img src="https://i.postimg.cc/d1YH4jN9/1774713423099.jpg" alt="Kaixepa SA" />
     </div>
     <div class="hero-brand">
-      <div class="hero-brand-name">Kaixepa sa</div>
+      <div class="hero-brand-name">Kaixepa SA</div>
       <div class="hero-brand-sub">Sociedade Mineira</div>
     </div>
     <button class="hero-notif" onclick="toggleNotif()">
@@ -322,43 +277,42 @@
   <!-- Acesso rapido -->
   <div class="quick-grid" style="margin-top:4px">
     <a class="quick-item" href="deposito.html">
-      <div class="quick-icon">
+      <div class="quick-icon blue">
         <svg viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="12" r="10" fill="#E8F0FE"/>
-          <line x1="12" y1="7" x2="12" y2="17" stroke="#2c4a8a" stroke-width="2.2" stroke-linecap="round"/>
-          <polyline points="7,13 12,18 17,13" stroke="#2c4a8a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="12" y1="5" x2="12" y2="19" stroke="#2c4a8a" stroke-width="2.2" stroke-linecap="round"/>
+          <polyline points="7,13 12,19 17,13" stroke="#2c4a8a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="6" y1="5" x2="18" y2="5" stroke="#2c4a8a" stroke-width="2.2" stroke-linecap="round"/>
         </svg>
       </div>
       <span class="quick-label">Deposito</span>
     </a>
     <a class="quick-item" href="levantamento.html">
-      <div class="quick-icon">
+      <div class="quick-icon green">
         <svg viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="12" r="10" fill="#dcfce7"/>
-          <line x1="12" y1="17" x2="12" y2="7" stroke="#2e7d32" stroke-width="2.2" stroke-linecap="round"/>
-          <polyline points="7,11 12,6 17,11" stroke="#2e7d32" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="12" y1="19" x2="12" y2="5" stroke="#2e7d32" stroke-width="2.2" stroke-linecap="round"/>
+          <polyline points="7,11 12,5 17,11" stroke="#2e7d32" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="6" y1="19" x2="18" y2="19" stroke="#2e7d32" stroke-width="2.2" stroke-linecap="round"/>
         </svg>
       </div>
       <span class="quick-label">Levantar</span>
     </a>
     <a class="quick-item" href="convite.html">
-      <div class="quick-icon">
-        <svg viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="12" r="10" fill="#fff3e0"/>
-          <path d="M9 12a2.5 2.5 0 100-5 2.5 2.5 0 000 5z" fill="#f57c00"/>
-          <path d="M5 18c0-2 1.8-3.5 4-3.5s4 1.5 4 3.5" stroke="#f57c00" stroke-width="1.8" stroke-linecap="round"/>
-          <path d="M15 11a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" fill="#f57c00"/>
-          <path d="M15 13.5c1.5 0 3 1 3 2.5" stroke="#f57c00" stroke-width="1.8" stroke-linecap="round"/>
+      <div class="quick-icon orange">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#f57c00" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 00-3-3.87"/>
+          <path d="M16 3.13a4 4 0 010 7.75"/>
         </svg>
       </div>
       <span class="quick-label">Convidar</span>
     </a>
     <a class="quick-item" href="historico.html">
-      <div class="quick-icon">
-        <svg viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="12" r="10" fill="#f3e8ff"/>
-          <circle cx="12" cy="12" r="5" stroke="#7c3aed" stroke-width="1.8"/>
-          <polyline points="12,9.5 12,12 13.5,13.5" stroke="#7c3aed" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      <div class="quick-icon purple">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="12 8 12 12 14 14"/>
+          <path d="M3.05 11a9 9 0 1 0 .5-4.5"/>
+          <polyline points="3 3 3 7 7 7"/>
         </svg>
       </div>
       <span class="quick-label">Historico</span>
@@ -370,43 +324,36 @@
     <div class="sec-title">Empresas Parceiras</div>
   </div>
   <div class="companies-list">
-
     <div class="company-card" onclick="abrirEmpresa('Endiama E.P.','Angola','https://i.postimg.cc/J0fS195h/images.png','Diamantes','A Endiama e a empresa publica angolana de exploracao e gestao dos recursos diamantiferos. Opera nas regioes de Lunda Norte e Lunda Sul, sendo a principal entidade reguladora e parceira do sector diamantifero em Angola.','Fundada em','1981','Setor','Mineracao de Diamantes')">
       <div class="co-logo"><img src="https://i.postimg.cc/J0fS195h/images.png" alt="Endiama" /></div>
       <div class="co-info"><div class="co-name">Endiama E.P.</div><div class="co-sub">Angola · Empresa Nacional de Diamantes</div></div>
       <div class="co-badge diamond">Diamantes</div>
     </div>
-
     <div class="company-card" onclick="abrirEmpresa('Sodiam E.P.','Angola','https://i.postimg.cc/HL79dfRp/images-(1).jpg','Diamantes','A Sodiam e responsavel pela comercializacao e exportacao de diamantes produzidos em Angola. Actua como intermediario entre os produtores nacionais e os mercados internacionais, valorizando a producao diamantifera angolana.','Fundada em','2000','Setor','Comercializacao')">
       <div class="co-logo"><img src="https://i.postimg.cc/HL79dfRp/images-(1).jpg" alt="Sodiam" /></div>
       <div class="co-info"><div class="co-name">Sodiam E.P.</div><div class="co-sub">Angola · Comercializacao de Diamantes</div></div>
       <div class="co-badge diamond">Diamantes</div>
     </div>
-
     <div class="company-card" onclick="abrirEmpresa('Sonangol S.P.','Angola','https://i.postimg.cc/KjmP74zy/images-(2).jpg','Petroleo','A Sonangol e a empresa nacional de petroleo de Angola, responsavel pela gestao e exploracao dos hidrocarbonetos. E uma das maiores produtoras de petroleo em Africa e referencia estrategica para a economia angolana.','Fundada em','1976','Setor','Petroleo e Gas')">
       <div class="co-logo"><img src="https://i.postimg.cc/KjmP74zy/images-(2).jpg" alt="Sonangol" /></div>
       <div class="co-info"><div class="co-name">Sonangol S.P.</div><div class="co-sub">Angola · Petroleo e Gas Natural</div></div>
       <div class="co-badge oil">Petroleo</div>
     </div>
-
     <div class="company-card" onclick="abrirEmpresa('De Beers Group','Africa do Sul','https://i.postimg.cc/FRVcKmxg/images-(3).jpg','Diamantes','De Beers e lider mundial na mineracao e comercializacao de diamantes. Com operacoes em varios paises africanos, incluindo Angola, a empresa e referencia global em qualidade e certificacao de diamantes.','Fundada em','1888','Setor','Mineracao Global')">
       <div class="co-logo"><img src="https://i.postimg.cc/FRVcKmxg/images-(3).jpg" alt="De Beers" /></div>
       <div class="co-info"><div class="co-name">De Beers Group</div><div class="co-sub">Africa do Sul · Mineracao Global</div></div>
       <div class="co-badge diamond">Diamantes</div>
     </div>
-
     <div class="company-card" onclick="abrirEmpresa('ALROSA Group','Russia','https://i.postimg.cc/59pLd4y8/images-(1).png','Mineracao','A ALROSA e a maior produtora de diamantes em bruto do mundo em volume, responsavel por cerca de 28% da producao mundial. Opera em parceria com diversas entidades africanas incluindo Angola.','Fundada em','1992','Setor','Mineracao de Diamantes')">
       <div class="co-logo"><img src="https://i.postimg.cc/59pLd4y8/images-(1).png" alt="ALROSA" /></div>
       <div class="co-info"><div class="co-name">ALROSA Group</div><div class="co-sub">Russia · Maior produtora de diamantes</div></div>
       <div class="co-badge mining">Mineracao</div>
     </div>
-
     <div class="company-card" onclick="abrirEmpresa('TotalEnergies SE','Franca','https://i.postimg.cc/Y9d9VSRp/images-(4).jpg','Petroleo','TotalEnergies e uma das maiores empresas energeticas do mundo com forte presenca em Angola. Opera nos blocos petroliferos offshore angolanos e contribui significativamente para a producao nacional de hidrocarbonetos.','Fundada em','1924','Setor','Energia e Petroleo')">
       <div class="co-logo"><img src="https://i.postimg.cc/Y9d9VSRp/images-(4).jpg" alt="TotalEnergies" /></div>
       <div class="co-info"><div class="co-name">TotalEnergies SE</div><div class="co-sub">Franca · Energia e Petroleo Angola</div></div>
       <div class="co-badge oil">Petroleo</div>
     </div>
-
   </div>
 
   <!-- Sobre -->
@@ -478,10 +425,8 @@
 
   onAuthStateChanged(auth, async (user) => {
     if (!user) { window.location.href = 'auth.html'; return; }
-    const snap = await getDoc(doc(db, 'users', user.uid));
+    await getDoc(doc(db, 'users', user.uid));
     document.getElementById('spinnerOverlay').classList.remove('show');
-    if (!snap.exists()) return;
-    // WhatsApp popup — só aparece se nao foi dispensado
     setTimeout(() => {
       if (!localStorage.getItem('wa_popup_dismissed')) {
         document.getElementById('waPopup').classList.add('show');
@@ -493,32 +438,23 @@
 </script>
 
 <script>
-  // ── WhatsApp ──
+  // WhatsApp
   window.fecharWaPopup = () => {
     document.getElementById('waPopup').classList.remove('show');
     localStorage.setItem('wa_popup_dismissed', '1');
   };
 
-  // ── Notificacao (sininho) — independente do WhatsApp ──
-  let notifTimer = null;
+  // Notificacao — abre modal no centro
   window.toggleNotif = () => {
-    const t = document.getElementById('notifToast');
-    if (t.classList.contains('show')) {
-      t.classList.remove('show');
-      clearTimeout(notifTimer);
-    } else {
-      t.classList.add('show');
-      clearTimeout(notifTimer);
-      // fecha automaticamente apos 4 s
-      notifTimer = setTimeout(() => t.classList.remove('show'), 4000);
+    document.getElementById('notifOverlay').classList.toggle('show');
+  };
+  window.fecharNotif = (e) => {
+    if (!e || e.target === document.getElementById('notifOverlay')) {
+      document.getElementById('notifOverlay').classList.remove('show');
     }
   };
-  window.fecharNotif = () => {
-    document.getElementById('notifToast').classList.remove('show');
-    clearTimeout(notifTimer);
-  };
 
-  // ── Empresa popup ──
+  // Empresa popup
   window.abrirEmpresa = (nome, pais, img, badge, desc, lbl1, val1, lbl2, val2) => {
     document.getElementById('coSheetName').textContent    = nome;
     document.getElementById('coSheetCountry').textContent = pais;
