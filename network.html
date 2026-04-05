@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Filmora Meta — Minha Rede</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--blue:#0056D2;--blue-light:#E8F0FD;--green:#00A86B;--red:#D9231E;--orange:#F47920;--black:#0A0A0A;--grey:#6B7280;--grey-light:#F3F4F6;--border:#E5E7EB;--white:#FFFFFF;}
+    html,body{min-height:100vh;font-family:'Sora',sans-serif;background:#F0F4FF;color:var(--black);}
+
+    .overlay{position:fixed;inset:0;background:rgba(10,10,10,0.55);backdrop-filter:blur(4px);z-index:200;display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;}
+    .overlay.active{display:flex;}
+    .spinner{width:50px;height:50px;border:4px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+
+    .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--black);color:#fff;padding:11px 22px;border-radius:100px;font-size:13px;font-weight:500;opacity:0;pointer-events:none;transition:all 0.3s;z-index:300;white-space:nowrap;}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+    .toast.success{background:var(--green);}
+
+    .page{padding-bottom:40px;}
+
+    .header{background:linear-gradient(135deg,var(--blue) 0%,#003d99 100%);padding:52px 20px 28px;position:relative;overflow:hidden;}
+    .header::before{content:'';position:absolute;top:-60px;right:-60px;width:220px;height:220px;background:rgba(255,255,255,0.06);border-radius:50%;}
+    .header::after{content:'';position:absolute;bottom:-30px;left:-20px;width:120px;height:120px;background:rgba(255,255,255,0.04);border-radius:50%;}
+    .header-top{display:flex;align-items:center;gap:14px;margin-bottom:24px;position:relative;z-index:1;}
+    .back-btn{width:38px;height:38px;background:rgba(255,255,255,0.12);border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+    .back-btn svg{color:#fff;width:18px;height:18px;}
+    .header-title{font-size:20px;font-weight:700;color:#fff;}
+    .header-sub{font-size:13px;color:rgba(255,255,255,0.65);}
+
+    /* STATS */
+    .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;position:relative;z-index:1;}
+    .stat-chip{background:rgba(255,255,255,0.12);border-radius:14px;padding:14px 10px;text-align:center;}
+    .stat-chip-val{font-size:18px;font-weight:800;color:#fff;font-family:'DM Mono',monospace;}
+    .stat-chip-label{font-size:10px;color:rgba(255,255,255,0.65);text-transform:uppercase;letter-spacing:0.05em;margin-top:4px;}
+
+    .content{padding:20px 16px 0;}
+
+    /* INVITE CARD */
+    .invite-card{background:var(--white);border-radius:20px;box-shadow:0 2px 12px rgba(0,0,0,0.06);padding:20px;margin-bottom:16px;}
+    .invite-card-title{font-size:15px;font-weight:700;margin-bottom:4px;}
+    .invite-card-sub{font-size:12px;color:var(--grey);margin-bottom:16px;line-height:1.5;}
+    .link-display{background:var(--grey-light);border-radius:12px;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;}
+    .link-text{font-size:12px;color:var(--black);font-family:'DM Mono',monospace;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .copy-btn{background:var(--blue);color:#fff;border:none;border-radius:10px;padding:8px 16px;font-family:'Sora',sans-serif;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0;transition:all 0.2s;}
+    .copy-btn:hover{background:#0041A8;}
+    .share-btn{width:100%;padding:12px;background:var(--blue-light);border:none;border-radius:12px;font-family:'Sora',sans-serif;font-size:14px;font-weight:600;color:var(--blue);cursor:pointer;transition:all 0.2s;}
+    .share-btn:hover{background:#d0e4fb;}
+
+    /* COMMISSION BOX */
+    .commission-box{background:linear-gradient(135deg,rgba(0,168,107,0.08),rgba(0,86,210,0.06));border:1.5px solid rgba(0,168,107,0.20);border-radius:16px;padding:16px;margin-bottom:16px;}
+    .commission-title{font-size:13px;font-weight:700;color:var(--green);margin-bottom:8px;}
+    .commission-desc{font-size:12px;color:var(--black);line-height:1.6;}
+    .commission-highlight{font-size:22px;font-weight:800;color:var(--green);font-family:'DM Mono',monospace;}
+
+    /* REFERRAL LIST */
+    .sec-title{font-size:15px;font-weight:700;margin-bottom:14px;color:var(--black);}
+    .referral-list{background:var(--white);border-radius:20px;box-shadow:0 2px 12px rgba(0,0,0,0.06);overflow:hidden;margin-bottom:16px;}
+    .referral-item{display:flex;align-items:center;gap:14px;padding:14px 16px;border-bottom:1px solid var(--border);}
+    .referral-item:last-child{border-bottom:none;}
+    .ref-avatar{width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff;flex-shrink:0;}
+    .ref-avatar.has-inv{background:var(--green);}
+    .ref-avatar.no-inv{background:var(--grey);}
+    .ref-info{flex:1;}
+    .ref-name{font-size:13px;font-weight:600;color:var(--black);}
+    .ref-status{font-size:11px;margin-top:2px;}
+    .ref-status.has-inv{color:var(--green);}
+    .ref-status.no-inv{color:var(--grey);}
+    .ref-badge{font-size:11px;font-weight:700;padding:4px 10px;border-radius:100px;}
+    .ref-badge.has-inv{background:rgba(0,168,107,0.10);color:var(--green);}
+    .ref-badge.no-inv{background:var(--grey-light);color:var(--grey);}
+
+    .empty-state{text-align:center;padding:36px 20px;color:var(--grey);}
+    .empty-icon{width:56px;height:56px;background:var(--grey-light);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;}
+    .empty-icon svg{width:24px;height:24px;}
+    .empty-title{font-size:15px;font-weight:700;color:var(--black);margin-bottom:4px;}
+    .empty-sub{font-size:12px;line-height:1.6;}
+  </style>
+</head>
+<body>
+
+<div class="overlay" id="overlay"><div class="spinner"></div></div>
+<div class="toast" id="toast"></div>
+
+<div class="page">
+  <div class="header">
+    <div class="header-top">
+      <button class="back-btn" onclick="history.back()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <div>
+        <div class="header-title">Minha Rede</div>
+        <div class="header-sub">Os seus referidos e comissoes</div>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-chip"><div class="stat-chip-val" id="stat-total">0</div><div class="stat-chip-label">Referidos</div></div>
+      <div class="stat-chip"><div class="stat-chip-val" id="stat-ativos">0</div><div class="stat-chip-label">Com Invest.</div></div>
+      <div class="stat-chip"><div class="stat-chip-val" id="stat-ganhos">0</div><div class="stat-chip-label">Ganhos Kz</div></div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- COMMISSION BOX -->
+    <div class="commission-box">
+      <div class="commission-title">Como funciona</div>
+      <div class="commission-desc">
+        Cada vez que um amigo convidado por si fizer o <strong>primeiro investimento</strong>, recebe automaticamente
+        <div class="commission-highlight">12%</div>
+        do valor desse investimento no seu saldo disponivel.
+      </div>
+    </div>
+
+    <!-- INVITE CARD -->
+    <div class="invite-card">
+      <div class="invite-card-title">O seu link de convite</div>
+      <div class="invite-card-sub">Partilhe este link e ganhe 12% sobre o primeiro investimento de cada amigo. O link e unico e gerado dinamicamente.</div>
+      <div class="link-display">
+        <div class="link-text" id="invite-link-display">A gerar link...</div>
+        <button class="copy-btn" onclick="copyLink()">Copiar</button>
+      </div>
+      <button class="share-btn" onclick="shareLink()">Partilhar Link de Convite</button>
+    </div>
+
+    <!-- REFERRAL LIST -->
+    <div class="sec-title">Lista de Referidos</div>
+    <div id="referral-container">
+      <div class="referral-list">
+        <div class="empty-state">
+          <div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          <div class="empty-title">A carregar...</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const app=initializeApp({apiKey:"AIzaSyAZ27ogn8Us8FZct_DdYkFFv9vQkaHrPL4",authDomain:"pinnacle-finance-b2626.firebaseapp.com",projectId:"pinnacle-finance-b2626",storageBucket:"pinnacle-finance-b2626.firebasestorage.app",messagingSenderId:"1032490368286",appId:"1:1032490368286:web:d77c9a1a888dd3c1c5dd0f"});
+const auth=getAuth(app),db=getFirestore(app);
+let userData=null,inviteLink='';
+
+function showToast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+type+' show';setTimeout(()=>t.className='toast '+type,2800);}
+function fmt(n){return Number(n||0).toLocaleString('pt-AO',{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+function buildInviteLink(accountNumber){
+  const base=window.location.origin+window.location.pathname.replace('network.html','auth.html');
+  const ref=encodeURIComponent(accountNumber);
+  return `${base}?ref=${ref}`;
+}
+
+function renderReferidos(refs){
+  const container=document.getElementById('referral-container');
+  if(!refs||!refs.length){
+    container.innerHTML=`<div class="referral-list"><div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><div class="empty-title">Nenhum referido ainda</div><div class="empty-sub">Partilhe o seu link de convite e comece a ganhar comissoes.</div></div></div>`;
+    return;
+  }
+  const ativos=refs.filter(r=>r.investimento);
+  document.getElementById('stat-ativos').textContent=ativos.length;
+  container.innerHTML=`<div class="referral-list">${refs.map((r,i)=>{
+    const ini=r.nome?r.nome.charAt(0).toUpperCase():'?';
+    return `<div class="referral-item">
+      <div class="ref-avatar ${r.investimento?'has-inv':'no-inv'}">${ini}</div>
+      <div class="ref-info">
+        <div class="ref-name">${r.nome||'Utilizador'}</div>
+        <div class="ref-status ${r.investimento?'has-inv':'no-inv'}">${r.investimento?'Investimento activo':'Sem investimento activo'}</div>
+      </div>
+      <div class="ref-badge ${r.investimento?'has-inv':'no-inv'}">${r.investimento?'Comissao activa':'Pendente'}</div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+window.copyLink=()=>{
+  if(!inviteLink) return;
+  navigator.clipboard.writeText(inviteLink).then(()=>showToast('Link copiado','success')).catch(()=>{});
+};
+
+window.shareLink=()=>{
+  if(!inviteLink) return;
+  if(navigator.share){
+    navigator.share({title:'Filmora Meta — Convite',text:'Junte-se a mim na Filmora Meta e comece a investir.',url:inviteLink});
+  } else {
+    copyLink();
+    showToast('Link copiado para partilhar','success');
+  }
+};
+
+onAuthStateChanged(auth,async(user)=>{
+  if(!user){window.location.href='auth.html';return;}
+  document.getElementById('overlay').classList.add('active');
+  try{
+    const snap=await getDoc(doc(db,'users',user.uid));
+    userData=snap.data();
+    const refs=userData?.referidos||[];
+    inviteLink=buildInviteLink(userData?.accountNumber||'');
+    document.getElementById('invite-link-display').textContent=inviteLink;
+    document.getElementById('stat-total').textContent=refs.length;
+    // Estimate ganhos: sum of commissions stored or approximate
+    const ganhos=(userData?.ganhoReferidos||0);
+    document.getElementById('stat-ganhos').textContent=fmt(ganhos);
+    renderReferidos(refs);
+  }catch(e){console.error(e);}
+  document.getElementById('overlay').classList.remove('active');
+});
+</script>
+</body>
+</html>

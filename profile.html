@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Filmora Meta — Perfil</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--blue:#0056D2;--blue-light:#E8F0FD;--green:#00A86B;--red:#D9231E;--orange:#F47920;--black:#0A0A0A;--grey:#6B7280;--grey-light:#F3F4F6;--border:#E5E7EB;--white:#FFFFFF;--nav-h:68px;}
+    html,body{min-height:100vh;font-family:'Sora',sans-serif;background:#F0F4FF;color:var(--black);}
+
+    .overlay{position:fixed;inset:0;background:rgba(10,10,10,0.55);backdrop-filter:blur(4px);z-index:200;display:none;align-items:center;justify-content:center;}
+    .overlay.active{display:flex;}
+    .spinner{width:50px;height:50px;border:4px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+
+    .page{padding-bottom:calc(var(--nav-h)+20px);}
+
+    .header{background:linear-gradient(160deg,#0041A8 0%,var(--blue) 100%);padding:52px 20px 80px;position:relative;overflow:hidden;text-align:center;}
+    .header::before{content:'';position:absolute;top:-60px;right:-60px;width:220px;height:220px;background:rgba(255,255,255,0.06);border-radius:50%;}
+    .header::after{content:'';position:absolute;bottom:-40px;left:-30px;width:150px;height:150px;background:rgba(255,255,255,0.04);border-radius:50%;}
+    .back-btn{position:absolute;top:52px;left:20px;width:38px;height:38px;background:rgba(255,255,255,0.12);border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+    .back-btn svg{color:#fff;width:18px;height:18px;}
+
+    .avatar{width:80px;height:80px;background:rgba(255,255,255,0.20);border-radius:24px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;position:relative;z-index:1;font-size:32px;font-weight:800;color:#fff;}
+    .profile-name{font-size:20px;font-weight:800;color:#fff;margin-bottom:4px;position:relative;z-index:1;}
+    .profile-account{font-family:'DM Mono',monospace;font-size:13px;color:rgba(255,255,255,0.75);position:relative;z-index:1;}
+
+    /* STATUS BADGES */
+    .status-row{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:12px;position:relative;z-index:1;}
+    .status-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,0.15);border-radius:100px;padding:5px 12px;font-size:11px;font-weight:600;color:#fff;}
+    .status-badge-dot{width:6px;height:6px;border-radius:50%;background:var(--green);}
+
+    /* PROFILE CARD */
+    .profile-card{position:relative;z-index:10;margin:-40px 16px 0;background:var(--white);border-radius:24px;box-shadow:0 8px 40px rgba(0,86,210,0.14);overflow:hidden;margin-bottom:16px;}
+
+    .profile-section{padding:20px;}
+    .profile-section+.profile-section{border-top:1px solid var(--border);}
+    .profile-section-title{font-size:11px;font-weight:700;color:var(--grey);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:14px;}
+
+    .profile-row{display:flex;align-items:flex-start;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);}
+    .profile-row:last-child{border-bottom:none;}
+    .profile-key{font-size:12px;color:var(--grey);font-weight:500;flex-shrink:0;margin-right:12px;}
+    .profile-val{font-size:13px;font-weight:600;color:var(--black);text-align:right;word-break:break-all;}
+    .profile-val.mono{font-family:'DM Mono',monospace;}
+    .profile-val.blue{color:var(--blue);}
+    .profile-val.green{color:var(--green);}
+    .profile-val.orange{color:var(--orange);}
+
+    /* INVESTMENT SUMMARY */
+    .inv-summary{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px;}
+    .inv-chip{background:var(--grey-light);border-radius:14px;padding:14px;}
+    .inv-chip-label{font-size:10px;color:var(--grey);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;}
+    .inv-chip-val{font-size:16px;font-weight:800;font-family:'DM Mono',monospace;}
+    .inv-chip-val.blue{color:var(--blue);}
+    .inv-chip-val.green{color:var(--green);}
+    .inv-chip-val.orange{color:var(--orange);}
+
+    /* READONLY NOTICE */
+    .readonly-notice{background:var(--blue-light);border:1.5px solid rgba(0,86,210,0.15);border-radius:14px;padding:12px 16px;font-size:12px;color:var(--blue);font-weight:500;display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+    .readonly-notice svg{width:16px;height:16px;flex-shrink:0;}
+
+    /* MEMBER SINCE */
+    .member-card{background:linear-gradient(135deg,var(--blue),#003d99);border-radius:20px;padding:18px 20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;}
+    .member-label{font-size:11px;color:rgba(255,255,255,0.70);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;}
+    .member-val{font-size:15px;font-weight:700;color:#fff;}
+    .member-icon{width:44px;height:44px;background:rgba(255,255,255,0.15);border-radius:13px;display:flex;align-items:center;justify-content:center;}
+    .member-icon svg{width:22px;height:22px;color:#fff;}
+
+    /* BOTTOM NAV */
+    .bottom-nav{position:fixed;bottom:0;left:0;right:0;height:var(--nav-h);background:var(--white);border-top:1px solid var(--border);display:flex;align-items:center;padding:0 8px;z-index:100;box-shadow:0 -4px 20px rgba(0,0,0,0.06);}
+    .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px 4px;cursor:pointer;text-decoration:none;border:none;background:none;font-family:'Sora',sans-serif;}
+    .nav-item svg{width:22px;height:22px;color:var(--grey);}
+    .nav-item span{font-size:10px;font-weight:500;color:var(--grey);}
+    .nav-item.active svg,.nav-item.active span{color:var(--blue);}
+    .nav-center{flex:1.4;}
+    .nav-center-inner{display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--blue);border-radius:16px;padding:9px 6px 7px;margin:0 4px;box-shadow:0 4px 16px rgba(0,86,210,0.30);}
+    .nav-center-inner svg{width:22px;height:22px;color:#fff;}
+    .nav-center-inner span{font-size:10px;font-weight:600;color:#fff;}
+  </style>
+</head>
+<body>
+
+<div class="overlay" id="overlay"><div class="spinner"></div></div>
+
+<div class="page">
+  <div class="header">
+    <button class="back-btn" onclick="history.back()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <div class="avatar" id="profile-avatar">?</div>
+    <div class="profile-name" id="profile-name">...</div>
+    <div class="profile-account mono" id="profile-account">...</div>
+    <div class="status-row">
+      <div class="status-badge"><div class="status-badge-dot"></div>Conta Activa</div>
+      <div class="status-badge" id="profile-plan-badge">Sem plano</div>
+    </div>
+  </div>
+
+  <div style="padding:0 16px;margin-top:0;">
+    <!-- MEMBER CARD (floating) -->
+    <div style="position:relative;z-index:10;margin-top:-30px;margin-bottom:16px;">
+      <div class="member-card">
+        <div>
+          <div class="member-label">Membro desde</div>
+          <div class="member-val" id="member-since">...</div>
+        </div>
+        <div class="member-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="readonly-notice">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Os dados do perfil nao podem ser editados. Contacte o suporte em caso de erro.
+    </div>
+
+    <!-- PERSONAL DATA CARD -->
+    <div class="profile-card">
+      <div class="profile-section">
+        <div class="profile-section-title">Dados Pessoais</div>
+        <div class="profile-row"><div class="profile-key">Nome Completo</div><div class="profile-val" id="pf-nome">...</div></div>
+        <div class="profile-row"><div class="profile-key">Numero BI</div><div class="profile-val mono" id="pf-bi">...</div></div>
+        <div class="profile-row"><div class="profile-key">Naturalidade</div><div class="profile-val" id="pf-naturalidade">...</div></div>
+        <div class="profile-row"><div class="profile-key">Residencia</div><div class="profile-val" id="pf-residencia">...</div></div>
+        <div class="profile-row"><div class="profile-key">Validade BI</div><div class="profile-val" id="pf-validade">...</div></div>
+      </div>
+      <div class="profile-section">
+        <div class="profile-section-title">Contacto</div>
+        <div class="profile-row"><div class="profile-key">Email</div><div class="profile-val" id="pf-email">...</div></div>
+        <div class="profile-row"><div class="profile-key">Telefone</div><div class="profile-val mono" id="pf-telefone">...</div></div>
+      </div>
+      <div class="profile-section">
+        <div class="profile-section-title">Conta</div>
+        <div class="profile-row"><div class="profile-key">Numero de Conta</div><div class="profile-val mono blue" id="pf-account">...</div></div>
+        <div class="profile-row"><div class="profile-key">Bonus recebido</div><div class="profile-val orange" id="pf-bonus">Kz 0,00</div></div>
+        <div class="profile-row"><div class="profile-key">Convidado por</div><div class="profile-val" id="pf-convite">—</div></div>
+      </div>
+    </div>
+
+    <!-- INVESTMENT SUMMARY -->
+    <div class="profile-card" style="margin-top:0;">
+      <div class="profile-section">
+        <div class="profile-section-title">Resumo de Investimentos</div>
+        <div class="inv-summary">
+          <div class="inv-chip"><div class="inv-chip-label">Planos Activos</div><div class="inv-chip-val blue" id="inv-activos">0</div></div>
+          <div class="inv-chip"><div class="inv-chip-label">Total Investido</div><div class="inv-chip-val green" id="inv-total">0</div></div>
+          <div class="inv-chip"><div class="inv-chip-label">Saldo Disp.</div><div class="inv-chip-val orange" id="inv-disp">0</div></div>
+          <div class="inv-chip"><div class="inv-chip-label">Referidos</div><div class="inv-chip-val blue" id="inv-refs">0</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <a class="nav-item" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Inicio</span></a>
+  <a class="nav-item" href="plans.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg><span>Planos</span></a>
+  <div class="nav-item nav-center"><a href="tasks.html" style="text-decoration:none;"><div class="nav-center-inner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span>Tarefas</span></div></a></div>
+  <a class="nav-item" href="menu.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg><span>Menu</span></a>
+  <a class="nav-item active" href="profile.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Perfil</span></a>
+</nav>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const app=initializeApp({apiKey:"AIzaSyAZ27ogn8Us8FZct_DdYkFFv9vQkaHrPL4",authDomain:"pinnacle-finance-b2626.firebaseapp.com",projectId:"pinnacle-finance-b2626",storageBucket:"pinnacle-finance-b2626.firebasestorage.app",messagingSenderId:"1032490368286",appId:"1:1032490368286:web:d77c9a1a888dd3c1c5dd0f"});
+const auth=getAuth(app),db=getFirestore(app);
+
+function fmt(n){return Number(n||0).toLocaleString('pt-AO',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function set(id,val){const el=document.getElementById(id);if(el)el.textContent=val||'—';}
+
+onAuthStateChanged(auth,async(user)=>{
+  if(!user){window.location.href='auth.html';return;}
+  document.getElementById('overlay').classList.add('active');
+  try{
+    const snap=await getDoc(doc(db,'users',user.uid));
+    const d=snap.data();
+
+    // Avatar
+    const initials=(d.nome||'?').split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+    document.getElementById('profile-avatar').textContent=initials;
+    document.getElementById('profile-name').textContent=d.nome||'...';
+    document.getElementById('profile-account').textContent=d.accountNumber||'...';
+
+    // Plan badge
+    const activos=(d.investimentosActivos||[]);
+    const planBadge=document.getElementById('profile-plan-badge');
+    if(activos.length){planBadge.textContent=activos.length+' plano'+(activos.length>1?'s':'')+' activo'+(activos.length>1?'s':'');}
+
+    // Member since
+    const since=d.criadoEm?new Date(d.criadoEm.seconds*1000).toLocaleDateString('pt-AO',{day:'2-digit',month:'long',year:'numeric'}):'—';
+    set('member-since',since);
+
+    // Personal
+    set('pf-nome',d.nome);
+    set('pf-bi',d.bi);
+    set('pf-naturalidade',d.naturalidade);
+    set('pf-residencia',d.residencia);
+    set('pf-validade',d.validadeBI);
+    set('pf-email',d.email);
+    set('pf-telefone',d.telefone);
+    set('pf-account',d.accountNumber);
+    document.getElementById('pf-bonus').textContent='Kz '+fmt(d.bonus||0);
+    set('pf-convite',d.conviteId||'—');
+
+    // Investment summary
+    const totalInvestido=activos.reduce((s,i)=>s+(i.valor||0),0);
+    set('inv-activos',activos.length);
+    set('inv-total',fmt(totalInvestido));
+    document.getElementById('inv-disp').textContent=fmt(d.saldoDisponivel||0);
+    set('inv-refs',(d.referidos||[]).length);
+  }catch(e){console.error(e);}
+  document.getElementById('overlay').classList.remove('active');
+});
+</script>
+</body>
+</html>

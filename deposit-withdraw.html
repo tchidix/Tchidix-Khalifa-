@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Filmora Meta — Deposito / Levantar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{
+      --blue:#0056D2;--blue-dark:#0041A8;--blue-light:#E8F0FD;
+      --green:#00A86B;--red:#D9231E;--orange:#F47920;
+      --black:#0A0A0A;--grey:#6B7280;--grey-light:#F3F4F6;
+      --border:#E5E7EB;--white:#FFFFFF;
+    }
+    html,body{min-height:100vh;font-family:'Sora',sans-serif;background:#F0F4FF;color:var(--black);overflow-x:hidden;}
+
+    .overlay{position:fixed;inset:0;background:rgba(10,10,10,0.55);backdrop-filter:blur(4px);z-index:200;display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;}
+    .overlay.active{display:flex;}
+    .spinner{width:50px;height:50px;border:4px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite;}
+    .spinner-label{color:#fff;font-size:14px;font-weight:500;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+
+    .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--black);color:#fff;padding:11px 22px;border-radius:100px;font-size:13px;font-weight:500;opacity:0;pointer-events:none;transition:all 0.3s;z-index:300;white-space:nowrap;}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+    .toast.success{background:var(--green);}
+    .toast.error{background:var(--red);}
+
+    .page{padding-bottom:40px;}
+
+    /* HEADER */
+    .header{padding:52px 20px 24px;position:relative;overflow:hidden;}
+    .header.deposit{background:var(--blue);}
+    .header.withdraw{background:#1a1a2e;}
+    .header::before{content:'';position:absolute;top:-50px;right:-50px;width:200px;height:200px;background:rgba(255,255,255,0.06);border-radius:50%;}
+    .header-top{display:flex;align-items:center;gap:14px;margin-bottom:0;position:relative;z-index:1;}
+    .back-btn{width:38px;height:38px;background:rgba(255,255,255,0.12);border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+    .back-btn svg{color:#fff;width:18px;height:18px;}
+    .header-title{font-size:20px;font-weight:700;color:#fff;}
+    .header-sub{font-size:13px;color:rgba(255,255,255,0.65);}
+
+    /* TABS */
+    .mode-tabs{display:grid;grid-template-columns:1fr 1fr;background:rgba(255,255,255,0.10);margin:16px 20px 0;border-radius:14px;padding:4px;position:relative;z-index:1;}
+    .mode-tab{padding:10px;border:none;background:transparent;border-radius:12px;font-family:'Sora',sans-serif;font-size:14px;font-weight:600;color:rgba(255,255,255,0.60);cursor:pointer;transition:all 0.25s;}
+    .mode-tab.active{background:var(--white);color:var(--blue);}
+
+    .content{padding:20px 16px 0;}
+
+    /* PANEL */
+    .panel{display:none;}
+    .panel.active{display:block;animation:fadeIn 0.3s ease;}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+    /* STEP SYSTEM */
+    .steps-bar{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:20px;}
+    .step-dot{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;border:2px solid var(--border);color:var(--grey);background:var(--white);z-index:1;}
+    .step-dot.active{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:0 4px 12px rgba(0,86,210,0.25);}
+    .step-dot.done{background:var(--green);border-color:var(--green);color:#fff;}
+    .step-line{flex:1;height:2px;background:var(--border);max-width:56px;}
+    .step-line.done{background:var(--green);}
+
+    /* CARDS */
+    .card{background:var(--white);border-radius:20px;box-shadow:0 2px 12px rgba(0,0,0,0.06);padding:20px;margin-bottom:16px;}
+    .card-title{font-size:15px;font-weight:700;margin-bottom:4px;}
+    .card-sub{font-size:12px;color:var(--grey);margin-bottom:16px;}
+
+    /* AMOUNT GRID */
+    .amount-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+    .amount-chip{padding:12px 8px;background:var(--grey-light);border-radius:12px;text-align:center;font-size:14px;font-weight:700;color:var(--black);border:1.5px solid transparent;cursor:pointer;transition:all 0.2s;font-family:'DM Mono',monospace;}
+    .amount-chip.selected{background:var(--blue-light);border-color:var(--blue);color:var(--blue);}
+
+    /* FIELDS */
+    .field{margin-bottom:16px;}
+    .field label{display:block;font-size:12px;font-weight:600;color:var(--grey);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;}
+    .field input,.field select{width:100%;padding:13px 16px;border:1.5px solid var(--border);border-radius:12px;font-family:'Sora',sans-serif;font-size:14px;color:var(--black);outline:none;transition:border-color 0.2s;background:var(--white);}
+    .field input:focus,.field select:focus{border-color:var(--blue);}
+    .field-error{font-size:11px;color:var(--red);margin-top:5px;display:none;}
+    .field-error.visible{display:block;}
+
+    /* BANK DETAILS BOX */
+    .bank-box{background:var(--blue-light);border:1.5px solid rgba(0,86,210,0.20);border-radius:16px;padding:18px;margin-bottom:16px;}
+    .bank-box-title{font-size:13px;font-weight:700;color:var(--blue);margin-bottom:12px;}
+    .bank-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(0,86,210,0.10);}
+    .bank-row:last-child{border-bottom:none;}
+    .bank-key{font-size:11px;color:var(--grey);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;}
+    .bank-val{font-size:13px;font-weight:700;color:var(--black);font-family:'DM Mono',monospace;}
+    .copy-btn{background:var(--blue);color:#fff;border:none;border-radius:8px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Sora',sans-serif;}
+
+    /* PROOF UPLOAD */
+    .proof-upload{border:2px dashed var(--border);border-radius:16px;padding:28px 20px;text-align:center;cursor:pointer;transition:all 0.2s;margin-bottom:16px;}
+    .proof-upload:hover{border-color:var(--blue);background:var(--blue-light);}
+    .proof-upload.has-file{border-color:var(--green);background:rgba(0,168,107,0.05);}
+    .proof-upload-icon{width:48px;height:48px;background:var(--grey-light);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;}
+    .proof-upload-icon svg{width:24px;height:24px;color:var(--grey);}
+    .proof-upload-title{font-size:14px;font-weight:600;color:var(--black);margin-bottom:4px;}
+    .proof-upload-sub{font-size:12px;color:var(--grey);}
+    #proof-file-input{display:none;}
+
+    /* LINKED ACCOUNT */
+    .linked-account-box{background:rgba(0,168,107,0.06);border:1.5px solid rgba(0,168,107,0.20);border-radius:16px;padding:16px;margin-bottom:16px;}
+    .la-title{font-size:12px;font-weight:700;color:var(--green);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.05em;}
+    .la-row{display:flex;justify-content:space-between;padding:6px 0;}
+    .la-key{font-size:12px;color:var(--grey);}
+    .la-val{font-size:13px;font-weight:600;color:var(--black);}
+
+    /* ADD BANK FORM */
+    .add-bank-notice{background:rgba(244,121,32,0.08);border:1.5px solid rgba(244,121,32,0.20);border-radius:14px;padding:14px;font-size:12px;color:#b85e00;font-weight:500;line-height:1.6;margin-bottom:16px;}
+
+    /* WARN */
+    .warn-box{background:rgba(217,35,30,0.06);border:1.5px solid rgba(217,35,30,0.15);border-radius:14px;padding:14px;font-size:12px;color:var(--red);font-weight:500;line-height:1.6;margin-bottom:16px;}
+
+    /* BUTTONS */
+    .btn{width:100%;padding:14px;border:none;border-radius:14px;font-family:'Sora',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all 0.2s;}
+    .btn-primary{background:var(--blue);color:#fff;box-shadow:0 4px 16px rgba(0,86,210,0.28);}
+    .btn-primary:hover{background:var(--blue-dark);}
+    .btn-ghost{background:var(--grey-light);color:var(--grey);margin-top:10px;}
+    .btn-green{background:var(--green);color:#fff;box-shadow:0 4px 14px rgba(0,168,107,0.25);}
+
+    /* SUCCESS */
+    .success-card{text-align:center;padding:36px 24px;}
+    .success-icon{width:72px;height:72px;background:rgba(0,168,107,0.10);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;}
+    .success-icon svg{width:36px;height:36px;color:var(--green);}
+    .success-title{font-size:20px;font-weight:700;margin-bottom:8px;}
+    .success-msg{font-size:13px;color:var(--grey);line-height:1.6;margin-bottom:24px;}
+
+    .min-note{font-size:11px;color:var(--grey);margin-top:6px;}
+  </style>
+</head>
+<body>
+
+<div class="overlay" id="overlay"><div class="spinner"></div><div class="spinner-label" id="overlay-label">A processar...</div></div>
+<div class="toast" id="toast"></div>
+
+<div class="page">
+  <div class="header deposit" id="main-header">
+    <div class="header-top">
+      <button class="back-btn" onclick="history.back()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <div>
+        <div class="header-title" id="header-title">Deposito</div>
+        <div class="header-sub" id="header-sub">Adicione fundos a sua conta</div>
+      </div>
+    </div>
+    <div class="mode-tabs">
+      <button class="mode-tab active" id="tab-deposit" onclick="switchMode('deposit')">Deposito</button>
+      <button class="mode-tab" id="tab-withdraw" onclick="switchMode('withdraw')">Levantar</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ═══ DEPOSIT PANEL ═══ -->
+    <div class="panel active" id="panel-deposit">
+
+      <!-- STEP 1 -->
+      <div id="dep-step-1">
+        <div class="steps-bar">
+          <div class="step-dot active">1</div>
+          <div class="step-line"></div>
+          <div class="step-dot">2</div>
+          <div class="step-line"></div>
+          <div class="step-dot">3</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Valor a depositar</div>
+          <div class="card-sub">Minimo Kz 5.000. Seleccione ou digite o valor.</div>
+          <div class="amount-grid">
+            <div class="amount-chip" onclick="selectAmount(5000,this)">5.000</div>
+            <div class="amount-chip" onclick="selectAmount(10000,this)">10.000</div>
+            <div class="amount-chip" onclick="selectAmount(20000,this)">20.000</div>
+            <div class="amount-chip" onclick="selectAmount(50000,this)">50.000</div>
+            <div class="amount-chip" onclick="selectAmount(100000,this)">100.000</div>
+            <div class="amount-chip" onclick="selectAmount(200000,this)">200.000</div>
+          </div>
+          <div class="field">
+            <label>Ou digite o valor (Kz)</label>
+            <input type="number" id="dep-amount" placeholder="Ex: 15000" min="5000"/>
+            <div class="min-note">Minimo: Kz 5.000</div>
+            <div class="field-error" id="err-dep-amount">Valor minimo e Kz 5.000</div>
+          </div>
+          <button class="btn btn-primary" onclick="depStep2()">Ver Dados de Pagamento</button>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div id="dep-step-2" style="display:none;">
+        <div class="steps-bar">
+          <div class="step-dot done">1</div>
+          <div class="step-line done"></div>
+          <div class="step-dot active">2</div>
+          <div class="step-line"></div>
+          <div class="step-dot">3</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Dados de Pagamento</div>
+          <div class="card-sub">Transfira o valor de <strong id="dep-amount-display">Kz 0</strong> para a conta abaixo.</div>
+          <div class="bank-box">
+            <div class="bank-box-title">Conta BFA — Filmora Meta</div>
+            <div class="bank-row">
+              <div class="bank-key">IBAN</div>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div class="bank-val">0006.0000.9095.7416.3015.7</div>
+                <button class="copy-btn" onclick="copyText('0006.0000.9095.7416.3015.7')">Copiar</button>
+              </div>
+            </div>
+            <div class="bank-row">
+              <div class="bank-key">Titular</div>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div class="bank-val">JONATHAN DOMINGOS BFA</div>
+                <button class="copy-btn" onclick="copyText('JONATHAN DOMINGOS BFA')">Copiar</button>
+              </div>
+            </div>
+            <div class="bank-row">
+              <div class="bank-key">Banco</div>
+              <div class="bank-val">BFA</div>
+            </div>
+            <div class="bank-row">
+              <div class="bank-key">Valor</div>
+              <div class="bank-val" id="bank-val-amount">Kz 0</div>
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="depStep3()">Ja Transferi — Enviar Comprovativo</button>
+          <button class="btn btn-ghost" onclick="depStep1()">Voltar</button>
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div id="dep-step-3" style="display:none;">
+        <div class="steps-bar">
+          <div class="step-dot done">1</div>
+          <div class="step-line done"></div>
+          <div class="step-dot done">2</div>
+          <div class="step-line done"></div>
+          <div class="step-dot active">3</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Enviar Comprovativo</div>
+          <div class="card-sub">Carregue a imagem do comprovativo de pagamento para validacao.</div>
+          <div class="proof-upload" id="proof-drop" onclick="document.getElementById('proof-file-input').click()">
+            <div class="proof-upload-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg></div>
+            <div class="proof-upload-title" id="proof-title">Seleccionar Imagem</div>
+            <div class="proof-upload-sub">PNG, JPG ou PDF — max 5MB</div>
+          </div>
+          <input type="file" id="proof-file-input" accept="image/*,application/pdf" onchange="handleProof(this)"/>
+          <button class="btn btn-green" onclick="submitDeposit()">Enviar Comprovativo</button>
+          <button class="btn btn-ghost" onclick="depStep2()">Voltar</button>
+        </div>
+      </div>
+
+      <!-- SUCCESS DEP -->
+      <div id="dep-success" style="display:none;">
+        <div class="card">
+          <div class="success-card">
+            <div class="success-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="success-title">Comprovativo enviado</div>
+            <div class="success-msg">O seu deposito esta em analise. Sera creditado na sua conta apos confirmacao, normalmente em menos de 24 horas.</div>
+            <button class="btn btn-primary" onclick="window.location.href='index.html'">Voltar ao Inicio</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /panel-deposit -->
+
+    <!-- ═══ WITHDRAW PANEL ═══ -->
+    <div class="panel" id="panel-withdraw">
+
+      <!-- ADD BANK -->
+      <div id="with-add-bank" style="display:none;">
+        <div class="card">
+          <div class="card-title">Vincular Conta Bancaria</div>
+          <div class="card-sub">Necessario para efectuar levantamentos. Nao pode ser alterado posteriormente.</div>
+          <div class="add-bank-notice">Certifique-se de que os dados estao correctos. Apos vincular, a conta nao pode ser editada ou removida.</div>
+          <div class="field">
+            <label>Titular (conforme o BI)</label>
+            <input type="text" id="bank-titular" placeholder="Nome completo conforme BI"/>
+            <div class="field-error" id="err-bank-titular">Titular obrigatorio</div>
+          </div>
+          <div class="field">
+            <label>IBAN</label>
+            <input type="text" id="bank-iban" placeholder="Ex: AO06.0040.0000.1234.5678.1016.2" style="font-family:'DM Mono',monospace;font-size:13px;"/>
+            <div class="field-error" id="err-bank-iban">IBAN invalido</div>
+          </div>
+          <div class="field">
+            <label>Nome do Banco</label>
+            <input type="text" id="bank-nome" placeholder="Ex: BFA, BAI, BIC, Millennium"/>
+            <div class="field-error" id="err-bank-nome">Nome do banco obrigatorio</div>
+          </div>
+          <button class="btn btn-primary" onclick="saveBank()">Vincular Conta</button>
+        </div>
+      </div>
+
+      <!-- WITHDRAW FORM -->
+      <div id="with-form" style="display:none;">
+        <div class="card">
+          <div class="card-title">Conta vinculada</div>
+          <div class="linked-account-box" id="linked-account-box"></div>
+          <div class="card-title" style="margin-top:4px;">Valor a levantar</div>
+          <div class="card-sub">Minimo Kz 400.</div>
+          <div class="field" style="margin-top:12px;">
+            <label>Valor (Kz)</label>
+            <input type="number" id="with-amount" placeholder="Ex: 5000" min="400"/>
+            <div class="min-note">Minimo: Kz 400</div>
+            <div class="field-error" id="err-with-amount">Valor minimo e Kz 400</div>
+          </div>
+          <div class="warn-box">O levantamento sera processado em ate 48 horas uteis apos aprovacao.</div>
+          <button class="btn btn-primary" onclick="submitWithdraw()">Solicitar Levantamento</button>
+        </div>
+      </div>
+
+      <!-- SUCCESS WITH -->
+      <div id="with-success" style="display:none;">
+        <div class="card">
+          <div class="success-card">
+            <div class="success-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="success-title">Pedido enviado</div>
+            <div class="success-msg">O seu pedido de levantamento foi registado e sera processado em breve pela equipa Filmora Meta.</div>
+            <button class="btn btn-primary" onclick="window.location.href='index.html'">Voltar ao Inicio</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /panel-withdraw -->
+
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, updateDoc, addDoc, collection, serverTimestamp, increment }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const app=initializeApp({apiKey:"AIzaSyAZ27ogn8Us8FZct_DdYkFFv9vQkaHrPL4",authDomain:"pinnacle-finance-b2626.firebaseapp.com",projectId:"pinnacle-finance-b2626",storageBucket:"pinnacle-finance-b2626.firebasestorage.app",messagingSenderId:"1032490368286",appId:"1:1032490368286:web:d77c9a1a888dd3c1c5dd0f"});
+const auth=getAuth(app),db=getFirestore(app);
+let currentUser=null,userData=null,depAmount=0,proofBase64=null;
+
+function fmt(n){return Number(n||0).toLocaleString('pt-AO',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function showToast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+type+' show';setTimeout(()=>t.className='toast '+type,2800);}
+function showOverlay(l='A processar...'){document.getElementById('overlay-label').textContent=l;document.getElementById('overlay').classList.add('active');}
+function hideOverlay(){document.getElementById('overlay').classList.remove('active');}
+
+// Read URL param
+const params=new URLSearchParams(window.location.search);
+const initAction=params.get('action')||'deposit';
+
+window.switchMode=(mode)=>{
+  const isDeposit=mode==='deposit';
+  document.getElementById('tab-deposit').classList.toggle('active',isDeposit);
+  document.getElementById('tab-withdraw').classList.toggle('active',!isDeposit);
+  document.getElementById('panel-deposit').classList.toggle('active',isDeposit);
+  document.getElementById('panel-withdraw').classList.toggle('active',!isDeposit);
+  document.getElementById('main-header').className='header '+(isDeposit?'deposit':'withdraw');
+  document.getElementById('header-title').textContent=isDeposit?'Deposito':'Levantar';
+  document.getElementById('header-sub').textContent=isDeposit?'Adicione fundos a sua conta':'Retire os seus fundos';
+  if(!isDeposit) checkWithdrawState();
+};
+
+window.selectAmount=(val,el)=>{
+  document.querySelectorAll('.amount-chip').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('dep-amount').value=val;
+};
+
+window.depStep1=()=>{
+  document.getElementById('dep-step-1').style.display='block';
+  document.getElementById('dep-step-2').style.display='none';
+  document.getElementById('dep-step-3').style.display='none';
+};
+window.depStep2=()=>{
+  const val=Number(document.getElementById('dep-amount').value);
+  if(!val||val<5000){document.getElementById('err-dep-amount').classList.add('visible');return;}
+  document.getElementById('err-dep-amount').classList.remove('visible');
+  depAmount=val;
+  document.getElementById('dep-amount-display').textContent='Kz '+fmt(val);
+  document.getElementById('bank-val-amount').textContent='Kz '+fmt(val);
+  document.getElementById('dep-step-1').style.display='none';
+  document.getElementById('dep-step-2').style.display='block';
+  document.getElementById('dep-step-3').style.display='none';
+};
+window.depStep3=()=>{
+  document.getElementById('dep-step-1').style.display='none';
+  document.getElementById('dep-step-2').style.display='none';
+  document.getElementById('dep-step-3').style.display='block';
+};
+
+window.handleProof=(inp)=>{
+  const file=inp.files[0];
+  if(!file) return;
+  if(file.size>5*1024*1024){showToast('Ficheiro muito grande (max 5MB)','error');return;}
+  const reader=new FileReader();
+  reader.onload=e=>{
+    proofBase64=e.target.result;
+    document.getElementById('proof-drop').classList.add('has-file');
+    document.getElementById('proof-title').textContent=file.name;
+  };
+  reader.readAsDataURL(file);
+};
+
+window.submitDeposit=async()=>{
+  if(!proofBase64){showToast('Seleccione o comprovativo','error');return;}
+  if(!currentUser) return;
+  showOverlay('A enviar comprovativo...');
+  try{
+    await addDoc(collection(db,'depositos'),{
+      uid:currentUser.uid,
+      valor:depAmount,
+      comprovativo:proofBase64,
+      estado:'pendente',
+      criadoEm:serverTimestamp()
+    });
+    await addDoc(collection(db,'movimentos'),{uid:currentUser.uid,tipo:'deposito',valor:depAmount,estado:'pendente',data:serverTimestamp()});
+    await updateDoc(doc(db,'users',currentUser.uid),{saldoDepositado:increment(depAmount)});
+    document.getElementById('dep-step-3').style.display='none';
+    document.getElementById('dep-success').style.display='block';
+  }catch(e){showToast('Erro ao enviar. Tente novamente.','error');}
+  hideOverlay();
+};
+
+function checkWithdrawState(){
+  if(!userData) return;
+  const hasBanco=userData.contaBancaria&&userData.contaBancaria.iban;
+  document.getElementById('with-add-bank').style.display=hasBanco?'none':'block';
+  document.getElementById('with-form').style.display=hasBanco?'block':'none';
+  if(hasBanco){
+    const b=userData.contaBancaria;
+    document.getElementById('linked-account-box').innerHTML=`
+      <div class="la-title">Conta Vinculada</div>
+      <div class="la-row"><div class="la-key">Titular</div><div class="la-val">${b.titular}</div></div>
+      <div class="la-row"><div class="la-key">IBAN</div><div class="la-val" style="font-family:'DM Mono',monospace;font-size:12px;">${b.iban}</div></div>
+      <div class="la-row"><div class="la-key">Banco</div><div class="la-val">${b.banco}</div></div>`;
+  }
+}
+
+window.saveBank=async()=>{
+  const titular=document.getElementById('bank-titular').value.trim();
+  const iban=document.getElementById('bank-iban').value.trim();
+  const banco=document.getElementById('bank-nome').value.trim();
+  let ok=true;
+  if(!titular){document.getElementById('err-bank-titular').classList.add('visible');ok=false;}else document.getElementById('err-bank-titular').classList.remove('visible');
+  if(!iban||iban.length<15){document.getElementById('err-bank-iban').classList.add('visible');ok=false;}else document.getElementById('err-bank-iban').classList.remove('visible');
+  if(!banco){document.getElementById('err-bank-nome').classList.add('visible');ok=false;}else document.getElementById('err-bank-nome').classList.remove('visible');
+  if(!ok) return;
+  if(!currentUser) return;
+  showOverlay('A vincular conta...');
+  try{
+    await updateDoc(doc(db,'users',currentUser.uid),{contaBancaria:{titular,iban,banco}});
+    userData.contaBancaria={titular,iban,banco};
+    checkWithdrawState();
+    showToast('Conta vinculada com sucesso','success');
+  }catch(e){showToast('Erro ao vincular conta','error');}
+  hideOverlay();
+};
+
+window.submitWithdraw=async()=>{
+  const val=Number(document.getElementById('with-amount').value);
+  if(!val||val<400){document.getElementById('err-with-amount').classList.add('visible');return;}
+  document.getElementById('err-with-amount').classList.remove('visible');
+  if((userData?.saldoDisponivel||0)<val){showToast('Saldo disponivel insuficiente','error');return;}
+  if(!currentUser) return;
+  showOverlay('A processar pedido...');
+  try{
+    await addDoc(collection(db,'levantamentos'),{uid:currentUser.uid,valor:val,contaBancaria:userData.contaBancaria,estado:'pendente',criadoEm:serverTimestamp()});
+    await addDoc(collection(db,'movimentos'),{uid:currentUser.uid,tipo:'retirada',valor:val,estado:'pendente',data:serverTimestamp()});
+    await updateDoc(doc(db,'users',currentUser.uid),{saldoDisponivel:increment(-val),saldoRetirado:increment(val)});
+    document.getElementById('with-form').style.display='none';
+    document.getElementById('with-success').style.display='block';
+  }catch(e){showToast('Erro ao processar pedido','error');}
+  hideOverlay();
+};
+
+window.copyText=(txt)=>{
+  navigator.clipboard.writeText(txt).then(()=>showToast('Copiado','success')).catch(()=>{});
+};
+
+onAuthStateChanged(auth,async(user)=>{
+  if(!user){window.location.href='auth.html';return;}
+  currentUser=user;
+  showOverlay('A carregar...');
+  try{
+    const snap=await getDoc(doc(db,'users',user.uid));
+    userData=snap.data();
+  }catch(e){}
+  hideOverlay();
+  switchMode(initAction==='withdraw'?'withdraw':'deposit');
+});
+</script>
+</body>
+</html>

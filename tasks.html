@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Filmora Meta — Tarefas</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{
+      --blue:#0056D2;--blue-dark:#0041A8;--blue-light:#E8F0FD;
+      --green:#00A86B;--red:#D9231E;--orange:#F47920;
+      --black:#0A0A0A;--grey:#6B7280;--grey-light:#F3F4F6;
+      --border:#E5E7EB;--white:#FFFFFF;--nav-h:68px;
+    }
+    html,body{min-height:100vh;font-family:'Sora',sans-serif;background:#F0F4FF;color:var(--black);overflow-x:hidden;}
+
+    .overlay{position:fixed;inset:0;background:rgba(10,10,10,0.55);backdrop-filter:blur(4px);z-index:200;display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;}
+    .overlay.active{display:flex;}
+    .spinner{width:50px;height:50px;border:4px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite;}
+    .spinner-label{color:#fff;font-size:14px;font-weight:500;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+
+    .toast{position:fixed;bottom:calc(var(--nav-h)+16px);left:50%;transform:translateX(-50%) translateY(20px);background:var(--black);color:#fff;padding:11px 22px;border-radius:100px;font-size:13px;font-weight:500;opacity:0;pointer-events:none;transition:all 0.3s;z-index:300;white-space:nowrap;}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+    .toast.success{background:var(--green);}
+    .toast.error{background:var(--red);}
+
+    /* SUCCESS MODAL */
+    .modal-bg{position:fixed;inset:0;background:rgba(10,10,10,0.6);backdrop-filter:blur(8px);z-index:150;display:none;align-items:center;justify-content:center;padding:20px;}
+    .modal-bg.active{display:flex;}
+    .modal{background:var(--white);border-radius:28px;width:100%;max-width:360px;padding:36px 28px;text-align:center;animation:popIn 0.4s cubic-bezier(0.34,1.56,0.64,1);}
+    @keyframes popIn{from{opacity:0;transform:scale(0.8);}to{opacity:1;transform:scale(1);}}
+    .modal-icon{width:80px;height:80px;background:rgba(0,168,107,0.10);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;}
+    .modal-icon svg{width:40px;height:40px;color:var(--green);}
+    .modal-earned{font-size:36px;font-weight:800;color:var(--green);font-family:'DM Mono',monospace;margin-bottom:6px;}
+    .modal-earned-label{font-size:13px;color:var(--grey);margin-bottom:20px;}
+    .modal-msg{font-size:14px;color:var(--black);line-height:1.6;margin-bottom:24px;}
+    .btn{width:100%;padding:14px;border:none;border-radius:14px;font-family:'Sora',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all 0.2s;}
+    .btn-primary{background:var(--blue);color:#fff;box-shadow:0 4px 16px rgba(0,86,210,0.28);}
+
+    .page{padding-bottom:calc(var(--nav-h)+20px);}
+
+    /* HEADER */
+    .header{background:var(--blue);padding:52px 20px 90px;position:relative;overflow:hidden;}
+    .header::before{content:'';position:absolute;top:-60px;right:-60px;width:220px;height:220px;background:rgba(255,255,255,0.06);border-radius:50%;}
+    .header::after{content:'';position:absolute;bottom:-40px;left:-20px;width:140px;height:140px;background:rgba(255,255,255,0.04);border-radius:50%;}
+    .header-top{display:flex;align-items:center;gap:14px;margin-bottom:24px;position:relative;z-index:1;}
+    .back-btn{width:38px;height:38px;background:rgba(255,255,255,0.12);border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+    .back-btn svg{color:#fff;width:18px;height:18px;}
+    .header-title{font-size:20px;font-weight:700;color:#fff;}
+    .header-sub{font-size:13px;color:rgba(255,255,255,0.65);}
+
+    /* ACCOUNT BANNER */
+    .account-banner{position:relative;z-index:1;background:rgba(255,255,255,0.12);border-radius:16px;padding:16px 18px;display:flex;align-items:center;gap:14px;}
+    .account-avatar{width:46px;height:46px;background:rgba(255,255,255,0.20);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#fff;flex-shrink:0;}
+    .account-info-name{font-size:15px;font-weight:700;color:#fff;margin-bottom:2px;}
+    .account-info-num{font-size:12px;color:rgba(255,255,255,0.70);font-family:'DM Mono',monospace;}
+
+    /* CARD FLOAT */
+    .card-float{position:relative;z-index:10;margin:-46px 16px 0;background:var(--white);border-radius:22px;box-shadow:0 8px 40px rgba(0,86,210,0.14);padding:20px;margin-bottom:0;}
+
+    .daily-info{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:4px;}
+    .daily-stat{text-align:center;padding:12px 8px;background:var(--grey-light);border-radius:14px;}
+    .daily-stat-val{font-size:16px;font-weight:800;font-family:'DM Mono',monospace;color:var(--blue);}
+    .daily-stat-val.green{color:var(--green);}
+    .daily-stat-val.orange{color:var(--orange);}
+    .daily-stat-label{font-size:10px;color:var(--grey);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-top:3px;}
+
+    .content{padding:20px 16px 0;}
+
+    /* TASK CARDS */
+    .task-card{background:var(--white);border-radius:20px;box-shadow:0 2px 12px rgba(0,0,0,0.06);margin-bottom:14px;overflow:hidden;border:1.5px solid var(--border);transition:all 0.2s;}
+    .task-card-header{padding:16px 18px 14px;border-bottom:1px solid var(--border);}
+    .task-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+    .task-plan-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:100px;font-size:12px;font-weight:700;}
+    .task-plan-badge.m{background:var(--blue-light);color:var(--blue);}
+    .task-plan-badge.promo{background:rgba(0,168,107,0.10);color:var(--green);}
+    .task-status-chip{font-size:11px;font-weight:700;padding:4px 10px;border-radius:100px;}
+    .task-status-chip.ready{background:rgba(0,168,107,0.12);color:var(--green);}
+    .task-status-chip.waiting{background:rgba(244,121,32,0.10);color:var(--orange);}
+    .task-status-chip.done{background:var(--grey-light);color:var(--grey);}
+
+    .task-plan-name{font-size:16px;font-weight:700;color:var(--black);margin-bottom:2px;}
+    .task-desc{font-size:12px;color:var(--grey);line-height:1.5;}
+
+    .task-card-body{padding:14px 18px;}
+    .task-progress-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+    .task-progress-label{font-size:12px;color:var(--grey);}
+    .task-progress-count{font-size:13px;font-weight:700;color:var(--black);font-family:'DM Mono',monospace;}
+    .progress-bar{height:6px;background:var(--grey-light);border-radius:3px;overflow:hidden;margin-bottom:14px;}
+    .progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--blue),var(--green));transition:width 0.5s ease;}
+
+    .task-reward-row{display:flex;align-items:center;justify-content:space-between;}
+    .task-reward-info{font-size:12px;color:var(--grey);}
+    .task-reward-val{font-size:15px;font-weight:800;font-family:'DM Mono',monospace;}
+    .task-reward-val.green{color:var(--green);}
+    .task-reward-val.orange{color:var(--orange);}
+
+    .claim-btn{background:var(--green);color:#fff;border:none;border-radius:12px;padding:11px 22px;font-family:'Sora',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 14px rgba(0,168,107,0.25);}
+    .claim-btn:hover{background:#007A52;transform:translateY(-1px);}
+    .claim-btn:disabled{background:var(--grey-light);color:var(--grey);box-shadow:none;transform:none;cursor:not-allowed;}
+
+    .next-available{font-size:11px;color:var(--orange);font-weight:600;margin-top:6px;}
+
+    /* EMPTY */
+    .empty-state{text-align:center;padding:48px 24px;color:var(--grey);}
+    .empty-icon{width:64px;height:64px;background:var(--grey-light);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;}
+    .empty-icon svg{width:28px;height:28px;color:var(--grey);}
+    .empty-title{font-size:16px;font-weight:700;color:var(--black);margin-bottom:6px;}
+    .empty-sub{font-size:13px;line-height:1.6;}
+
+    /* bottom nav */
+    .bottom-nav{position:fixed;bottom:0;left:0;right:0;height:var(--nav-h);background:var(--white);border-top:1px solid var(--border);display:flex;align-items:center;padding:0 8px;z-index:100;box-shadow:0 -4px 20px rgba(0,0,0,0.06);}
+    .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px 4px;cursor:pointer;text-decoration:none;border:none;background:none;font-family:'Sora',sans-serif;transition:all 0.2s;}
+    .nav-item svg{width:22px;height:22px;color:var(--grey);}
+    .nav-item span{font-size:10px;font-weight:500;color:var(--grey);}
+    .nav-item.active svg,.nav-item.active span{color:var(--blue);}
+    .nav-center{flex:1.4;}
+    .nav-center-inner{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:var(--blue);border-radius:16px;padding:9px 6px 7px;margin:0 4px;box-shadow:0 4px 16px rgba(0,86,210,0.30);}
+    .nav-center-inner svg{width:22px;height:22px;color:#fff;}
+    .nav-center-inner span{font-size:10px;font-weight:600;color:#fff;}
+  </style>
+</head>
+<body>
+
+<div class="overlay" id="overlay"><div class="spinner"></div><div class="spinner-label" id="overlay-label">A processar...</div></div>
+<div class="toast" id="toast"></div>
+
+<!-- SUCCESS MODAL -->
+<div class="modal-bg" id="modal-bg">
+  <div class="modal">
+    <div class="modal-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <div class="modal-earned" id="modal-earned">+ Kz 0,00</div>
+    <div class="modal-earned-label">Rendimento reclamado com sucesso</div>
+    <div class="modal-msg" id="modal-msg">O valor foi creditado no seu saldo disponivel. Continue a reivindicar diariamente para maximizar os seus ganhos.</div>
+    <button class="btn btn-primary" onclick="document.getElementById('modal-bg').classList.remove('active')">Continuar</button>
+  </div>
+</div>
+
+<div class="page">
+  <div class="header">
+    <div class="header-top">
+      <button class="back-btn" onclick="history.back()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <div>
+        <div class="header-title">Tarefas Diarias</div>
+        <div class="header-sub">Reivindique os seus rendimentos</div>
+      </div>
+    </div>
+    <div class="account-banner">
+      <div class="account-avatar" id="user-initial">?</div>
+      <div>
+        <div class="account-info-name" id="user-name-display">...</div>
+        <div class="account-info-num" id="user-account-display">...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOAT STATS -->
+  <div class="card-float" style="margin:0 16px;margin-top:-46px;position:relative;z-index:10;">
+    <div class="daily-info">
+      <div class="daily-stat">
+        <div class="daily-stat-val green" id="stat-total">0</div>
+        <div class="daily-stat-label">Tarefas</div>
+      </div>
+      <div class="daily-stat">
+        <div class="daily-stat-val orange" id="stat-disponiveis">0</div>
+        <div class="daily-stat-label">Disponiveis</div>
+      </div>
+      <div class="daily-stat">
+        <div class="daily-stat-val" id="stat-ganhos">0</div>
+        <div class="daily-stat-label">Ganhos Kz</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content" style="margin-top:16px;">
+    <div id="tasks-container">
+      <div class="empty-state">
+        <div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+        <div class="empty-title">Sem tarefas activas</div>
+        <div class="empty-sub">Active um plano M ou o plano gratuito para comecar a ganhar rendimentos diarios.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <a class="nav-item" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Inicio</span></a>
+  <a class="nav-item" href="plans.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg><span>Planos</span></a>
+  <div class="nav-item nav-center">
+    <div class="nav-center-inner">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      <span>Tarefas</span>
+    </div>
+  </div>
+  <a class="nav-item" href="menu.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg><span>Menu</span></a>
+  <a class="nav-item" href="profile.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Perfil</span></a>
+</nav>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, updateDoc, addDoc, collection, serverTimestamp, increment }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey:"AIzaSyAZ27ogn8Us8FZct_DdYkFFv9vQkaHrPL4",
+  authDomain:"pinnacle-finance-b2626.firebaseapp.com",
+  projectId:"pinnacle-finance-b2626",
+  storageBucket:"pinnacle-finance-b2626.firebasestorage.app",
+  messagingSenderId:"1032490368786",
+  appId:"1:1032490368286:web:d77c9a1a888dd3c1c5dd0f"
+});
+const auth=getAuth(app), db=getFirestore(app);
+let currentUser=null, userData=null;
+
+function fmt(n){return Number(n||0).toLocaleString('pt-AO',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function showToast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+type+' show';setTimeout(()=>t.className='toast '+type,2800);}
+function showOverlay(l='A processar...'){document.getElementById('overlay-label').textContent=l;document.getElementById('overlay').classList.add('active');}
+function hideOverlay(){document.getElementById('overlay').classList.remove('active');}
+
+function isToday(dateStr){
+  if(!dateStr) return false;
+  const d=new Date(dateStr), now=new Date();
+  return d.getDate()===now.getDate()&&d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
+}
+
+function isSameHourAvailable(inv){
+  if(!inv.ultimaTarefa) return true;
+  const last=new Date(inv.ultimaTarefa);
+  const start=new Date(inv.inicio);
+  const now=new Date();
+  // available if same hour of day has passed since last claim
+  if(isToday(inv.ultimaTarefa)) return false;
+  return true;
+}
+
+function diasRestantes(inv){
+  const fim=new Date(inv.fim), now=new Date();
+  const diff=Math.ceil((fim-now)/(1000*60*60*24));
+  return Math.max(0,diff);
+}
+
+function diasDecorridos(inv){
+  const inicio=new Date(inv.inicio), now=new Date();
+  return Math.max(1,Math.ceil((now-inicio)/(1000*60*60*24)));
+}
+
+function getReward(inv){
+  if(inv.planId==='PROMO') return 50;
+  if(inv.planId==='M1') return 300;
+  if(inv.planId==='M2') return 600;
+  if(inv.planId==='M3') return 1200;
+  return 0;
+}
+
+function getDias(inv){
+  if(inv.planId==='PROMO') return 31;
+  return 30;
+}
+
+function renderTasks(){
+  const plans=(userData?.investimentosActivos||[]).filter(i=>['M1','M2','M3','PROMO'].includes(i.planId));
+  const container=document.getElementById('tasks-container');
+  if(!plans.length){
+    container.innerHTML=`<div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div><div class="empty-title">Sem tarefas activas</div><div class="empty-sub">Active um plano M ou o plano gratuito para comecar a ganhar rendimentos diarios.</div></div>`;
+    return;
+  }
+  let dispCount=0, totalGanhos=0;
+  const html=plans.map((inv,idx)=>{
+    const reward=getReward(inv);
+    const totalDias=getDias(inv);
+    const decorridos=Math.min(diasDecorridos(inv),totalDias);
+    const restantes=diasRestantes(inv);
+    const pct=Math.round((decorridos/totalDias)*100);
+    const canClaim=isSameHourAvailable(inv)&&restantes>0;
+    const isPromo=inv.planId==='PROMO';
+    if(canClaim) dispCount++;
+    totalGanhos+=(inv.totalGanho||0);
+    const nextTime=inv.ultimaTarefa?'Disponivel amanha':'Disponivel agora';
+    return `
+    <div class="task-card">
+      <div class="task-card-header">
+        <div class="task-card-top">
+          <div class="task-plan-badge ${isPromo?'promo':'m'}">${inv.planId==='PROMO'?'Gratuito':inv.planId}</div>
+          <div class="task-status-chip ${canClaim?'ready':'waiting'}">${canClaim?'Disponivel':'Aguardar'}</div>
+        </div>
+        <div class="task-plan-name">${inv.nome}</div>
+        <div class="task-desc">${isPromo?'Plano gratuito de boas-vindas — Kz 50 por dia durante 31 dias':'Rendimento diario do seu investimento activo'}</div>
+      </div>
+      <div class="task-card-body">
+        <div class="task-progress-row">
+          <div class="task-progress-label">Progresso do ciclo</div>
+          <div class="task-progress-count">${decorridos} / ${totalDias} dias</div>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+        <div class="task-reward-row">
+          <div>
+            <div class="task-reward-info">Rendimento diario</div>
+            <div class="task-reward-val ${isPromo?'orange':'green'}">Kz ${fmt(reward)}</div>
+            ${!canClaim&&restantes>0?`<div class="next-available">${nextTime}</div>`:''}
+            ${restantes===0?`<div class="next-available" style="color:var(--red)">Ciclo encerrado</div>`:''}
+          </div>
+          <button class="claim-btn" ${(!canClaim||restantes===0)?'disabled':''} onclick="claimReward(${idx})">Reivindicar</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  container.innerHTML=html;
+  document.getElementById('stat-total').textContent=plans.length;
+  document.getElementById('stat-disponiveis').textContent=dispCount;
+  document.getElementById('stat-ganhos').textContent=fmt(totalGanhos);
+}
+
+window.claimReward=async(idx)=>{
+  if(!currentUser||!userData) return;
+  const plans=(userData.investimentosActivos||[]).filter(i=>['M1','M2','M3','PROMO'].includes(i.planId));
+  const inv=plans[idx];
+  if(!inv) return;
+  const reward=getReward(inv);
+  showOverlay('A creditar rendimento...');
+  try{
+    const allInvs=userData.investimentosActivos||[];
+    const globalIdx=allInvs.findIndex(i=>i.planId===inv.planId&&i.inicio===inv.inicio);
+    if(globalIdx===-1){hideOverlay();showToast('Erro ao processar','error');return;}
+    allInvs[globalIdx].ultimaTarefa=new Date().toISOString();
+    allInvs[globalIdx].totalGanho=(allInvs[globalIdx].totalGanho||0)+reward;
+    await updateDoc(doc(db,'users',currentUser.uid),{
+      saldoDisponivel:increment(reward),
+      investimentosActivos:allInvs
+    });
+    await addDoc(collection(db,'movimentos'),{uid:currentUser.uid,tipo:'rendimento',valor:reward,planId:inv.planId,data:serverTimestamp()});
+    userData.saldoDisponivel=(userData.saldoDisponivel||0)+reward;
+    userData.investimentosActivos=allInvs;
+    hideOverlay();
+    document.getElementById('modal-earned').textContent='+ Kz '+fmt(reward);
+    document.getElementById('modal-msg').textContent='O rendimento do '+inv.nome+' foi creditado com sucesso. Continue a reivindicar diariamente.';
+    document.getElementById('modal-bg').classList.add('active');
+    renderTasks();
+  }catch(e){hideOverlay();showToast('Erro ao creditar','error');}
+};
+
+onAuthStateChanged(auth,async(user)=>{
+  if(!user){window.location.href='auth.html';return;}
+  currentUser=user;
+  showOverlay('A carregar tarefas...');
+  try{
+    const snap=await getDoc(doc(db,'users',user.uid));
+    userData=snap.data();
+    const nome=userData?.nome||'';
+    document.getElementById('user-initial').textContent=nome.charAt(0).toUpperCase();
+    document.getElementById('user-name-display').textContent=nome.split(' ')[0]+' '+((nome.split(' ')[1]||''));
+    document.getElementById('user-account-display').textContent=userData?.accountNumber||'';
+    renderTasks();
+  }catch(e){showToast('Erro ao carregar','error');}
+  hideOverlay();
+});
+</script>
+</body>
+</html>
