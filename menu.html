@@ -4,16 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Filmora Meta — Menu</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import {
-      getFirestore, doc, getDoc, collection, query, where,
-      getDocs, orderBy, limit, serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged, updatePassword, reauthenticateWithCredential, EmailAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAZ27ogn8Us8FZct_DdYkFFv9vQkaHrPL4",
@@ -27,7 +24,6 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-
     let currentUser = null;
     let userData = null;
 
@@ -50,7 +46,6 @@
       const invQ = query(collection(db, "users", currentUser.uid, "investimentos"), where("status", "==", "ativo"));
       const invSnap = await getDocs(invQ);
       const plans = invSnap.docs.map(d => d.data());
-
       const labels = plans.map(p => p.nome);
       const values = plans.map(p => p.valor || 0);
 
@@ -64,33 +59,26 @@
             backgroundColor: values.length
               ? ["#F97316","#16A34A","#1D4ED8","#DC2626","#9333EA","#0891B2"]
               : ["#E5E7EB"],
-            borderWidth: 0,
-            hoverOffset: 6
+            borderWidth: 0, hoverOffset: 6
           }]
         },
         options: {
           cutout: "70%",
-          plugins: { legend: { position: "bottom", labels: { font: { family: "DM Sans", size: 11 }, color: "#6B7280", boxWidth: 10, padding: 12 } } },
-          responsive: true,
-          maintainAspectRatio: false
+          plugins: { legend: { position: "bottom", labels: { font: { family: "DM Sans", size: 11 }, color: "#6B7280", boxWidth: 10, padding: 10 } } },
+          responsive: true, maintainAspectRatio: false
         }
       });
 
-      if (!values.length) {
-        document.getElementById("chart-empty").style.display = "block";
-      }
+      if (!values.length) document.getElementById("chart-empty").style.display = "flex";
     }
 
-    /* ── alterar senha ── */
     window.alterarSenha = async function () {
       const senhaAtual = document.getElementById("senha-atual").value;
-      const senhaNova = document.getElementById("senha-nova").value;
-      const senhaConf = document.getElementById("senha-confirmar").value;
-
+      const senhaNova  = document.getElementById("senha-nova").value;
+      const senhaConf  = document.getElementById("senha-confirmar").value;
       if (!senhaAtual || !senhaNova || !senhaConf) return showToast("Preencha todos os campos.", "error");
       if (senhaNova.length !== 6 || !/^\d{6}$/.test(senhaNova)) return showToast("A nova senha deve ter 6 digitos numericos.", "error");
       if (senhaNova !== senhaConf) return showToast("As senhas nao coincidem.", "error");
-
       showOverlay();
       try {
         const cred = EmailAuthProvider.credential(currentUser.email, senhaAtual);
@@ -104,29 +92,28 @@
         closeSection("section-senha");
       } catch (e) {
         hideOverlay();
-        let msg = "Erro ao alterar senha.";
-        if (e.code === "auth/wrong-password") msg = "Senha actual incorrecta.";
-        showToast(msg, "error");
+        showToast(e.code === "auth/wrong-password" ? "Senha actual incorrecta." : "Erro ao alterar senha.", "error");
       }
     };
 
+    window.doLogout = async function () {
+      await signOut(auth);
+      window.location.href = "auth.html";
+    };
+
     window.toggleSection = function (id) {
-      const el = document.getElementById(id);
-      el.classList.toggle("open");
+      document.getElementById(id).classList.toggle("open");
     };
     window.closeSection = function (id) {
       document.getElementById(id).classList.remove("open");
     };
 
-    function formatVal(v) {
-      return Number(v).toLocaleString("pt-AO", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    }
-
+    function formatVal(v) { return Number(v).toLocaleString("pt-AO", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
     function showOverlay() { document.getElementById("processingOverlay").classList.add("active"); }
     function hideOverlay() { document.getElementById("processingOverlay").classList.remove("active"); }
     function showToast(msg, type = "success") {
-      const t = document.getElementById("toast");
-      t.textContent = msg; t.className = "toast " + type; t.classList.add("show");
+      const t = document.getElementById("toast"); t.textContent = msg;
+      t.className = "toast " + type; t.classList.add("show");
       setTimeout(() => t.classList.remove("show"), 3500);
     }
   </script>
@@ -136,7 +123,7 @@
     :root {
       --orange: #F97316; --green: #16A34A; --red: #DC2626; --blue: #1D4ED8;
       --black: #111111; --gray: #6B7280; --gray-light: #F3F4F6; --border: #E5E7EB;
-      --font: 'DM Sans', sans-serif; --mono: 'DM Mono', monospace;
+      --font: 'DM Sans', sans-serif;
     }
     body { font-family: var(--font); background: #fff; color: var(--black); overflow-y: auto; overflow-x: hidden; min-height: 100vh; padding-bottom: 90px; }
     body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(ellipse at 0% 0%, rgba(249,115,22,0.09) 0%, transparent 55%), radial-gradient(ellipse at 100% 100%, rgba(249,115,22,0.08) 0%, transparent 55%); pointer-events: none; z-index: 0; }
@@ -148,136 +135,85 @@
 
     .page-wrap { position: relative; z-index: 1; max-width: 480px; margin: 0 auto; padding: 20px; }
 
-    /* ── profile card ── */
+    /* perfil */
     .profile-card {
-      background: var(--black);
-      border-radius: 18px;
-      padding: 20px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 20px;
+      background: var(--black); border-radius: 18px; padding: 18px 18px 16px;
+      display: flex; align-items: center; gap: 14px; margin-bottom: 18px;
     }
-    .avatar {
-      width: 50px; height: 50px;
-      border-radius: 50%;
-      background: rgba(249,115,22,0.2);
-      border: 2px solid rgba(249,115,22,0.4);
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-    }
-    .avatar svg { width: 24px; height: 24px; stroke: var(--orange); fill: none; stroke-width: 1.8; }
+    .avatar { width: 48px; height: 48px; border-radius: 50%; background: rgba(249,115,22,0.18); border: 2px solid rgba(249,115,22,0.35); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .avatar svg { width: 22px; height: 22px; stroke: var(--orange); fill: none; stroke-width: 1.8; }
     .profile-info { flex: 1; min-width: 0; }
-    .profile-name { font-size: 15px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .profile-acc { font-size: 11px; color: rgba(255,255,255,0.4); font-family: var(--mono); margin-top: 2px; }
-    .profile-saldo { font-size: 14px; color: var(--orange); font-weight: 700; font-family: var(--mono); margin-top: 4px; }
+    .profile-name  { font-size: 14px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .profile-acc   { font-size: 11px; color: rgba(255,255,255,0.38); margin-top: 2px; }
+    .profile-saldo { font-size: 13px; color: var(--orange); font-weight: 700; margin-top: 3px; }
 
-    /* ── chart + action row ── */
-    .chart-row {
-      display: flex;
-      gap: 14px;
-      margin-bottom: 20px;
-      align-items: stretch;
-    }
-    .chart-box {
-      flex: 1;
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 14px;
-      background: #fff;
-      position: relative;
-    }
+    /* grafico */
+    .chart-box { border: 1px solid var(--border); border-radius: 16px; padding: 14px; background: #fff; margin-bottom: 16px; }
     .chart-title { font-size: 11px; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
-    .chart-wrap { height: 140px; position: relative; }
-    #chart-empty { display: none; position: absolute; inset: 0; display: none; align-items: center; justify-content: center; font-size: 11px; color: var(--gray); text-align: center; }
+    .chart-wrap { height: 160px; position: relative; }
+    #chart-empty { display: none; position: absolute; inset: 0; align-items: center; justify-content: center; font-size: 11px; color: var(--gray); text-align: center; }
 
-    .action-col {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      min-width: 110px;
-    }
-    .action-btn {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      border-radius: 14px;
-      border: 1.5px solid var(--border);
-      background: #fff;
-      cursor: pointer;
-      text-decoration: none;
-      padding: 12px 8px;
-      transition: border-color 0.2s;
-    }
-    .action-btn:hover { border-color: var(--orange); }
-    .action-btn svg { width: 20px; height: 20px; fill: none; stroke-width: 1.8; }
-    .action-btn.dep svg { stroke: var(--green); }
-    .action-btn.lev svg { stroke: var(--red); }
-    .action-btn span { font-size: 11px; font-weight: 700; color: var(--black); }
+    /* botoes deposito/levantar — IDENTICOS ao index e quick actions */
+    .quick-actions { display: flex; gap: 10px; margin-bottom: 18px; }
+    .qa-btn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 7px; padding: 14px 6px; border-radius: 14px; border: 1.5px solid var(--border); background: #fff; cursor: pointer; text-decoration: none; transition: border-color 0.2s; }
+    .qa-btn:hover { border-color: var(--orange); }
+    .qa-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+    .qa-icon svg { width: 18px; height: 18px; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .qa-icon.green { background: rgba(22,163,74,0.08); } .qa-icon.green svg { stroke: var(--green); }
+    .qa-icon.red   { background: rgba(220,38,38,0.08); } .qa-icon.red svg   { stroke: var(--red); }
+    .qa-label { font-size: 12px; font-weight: 600; color: var(--black); }
 
-    /* ── menu items ── */
-    .menu-item {
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      margin-bottom: 10px;
-      overflow: hidden;
-      background: #fff;
-    }
-    .menu-item-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px;
-      cursor: pointer;
-      transition: background 0.15s;
-    }
+    /* menu items */
+    .menu-item { border: 1px solid var(--border); border-radius: 14px; margin-bottom: 10px; overflow: hidden; background: #fff; }
+    .menu-item-header { display: flex; align-items: center; justify-content: space-between; padding: 15px 16px; cursor: pointer; transition: background 0.15s; }
     .menu-item-header:hover { background: var(--gray-light); }
     .menu-item-left { display: flex; align-items: center; gap: 12px; }
     .menu-icon { width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center; }
-    .menu-icon svg { width: 18px; height: 18px; fill: none; stroke-width: 1.8; }
+    .menu-icon svg { width: 18px; height: 18px; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
     .menu-icon.orange { background: rgba(249,115,22,0.1); } .menu-icon.orange svg { stroke: var(--orange); }
-    .menu-icon.green { background: rgba(22,163,74,0.08); } .menu-icon.green svg { stroke: var(--green); }
-    .menu-icon.blue { background: rgba(29,78,216,0.08); } .menu-icon.blue svg { stroke: var(--blue); }
-    .menu-icon.red { background: rgba(220,38,38,0.08); } .menu-icon.red svg { stroke: var(--red); }
+    .menu-icon.green  { background: rgba(22,163,74,0.08);  } .menu-icon.green svg  { stroke: var(--green); }
+    .menu-icon.blue   { background: rgba(29,78,216,0.08);   } .menu-icon.blue svg   { stroke: var(--blue); }
+    .menu-icon.red    { background: rgba(220,38,38,0.08);   } .menu-icon.red svg    { stroke: var(--red); }
+    .menu-icon.wa     { background: rgba(37,211,102,0.12);  } .menu-icon.wa svg     { stroke: #25D366; }
     .menu-label { font-size: 14px; font-weight: 700; color: var(--black); }
-    .menu-sub { font-size: 11px; color: var(--gray); margin-top: 1px; }
-    .chevron { width: 16px; height: 16px; stroke: var(--gray); fill: none; stroke-width: 2; transition: transform 0.25s; }
+    .menu-sub   { font-size: 11px; color: var(--gray); margin-top: 1px; }
+    .chevron { width: 16px; height: 16px; stroke: var(--gray); fill: none; stroke-width: 2; transition: transform 0.25s; stroke-linecap: round; stroke-linejoin: round; }
     .menu-item.open .chevron { transform: rotate(180deg); }
-
     .menu-body { display: none; padding: 0 16px 16px; border-top: 1px solid var(--border); }
     .menu-item.open .menu-body { display: block; }
 
-    /* ── form inside menu ── */
-    .mform-group { margin-top: 14px; }
-    .mform-group label { display: block; font-size: 11px; font-weight: 700; color: var(--gray); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.4px; }
-    .mform-group input {
-      width: 100%; padding: 10px 13px;
-      border: 1.5px solid var(--border); border-radius: 9px;
-      font-family: var(--font); font-size: 14px; color: var(--black); background: #fafafa; outline: none;
-      transition: border-color 0.2s;
-    }
-    .mform-group input:focus { border-color: var(--orange); background: #fff; }
-    .mform-group input[type="password"] { font-family: var(--mono); letter-spacing: 4px; }
+    /* link de navegacao direto (sem accordion) */
+    .menu-item-link { display: flex; align-items: center; justify-content: space-between; padding: 15px 16px; text-decoration: none; cursor: pointer; transition: background 0.15s; }
+    .menu-item-link:hover { background: var(--gray-light); }
 
-    .btn-form {
-      width: 100%; margin-top: 14px; padding: 12px;
-      background: var(--orange); color: #fff; border: none; border-radius: 10px;
-      font-family: var(--font); font-size: 14px; font-weight: 700; cursor: pointer;
-      transition: opacity 0.2s;
-    }
+    /* formulario senha */
+    .mform-group { margin-top: 13px; }
+    .mform-group label { display: block; font-size: 11px; font-weight: 700; color: var(--gray); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.4px; }
+    .mform-group input { width: 100%; padding: 10px 13px; border: 1.5px solid var(--border); border-radius: 9px; font-family: var(--font); font-size: 14px; color: var(--black); background: #fafafa; outline: none; transition: border-color 0.2s; }
+    .mform-group input:focus { border-color: var(--orange); background: #fff; }
+    .btn-form { width: 100%; margin-top: 13px; padding: 12px; background: var(--orange); color: #fff; border: none; border-radius: 10px; font-family: var(--font); font-size: 14px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
     .btn-form:hover { opacity: 0.88; }
 
-    /* ── logout ── */
-    .btn-logout {
-      width: 100%; margin-top: 6px; padding: 14px;
-      background: transparent; color: var(--red);
-      border: 1.5px solid rgba(220,38,38,0.25); border-radius: 12px;
-      font-family: var(--font); font-size: 14px; font-weight: 700; cursor: pointer;
-      transition: background 0.2s;
+    /* quem somos body */
+    .about-body { padding: 4px 0 4px; }
+    .about-p { font-size: 13px; color: var(--gray); line-height: 1.65; margin-bottom: 10px; }
+    .about-p:last-child { margin-bottom: 0; }
+    .about-highlight { color: var(--orange); font-weight: 700; }
+
+    /* whatsapp link */
+    .wa-link {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 14px; background: rgba(37,211,102,0.06);
+      border: 1px solid rgba(37,211,102,0.2); border-radius: 10px;
+      margin-top: 13px; text-decoration: none;
     }
+    .wa-link-icon { width: 36px; height: 36px; border-radius: 50%; background: #25D366; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .wa-link-icon svg { width: 18px; height: 18px; fill: #fff; }
+    .wa-link-text .wt-title { font-size: 13px; font-weight: 700; color: var(--black); }
+    .wa-link-text .wt-num   { font-size: 12px; color: var(--gray); margin-top: 1px; }
+
+    /* logout */
+    .btn-logout { width: 100%; margin-top: 6px; padding: 14px; background: transparent; color: var(--red); border: 1.5px solid rgba(220,38,38,0.25); border-radius: 12px; font-family: var(--font); font-size: 14px; font-weight: 700; cursor: pointer; transition: background 0.2s; }
     .btn-logout:hover { background: rgba(220,38,38,0.05); }
 
     /* overlay / toast / nav */
@@ -290,22 +226,19 @@
     .toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--black); color: #fff; padding: 12px 22px; border-radius: 50px; font-size: 13px; font-weight: 500; opacity: 0; transition: opacity 0.3s, transform 0.3s; z-index: 1000; white-space: nowrap; max-width: 90vw; text-align: center; }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
     .toast.success { background: var(--green); }
-    .toast.error { background: var(--red); }
+    .toast.error   { background: var(--red); }
 
     .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid var(--border); display: flex; z-index: 100; max-width: 480px; margin: 0 auto; }
     .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 6px 12px; text-decoration: none; }
-    .nav-item svg { width: 22px; height: 22px; stroke: var(--gray); fill: none; stroke-width: 1.8; }
+    .nav-item svg { width: 22px; height: 22px; stroke: var(--gray); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
     .nav-item span { font-size: 10px; font-weight: 600; color: var(--gray); }
     .nav-item.active svg { stroke: var(--orange); }
     .nav-item.active span { color: var(--orange); }
   </style>
 </head>
 <body>
-
-  <div class="deco-circle dc1"></div>
-  <div class="deco-circle dc2"></div>
-  <div class="deco-circle dc3"></div>
-  <div class="deco-circle dc4"></div>
+  <div class="deco-circle dc1"></div><div class="deco-circle dc2"></div>
+  <div class="deco-circle dc3"></div><div class="deco-circle dc4"></div>
   <div id="processingOverlay"><div class="spinner"></div><p class="overlay-text">A processar...</p></div>
   <div class="toast" id="toast"></div>
 
@@ -313,9 +246,7 @@
 
     <!-- perfil -->
     <div class="profile-card">
-      <div class="avatar">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-      </div>
+      <div class="avatar"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>
       <div class="profile-info">
         <div class="profile-name" id="menu-name">—</div>
         <div class="profile-acc" id="menu-account">—</div>
@@ -323,28 +254,26 @@
       </div>
     </div>
 
-    <!-- grafico + accoes -->
-    <div class="chart-row">
-      <div class="chart-box">
-        <div class="chart-title">Investimentos Activos</div>
-        <div class="chart-wrap">
-          <canvas id="investChart"></canvas>
-          <div id="chart-empty">Sem dados</div>
-        </div>
-      </div>
-      <div class="action-col">
-        <a class="action-btn dep" href="deposito.html">
-          <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <span>Deposito</span>
-        </a>
-        <a class="action-btn lev" href="levantar.html">
-          <svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <span>Levantar</span>
-        </a>
+    <!-- grafico -->
+    <div class="chart-box">
+      <div class="chart-title">Investimentos Activos</div>
+      <div class="chart-wrap">
+        <canvas id="investChart"></canvas>
+        <div id="chart-empty">Sem dados de investimento</div>
       </div>
     </div>
 
-    <!-- itens de menu -->
+    <!-- botoes deposito e levantar — iguais ao index -->
+    <div class="quick-actions">
+      <a class="qa-btn" href="deposito.html">
+        <div class="qa-icon green"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg></div>
+        <span class="qa-label">Deposito</span>
+      </a>
+      <a class="qa-btn" href="levantar.html">
+        <div class="qa-icon red"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></div>
+        <span class="qa-label">Levantar</span>
+      </a>
+    </div>
 
     <!-- historico -->
     <div class="menu-item" onclick="location.href='historico.html'" style="cursor:pointer">
@@ -353,7 +282,7 @@
           <div class="menu-icon orange"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 10h16M4 14h10" stroke-linecap="round"/></svg></div>
           <div><div class="menu-label">Historico</div><div class="menu-sub">Todos os movimentos da conta</div></div>
         </div>
-        <svg class="chevron" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg class="chevron" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
       </div>
     </div>
 
@@ -364,18 +293,18 @@
           <div class="menu-icon green"><svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="3"/><path d="M3 21v-2a4 4 0 014-4h4"/><circle cx="17" cy="11" r="3"/><path d="M13 21v-2a4 4 0 014-4h4v6H13z"/></svg></div>
           <div><div class="menu-label">Minha Rede</div><div class="menu-sub">Referidos e comissoes</div></div>
         </div>
-        <svg class="chevron" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg class="chevron" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
       </div>
     </div>
 
-    <!-- alterar senha (integrado) -->
+    <!-- alterar senha -->
     <div class="menu-item" id="section-senha">
       <div class="menu-item-header" onclick="toggleSection('section-senha')">
         <div class="menu-item-left">
           <div class="menu-icon blue"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 118 0v4"/></svg></div>
-          <div><div class="menu-label">Alterar Senha</div><div class="menu-sub">Actualizar a sua senha de acesso</div></div>
+          <div><div class="menu-label">Alterar Senha</div><div class="menu-sub">Actualizar senha de acesso</div></div>
         </div>
-        <svg class="chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg class="chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
       </div>
       <div class="menu-body">
         <div class="mform-group">
@@ -394,8 +323,56 @@
       </div>
     </div>
 
+    <!-- atendimento whatsapp -->
+    <div class="menu-item" id="section-wa">
+      <div class="menu-item-header" onclick="toggleSection('section-wa')">
+        <div class="menu-item-left">
+          <div class="menu-icon wa">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke="#25D366"/>
+            </svg>
+          </div>
+          <div><div class="menu-label">Atendimento</div><div class="menu-sub">Suporte via WhatsApp</div></div>
+        </div>
+        <svg class="chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      <div class="menu-body">
+        <p style="font-size:13px;color:var(--gray);line-height:1.6;margin-top:12px;">A nossa equipa esta disponivel para ajudar com qualquer questao relacionada com a sua conta, depositos, levantamentos ou planos de investimento.</p>
+        <a class="wa-link" href="https://wa.me/244937359561" target="_blank" rel="noopener">
+          <div class="wa-link-icon">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+            </svg>
+          </div>
+          <div class="wa-link-text">
+            <div class="wt-title">Falar com Suporte</div>
+            <div class="wt-num">+244 937 359 561</div>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- quem somos -->
+    <div class="menu-item" id="section-about">
+      <div class="menu-item-header" onclick="toggleSection('section-about')">
+        <div class="menu-item-left">
+          <div class="menu-icon orange"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg></div>
+          <div><div class="menu-label">Quem Somos</div><div class="menu-sub">Sobre a Filmora Meta</div></div>
+        </div>
+        <svg class="chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      <div class="menu-body">
+        <div class="about-body">
+          <p class="about-p">A <span class="about-highlight">Filmora Meta</span> e uma plataforma angolana de investimentos digitais, criada para democratizar o acesso a oportunidades de crescimento financeiro de forma simples, segura e acessivel.</p>
+          <p class="about-p">A nossa missao e proporcionar aos nossos usuarios planos de investimento transparentes com retornos atractivos, suportados por uma equipa dedicada e disponivel.</p>
+          <p class="about-p">Oferecemos planos diarios e de ciclo para todos os perfis de investidor, desde os que estao a comecar com o nosso plano gratuito ate aos investidores mais avancados com os planos F.</p>
+          <p class="about-p">A Filmora Meta opera com base nos valores de <span class="about-highlight">transparencia</span>, <span class="about-highlight">confianca</span> e <span class="about-highlight">crescimento conjunto</span>.</p>
+        </div>
+      </div>
+    </div>
+
     <!-- logout -->
-    <button class="btn-logout" onclick="location.href='auth.html'">Terminar Sessao</button>
+    <button class="btn-logout" onclick="doLogout()">Terminar Sessao</button>
 
   </div>
 
@@ -417,6 +394,5 @@
       <span>Menu</span>
     </a>
   </nav>
-
 </body>
 </html>
