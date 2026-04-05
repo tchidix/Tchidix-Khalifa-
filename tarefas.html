@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Filmora Meta — Tarefas</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -45,109 +45,121 @@
     });
 
     async function loadTasks() {
-      // buscar planos M activos (incluindo gratis)
-      const invQ = query(
-        collection(db, "users", currentUser.uid, "investimentos"),
-        where("status", "==", "ativo")
+      document.getElementById("tasks-list").innerHTML = `<div class="loading-msg">A carregar tarefas...</div>`;
+
+      // buscar todos investimentos activos
+      const invSnap = await getDocs(
+        query(collection(db, "users", currentUser.uid, "investimentos"), where("status", "==", "ativo"))
       );
-      const invSnap = await getDocs(invQ);
-      const mPlans = invSnap.docs
+
+      // filtrar apenas planos M e Gratis (que tem rendimento diario)
+      const plans = invSnap.docs
         .map(d => ({ id: d.id, ...d.data() }))
-        .filter(p => p.tipo?.startsWith("m") || p.tipo === "gratis");
+        .filter(p => {
+          const t = (p.tipo || "").toLowerCase();
+          return t.startsWith("m") || t === "gratis";
+        });
 
       const container = document.getElementById("tasks-list");
       container.innerHTML = "";
 
-      if (mPlans.length === 0) {
+      if (plans.length === 0) {
         container.innerHTML = `
           <div class="empty-state">
+            <div class="empty-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+              </svg>
+            </div>
             <div class="empty-title">Sem tarefas disponiveis</div>
-            <div class="empty-sub">Active um plano M ou o Plano Gratuito para comecar a ganhar rendimentos diarios.</div>
+            <div class="empty-sub">Active um Plano M ou o Plano Gratuito para comecar a ganhar rendimentos diarios.</div>
             <a href="planos.html" class="btn-go-plans">Ver Planos</a>
           </div>`;
         return;
       }
 
-      for (const plan of mPlans) {
-        const card = await buildTaskCard(plan);
+      // verificar reivindicacoes de hoje para cada plano
+      const hoje = new Date();
+      const inicioHoje = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+      const fimHoje   = new Date(inicioHoje.getTime() + 86400000);
+
+      for (const plan of plans) {
+        const reivinSnap = await getDocs(
+          query(
+            collection(db, "users", currentUser.uid, "reivindicacoes"),
+            where("planId", "==", plan.id),
+            where("data", ">=", Timestamp.fromDate(inicioHoje)),
+            where("data", "<",  Timestamp.fromDate(fimHoje))
+          )
+        );
+        const jaReivindicou = !reivinSnap.empty;
+
+        const rendimento = plan.rendimentoDiario || 0;
+
+        // calcular hora disponivel
+        let horaDisp = "Disponivel todos os dias";
+        if (plan.inicio && plan.inicio.toDate) {
+          const d = plan.inicio.toDate();
+          horaDisp = `Disponivel todos os dias as ${d.getHours().toString().padStart(2,"0")}:${d.getMinutes().toString().padStart(2,"0")}`;
+        }
+
+        const card = document.createElement("div");
+        card.className = "task-card";
+        card.id = "card-" + plan.id;
+        card.innerHTML = `
+          <div class="task-top">
+            <div class="task-info">
+              <div class="task-name">${plan.nome}</div>
+              <div class="task-hora">${horaDisp}</div>
+            </div>
+            <div class="task-rendimento">+ ${formatVal(rendimento)} Kz</div>
+          </div>
+          <div class="task-divider"></div>
+          <button
+            class="btn-reivindicar ${jaReivindicou ? "done" : ""}"
+            id="btn-${plan.id}"
+            onclick="reivindicar('${plan.id}','${plan.nome.replace(/'/g,"\\'")}',${rendimento})"
+            ${jaReivindicou ? "disabled" : ""}>
+            ${jaReivindicou ? "Ganho reivindicado hoje" : "Reivindicar Ganho"}
+          </button>`;
         container.appendChild(card);
       }
     }
 
-    async function buildTaskCard(plan) {
-      const card = document.createElement("div");
-      card.className = "task-card";
-
-      // verificar se ja reivindicou hoje
-      const hoje = new Date();
-      const inicioHoje = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
-      const fimHoje = new Date(inicioHoje.getTime() + 86400000);
-
-      const reivinQ = query(
-        collection(db, "users", currentUser.uid, "reivindicacoes"),
-        where("planId", "==", plan.id),
-        where("data", ">=", Timestamp.fromDate(inicioHoje)),
-        where("data", "<", Timestamp.fromDate(fimHoje))
-      );
-      const reivinSnap = await getDocs(reivinQ);
-      const jaReivindicou = !reivinSnap.empty;
-
-      // calcular hora disponivel (hora em que o investimento foi feito)
-      let horaDisp = "Disponivel agora";
-      if (plan.inicio) {
-        const inicioDate = plan.inicio.toDate ? plan.inicio.toDate() : new Date(plan.inicio);
-        horaDisp = `Disponivel todos os dias as ${inicioDate.toLocaleTimeString("pt-AO", { hour: "2-digit", minute: "2-digit" })}`;
-      }
-
-      const rendimento = plan.rendimentoDiario || plan.retorno || 0;
-
-      card.innerHTML = `
-        <div class="task-top">
-          <div>
-            <div class="task-name">${plan.nome}</div>
-            <div class="task-hora">${horaDisp}</div>
-          </div>
-          <div class="task-val">+ ${formatVal(rendimento)} Kz</div>
-        </div>
-        <div class="task-divider"></div>
-        <button class="btn-reivindicar ${jaReivindicou ? "done" : ""}"
-          onclick="reivindicar('${plan.id}', '${plan.nome}', ${rendimento})"
-          ${jaReivindicou ? "disabled" : ""}>
-          ${jaReivindicou ? "Reivindicado hoje" : "Reivindicar Ganho"}
-        </button>
-      `;
-      return card;
-    }
-
     window.reivindicar = async function (planId, planNome, valor) {
+      const btn = document.getElementById("btn-" + planId);
+      if (btn) { btn.disabled = true; btn.textContent = "A processar..."; }
+
       showOverlay();
       try {
-        // dupla verificacao
         const hoje = new Date();
         const inicioHoje = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
-        const fimHoje = new Date(inicioHoje.getTime() + 86400000);
+        const fimHoje   = new Date(inicioHoje.getTime() + 86400000);
 
-        const reivinQ = query(
-          collection(db, "users", currentUser.uid, "reivindicacoes"),
-          where("planId", "==", planId),
-          where("data", ">=", Timestamp.fromDate(inicioHoje)),
-          where("data", "<", Timestamp.fromDate(fimHoje))
+        // dupla verificacao anti-duplicado
+        const check = await getDocs(
+          query(
+            collection(db, "users", currentUser.uid, "reivindicacoes"),
+            where("planId", "==", planId),
+            where("data", ">=", Timestamp.fromDate(inicioHoje)),
+            where("data", "<",  Timestamp.fromDate(fimHoje))
+          )
         );
-        const check = await getDocs(reivinQ);
         if (!check.empty) {
           hideOverlay();
+          if (btn) { btn.classList.add("done"); btn.textContent = "Ganho reivindicado hoje"; }
           return showToast("Ja reivindicou este ganho hoje.", "error");
         }
 
+        // registar reivindicacao
         await addDoc(collection(db, "users", currentUser.uid, "reivindicacoes"), {
-          planId,
-          planNome,
-          valor,
-          data: serverTimestamp()
+          planId, planNome, valor, data: serverTimestamp()
         });
 
+        // creditar saldo
         await updateDoc(doc(db, "users", currentUser.uid), { saldo: increment(valor) });
 
+        // registar movimento
         await addDoc(collection(db, "users", currentUser.uid, "movimentos"), {
           tipo: "rendimento",
           descricao: "Rendimento " + planNome,
@@ -156,23 +168,22 @@
         });
 
         hideOverlay();
-        showToast("Ganho de " + formatVal(valor) + " Kz recebido!", "success");
-        setTimeout(() => loadTasks(), 1500);
+        showToast("+" + formatVal(valor) + " Kz recebidos com sucesso!", "success");
+
+        if (btn) { btn.classList.add("done"); btn.textContent = "Ganho reivindicado hoje"; }
       } catch (e) {
         hideOverlay();
-        showToast("Erro ao reivindicar.", "error");
+        if (btn) { btn.disabled = false; btn.textContent = "Reivindicar Ganho"; }
+        showToast("Erro ao reivindicar. Tente novamente.", "error");
       }
     };
 
-    function formatVal(v) {
-      return Number(v).toLocaleString("pt-AO", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    }
-
+    function formatVal(v) { return Number(v).toLocaleString("pt-AO", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
     function showOverlay() { document.getElementById("processingOverlay").classList.add("active"); }
     function hideOverlay() { document.getElementById("processingOverlay").classList.remove("active"); }
     function showToast(msg, type = "success") {
-      const t = document.getElementById("toast");
-      t.textContent = msg; t.className = "toast " + type; t.classList.add("show");
+      const t = document.getElementById("toast"); t.textContent = msg;
+      t.className = "toast " + type; t.classList.add("show");
       setTimeout(() => t.classList.remove("show"), 3500);
     }
   </script>
@@ -182,7 +193,7 @@
     :root {
       --orange: #F97316; --green: #16A34A; --red: #DC2626; --blue: #1D4ED8;
       --black: #111111; --gray: #6B7280; --gray-light: #F3F4F6; --border: #E5E7EB;
-      --font: 'DM Sans', sans-serif; --mono: 'DM Mono', monospace;
+      --font: 'DM Sans', sans-serif;
     }
     body { font-family: var(--font); background: #fff; color: var(--black); overflow-y: auto; overflow-x: hidden; min-height: 100vh; padding-bottom: 90px; }
     body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(ellipse at 0% 0%, rgba(249,115,22,0.09) 0%, transparent 55%), radial-gradient(ellipse at 100% 100%, rgba(249,115,22,0.08) 0%, transparent 55%); pointer-events: none; z-index: 0; }
@@ -194,87 +205,49 @@
 
     .page-wrap { position: relative; z-index: 1; max-width: 480px; margin: 0 auto; padding: 20px; }
 
-    /* ── welcome ── */
+    /* welcome */
     .welcome-card {
-      background: var(--black);
-      border-radius: 18px;
-      padding: 22px 20px;
-      margin-bottom: 24px;
-      position: relative;
-      overflow: hidden;
+      background: var(--black); border-radius: 18px; padding: 20px 18px;
+      margin-bottom: 22px; position: relative; overflow: hidden;
     }
-    .welcome-card::before {
-      content: '';
-      position: absolute; top: -30px; right: -30px;
-      width: 120px; height: 120px; border-radius: 50%;
-      border: 1.5px solid rgba(249,115,22,0.2);
-    }
-    .welcome-card::after {
-      content: '';
-      position: absolute; bottom: -20px; left: -20px;
-      width: 80px; height: 80px; border-radius: 50%;
-      border: 1.5px solid rgba(249,115,22,0.12);
-    }
-    .wc-label { font-size: 11px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 4px; }
-    .wc-account { font-family: var(--mono); font-size: 15px; color: var(--orange); font-weight: 500; margin-bottom: 12px; }
-    .wc-msg { font-size: 14px; color: rgba(255,255,255,0.75); line-height: 1.5; }
-    .wc-name { color: #fff; font-weight: 700; }
+    .welcome-card::before { content: ''; position: absolute; top: -30px; right: -30px; width: 110px; height: 110px; border-radius: 50%; border: 1.5px solid rgba(249,115,22,0.2); }
+    .welcome-card::after  { content: ''; position: absolute; bottom: -20px; left: -20px; width: 80px; height: 80px; border-radius: 50%; border: 1.5px solid rgba(249,115,22,0.12); }
+    .wc-label   { font-size: 10px; color: rgba(255,255,255,0.38); text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 3px; }
+    .wc-account { font-size: 13px; color: var(--orange); font-weight: 600; margin-bottom: 10px; }
+    .wc-msg     { font-size: 13px; color: rgba(255,255,255,0.7); line-height: 1.55; }
+    .wc-name    { color: #fff; font-weight: 700; }
 
-    /* ── page title ── */
     .page-title { font-size: 20px; font-weight: 700; color: var(--black); margin-bottom: 4px; }
-    .page-sub { font-size: 13px; color: var(--gray); margin-bottom: 20px; }
+    .page-sub   { font-size: 13px; color: var(--gray); margin-bottom: 18px; }
 
-    /* ── task card ── */
+    /* task card */
     .task-card {
-      border: 1.5px solid var(--border);
-      border-radius: 16px;
-      padding: 18px;
-      margin-bottom: 12px;
-      background: #fff;
+      border: 1.5px solid var(--border); border-radius: 16px;
+      padding: 18px; margin-bottom: 12px; background: #fff;
       transition: border-color 0.2s;
     }
-    .task-card:hover { border-color: rgba(249,115,22,0.35); }
-
-    .task-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 4px; }
+    .task-top { display: flex; align-items: flex-start; justify-content: space-between; }
     .task-name { font-size: 15px; font-weight: 700; color: var(--black); margin-bottom: 3px; }
     .task-hora { font-size: 11px; color: var(--gray); }
-    .task-val { font-size: 18px; font-weight: 700; color: var(--green); font-family: var(--mono); }
+    .task-rendimento { font-size: 18px; font-weight: 700; color: var(--green); }
     .task-divider { height: 1px; background: var(--border); margin: 14px 0; }
 
     .btn-reivindicar {
-      width: 100%;
-      padding: 12px;
-      background: var(--orange);
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      font-family: var(--font);
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: opacity 0.2s;
+      width: 100%; padding: 12px; background: var(--orange); color: #fff;
+      border: none; border-radius: 10px; font-family: var(--font);
+      font-size: 14px; font-weight: 700; cursor: pointer; transition: opacity 0.2s;
     }
     .btn-reivindicar:hover:not(:disabled) { opacity: 0.88; }
-    .btn-reivindicar.done {
-      background: var(--gray-light);
-      color: var(--gray);
-      cursor: not-allowed;
-    }
+    .btn-reivindicar.done { background: var(--gray-light); color: var(--gray); cursor: not-allowed; }
 
-    /* ── empty state ── */
-    .empty-state { text-align: center; padding: 40px 20px; }
+    /* empty / loading */
+    .loading-msg { font-size: 13px; color: var(--gray); text-align: center; padding: 24px 0; }
+    .empty-state { text-align: center; padding: 36px 20px; }
+    .empty-icon { margin: 0 auto 14px; width: 52px; height: 52px; background: var(--gray-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    .empty-icon svg { width: 24px; height: 24px; stroke: var(--gray); }
     .empty-title { font-size: 16px; font-weight: 700; color: var(--black); margin-bottom: 8px; }
-    .empty-sub { font-size: 13px; color: var(--gray); line-height: 1.6; margin-bottom: 20px; }
-    .btn-go-plans {
-      display: inline-block;
-      padding: 11px 24px;
-      background: var(--orange);
-      color: #fff;
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 700;
-      text-decoration: none;
-    }
+    .empty-sub   { font-size: 13px; color: var(--gray); line-height: 1.6; margin-bottom: 20px; }
+    .btn-go-plans { display: inline-block; padding: 11px 24px; background: var(--orange); color: #fff; border-radius: 10px; font-size: 14px; font-weight: 700; text-decoration: none; }
 
     /* overlay / toast / nav */
     #processingOverlay { position: fixed; inset: 0; background: rgba(255,255,255,0.82); backdrop-filter: blur(6px); z-index: 999; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 18px; }
@@ -286,28 +259,23 @@
     .toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--black); color: #fff; padding: 12px 22px; border-radius: 50px; font-size: 13px; font-weight: 500; opacity: 0; transition: opacity 0.3s, transform 0.3s; z-index: 1000; white-space: nowrap; max-width: 90vw; text-align: center; }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
     .toast.success { background: var(--green); }
-    .toast.error { background: var(--red); }
+    .toast.error   { background: var(--red); }
 
     .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid var(--border); display: flex; z-index: 100; max-width: 480px; margin: 0 auto; }
     .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 6px 12px; text-decoration: none; }
-    .nav-item svg { width: 22px; height: 22px; stroke: var(--gray); fill: none; stroke-width: 1.8; }
+    .nav-item svg { width: 22px; height: 22px; stroke: var(--gray); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
     .nav-item span { font-size: 10px; font-weight: 600; color: var(--gray); }
     .nav-item.active svg { stroke: var(--orange); }
     .nav-item.active span { color: var(--orange); }
   </style>
 </head>
 <body>
-
-  <div class="deco-circle dc1"></div>
-  <div class="deco-circle dc2"></div>
-  <div class="deco-circle dc3"></div>
-  <div class="deco-circle dc4"></div>
+  <div class="deco-circle dc1"></div><div class="deco-circle dc2"></div>
+  <div class="deco-circle dc3"></div><div class="deco-circle dc4"></div>
   <div id="processingOverlay"><div class="spinner"></div><p class="overlay-text">A processar ganho...</p></div>
   <div class="toast" id="toast"></div>
 
   <div class="page-wrap">
-
-    <!-- welcome -->
     <div class="welcome-card">
       <div class="wc-label">Numero de Conta</div>
       <div class="wc-account" id="user-account">—</div>
@@ -315,12 +283,11 @@
     </div>
 
     <div class="page-title">Tarefas Diarias</div>
-    <div class="page-sub">Reivindique os seus rendimentos diarios dos planos activos</div>
+    <div class="page-sub">Reivindique os rendimentos dos seus planos activos</div>
 
     <div id="tasks-list">
-      <div style="text-align:center;padding:30px;color:var(--gray);font-size:13px;">A carregar tarefas...</div>
+      <div class="loading-msg">A carregar tarefas...</div>
     </div>
-
   </div>
 
   <nav class="nav-bar">
@@ -341,6 +308,5 @@
       <span>Menu</span>
     </a>
   </nav>
-
 </body>
 </html>
