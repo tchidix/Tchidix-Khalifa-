@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Filmora Meta — Planos</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import {
+      getFirestore, doc, getDoc, setDoc, updateDoc, increment,
+      collection, query, where, getDocs, serverTimestamp, addDoc
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAZ27ogn8Us8FZct_DdYkFFv9vQkaHrPL4",
+      authDomain: "pinnacle-finance-b2626.firebaseapp.com",
+      projectId: "pinnacle-finance-b2626",
+      storageBucket: "pinnacle-finance-b2626.firebasestorage.app",
+      messagingSenderId: "1032490368286",
+      appId: "1:1032490368286:web:d77c9a1a888dd3c1c5dd0f"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUser = null;
+    let userData = null;
+    let activePlans = [];
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) { window.location.href = "auth.html"; return; }
+      currentUser = user;
+
+      const snap = await getDoc(doc(db, "users", user.uid));
+      if (!snap.exists()) { window.location.href = "auth.html"; return; }
+      userData = snap.data();
+
+      // buscar investimentos activos do usuario
+      const invQ = query(collection(db, "users", user.uid, "investimentos"), where("status", "==", "ativo"));
+      const invSnap = await getDocs(invQ);
+      activePlans = invSnap.docs.map(d => d.data());
+
+      renderActivePlans();
+    });
+
+    function renderActivePlans() {
+      const container = document.getElementById("active-plans-list");
+      container.innerHTML = "";
+      if (activePlans.length === 0) {
+        container.innerHTML = `<div class="empty-msg">Nenhum plano activo ainda</div>`;
+        return;
+      }
+      activePlans.forEach(p => {
+        const div = document.createElement("div");
+        div.className = "active-plan-item";
+        const inicio = p.inicio?.toDate ? p.inicio.toDate().toLocaleDateString("pt-AO") : "—";
+        const fim = p.fim?.toDate ? p.fim.toDate().toLocaleDateString("pt-AO") : "—";
+        div.innerHTML = `
+          <div class="ap-name">${p.nome}</div>
+          <div class="ap-info">Investido: <span class="val-orange">${formatVal(p.valor)} Kz</span></div>
+          <div class="ap-info">Retorno: <span class="val-green">${formatVal(p.retorno)} Kz</span></div>
+          <div class="ap-dates">${inicio} — ${fim}</div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    window.activateGratis = async function () {
+      if (!currentUser) return;
+      showOverlay();
+      try {
+        // verificar se ja usou plano gratis
+        const gratisQ = query(collection(db, "users", currentUser.uid, "investimentos"), where("tipo", "==", "gratis"));
+        const gratisSnap = await getDocs(gratisQ);
+        if (!gratisSnap.empty) {
+          hideOverlay();
+          return showToast("Ja utilizou o plano gratuito.", "error");
+        }
+
+        const inicio = new Date();
+        const fim = new Date();
+        fim.setDate(fim.getDate() + 31);
+
+        await addDoc(collection(db, "users", currentUser.uid, "investimentos"), {
+          tipo: "gratis",
+          nome: "Plano Gratuito",
+          valor: 0,
+          rendimentoDiario: 50,
+          retorno: 50 * 31,
+          diasTotal: 31,
+          status: "ativo",
+          inicio: serverTimestamp(),
+          fim
+        });
+
+        await addDoc(collection(db, "users", currentUser.uid, "movimentos"), {
+          tipo: "bonus",
+          descricao: "Activacao Plano Gratuito",
+          valor: 0,
+          data: serverTimestamp()
+        });
+
+        hideOverlay();
+        showToast("Plano Gratuito activado com sucesso!", "success");
+        setTimeout(() => location.reload(), 1500);
+      } catch (e) {
+        hideOverlay();
+        showToast("Erro ao activar plano.", "error");
+      }
+    };
+
+    window.investir = async function (nome, valor, retorno, tipo, dias) {
+      if (!currentUser || !userData) return;
+
+      // verificar limite de 2 planos (excluindo gratis)
+      const paidPlans = activePlans.filter(p => p.tipo !== "gratis");
+      if (paidPlans.length >= 2) {
+        return showToast("Limite de 2 planos de investimento atingido.", "error");
+      }
+
+      // verificar saldo
+      if ((userData.saldo || 0) < valor) {
+        return showToast("Saldo insuficiente para este plano.", "error");
+      }
+
+      // confirmar
+      const conf = document.getElementById("confirm-modal");
+      document.getElementById("conf-plan-name").textContent = nome;
+      document.getElementById("conf-plan-valor").textContent = formatVal(valor) + " Kz";
+      document.getElementById("conf-plan-retorno").textContent = formatVal(retorno) + " Kz";
+      document.getElementById("conf-plan-dias").textContent = dias + " dias";
+      conf.classList.add("active");
+
+      document.getElementById("btn-confirm-invest").onclick = async () => {
+        conf.classList.remove("active");
+        showOverlay();
+        try {
+          const inicio = new Date();
+          const fim = new Date();
+          fim.setDate(fim.getDate() + dias);
+
+          await addDoc(collection(db, "users", currentUser.uid, "investimentos"), {
+            tipo,
+            nome,
+            valor,
+            retorno,
+            diasTotal: dias,
+            status: "ativo",
+            inicio: serverTimestamp(),
+            fim
+          });
+
+          await updateDoc(doc(db, "users", currentUser.uid), { saldo: increment(-valor) });
+
+          await addDoc(collection(db, "users", currentUser.uid, "movimentos"), {
+            tipo: "investimento",
+            descricao: "Investimento " + nome,
+            valor,
+            data: serverTimestamp()
+          });
+
+          // comissao ao referente (12%)
+          if (userData.referrerId && tipo.startsWith("m")) {
+            const comissao = valor * 0.12;
+            await updateDoc(doc(db, "users", userData.referrerId), { saldo: increment(comissao) });
+            await addDoc(collection(db, "users", userData.referrerId, "movimentos"), {
+              tipo: "comissao",
+              descricao: "Comissao de referido",
+              valor: comissao,
+              data: serverTimestamp()
+            });
+          }
+
+          hideOverlay();
+          showToast("Investimento realizado com sucesso!", "success");
+          setTimeout(() => location.reload(), 1600);
+        } catch (e) {
+          hideOverlay();
+          showToast("Erro ao processar investimento.", "error");
+        }
+      };
+    };
+
+    function formatVal(v) {
+      return Number(v).toLocaleString("pt-AO", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function showOverlay() { document.getElementById("processingOverlay").classList.add("active"); }
+    function hideOverlay() { document.getElementById("processingOverlay").classList.remove("active"); }
+
+    function showToast(msg, type = "success") {
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.className = "toast " + type;
+      t.classList.add("show");
+      setTimeout(() => t.classList.remove("show"), 3500);
+    }
+
+    window.closeModal = function () {
+      document.getElementById("confirm-modal").classList.remove("active");
+    };
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --orange: #F97316; --green: #16A34A; --red: #DC2626; --blue: #1D4ED8;
+      --black: #111111; --gray: #6B7280; --gray-light: #F3F4F6; --border: #E5E7EB;
+      --font: 'DM Sans', sans-serif; --mono: 'DM Mono', monospace;
+    }
+    body { font-family: var(--font); background: #fff; color: var(--black); overflow-y: auto; overflow-x: hidden; min-height: 100vh; padding-bottom: 90px; }
+    body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(ellipse at 0% 0%, rgba(249,115,22,0.09) 0%, transparent 55%), radial-gradient(ellipse at 100% 100%, rgba(249,115,22,0.08) 0%, transparent 55%); pointer-events: none; z-index: 0; }
+    .deco-circle { position: fixed; border-radius: 50%; border: 1.5px solid rgba(249,115,22,0.16); background: transparent; pointer-events: none; z-index: 0; }
+    .dc1 { width: 420px; height: 420px; top: -140px; left: -140px; }
+    .dc2 { width: 280px; height: 280px; top: -60px; left: -60px; border-color: rgba(249,115,22,0.12); }
+    .dc3 { width: 360px; height: 360px; bottom: -120px; right: -120px; }
+    .dc4 { width: 200px; height: 200px; bottom: -50px; right: -50px; border-color: rgba(249,115,22,0.13); }
+
+    .page-wrap { position: relative; z-index: 1; max-width: 480px; margin: 0 auto; padding: 20px 20px 10px; }
+
+    .page-title { font-size: 20px; font-weight: 700; color: var(--black); margin-bottom: 4px; }
+    .page-sub { font-size: 13px; color: var(--gray); margin-bottom: 20px; }
+
+    /* ── planos activos ── */
+    .section-label { font-size: 11px; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 10px; }
+
+    .active-plan-item {
+      background: var(--gray-light);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 8px;
+    }
+    .ap-name { font-size: 14px; font-weight: 700; color: var(--black); margin-bottom: 6px; }
+    .ap-info { font-size: 12px; color: var(--gray); margin-bottom: 2px; }
+    .ap-dates { font-size: 11px; color: var(--gray); margin-top: 4px; font-family: var(--mono); }
+    .val-orange { color: var(--orange); font-weight: 700; }
+    .val-green { color: var(--green); font-weight: 700; }
+    .empty-msg { font-size: 13px; color: var(--gray); padding: 12px 0; }
+
+    /* ── plano card ── */
+    .plan-card {
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 12px;
+      background: #fff;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .plan-card:hover { border-color: var(--orange); box-shadow: 0 4px 16px rgba(249,115,22,0.09); }
+    .plan-card.promo { border-color: rgba(22,163,74,0.35); background: rgba(22,163,74,0.03); }
+    .plan-card.featured { border-color: var(--orange); }
+
+    .plan-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
+    .plan-name { font-size: 16px; font-weight: 700; color: var(--black); }
+    .plan-badge { font-size: 10px; font-weight: 700; border-radius: 50px; padding: 3px 10px; }
+    .badge-promo { background: rgba(22,163,74,0.12); color: var(--green); }
+    .badge-ciclo { background: rgba(249,115,22,0.1); color: var(--orange); }
+    .badge-diario { background: rgba(29,78,216,0.1); color: var(--blue); }
+
+    .plan-row { display: flex; justify-content: space-between; margin-bottom: 6px; }
+    .plan-key { font-size: 12px; color: var(--gray); font-weight: 500; }
+    .plan-val { font-size: 13px; font-weight: 700; font-family: var(--mono); }
+    .plan-val.orange { color: var(--orange); }
+    .plan-val.green { color: var(--green); }
+    .plan-val.blue { color: var(--blue); }
+
+    .plan-divider { height: 1px; background: var(--border); margin: 12px 0; }
+
+    .btn-invest {
+      width: 100%;
+      padding: 11px;
+      background: var(--orange);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn-invest:hover { opacity: 0.88; }
+    .btn-invest.green { background: var(--green); }
+
+    /* ── modal confirmacao ── */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-box {
+      background: #fff;
+      border-radius: 20px 20px 0 0;
+      padding: 28px 24px 36px;
+      width: 100%;
+      max-width: 480px;
+    }
+    .modal-title { font-size: 17px; font-weight: 700; color: var(--black); margin-bottom: 18px; }
+    .modal-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+    .modal-row:last-of-type { border: none; }
+    .modal-row span:first-child { color: var(--gray); }
+    .modal-row span:last-child { font-weight: 700; color: var(--black); }
+    .modal-btns { display: flex; gap: 10px; margin-top: 18px; }
+    .btn-cancel { flex: 1; padding: 12px; border: 1.5px solid var(--border); border-radius: 10px; background: transparent; font-family: var(--font); font-size: 14px; font-weight: 600; color: var(--gray); cursor: pointer; }
+    .btn-ok { flex: 2; padding: 12px; background: var(--orange); color: #fff; border: none; border-radius: 10px; font-family: var(--font); font-size: 14px; font-weight: 700; cursor: pointer; }
+
+    /* overlay / toast / nav (igual ao index) */
+    #processingOverlay { position: fixed; inset: 0; background: rgba(255,255,255,0.82); backdrop-filter: blur(6px); z-index: 999; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 18px; }
+    #processingOverlay.active { display: flex; }
+    .spinner { width: 52px; height: 52px; border: 3px solid rgba(249,115,22,0.15); border-top-color: var(--orange); border-radius: 50%; animation: spin 0.85s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .overlay-text { font-size: 14px; font-weight: 600; color: var(--black); }
+
+    .toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--black); color: #fff; padding: 12px 22px; border-radius: 50px; font-size: 13px; font-weight: 500; opacity: 0; transition: opacity 0.3s, transform 0.3s; z-index: 1000; white-space: nowrap; max-width: 90vw; text-align: center; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .toast.success { background: var(--green); }
+    .toast.error { background: var(--red); }
+
+    .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid var(--border); display: flex; z-index: 100; max-width: 480px; margin: 0 auto; }
+    .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 6px 12px; text-decoration: none; }
+    .nav-item svg { width: 22px; height: 22px; stroke: var(--gray); fill: none; stroke-width: 1.8; }
+    .nav-item span { font-size: 10px; font-weight: 600; color: var(--gray); }
+    .nav-item.active svg { stroke: var(--orange); }
+    .nav-item.active span { color: var(--orange); }
+  </style>
+</head>
+<body>
+
+  <div class="deco-circle dc1"></div>
+  <div class="deco-circle dc2"></div>
+  <div class="deco-circle dc3"></div>
+  <div class="deco-circle dc4"></div>
+  <div id="processingOverlay"><div class="spinner"></div><p class="overlay-text">A processar...</p></div>
+  <div class="toast" id="toast"></div>
+
+  <!-- modal confirmacao -->
+  <div class="modal-overlay" id="confirm-modal">
+    <div class="modal-box">
+      <div class="modal-title">Confirmar Investimento</div>
+      <div class="modal-row"><span>Plano</span><span id="conf-plan-name">—</span></div>
+      <div class="modal-row"><span>Valor</span><span id="conf-plan-valor">—</span></div>
+      <div class="modal-row"><span>Retorno</span><span id="conf-plan-retorno">—</span></div>
+      <div class="modal-row"><span>Ciclo</span><span id="conf-plan-dias">—</span></div>
+      <div class="modal-btns">
+        <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+        <button class="btn-ok" id="btn-confirm-invest">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-wrap">
+    <div class="page-title">Planos de Investimento</div>
+    <div class="page-sub">Escolha o plano ideal para o seu perfil</div>
+
+    <!-- planos activos -->
+    <div class="section-label">Meus Planos Activos</div>
+    <div id="active-plans-list"><div class="empty-msg">A carregar...</div></div>
+
+    <div style="height:10px"></div>
+
+    <!-- PROMO GRATIS -->
+    <div class="section-label">Promocao</div>
+    <div class="plan-card promo">
+      <div class="plan-top">
+        <div class="plan-name">Plano Gratuito</div>
+        <div class="plan-badge badge-promo">Gratis</div>
+      </div>
+      <div class="plan-row"><span class="plan-key">Investimento</span><span class="plan-val green">0,00 Kz</span></div>
+      <div class="plan-row"><span class="plan-key">Rendimento diario</span><span class="plan-val orange">50,00 Kz / dia</span></div>
+      <div class="plan-row"><span class="plan-key">Validade</span><span class="plan-val">31 dias</span></div>
+      <div class="plan-divider"></div>
+      <button class="btn-invest green" onclick="activateGratis()">Activar Plano Gratuito</button>
+    </div>
+
+    <!-- PLANOS M — RENDIMENTO DIARIO -->
+    <div class="section-label" style="margin-top:16px">Planos M — Rendimento Diario</div>
+
+    <div class="plan-card">
+      <div class="plan-top"><div class="plan-name">Plano M1</div><div class="plan-badge badge-diario">Diario</div></div>
+      <div class="plan-row"><span class="plan-key">Investimento</span><span class="plan-val orange">6.000,00 Kz</span></div>
+      <div class="plan-row"><span class="plan-key">Performance diaria</span><span class="plan-val green">300,00 Kz / dia</span></div>
+      <div class="plan-divider"></div>
+      <button class="btn-invest" onclick="investir('Plano M1',6000,300,'m1',1)">Investir Agora</button>
+    </div>
+
+    <div class="plan-card">
+      <div class="plan-top"><div class="plan-name">Plano M2</div><div class="plan-badge badge-diario">Diario</div></div>
+      <div class="plan-row"><span class="plan-key">Investimento</span><span class="plan-val orange">12.000,00 Kz</span></div>
+      <div class="plan-row"><span class="plan-key">Performance diaria</span><span class="plan-val green">600,00 Kz / dia</span></div>
+      <div class="plan-divider"></div>
+      <button class="btn-invest" onclick="investir('Plano M2',12000,600,'m2',1)">Investir Agora</button>
+    </div>
+
+    <div class="plan-card">
+      <div class="plan-top"><div class="plan-name">Plano M3</div><div class="plan-badge badge-diario">Diario</div></div>
+      <div class="plan-row"><span class="plan-key">Investimento</span><span class="plan-val orange">18.000,00 Kz</span></div>
+      <div class="plan-row"><span class="plan-key">Performance diaria</span><span class="plan-val green">1.200,00 Kz / dia</span></div>
+      <div class="plan-divider"></div>
+      <button class="btn-invest" onclick="investir('Plano M3',18000,1200,'m3',1)">Investir Agora</button>
+    </div>
+
+    <!-- PLANOS F — CICLO DE LUCRO -->
+    <div class="section-label" style="margin-top:16px">Planos F — Ciclo de Lucro (35 dias)</div>
+
+    <div class="plan-card">
+      <div class="plan-top"><div class="plan-name">Plano F2</div><div class="plan-badge badge-ciclo">Ciclo</div></div>
+      <div class="plan-row"><span class="plan-key">Investimento</span><span class="plan-val orange">5.000,00 Kz</span></div>
+      <div class="plan-row"><span class="plan-key">Ciclo de lucro</span><span class="plan-val green">15.000,00 Kz</span></div>
+      <div class="plan-row"><span class="plan-key">Duracao</span><span class="plan-val">35 dias</span></div>
+      <div class="plan-divider"></div>
+      <button class="btn-invest" onclick="investir('Plano F2',5000,15000,'f2',35)">Investir Agora</button>
+    </div>
+
+    <div class="plan-card">
+      <div class="plan-top"><div class="plan-name">Plano F3</div><div class="plan-badge badge-ciclo">Ciclo</div></div>
+      <div class="plan-row"><span class="plan-key">Investimento</span><span class="plan-val orange">10.000,00 Kz</span></div>
+      <div class="plan-row"><span class="plan-key">Ciclo de lucro</span><span class="plan-val green">25.000,00 Kz</span></div>
+      <div class="plan-row"><span class="plan-key">Duracao</span><span class="plan-val">35 dias</span></div>
+      <div class="plan-divider"></div>
+      <button class="btn-invest" onclick="investir('Plano F3',10000,25000,'f3',35)">Investir Agora</button>
+    </div>
+
+    <div class="plan-card featured">
+      <div class="plan-top"><div class="plan-name">Plano F4</div><div class="plan-badge badge-ciclo">Ciclo</div></div>
+      <div class="plan-row"><span class="plan-key">Investimento</span><span class="plan-val orange">15.000,00 Kz</span></div>
+      <div class="plan-row"><span class="plan-key">Ciclo de lucro</span><span class="plan-val green">35.000,00 Kz</span></div>
+      <div class="plan-row"><span class="plan-key">Duracao</span><span class="plan-val">35 dias</span></div>
+      <div class="plan-divider"></div>
+      <button class="btn-invest" onclick="investir('Plano F4',15000,35000,'f4',35)">Investir Agora</button>
+    </div>
+
+    <div class="plan-card featured">
+      <div class="plan-top"><div class="plan-name">Plano F5</div><div class="plan-badge badge-ciclo">Ciclo</div></div>
+      <div class="plan-row"><span class="plan-key">Investimento</span><span class="plan-val orange">50.000,00 Kz</span></div>
+      <div class="plan-row"><span class="plan-key">Ciclo de lucro</span><span class="plan-val green">121.000,00 Kz</span></div>
+      <div class="plan-row"><span class="plan-key">Duracao</span><span class="plan-val">35 dias</span></div>
+      <div class="plan-divider"></div>
+      <button class="btn-invest" onclick="investir('Plano F5',50000,121000,'f5',35)">Investir Agora</button>
+    </div>
+
+    <div class="plan-card featured">
+      <div class="plan-top"><div class="plan-name">Plano F6</div><div class="plan-badge badge-ciclo">Ciclo</div></div>
+      <div class="plan-row"><span class="plan-key">Investimento</span><span class="plan-val orange">100.000,00 Kz</span></div>
+      <div class="plan-row"><span class="plan-key">Ciclo de lucro</span><span class="plan-val green">242.000,00 Kz</span></div>
+      <div class="plan-row"><span class="plan-key">Duracao</span><span class="plan-val">35 dias</span></div>
+      <div class="plan-divider"></div>
+      <button class="btn-invest" onclick="investir('Plano F6',100000,242000,'f6',35)">Investir Agora</button>
+    </div>
+
+  </div>
+
+  <nav class="nav-bar">
+    <a class="nav-item" href="index.html">
+      <svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg>
+      <span>Inicial</span>
+    </a>
+    <a class="nav-item active" href="planos.html">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      <span>Planos</span>
+    </a>
+    <a class="nav-item" href="tarefas.html">
+      <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+      <span>Tarefas</span>
+    </a>
+    <a class="nav-item" href="menu.html">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      <span>Menu</span>
+    </a>
+  </nav>
+
+</body>
+</html>

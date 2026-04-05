@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Filmora Meta — Deposito</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAZ27ogn8Us8FZct_DdYkFFv9vQkaHrPL4",
+      authDomain: "pinnacle-finance-b2626.firebaseapp.com",
+      projectId: "pinnacle-finance-b2626",
+      storageBucket: "pinnacle-finance-b2626.firebasestorage.app",
+      messagingSenderId: "1032490368286",
+      appId: "1:1032490368286:web:d77c9a1a888dd3c1c5dd0f"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    let currentUser = null;
+    let depositoValor = 0;
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) { window.location.href = "auth.html"; return; }
+      currentUser = user;
+    });
+
+    window.selectAmount = function (val) {
+      document.getElementById("dep-valor").value = val;
+      document.querySelectorAll(".amount-chip").forEach(c => c.classList.remove("active"));
+      event.target.classList.add("active");
+    };
+
+    window.goStep2 = function () {
+      const v = parseFloat(document.getElementById("dep-valor").value);
+      if (!v || v < 5000) return showToast("O valor minimo de deposito e 5.000 Kz.", "error");
+      depositoValor = v;
+      document.getElementById("dep-step1").classList.remove("active");
+      document.getElementById("dep-step2").classList.add("active");
+      document.getElementById("dep-valor-show").textContent = formatVal(v) + " Kz";
+      updateDots(2);
+    };
+
+    window.goStep3 = function () {
+      document.getElementById("dep-step2").classList.remove("active");
+      document.getElementById("dep-step3").classList.add("active");
+      updateDots(3);
+    };
+
+    window.goBack = function (to) {
+      document.querySelectorAll(".dep-step").forEach(s => s.classList.remove("active"));
+      document.getElementById("dep-step" + to).classList.add("active");
+      updateDots(to);
+    };
+
+    window.enviarComprovativo = async function () {
+      const file = document.getElementById("comp-file").files[0];
+      if (!file) return showToast("Anexe o comprovativo de pagamento.", "error");
+
+      showOverlay();
+      try {
+        // registar pedido de deposito (admin aprova manualmente)
+        await addDoc(collection(db, "depositos"), {
+          uid: currentUser.uid,
+          valor: depositoValor,
+          status: "pendente",
+          comprovativoNome: file.name,
+          data: serverTimestamp()
+        });
+
+        // registar no historico do usuario como pendente
+        await addDoc(collection(db, "users", currentUser.uid, "movimentos"), {
+          tipo: "deposito",
+          descricao: "Deposito pendente de confirmacao",
+          valor: depositoValor,
+          status: "pendente",
+          data: serverTimestamp()
+        });
+
+        hideOverlay();
+        showToast("Comprovativo enviado. Aguarde confirmacao.", "success");
+        setTimeout(() => { window.location.href = "index.html"; }, 2000);
+      } catch (e) {
+        hideOverlay();
+        showToast("Erro ao enviar. Tente novamente.", "error");
+      }
+    };
+
+    window.copyIBAN = function () {
+      navigator.clipboard.writeText("0006.0000.9095.7416.3015.7").then(() => {
+        showToast("IBAN copiado.", "success");
+      });
+    };
+
+    function updateDots(n) {
+      [1,2,3].forEach(i => {
+        const d = document.getElementById("ddot" + i);
+        d.classList.remove("done","current");
+        if (i < n) d.classList.add("done");
+        if (i === n) d.classList.add("current");
+      });
+    }
+
+    function formatVal(v) {
+      return Number(v).toLocaleString("pt-AO", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function showOverlay() { document.getElementById("processingOverlay").classList.add("active"); }
+    function hideOverlay() { document.getElementById("processingOverlay").classList.remove("active"); }
+    function showToast(msg, type = "success") {
+      const t = document.getElementById("toast");
+      t.textContent = msg; t.className = "toast " + type; t.classList.add("show");
+      setTimeout(() => t.classList.remove("show"), 3500);
+    }
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --orange: #F97316; --green: #16A34A; --red: #DC2626; --blue: #1D4ED8;
+      --black: #111111; --gray: #6B7280; --gray-light: #F3F4F6; --border: #E5E7EB;
+      --font: 'DM Sans', sans-serif; --mono: 'DM Mono', monospace;
+    }
+    body { font-family: var(--font); background: #fff; color: var(--black); overflow-y: auto; overflow-x: hidden; min-height: 100vh; padding-bottom: 40px; }
+    body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(ellipse at 0% 0%, rgba(249,115,22,0.09) 0%, transparent 55%), radial-gradient(ellipse at 100% 100%, rgba(249,115,22,0.08) 0%, transparent 55%); pointer-events: none; z-index: 0; }
+    .deco-circle { position: fixed; border-radius: 50%; border: 1.5px solid rgba(249,115,22,0.16); background: transparent; pointer-events: none; z-index: 0; }
+    .dc1 { width: 420px; height: 420px; top: -140px; left: -140px; }
+    .dc2 { width: 280px; height: 280px; top: -60px; left: -60px; border-color: rgba(249,115,22,0.12); }
+    .dc3 { width: 360px; height: 360px; bottom: -120px; right: -120px; }
+    .dc4 { width: 200px; height: 200px; bottom: -50px; right: -50px; border-color: rgba(249,115,22,0.13); }
+
+    .page-wrap { position: relative; z-index: 1; max-width: 480px; margin: 0 auto; padding: 20px; }
+
+    .back-link { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--gray); text-decoration: none; margin-bottom: 20px; }
+    .back-link svg { width: 16px; height: 16px; stroke: var(--gray); fill: none; stroke-width: 2; }
+
+    .page-title { font-size: 22px; font-weight: 700; color: var(--black); margin-bottom: 4px; }
+    .page-sub { font-size: 13px; color: var(--gray); margin-bottom: 24px; }
+
+    /* steps bar */
+    .steps-bar { display: flex; align-items: center; justify-content: center; gap: 0; margin-bottom: 28px; }
+    .step-dot { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--gray); background: #fff; z-index: 1; transition: all 0.3s; }
+    .step-dot.current { border-color: var(--orange); color: var(--orange); background: rgba(249,115,22,0.06); }
+    .step-dot.done { border-color: var(--green); background: var(--green); color: #fff; }
+    .step-line { flex: 1; height: 1.5px; background: var(--border); max-width: 48px; }
+
+    .dep-step { display: none; }
+    .dep-step.active { display: block; }
+
+    /* amount chips */
+    .amounts-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+    .amount-chip { padding: 10px 6px; border: 1.5px solid var(--border); border-radius: 10px; background: #fff; font-family: var(--mono); font-size: 13px; font-weight: 600; color: var(--black); text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s; }
+    .amount-chip:hover, .amount-chip.active { border-color: var(--orange); background: rgba(249,115,22,0.06); color: var(--orange); }
+
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-size: 11px; font-weight: 700; color: var(--gray); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.4px; }
+    input[type="number"], input[type="file"] {
+      width: 100%; padding: 11px 14px;
+      border: 1.5px solid var(--border); border-radius: 10px;
+      font-family: var(--font); font-size: 14px; color: var(--black); background: #fafafa; outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus { border-color: var(--orange); background: #fff; }
+
+    /* iban box */
+    .iban-card {
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      background: var(--gray-light);
+      margin-bottom: 16px;
+    }
+    .iban-label { font-size: 11px; color: var(--gray); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+    .iban-val { font-family: var(--mono); font-size: 16px; font-weight: 700; color: var(--black); margin-bottom: 4px; }
+    .iban-titular { font-size: 13px; color: var(--gray); margin-bottom: 14px; }
+    .btn-copy {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 16px; background: var(--black); color: #fff;
+      border: none; border-radius: 8px; font-family: var(--font);
+      font-size: 12px; font-weight: 700; cursor: pointer;
+    }
+    .btn-copy svg { width: 14px; height: 14px; stroke: #fff; fill: none; stroke-width: 2; }
+
+    .dep-valor-tag {
+      display: inline-block; background: rgba(249,115,22,0.1); color: var(--orange);
+      border-radius: 8px; padding: 4px 12px; font-family: var(--mono); font-weight: 700;
+      font-size: 15px; margin-bottom: 16px;
+    }
+
+    .info-box {
+      background: rgba(29,78,216,0.06); border: 1px solid rgba(29,78,216,0.15);
+      border-radius: 10px; padding: 12px 14px; margin-bottom: 16px;
+      font-size: 12px; color: var(--blue); line-height: 1.6;
+    }
+
+    .btn-primary { width: 100%; padding: 13px; background: var(--orange); color: #fff; border: none; border-radius: 12px; font-family: var(--font); font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 6px; transition: opacity 0.2s; }
+    .btn-primary:hover { opacity: 0.88; }
+    .btn-secondary { width: 100%; padding: 11px; background: transparent; color: var(--gray); border: 1.5px solid var(--border); border-radius: 12px; font-family: var(--font); font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 8px; transition: border-color 0.2s, color 0.2s; }
+    .btn-secondary:hover { border-color: var(--orange); color: var(--orange); }
+
+    /* overlay / toast */
+    #processingOverlay { position: fixed; inset: 0; background: rgba(255,255,255,0.82); backdrop-filter: blur(6px); z-index: 999; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 18px; }
+    #processingOverlay.active { display: flex; }
+    .spinner { width: 52px; height: 52px; border: 3px solid rgba(249,115,22,0.15); border-top-color: var(--orange); border-radius: 50%; animation: spin 0.85s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .overlay-text { font-size: 14px; font-weight: 600; color: var(--black); }
+
+    .toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--black); color: #fff; padding: 12px 22px; border-radius: 50px; font-size: 13px; font-weight: 500; opacity: 0; transition: opacity 0.3s, transform 0.3s; z-index: 1000; white-space: nowrap; max-width: 90vw; text-align: center; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .toast.success { background: var(--green); }
+    .toast.error { background: var(--red); }
+  </style>
+</head>
+<body>
+
+  <div class="deco-circle dc1"></div>
+  <div class="deco-circle dc2"></div>
+  <div class="deco-circle dc3"></div>
+  <div class="deco-circle dc4"></div>
+  <div id="processingOverlay"><div class="spinner"></div><p class="overlay-text">A enviar...</p></div>
+  <div class="toast" id="toast"></div>
+
+  <div class="page-wrap">
+
+    <a class="back-link" href="javascript:history.back()">
+      <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Voltar
+    </a>
+
+    <div class="page-title">Deposito</div>
+    <div class="page-sub">Deposite fundos na sua conta Filmora Meta</div>
+
+    <!-- barra de etapas -->
+    <div class="steps-bar">
+      <div class="step-dot current" id="ddot1">1</div>
+      <div class="step-line"></div>
+      <div class="step-dot" id="ddot2">2</div>
+      <div class="step-line"></div>
+      <div class="step-dot" id="ddot3">3</div>
+    </div>
+
+    <!-- etapa 1 — valor -->
+    <div class="dep-step active" id="dep-step1">
+      <div class="form-group">
+        <label>Seleccione ou digite o valor</label>
+        <div class="amounts-grid">
+          <div class="amount-chip" onclick="selectAmount(5000)">5.000</div>
+          <div class="amount-chip" onclick="selectAmount(10000)">10.000</div>
+          <div class="amount-chip" onclick="selectAmount(15000)">15.000</div>
+          <div class="amount-chip" onclick="selectAmount(20000)">20.000</div>
+          <div class="amount-chip" onclick="selectAmount(50000)">50.000</div>
+          <div class="amount-chip" onclick="selectAmount(100000)">100.000</div>
+        </div>
+        <input type="number" id="dep-valor" placeholder="Valor minimo: 5.000 Kz" min="5000" />
+      </div>
+      <button class="btn-primary" onclick="goStep2()">Ver Dados de Pagamento</button>
+    </div>
+
+    <!-- etapa 2 — dados bancarios -->
+    <div class="dep-step" id="dep-step2">
+      <div class="dep-valor-tag" id="dep-valor-show">—</div>
+      <div class="iban-card">
+        <div class="iban-label">Banco BFA</div>
+        <div class="iban-val">0006.0000.9095.7416.3015.7</div>
+        <div class="iban-titular">Titular: JONATHAN DOMINGOS BFA</div>
+        <button class="btn-copy" onclick="copyIBAN()">
+          <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          Copiar IBAN
+        </button>
+      </div>
+      <div class="info-box">
+        Efectue a transferencia do valor indicado para a conta acima. Guarde o comprovativo para enviar na proxima etapa.
+      </div>
+      <button class="btn-primary" onclick="goStep3()">Ja Transferi — Enviar Comprovativo</button>
+      <button class="btn-secondary" onclick="goBack(1)">Voltar</button>
+    </div>
+
+    <!-- etapa 3 — comprovativo -->
+    <div class="dep-step" id="dep-step3">
+      <div class="form-group">
+        <label>Anexar Comprovativo de Pagamento</label>
+        <input type="file" id="comp-file" accept="image/*,application/pdf" />
+      </div>
+      <div class="info-box">
+        O deposito sera confirmado manualmente. O saldo sera creditado apos verificacao, normalmente em ate 24 horas.
+      </div>
+      <button class="btn-primary" onclick="enviarComprovativo()">Enviar Comprovativo</button>
+      <button class="btn-secondary" onclick="goBack(2)">Voltar</button>
+    </div>
+
+  </div>
+
+</body>
+</html>

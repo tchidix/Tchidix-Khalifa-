@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Filmora Meta — Tarefas</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import {
+      getFirestore, doc, getDoc, updateDoc, increment,
+      collection, query, where, getDocs, addDoc, serverTimestamp, Timestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAZ27ogn8Us8FZct_DdYkFFv9vQkaHrPL4",
+      authDomain: "pinnacle-finance-b2626.firebaseapp.com",
+      projectId: "pinnacle-finance-b2626",
+      storageBucket: "pinnacle-finance-b2626.firebasestorage.app",
+      messagingSenderId: "1032490368286",
+      appId: "1:1032490368286:web:d77c9a1a888dd3c1c5dd0f"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUser = null;
+    let userData = null;
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) { window.location.href = "auth.html"; return; }
+      currentUser = user;
+
+      const snap = await getDoc(doc(db, "users", user.uid));
+      if (!snap.exists()) { window.location.href = "auth.html"; return; }
+      userData = snap.data();
+
+      document.getElementById("user-account").textContent = userData.accountNumber || "—";
+      document.getElementById("user-first").textContent = (userData.nomeCompleto || "").split(" ")[0];
+
+      await loadTasks();
+    });
+
+    async function loadTasks() {
+      // buscar planos M activos (incluindo gratis)
+      const invQ = query(
+        collection(db, "users", currentUser.uid, "investimentos"),
+        where("status", "==", "ativo")
+      );
+      const invSnap = await getDocs(invQ);
+      const mPlans = invSnap.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .filter(p => p.tipo?.startsWith("m") || p.tipo === "gratis");
+
+      const container = document.getElementById("tasks-list");
+      container.innerHTML = "";
+
+      if (mPlans.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-title">Sem tarefas disponiveis</div>
+            <div class="empty-sub">Active um plano M ou o Plano Gratuito para comecar a ganhar rendimentos diarios.</div>
+            <a href="planos.html" class="btn-go-plans">Ver Planos</a>
+          </div>`;
+        return;
+      }
+
+      for (const plan of mPlans) {
+        const card = await buildTaskCard(plan);
+        container.appendChild(card);
+      }
+    }
+
+    async function buildTaskCard(plan) {
+      const card = document.createElement("div");
+      card.className = "task-card";
+
+      // verificar se ja reivindicou hoje
+      const hoje = new Date();
+      const inicioHoje = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+      const fimHoje = new Date(inicioHoje.getTime() + 86400000);
+
+      const reivinQ = query(
+        collection(db, "users", currentUser.uid, "reivindicacoes"),
+        where("planId", "==", plan.id),
+        where("data", ">=", Timestamp.fromDate(inicioHoje)),
+        where("data", "<", Timestamp.fromDate(fimHoje))
+      );
+      const reivinSnap = await getDocs(reivinQ);
+      const jaReivindicou = !reivinSnap.empty;
+
+      // calcular hora disponivel (hora em que o investimento foi feito)
+      let horaDisp = "Disponivel agora";
+      if (plan.inicio) {
+        const inicioDate = plan.inicio.toDate ? plan.inicio.toDate() : new Date(plan.inicio);
+        horaDisp = `Disponivel todos os dias as ${inicioDate.toLocaleTimeString("pt-AO", { hour: "2-digit", minute: "2-digit" })}`;
+      }
+
+      const rendimento = plan.rendimentoDiario || plan.retorno || 0;
+
+      card.innerHTML = `
+        <div class="task-top">
+          <div>
+            <div class="task-name">${plan.nome}</div>
+            <div class="task-hora">${horaDisp}</div>
+          </div>
+          <div class="task-val">+ ${formatVal(rendimento)} Kz</div>
+        </div>
+        <div class="task-divider"></div>
+        <button class="btn-reivindicar ${jaReivindicou ? "done" : ""}"
+          onclick="reivindicar('${plan.id}', '${plan.nome}', ${rendimento})"
+          ${jaReivindicou ? "disabled" : ""}>
+          ${jaReivindicou ? "Reivindicado hoje" : "Reivindicar Ganho"}
+        </button>
+      `;
+      return card;
+    }
+
+    window.reivindicar = async function (planId, planNome, valor) {
+      showOverlay();
+      try {
+        // dupla verificacao
+        const hoje = new Date();
+        const inicioHoje = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+        const fimHoje = new Date(inicioHoje.getTime() + 86400000);
+
+        const reivinQ = query(
+          collection(db, "users", currentUser.uid, "reivindicacoes"),
+          where("planId", "==", planId),
+          where("data", ">=", Timestamp.fromDate(inicioHoje)),
+          where("data", "<", Timestamp.fromDate(fimHoje))
+        );
+        const check = await getDocs(reivinQ);
+        if (!check.empty) {
+          hideOverlay();
+          return showToast("Ja reivindicou este ganho hoje.", "error");
+        }
+
+        await addDoc(collection(db, "users", currentUser.uid, "reivindicacoes"), {
+          planId,
+          planNome,
+          valor,
+          data: serverTimestamp()
+        });
+
+        await updateDoc(doc(db, "users", currentUser.uid), { saldo: increment(valor) });
+
+        await addDoc(collection(db, "users", currentUser.uid, "movimentos"), {
+          tipo: "rendimento",
+          descricao: "Rendimento " + planNome,
+          valor,
+          data: serverTimestamp()
+        });
+
+        hideOverlay();
+        showToast("Ganho de " + formatVal(valor) + " Kz recebido!", "success");
+        setTimeout(() => loadTasks(), 1500);
+      } catch (e) {
+        hideOverlay();
+        showToast("Erro ao reivindicar.", "error");
+      }
+    };
+
+    function formatVal(v) {
+      return Number(v).toLocaleString("pt-AO", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function showOverlay() { document.getElementById("processingOverlay").classList.add("active"); }
+    function hideOverlay() { document.getElementById("processingOverlay").classList.remove("active"); }
+    function showToast(msg, type = "success") {
+      const t = document.getElementById("toast");
+      t.textContent = msg; t.className = "toast " + type; t.classList.add("show");
+      setTimeout(() => t.classList.remove("show"), 3500);
+    }
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --orange: #F97316; --green: #16A34A; --red: #DC2626; --blue: #1D4ED8;
+      --black: #111111; --gray: #6B7280; --gray-light: #F3F4F6; --border: #E5E7EB;
+      --font: 'DM Sans', sans-serif; --mono: 'DM Mono', monospace;
+    }
+    body { font-family: var(--font); background: #fff; color: var(--black); overflow-y: auto; overflow-x: hidden; min-height: 100vh; padding-bottom: 90px; }
+    body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(ellipse at 0% 0%, rgba(249,115,22,0.09) 0%, transparent 55%), radial-gradient(ellipse at 100% 100%, rgba(249,115,22,0.08) 0%, transparent 55%); pointer-events: none; z-index: 0; }
+    .deco-circle { position: fixed; border-radius: 50%; border: 1.5px solid rgba(249,115,22,0.16); background: transparent; pointer-events: none; z-index: 0; }
+    .dc1 { width: 420px; height: 420px; top: -140px; left: -140px; }
+    .dc2 { width: 280px; height: 280px; top: -60px; left: -60px; border-color: rgba(249,115,22,0.12); }
+    .dc3 { width: 360px; height: 360px; bottom: -120px; right: -120px; }
+    .dc4 { width: 200px; height: 200px; bottom: -50px; right: -50px; border-color: rgba(249,115,22,0.13); }
+
+    .page-wrap { position: relative; z-index: 1; max-width: 480px; margin: 0 auto; padding: 20px; }
+
+    /* ── welcome ── */
+    .welcome-card {
+      background: var(--black);
+      border-radius: 18px;
+      padding: 22px 20px;
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .welcome-card::before {
+      content: '';
+      position: absolute; top: -30px; right: -30px;
+      width: 120px; height: 120px; border-radius: 50%;
+      border: 1.5px solid rgba(249,115,22,0.2);
+    }
+    .welcome-card::after {
+      content: '';
+      position: absolute; bottom: -20px; left: -20px;
+      width: 80px; height: 80px; border-radius: 50%;
+      border: 1.5px solid rgba(249,115,22,0.12);
+    }
+    .wc-label { font-size: 11px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 4px; }
+    .wc-account { font-family: var(--mono); font-size: 15px; color: var(--orange); font-weight: 500; margin-bottom: 12px; }
+    .wc-msg { font-size: 14px; color: rgba(255,255,255,0.75); line-height: 1.5; }
+    .wc-name { color: #fff; font-weight: 700; }
+
+    /* ── page title ── */
+    .page-title { font-size: 20px; font-weight: 700; color: var(--black); margin-bottom: 4px; }
+    .page-sub { font-size: 13px; color: var(--gray); margin-bottom: 20px; }
+
+    /* ── task card ── */
+    .task-card {
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 12px;
+      background: #fff;
+      transition: border-color 0.2s;
+    }
+    .task-card:hover { border-color: rgba(249,115,22,0.35); }
+
+    .task-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 4px; }
+    .task-name { font-size: 15px; font-weight: 700; color: var(--black); margin-bottom: 3px; }
+    .task-hora { font-size: 11px; color: var(--gray); }
+    .task-val { font-size: 18px; font-weight: 700; color: var(--green); font-family: var(--mono); }
+    .task-divider { height: 1px; background: var(--border); margin: 14px 0; }
+
+    .btn-reivindicar {
+      width: 100%;
+      padding: 12px;
+      background: var(--orange);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn-reivindicar:hover:not(:disabled) { opacity: 0.88; }
+    .btn-reivindicar.done {
+      background: var(--gray-light);
+      color: var(--gray);
+      cursor: not-allowed;
+    }
+
+    /* ── empty state ── */
+    .empty-state { text-align: center; padding: 40px 20px; }
+    .empty-title { font-size: 16px; font-weight: 700; color: var(--black); margin-bottom: 8px; }
+    .empty-sub { font-size: 13px; color: var(--gray); line-height: 1.6; margin-bottom: 20px; }
+    .btn-go-plans {
+      display: inline-block;
+      padding: 11px 24px;
+      background: var(--orange);
+      color: #fff;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    /* overlay / toast / nav */
+    #processingOverlay { position: fixed; inset: 0; background: rgba(255,255,255,0.82); backdrop-filter: blur(6px); z-index: 999; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 18px; }
+    #processingOverlay.active { display: flex; }
+    .spinner { width: 52px; height: 52px; border: 3px solid rgba(249,115,22,0.15); border-top-color: var(--orange); border-radius: 50%; animation: spin 0.85s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .overlay-text { font-size: 14px; font-weight: 600; color: var(--black); }
+
+    .toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--black); color: #fff; padding: 12px 22px; border-radius: 50px; font-size: 13px; font-weight: 500; opacity: 0; transition: opacity 0.3s, transform 0.3s; z-index: 1000; white-space: nowrap; max-width: 90vw; text-align: center; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .toast.success { background: var(--green); }
+    .toast.error { background: var(--red); }
+
+    .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid var(--border); display: flex; z-index: 100; max-width: 480px; margin: 0 auto; }
+    .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 6px 12px; text-decoration: none; }
+    .nav-item svg { width: 22px; height: 22px; stroke: var(--gray); fill: none; stroke-width: 1.8; }
+    .nav-item span { font-size: 10px; font-weight: 600; color: var(--gray); }
+    .nav-item.active svg { stroke: var(--orange); }
+    .nav-item.active span { color: var(--orange); }
+  </style>
+</head>
+<body>
+
+  <div class="deco-circle dc1"></div>
+  <div class="deco-circle dc2"></div>
+  <div class="deco-circle dc3"></div>
+  <div class="deco-circle dc4"></div>
+  <div id="processingOverlay"><div class="spinner"></div><p class="overlay-text">A processar ganho...</p></div>
+  <div class="toast" id="toast"></div>
+
+  <div class="page-wrap">
+
+    <!-- welcome -->
+    <div class="welcome-card">
+      <div class="wc-label">Numero de Conta</div>
+      <div class="wc-account" id="user-account">—</div>
+      <div class="wc-msg">Obrigado pela sua confianca, <span class="wc-name" id="user-first">—</span>. Reivindique os seus ganhos diarios abaixo e continue a crescer com a Filmora Meta.</div>
+    </div>
+
+    <div class="page-title">Tarefas Diarias</div>
+    <div class="page-sub">Reivindique os seus rendimentos diarios dos planos activos</div>
+
+    <div id="tasks-list">
+      <div style="text-align:center;padding:30px;color:var(--gray);font-size:13px;">A carregar tarefas...</div>
+    </div>
+
+  </div>
+
+  <nav class="nav-bar">
+    <a class="nav-item" href="index.html">
+      <svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg>
+      <span>Inicial</span>
+    </a>
+    <a class="nav-item" href="planos.html">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      <span>Planos</span>
+    </a>
+    <a class="nav-item active" href="tarefas.html">
+      <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+      <span>Tarefas</span>
+    </a>
+    <a class="nav-item" href="menu.html">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      <span>Menu</span>
+    </a>
+  </nav>
+
+</body>
+</html>

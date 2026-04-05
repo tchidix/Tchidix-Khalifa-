@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Filmora Meta — Menu</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import {
+      getFirestore, doc, getDoc, collection, query, where,
+      getDocs, orderBy, limit, serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAZ27ogn8Us8FZct_DdYkFFv9vQkaHrPL4",
+      authDomain: "pinnacle-finance-b2626.firebaseapp.com",
+      projectId: "pinnacle-finance-b2626",
+      storageBucket: "pinnacle-finance-b2626.firebasestorage.app",
+      messagingSenderId: "1032490368286",
+      appId: "1:1032490368286:web:d77c9a1a888dd3c1c5dd0f"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUser = null;
+    let userData = null;
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) { window.location.href = "auth.html"; return; }
+      currentUser = user;
+
+      const snap = await getDoc(doc(db, "users", user.uid));
+      if (!snap.exists()) { window.location.href = "auth.html"; return; }
+      userData = snap.data();
+
+      document.getElementById("menu-name").textContent = userData.nomeCompleto || "—";
+      document.getElementById("menu-account").textContent = userData.accountNumber || "—";
+      document.getElementById("menu-saldo").textContent = formatVal(userData.saldo || 0) + " Kz";
+
+      await buildChart();
+    });
+
+    async function buildChart() {
+      const invQ = query(collection(db, "users", currentUser.uid, "investimentos"), where("status", "==", "ativo"));
+      const invSnap = await getDocs(invQ);
+      const plans = invSnap.docs.map(d => d.data());
+
+      const labels = plans.map(p => p.nome);
+      const values = plans.map(p => p.valor || 0);
+
+      const ctx = document.getElementById("investChart").getContext("2d");
+      new Chart(ctx, {
+        type: "doughnut",
+        data: {
+          labels: labels.length ? labels : ["Sem investimentos"],
+          datasets: [{
+            data: values.length ? values : [1],
+            backgroundColor: values.length
+              ? ["#F97316","#16A34A","#1D4ED8","#DC2626","#9333EA","#0891B2"]
+              : ["#E5E7EB"],
+            borderWidth: 0,
+            hoverOffset: 6
+          }]
+        },
+        options: {
+          cutout: "70%",
+          plugins: { legend: { position: "bottom", labels: { font: { family: "DM Sans", size: 11 }, color: "#6B7280", boxWidth: 10, padding: 12 } } },
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      });
+
+      if (!values.length) {
+        document.getElementById("chart-empty").style.display = "block";
+      }
+    }
+
+    /* ── alterar senha ── */
+    window.alterarSenha = async function () {
+      const senhaAtual = document.getElementById("senha-atual").value;
+      const senhaNova = document.getElementById("senha-nova").value;
+      const senhaConf = document.getElementById("senha-confirmar").value;
+
+      if (!senhaAtual || !senhaNova || !senhaConf) return showToast("Preencha todos os campos.", "error");
+      if (senhaNova.length !== 6 || !/^\d{6}$/.test(senhaNova)) return showToast("A nova senha deve ter 6 digitos numericos.", "error");
+      if (senhaNova !== senhaConf) return showToast("As senhas nao coincidem.", "error");
+
+      showOverlay();
+      try {
+        const cred = EmailAuthProvider.credential(currentUser.email, senhaAtual);
+        await reauthenticateWithCredential(currentUser, cred);
+        await updatePassword(currentUser, senhaNova);
+        hideOverlay();
+        showToast("Senha alterada com sucesso.", "success");
+        document.getElementById("senha-atual").value = "";
+        document.getElementById("senha-nova").value = "";
+        document.getElementById("senha-confirmar").value = "";
+        closeSection("section-senha");
+      } catch (e) {
+        hideOverlay();
+        let msg = "Erro ao alterar senha.";
+        if (e.code === "auth/wrong-password") msg = "Senha actual incorrecta.";
+        showToast(msg, "error");
+      }
+    };
+
+    window.toggleSection = function (id) {
+      const el = document.getElementById(id);
+      el.classList.toggle("open");
+    };
+    window.closeSection = function (id) {
+      document.getElementById(id).classList.remove("open");
+    };
+
+    function formatVal(v) {
+      return Number(v).toLocaleString("pt-AO", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function showOverlay() { document.getElementById("processingOverlay").classList.add("active"); }
+    function hideOverlay() { document.getElementById("processingOverlay").classList.remove("active"); }
+    function showToast(msg, type = "success") {
+      const t = document.getElementById("toast");
+      t.textContent = msg; t.className = "toast " + type; t.classList.add("show");
+      setTimeout(() => t.classList.remove("show"), 3500);
+    }
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --orange: #F97316; --green: #16A34A; --red: #DC2626; --blue: #1D4ED8;
+      --black: #111111; --gray: #6B7280; --gray-light: #F3F4F6; --border: #E5E7EB;
+      --font: 'DM Sans', sans-serif; --mono: 'DM Mono', monospace;
+    }
+    body { font-family: var(--font); background: #fff; color: var(--black); overflow-y: auto; overflow-x: hidden; min-height: 100vh; padding-bottom: 90px; }
+    body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(ellipse at 0% 0%, rgba(249,115,22,0.09) 0%, transparent 55%), radial-gradient(ellipse at 100% 100%, rgba(249,115,22,0.08) 0%, transparent 55%); pointer-events: none; z-index: 0; }
+    .deco-circle { position: fixed; border-radius: 50%; border: 1.5px solid rgba(249,115,22,0.16); background: transparent; pointer-events: none; z-index: 0; }
+    .dc1 { width: 420px; height: 420px; top: -140px; left: -140px; }
+    .dc2 { width: 280px; height: 280px; top: -60px; left: -60px; border-color: rgba(249,115,22,0.12); }
+    .dc3 { width: 360px; height: 360px; bottom: -120px; right: -120px; }
+    .dc4 { width: 200px; height: 200px; bottom: -50px; right: -50px; border-color: rgba(249,115,22,0.13); }
+
+    .page-wrap { position: relative; z-index: 1; max-width: 480px; margin: 0 auto; padding: 20px; }
+
+    /* ── profile card ── */
+    .profile-card {
+      background: var(--black);
+      border-radius: 18px;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .avatar {
+      width: 50px; height: 50px;
+      border-radius: 50%;
+      background: rgba(249,115,22,0.2);
+      border: 2px solid rgba(249,115,22,0.4);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .avatar svg { width: 24px; height: 24px; stroke: var(--orange); fill: none; stroke-width: 1.8; }
+    .profile-info { flex: 1; min-width: 0; }
+    .profile-name { font-size: 15px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .profile-acc { font-size: 11px; color: rgba(255,255,255,0.4); font-family: var(--mono); margin-top: 2px; }
+    .profile-saldo { font-size: 14px; color: var(--orange); font-weight: 700; font-family: var(--mono); margin-top: 4px; }
+
+    /* ── chart + action row ── */
+    .chart-row {
+      display: flex;
+      gap: 14px;
+      margin-bottom: 20px;
+      align-items: stretch;
+    }
+    .chart-box {
+      flex: 1;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      background: #fff;
+      position: relative;
+    }
+    .chart-title { font-size: 11px; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+    .chart-wrap { height: 140px; position: relative; }
+    #chart-empty { display: none; position: absolute; inset: 0; display: none; align-items: center; justify-content: center; font-size: 11px; color: var(--gray); text-align: center; }
+
+    .action-col {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-width: 110px;
+    }
+    .action-btn {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border-radius: 14px;
+      border: 1.5px solid var(--border);
+      background: #fff;
+      cursor: pointer;
+      text-decoration: none;
+      padding: 12px 8px;
+      transition: border-color 0.2s;
+    }
+    .action-btn:hover { border-color: var(--orange); }
+    .action-btn svg { width: 20px; height: 20px; fill: none; stroke-width: 1.8; }
+    .action-btn.dep svg { stroke: var(--green); }
+    .action-btn.lev svg { stroke: var(--red); }
+    .action-btn span { font-size: 11px; font-weight: 700; color: var(--black); }
+
+    /* ── menu items ── */
+    .menu-item {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      margin-bottom: 10px;
+      overflow: hidden;
+      background: #fff;
+    }
+    .menu-item-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .menu-item-header:hover { background: var(--gray-light); }
+    .menu-item-left { display: flex; align-items: center; gap: 12px; }
+    .menu-icon { width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center; }
+    .menu-icon svg { width: 18px; height: 18px; fill: none; stroke-width: 1.8; }
+    .menu-icon.orange { background: rgba(249,115,22,0.1); } .menu-icon.orange svg { stroke: var(--orange); }
+    .menu-icon.green { background: rgba(22,163,74,0.08); } .menu-icon.green svg { stroke: var(--green); }
+    .menu-icon.blue { background: rgba(29,78,216,0.08); } .menu-icon.blue svg { stroke: var(--blue); }
+    .menu-icon.red { background: rgba(220,38,38,0.08); } .menu-icon.red svg { stroke: var(--red); }
+    .menu-label { font-size: 14px; font-weight: 700; color: var(--black); }
+    .menu-sub { font-size: 11px; color: var(--gray); margin-top: 1px; }
+    .chevron { width: 16px; height: 16px; stroke: var(--gray); fill: none; stroke-width: 2; transition: transform 0.25s; }
+    .menu-item.open .chevron { transform: rotate(180deg); }
+
+    .menu-body { display: none; padding: 0 16px 16px; border-top: 1px solid var(--border); }
+    .menu-item.open .menu-body { display: block; }
+
+    /* ── form inside menu ── */
+    .mform-group { margin-top: 14px; }
+    .mform-group label { display: block; font-size: 11px; font-weight: 700; color: var(--gray); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.4px; }
+    .mform-group input {
+      width: 100%; padding: 10px 13px;
+      border: 1.5px solid var(--border); border-radius: 9px;
+      font-family: var(--font); font-size: 14px; color: var(--black); background: #fafafa; outline: none;
+      transition: border-color 0.2s;
+    }
+    .mform-group input:focus { border-color: var(--orange); background: #fff; }
+    .mform-group input[type="password"] { font-family: var(--mono); letter-spacing: 4px; }
+
+    .btn-form {
+      width: 100%; margin-top: 14px; padding: 12px;
+      background: var(--orange); color: #fff; border: none; border-radius: 10px;
+      font-family: var(--font); font-size: 14px; font-weight: 700; cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn-form:hover { opacity: 0.88; }
+
+    /* ── logout ── */
+    .btn-logout {
+      width: 100%; margin-top: 6px; padding: 14px;
+      background: transparent; color: var(--red);
+      border: 1.5px solid rgba(220,38,38,0.25); border-radius: 12px;
+      font-family: var(--font); font-size: 14px; font-weight: 700; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-logout:hover { background: rgba(220,38,38,0.05); }
+
+    /* overlay / toast / nav */
+    #processingOverlay { position: fixed; inset: 0; background: rgba(255,255,255,0.82); backdrop-filter: blur(6px); z-index: 999; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 18px; }
+    #processingOverlay.active { display: flex; }
+    .spinner { width: 52px; height: 52px; border: 3px solid rgba(249,115,22,0.15); border-top-color: var(--orange); border-radius: 50%; animation: spin 0.85s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .overlay-text { font-size: 14px; font-weight: 600; color: var(--black); }
+
+    .toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--black); color: #fff; padding: 12px 22px; border-radius: 50px; font-size: 13px; font-weight: 500; opacity: 0; transition: opacity 0.3s, transform 0.3s; z-index: 1000; white-space: nowrap; max-width: 90vw; text-align: center; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .toast.success { background: var(--green); }
+    .toast.error { background: var(--red); }
+
+    .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid var(--border); display: flex; z-index: 100; max-width: 480px; margin: 0 auto; }
+    .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 6px 12px; text-decoration: none; }
+    .nav-item svg { width: 22px; height: 22px; stroke: var(--gray); fill: none; stroke-width: 1.8; }
+    .nav-item span { font-size: 10px; font-weight: 600; color: var(--gray); }
+    .nav-item.active svg { stroke: var(--orange); }
+    .nav-item.active span { color: var(--orange); }
+  </style>
+</head>
+<body>
+
+  <div class="deco-circle dc1"></div>
+  <div class="deco-circle dc2"></div>
+  <div class="deco-circle dc3"></div>
+  <div class="deco-circle dc4"></div>
+  <div id="processingOverlay"><div class="spinner"></div><p class="overlay-text">A processar...</p></div>
+  <div class="toast" id="toast"></div>
+
+  <div class="page-wrap">
+
+    <!-- perfil -->
+    <div class="profile-card">
+      <div class="avatar">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      </div>
+      <div class="profile-info">
+        <div class="profile-name" id="menu-name">—</div>
+        <div class="profile-acc" id="menu-account">—</div>
+        <div class="profile-saldo" id="menu-saldo">—</div>
+      </div>
+    </div>
+
+    <!-- grafico + accoes -->
+    <div class="chart-row">
+      <div class="chart-box">
+        <div class="chart-title">Investimentos Activos</div>
+        <div class="chart-wrap">
+          <canvas id="investChart"></canvas>
+          <div id="chart-empty">Sem dados</div>
+        </div>
+      </div>
+      <div class="action-col">
+        <a class="action-btn dep" href="deposito.html">
+          <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Deposito</span>
+        </a>
+        <a class="action-btn lev" href="levantar.html">
+          <svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Levantar</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- itens de menu -->
+
+    <!-- historico -->
+    <div class="menu-item" onclick="location.href='historico.html'" style="cursor:pointer">
+      <div class="menu-item-header">
+        <div class="menu-item-left">
+          <div class="menu-icon orange"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 10h16M4 14h10" stroke-linecap="round"/></svg></div>
+          <div><div class="menu-label">Historico</div><div class="menu-sub">Todos os movimentos da conta</div></div>
+        </div>
+        <svg class="chevron" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+
+    <!-- minha rede -->
+    <div class="menu-item" onclick="location.href='rede.html'" style="cursor:pointer">
+      <div class="menu-item-header">
+        <div class="menu-item-left">
+          <div class="menu-icon green"><svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="3"/><path d="M3 21v-2a4 4 0 014-4h4"/><circle cx="17" cy="11" r="3"/><path d="M13 21v-2a4 4 0 014-4h4v6H13z"/></svg></div>
+          <div><div class="menu-label">Minha Rede</div><div class="menu-sub">Referidos e comissoes</div></div>
+        </div>
+        <svg class="chevron" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+
+    <!-- alterar senha (integrado) -->
+    <div class="menu-item" id="section-senha">
+      <div class="menu-item-header" onclick="toggleSection('section-senha')">
+        <div class="menu-item-left">
+          <div class="menu-icon blue"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 118 0v4"/></svg></div>
+          <div><div class="menu-label">Alterar Senha</div><div class="menu-sub">Actualizar a sua senha de acesso</div></div>
+        </div>
+        <svg class="chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="menu-body">
+        <div class="mform-group">
+          <label>Senha Actual</label>
+          <input type="password" id="senha-atual" placeholder="------" maxlength="6" />
+        </div>
+        <div class="mform-group">
+          <label>Nova Senha (6 digitos)</label>
+          <input type="password" id="senha-nova" placeholder="------" maxlength="6" />
+        </div>
+        <div class="mform-group">
+          <label>Confirmar Nova Senha</label>
+          <input type="password" id="senha-confirmar" placeholder="------" maxlength="6" />
+        </div>
+        <button class="btn-form" onclick="alterarSenha()">Actualizar Senha</button>
+      </div>
+    </div>
+
+    <!-- logout -->
+    <button class="btn-logout" onclick="location.href='auth.html'">Terminar Sessao</button>
+
+  </div>
+
+  <nav class="nav-bar">
+    <a class="nav-item" href="index.html">
+      <svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg>
+      <span>Inicial</span>
+    </a>
+    <a class="nav-item" href="planos.html">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      <span>Planos</span>
+    </a>
+    <a class="nav-item" href="tarefas.html">
+      <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+      <span>Tarefas</span>
+    </a>
+    <a class="nav-item active" href="menu.html">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      <span>Menu</span>
+    </a>
+  </nav>
+
+</body>
+</html>

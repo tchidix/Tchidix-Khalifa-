@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Filmora Meta — Levantar</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import {
+      getFirestore, doc, getDoc, updateDoc, increment,
+      collection, addDoc, serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAZ27ogn8Us8FZct_DdYkFFv9vQkaHrPL4",
+      authDomain: "pinnacle-finance-b2626.firebaseapp.com",
+      projectId: "pinnacle-finance-b2626",
+      storageBucket: "pinnacle-finance-b2626.firebasestorage.app",
+      messagingSenderId: "1032490368286",
+      appId: "1:1032490368286:web:d77c9a1a888dd3c1c5dd0f"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    let currentUser = null;
+    let userData = null;
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) { window.location.href = "auth.html"; return; }
+      currentUser = user;
+
+      const snap = await getDoc(doc(db, "users", user.uid));
+      if (!snap.exists()) { window.location.href = "auth.html"; return; }
+      userData = snap.data();
+
+      document.getElementById("saldo-disp").textContent = formatVal(userData.saldo || 0) + " Kz";
+
+      if (userData.contaBancaria) {
+        showContaVinculada();
+      } else {
+        showVincularConta();
+      }
+    });
+
+    function showVincularConta() {
+      document.getElementById("view-vincular").style.display = "block";
+      document.getElementById("view-levantar").style.display = "none";
+    }
+
+    function showContaVinculada() {
+      document.getElementById("view-vincular").style.display = "none";
+      document.getElementById("view-levantar").style.display = "block";
+
+      const c = userData.contaBancaria;
+      document.getElementById("cv-titular").textContent = c.titular || "—";
+      document.getElementById("cv-iban").textContent = c.iban || "—";
+      document.getElementById("cv-banco").textContent = c.banco || "—";
+    }
+
+    window.vincularConta = async function () {
+      const titular = document.getElementById("v-titular").value.trim();
+      const iban = document.getElementById("v-iban").value.trim();
+      const banco = document.getElementById("v-banco").value.trim();
+
+      if (!titular || !iban || !banco) return showToast("Preencha todos os campos.", "error");
+      if (iban.length < 10) return showToast("IBAN invalido.", "error");
+
+      showOverlay();
+      try {
+        await updateDoc(doc(db, "users", currentUser.uid), {
+          contaBancaria: { titular, iban, banco }
+        });
+        userData.contaBancaria = { titular, iban, banco };
+        hideOverlay();
+        showToast("Conta bancaria vinculada com sucesso.", "success");
+        showContaVinculada();
+      } catch (e) {
+        hideOverlay();
+        showToast("Erro ao vincular conta.", "error");
+      }
+    };
+
+    window.solicitarLevantamento = async function () {
+      const val = parseFloat(document.getElementById("lev-valor").value);
+      if (!val || val < 400) return showToast("O valor minimo de levantamento e 400 Kz.", "error");
+      if (val > (userData.saldo || 0)) return showToast("Saldo insuficiente.", "error");
+
+      showOverlay();
+      try {
+        await addDoc(collection(db, "levantamentos"), {
+          uid: currentUser.uid,
+          valor: val,
+          contaBancaria: userData.contaBancaria,
+          status: "pendente",
+          data: serverTimestamp()
+        });
+
+        await updateDoc(doc(db, "users", currentUser.uid), { saldo: increment(-val) });
+
+        await addDoc(collection(db, "users", currentUser.uid, "movimentos"), {
+          tipo: "levantamento",
+          descricao: "Pedido de levantamento",
+          valor: val,
+          status: "pendente",
+          data: serverTimestamp()
+        });
+
+        hideOverlay();
+        showToast("Pedido enviado. Processamento em ate 48 horas.", "success");
+        setTimeout(() => { window.location.href = "index.html"; }, 2200);
+      } catch (e) {
+        hideOverlay();
+        showToast("Erro ao processar pedido.", "error");
+      }
+    };
+
+    function formatVal(v) {
+      return Number(v).toLocaleString("pt-AO", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function showOverlay() { document.getElementById("processingOverlay").classList.add("active"); }
+    function hideOverlay() { document.getElementById("processingOverlay").classList.remove("active"); }
+    function showToast(msg, type = "success") {
+      const t = document.getElementById("toast");
+      t.textContent = msg; t.className = "toast " + type; t.classList.add("show");
+      setTimeout(() => t.classList.remove("show"), 3500);
+    }
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --orange: #F97316; --green: #16A34A; --red: #DC2626; --blue: #1D4ED8;
+      --black: #111111; --gray: #6B7280; --gray-light: #F3F4F6; --border: #E5E7EB;
+      --font: 'DM Sans', sans-serif; --mono: 'DM Mono', monospace;
+    }
+    body { font-family: var(--font); background: #fff; color: var(--black); overflow-y: auto; overflow-x: hidden; min-height: 100vh; padding-bottom: 40px; }
+    body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(ellipse at 0% 0%, rgba(249,115,22,0.09) 0%, transparent 55%), radial-gradient(ellipse at 100% 100%, rgba(249,115,22,0.08) 0%, transparent 55%); pointer-events: none; z-index: 0; }
+    .deco-circle { position: fixed; border-radius: 50%; border: 1.5px solid rgba(249,115,22,0.16); background: transparent; pointer-events: none; z-index: 0; }
+    .dc1 { width: 420px; height: 420px; top: -140px; left: -140px; }
+    .dc2 { width: 280px; height: 280px; top: -60px; left: -60px; border-color: rgba(249,115,22,0.12); }
+    .dc3 { width: 360px; height: 360px; bottom: -120px; right: -120px; }
+    .dc4 { width: 200px; height: 200px; bottom: -50px; right: -50px; border-color: rgba(249,115,22,0.13); }
+
+    .page-wrap { position: relative; z-index: 1; max-width: 480px; margin: 0 auto; padding: 20px; }
+
+    .back-link { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--gray); text-decoration: none; margin-bottom: 20px; }
+    .back-link svg { width: 16px; height: 16px; stroke: var(--gray); fill: none; stroke-width: 2; }
+
+    .page-title { font-size: 22px; font-weight: 700; color: var(--black); margin-bottom: 4px; }
+    .page-sub { font-size: 13px; color: var(--gray); margin-bottom: 24px; }
+
+    .saldo-box {
+      background: var(--gray-light);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .saldo-box-label { font-size: 12px; color: var(--gray); font-weight: 600; }
+    .saldo-box-val { font-size: 18px; font-weight: 700; color: var(--orange); font-family: var(--mono); }
+
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-size: 11px; font-weight: 700; color: var(--gray); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.4px; }
+    input[type="text"], input[type="number"] {
+      width: 100%; padding: 11px 14px;
+      border: 1.5px solid var(--border); border-radius: 10px;
+      font-family: var(--font); font-size: 14px; color: var(--black); background: #fafafa; outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus { border-color: var(--orange); background: #fff; }
+
+    .section-title { font-size: 14px; font-weight: 700; color: var(--black); margin-bottom: 14px; }
+
+    /* conta vinculada card */
+    .conta-card {
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 20px;
+      background: var(--gray-light);
+    }
+    .conta-card-label { font-size: 10px; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 10px; }
+    .conta-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 13px; }
+    .conta-row span:first-child { color: var(--gray); font-weight: 500; }
+    .conta-row span:last-child { font-weight: 700; color: var(--black); font-family: var(--mono); font-size: 12px; }
+    .lock-note { font-size: 11px; color: var(--gray); margin-top: 8px; display: flex; align-items: center; gap: 4px; }
+    .lock-note svg { width: 12px; height: 12px; stroke: var(--gray); fill: none; stroke-width: 2; }
+
+    .btn-primary { width: 100%; padding: 13px; background: var(--orange); color: #fff; border: none; border-radius: 12px; font-family: var(--font); font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 6px; transition: opacity 0.2s; }
+    .btn-primary:hover { opacity: 0.88; }
+    .btn-primary.red { background: var(--red); }
+
+    .info-box { background: rgba(29,78,216,0.06); border: 1px solid rgba(29,78,216,0.15); border-radius: 10px; padding: 12px 14px; margin-bottom: 16px; font-size: 12px; color: var(--blue); line-height: 1.6; }
+
+    /* overlay / toast */
+    #processingOverlay { position: fixed; inset: 0; background: rgba(255,255,255,0.82); backdrop-filter: blur(6px); z-index: 999; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 18px; }
+    #processingOverlay.active { display: flex; }
+    .spinner { width: 52px; height: 52px; border: 3px solid rgba(249,115,22,0.15); border-top-color: var(--orange); border-radius: 50%; animation: spin 0.85s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .overlay-text { font-size: 14px; font-weight: 600; color: var(--black); }
+
+    .toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--black); color: #fff; padding: 12px 22px; border-radius: 50px; font-size: 13px; font-weight: 500; opacity: 0; transition: opacity 0.3s, transform 0.3s; z-index: 1000; white-space: nowrap; max-width: 90vw; text-align: center; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .toast.success { background: var(--green); }
+    .toast.error { background: var(--red); }
+  </style>
+</head>
+<body>
+
+  <div class="deco-circle dc1"></div>
+  <div class="deco-circle dc2"></div>
+  <div class="deco-circle dc3"></div>
+  <div class="deco-circle dc4"></div>
+  <div id="processingOverlay"><div class="spinner"></div><p class="overlay-text">A processar...</p></div>
+  <div class="toast" id="toast"></div>
+
+  <div class="page-wrap">
+
+    <a class="back-link" href="javascript:history.back()">
+      <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Voltar
+    </a>
+
+    <div class="page-title">Levantar</div>
+    <div class="page-sub">Solicite a transferencia do seu saldo</div>
+
+    <div class="saldo-box">
+      <div class="saldo-box-label">Saldo Disponivel</div>
+      <div class="saldo-box-val" id="saldo-disp">—</div>
+    </div>
+
+    <!-- VIEW: vincular conta -->
+    <div id="view-vincular" style="display:none">
+      <div class="section-title">Vincular Conta Bancaria</div>
+      <div class="info-box">
+        Para efectuar levantamentos, e necessario vincular a sua conta bancaria. Esta informacao nao podera ser alterada apos o registo.
+      </div>
+      <div class="form-group">
+        <label>Titular (conforme o BI)</label>
+        <input type="text" id="v-titular" placeholder="Nome completo como no BI" />
+      </div>
+      <div class="form-group">
+        <label>IBAN</label>
+        <input type="text" id="v-iban" placeholder="0000.0000.0000.0000.0000.0" />
+      </div>
+      <div class="form-group">
+        <label>Nome do Banco</label>
+        <input type="text" id="v-banco" placeholder="Ex: BFA, BAI, BIC..." />
+      </div>
+      <button class="btn-primary" onclick="vincularConta()">Vincular Conta</button>
+    </div>
+
+    <!-- VIEW: solicitar levantamento -->
+    <div id="view-levantar" style="display:none">
+      <div class="section-title">Conta Bancaria Vinculada</div>
+      <div class="conta-card">
+        <div class="conta-card-label">Conta Verificada</div>
+        <div class="conta-row"><span>Titular</span><span id="cv-titular">—</span></div>
+        <div class="conta-row"><span>IBAN</span><span id="cv-iban">—</span></div>
+        <div class="conta-row"><span>Banco</span><span id="cv-banco">—</span></div>
+        <div class="lock-note">
+          <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 118 0v4"/></svg>
+          Conta bloqueada para edicao por seguranca
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Valor a Levantar (minimo 400 Kz)</label>
+        <input type="number" id="lev-valor" placeholder="400" min="400" />
+      </div>
+
+      <div class="info-box">
+        O valor sera processado em ate 48 horas uteis apos aprovacao.
+      </div>
+
+      <button class="btn-primary red" onclick="solicitarLevantamento()">Solicitar Levantamento</button>
+    </div>
+
+  </div>
+
+</body>
+</html>
