@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Filmora Meta — Planos e Tarefas</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs, addDoc, serverTimestamp, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAZ27ogn8Us8FZct_DdYkFFv9vQkaHrPL4",
+      authDomain: "pinnacle-finance-b2626.firebaseapp.com",
+      projectId: "pinnacle-finance-b2626",
+      storageBucket: "pinnacle-finance-b2626.firebasestorage.app",
+      messagingSenderId: "1032490368286",
+      appId: "1:1032490368286:web:d77c9a1a888dd3c1c5dd0f"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUser = null;
+    let userData = null;
+    let userInvestments = [];
+
+    function fmt(n) { return Number(n||0).toLocaleString('pt-AO',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+
+    function showOverlay(msg) {
+      document.getElementById('processing-overlay').style.display = 'flex';
+      document.getElementById('processing-msg').textContent = msg || 'A processar...';
+    }
+    function hideOverlay() { document.getElementById('processing-overlay').style.display = 'none'; }
+    function showNotif(msg, type) {
+      const n = document.getElementById('notification');
+      n.textContent = msg;
+      n.className = 'notification ' + (type === 'error' ? 'notif-error' : 'notif-success');
+      n.style.display = 'block';
+      setTimeout(() => { n.style.display = 'none'; }, 4000);
+    }
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) { window.location.href = 'auth.html'; return; }
+      currentUser = user;
+      const snap = await getDoc(doc(db, 'users', user.uid));
+      if (!snap.exists()) { window.location.href = 'auth.html'; return; }
+      userData = snap.data();
+
+      // load investments
+      const invQ = query(collection(db, 'investments'), where('uid', '==', user.uid), where('status', '==', 'active'));
+      const invSnap = await getDocs(invQ);
+      userInvestments = [];
+      invSnap.forEach(d => userInvestments.push({ id: d.id, ...d.data() }));
+
+      loadTasksTab();
+
+      // check if coming from hash
+      if (window.location.hash === '#tasks') switchMainTab('tasks');
+    });
+
+    /* ── MAIN TAB SWITCH ── */
+    window.switchMainTab = function(tab) {
+      ['plans','tasks'].forEach(t => {
+        document.getElementById('maintab-' + t).classList.toggle('active', t === tab);
+        document.getElementById('panel-' + t).classList.toggle('hidden', t !== tab);
+      });
+      if (tab === 'tasks') loadTasksTab();
+    };
+
+    /* ── PLAN SUB TABS ── */
+    window.switchPlanTab = function(tab) {
+      ['M','F'].forEach(t => {
+        document.getElementById('plantab-' + t).classList.toggle('active', t === tab);
+        document.getElementById('plans-' + t).classList.toggle('hidden', t !== tab);
+      });
+    };
+
+    /* ── INVEST ── */
+    window.investPlan = async function(planId, cost, dailyReturn, totalReturn, label, type) {
+      if (!currentUser || !userData) return;
+
+      // check max 2 active investments (excluding free)
+      const paidInvs = userInvestments.filter(i => i.type !== 'free');
+      if (paidInvs.length >= 2) { showNotif('Limite de 2 investimentos activos atingido.', 'error'); return; }
+
+      // check free plan unique
+      if (type === 'free') {
+        const freeSnap = await getDocs(query(collection(db,'investments'), where('uid','==',currentUser.uid), where('type','==','free')));
+        if (!freeSnap.empty) { showNotif('O plano gratuito so pode ser activado uma vez.', 'error'); return; }
+      }
+
+      if (type !== 'free' && userData.balance < cost) {
+        showNotif('Saldo insuficiente para este plano.', 'error'); return;
+      }
+
+      showOverlay('A activar o plano ' + label + '...');
+      try {
+        const now = new Date();
+        const endDate = new Date(now);
+        endDate.setDate(endDate.getDate() + (type === 'free' ? 31 : (type === 'M' ? 0 : 35)));
+
+        const invData = {
+          uid: currentUser.uid, planId, label, type,
+          cost, dailyReturn: dailyReturn || 0, totalReturn: totalReturn || 0,
+          startDate: serverTimestamp(),
+          endDate: endDate.toISOString(),
+          status: 'active',
+          lastClaim: null,
+          streak: 0
+        };
+
+        await addDoc(collection(db, 'investments'), invData);
+
+        if (type !== 'free') {
+          await updateDoc(doc(db, 'users', currentUser.uid), {
+            balance: increment(-cost),
+            deposited: increment(cost)
+          });
+          userData.balance -= cost;
+        }
+
+        userInvestments.push(invData);
+        hideOverlay();
+        showNotif('Plano ' + label + ' activado com sucesso!', 'success');
+        setTimeout(() => window.location.reload(), 1500);
+      } catch(e) {
+        hideOverlay();
+        showNotif('Erro ao activar o plano.', 'error');
+      }
+    };
+
+    /* ── TASKS ── */
+    function loadTasksTab() {
+      const mInvs = userInvestments.filter(i => i.type === 'M' || i.type === 'free');
+      const container = document.getElementById('tasks-container');
+
+      if (mInvs.length === 0 && !userInvestments.find(i=>i.type==='free')) {
+        container.innerHTML = '<div class="empty-tasks">Nenhum plano M activo. Active um plano para comecar a ganhar diariamente.</div>';
+        return;
+      }
+
+      container.innerHTML = '';
+      mInvs.forEach(inv => {
+        const now = Date.now();
+        const lastClaim = inv.lastClaim ? new Date(inv.lastClaim).getTime() : 0;
+        const msSinceClaim = now - lastClaim;
+        const msInDay = 86400000;
+        const canClaim = msSinceClaim >= msInDay;
+        const nextMs = msInDay - msSinceClaim;
+        const nextH = Math.floor(nextMs / 3600000);
+        const nextM = Math.floor((nextMs % 3600000) / 60000);
+
+        container.innerHTML += `
+          <div class="task-card">
+            <div class="task-plan-badge">${inv.label}</div>
+            <div class="task-earn-label">Ganho Diario</div>
+            <div class="task-earn-val">${fmt(inv.dailyReturn || 50)} <span class="curr-sm">AOA</span></div>
+            ${canClaim
+              ? `<button class="btn-claim" onclick="claimEarning('${inv.id}', ${inv.dailyReturn || 50}, '${inv.label}')">Reivindicar Ganho</button>`
+              : `<div class="task-timer">Proximo ganho em <strong>${nextH}h ${nextM}m</strong></div>`
+            }
+          </div>`;
+      });
+    }
+
+    window.claimEarning = async function(invId, amount, label) {
+      showOverlay('A processar o seu ganho...');
+      try {
+        await updateDoc(doc(db, 'investments', invId), { lastClaim: new Date().toISOString(), streak: increment(1) });
+        await updateDoc(doc(db, 'users', currentUser.uid), { balance: increment(amount) });
+        await addDoc(collection(db, 'transactions'), {
+          uid: currentUser.uid,
+          type: 'earning',
+          description: 'Ganho diario — ' + label,
+          amount,
+          createdAt: serverTimestamp()
+        });
+        hideOverlay();
+        showNotif('+ ' + amount + ' AOA creditados na sua carteira!', 'success');
+        setTimeout(() => window.location.reload(), 1800);
+      } catch(e) {
+        hideOverlay();
+        showNotif('Erro ao reivindicar ganho.', 'error');
+      }
+    };
+
+    // Live pay feed
+    const liveNames = ['A.Costa','M.Silva','J.Santos','R.Pereira','L.Neto','D.Ferreira','C.Manuel','F.Lopes'];
+    const liveAmts  = [300,600,1200,50,300,600,1200,50];
+    let liveIdx = 0;
+    function startLiveFeed() {
+      const el = document.getElementById('live-feed');
+      if (!el) return;
+      setInterval(() => {
+        const name = liveNames[liveIdx % liveNames.length];
+        const amt  = liveAmts[liveIdx % liveAmts.length];
+        const row = document.createElement('div');
+        row.className = 'live-row';
+        row.innerHTML = `<span class="live-dot"></span> <strong>${name}</strong> recebeu <strong>+ ${amt} AOA</strong>`;
+        el.insertBefore(row, el.firstChild);
+        if (el.children.length > 5) el.removeChild(el.lastChild);
+        liveIdx++;
+      }, 3000);
+    }
+    window.addEventListener('DOMContentLoaded', () => { startLiveFeed(); });
+
+    // Checkin streak
+    window.doCheckin = async function() {
+      showOverlay('A registar check-in...');
+      await new Promise(r => setTimeout(r, 1200));
+      hideOverlay();
+      showNotif('Check-in diario registado!', 'success');
+    };
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --blue:#3B82F6; --orange:#F59E0B; --green:#10B981; --red:#EF4444; --black:#000; --white:#fff; }
+    html { height: 100%; }
+    body { font-family:'DM Sans',sans-serif; background:#fff; color:var(--black); min-height:100vh; overflow-y:auto; overflow-x:hidden; padding-bottom:90px; }
+    body::before { content:''; position:fixed; inset:0; background: radial-gradient(ellipse at 0% 0%,rgba(59,130,246,.08) 0%,transparent 55%), radial-gradient(ellipse at 100% 100%,rgba(59,130,246,.08) 0%,transparent 55%); pointer-events:none; z-index:0; }
+    .deco-circle{position:fixed;border-radius:50%;background:transparent;pointer-events:none;z-index:0;}
+    .tl-1{width:420px;height:420px;top:-140px;left:-140px;border:1.5px solid rgba(59,130,246,.14);}
+    .tl-2{width:280px;height:280px;top:-70px;left:-70px;border:1.5px solid rgba(59,130,246,.10);}
+    .br-1{width:360px;height:360px;bottom:-120px;right:-120px;border:1.5px solid rgba(59,130,246,.14);}
+    .br-2{width:200px;height:200px;bottom:-60px;right:-60px;border:1.5px solid rgba(59,130,246,.10);}
+    .page{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:0 16px;}
+
+    /* PAGE HEADER */
+    .page-header{padding:20px 0 16px;}
+    .page-title{font-size:1.15rem;font-weight:700;}
+    .page-sub{font-size:0.75rem;color:rgba(0,0,0,.4);margin-top:2px;}
+
+    /* MAIN TABS */
+    .main-tabs{display:grid;grid-template-columns:1fr 1fr;background:rgba(59,130,246,.06);border-radius:14px;padding:3px;margin-bottom:20px;gap:3px;}
+    .main-tab-btn{padding:11px;border:none;border-radius:11px;background:transparent;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;color:rgba(0,0,0,.4);cursor:pointer;transition:all .22s;}
+    .main-tab-btn.active{background:var(--white);color:var(--blue);box-shadow:0 1px 8px rgba(59,130,246,.12);}
+
+    /* PLAN TABS */
+    .plan-tabs{display:flex;gap:8px;margin-bottom:18px;}
+    .plan-tab-btn{padding:8px 22px;border-radius:20px;border:1px solid rgba(59,130,246,.2);background:transparent;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:600;color:rgba(0,0,0,.45);cursor:pointer;transition:all .2s;}
+    .plan-tab-btn.active{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:0 3px 12px rgba(59,130,246,.28);}
+
+    .hidden{display:none!important;}
+
+    /* PROMO CARD */
+    .promo-card{background:linear-gradient(135deg,#F59E0B 0%,#FBBF24 100%);border-radius:18px;padding:18px 20px;margin-bottom:16px;box-shadow:0 4px 18px rgba(245,158,11,.25);position:relative;overflow:hidden;}
+    .promo-card::after{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.12);}
+    .promo-title{font-size:.72rem;font-weight:700;color:rgba(255,255,255,.8);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px;}
+    .promo-desc{font-size:.88rem;font-weight:700;color:#fff;margin-bottom:12px;line-height:1.4;}
+    .promo-btn{display:inline-block;background:rgba(255,255,255,.25);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.4);border-radius:10px;padding:8px 18px;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:700;color:#fff;cursor:pointer;transition:transform .15s;}
+    .promo-btn:active{transform:scale(.96);}
+    .promo-validity{font-size:.68rem;color:rgba(255,255,255,.65);margin-top:8px;}
+
+    /* PLAN CARDS */
+    .plan-card{background:rgba(255,255,255,.65);backdrop-filter:blur(12px);border:1px solid rgba(59,130,246,.13);border-radius:18px;padding:18px 20px;margin-bottom:12px;}
+    .plan-card-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;}
+    .plan-name{font-size:1rem;font-weight:700;}
+    .plan-badge{font-size:.68rem;font-weight:700;padding:3px 10px;border-radius:20px;}
+    .badge-m{background:rgba(59,130,246,.1);color:var(--blue);}
+    .badge-f{background:rgba(16,185,129,.1);color:var(--green);}
+    .plan-rows{display:flex;gap:8px;margin-bottom:14px;}
+    .plan-stat{flex:1;background:rgba(59,130,246,.04);border-radius:12px;padding:10px 12px;}
+    .plan-stat-label{font-size:.65rem;font-weight:600;color:rgba(0,0,0,.4);text-transform:uppercase;letter-spacing:.8px;margin-bottom:3px;}
+    .plan-stat-val{font-size:.92rem;font-weight:700;font-variant-numeric:tabular-nums;}
+    .val-blue{color:var(--blue);}
+    .val-green2{color:var(--green);}
+    .val-orange{color:var(--orange);}
+    .plan-cycle{font-size:.72rem;color:rgba(0,0,0,.4);margin-bottom:12px;}
+    .btn-invest{width:100%;padding:12px;background:var(--blue);color:#fff;border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:transform .15s,box-shadow .2s;box-shadow:0 3px 14px rgba(59,130,246,.28);}
+    .btn-invest:active{transform:scale(.96);}
+    .btn-invest-glass{width:100%;padding:12px;background:rgba(255,255,255,.4);backdrop-filter:blur(10px);border:1px solid rgba(59,130,246,.22);border-radius:12px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;color:var(--blue);cursor:pointer;transition:transform .15s;}
+    .btn-invest-glass:active{transform:scale(.96);}
+
+    /* TASKS */
+    .tasks-intro{font-size:.82rem;color:rgba(0,0,0,.45);margin-bottom:18px;line-height:1.5;}
+
+    /* live feed */
+    .live-feed-card{background:rgba(16,185,129,.05);border:1px solid rgba(16,185,129,.15);border-radius:16px;padding:14px 16px;margin-bottom:18px;}
+    .live-feed-title{font-size:.72rem;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+    .live-blink{width:7px;height:7px;border-radius:50%;background:var(--green);animation:blink 1.2s infinite;}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+    #live-feed{display:flex;flex-direction:column;gap:6px;}
+    .live-row{font-size:.8rem;color:rgba(0,0,0,.6);display:flex;align-items:center;gap:6px;animation:fade-in .4s ease;}
+    @keyframes fade-in{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+    .live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0;}
+
+    /* tips */
+    .tips-card{background:rgba(59,130,246,.04);border:1px solid rgba(59,130,246,.12);border-radius:16px;padding:14px 16px;margin-bottom:18px;}
+    .tips-title{font-size:.72rem;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:10px;}
+    .tip-item{font-size:.8rem;color:rgba(0,0,0,.55);padding:6px 0;border-bottom:1px solid rgba(59,130,246,.07);line-height:1.5;}
+    .tip-item:last-child{border-bottom:none;}
+
+    /* checkin */
+    .checkin-card{background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.18);border-radius:16px;padding:14px 16px;margin-bottom:18px;}
+    .checkin-title{font-size:.72rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:10px;}
+    .checkin-days{display:flex;gap:6px;margin-bottom:12px;}
+    .day-dot{width:32px;height:32px;border-radius:50%;border:1.5px solid rgba(245,158,11,.3);display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;color:rgba(0,0,0,.35);}
+    .day-dot.done{background:var(--orange);border-color:var(--orange);color:#fff;}
+    .btn-checkin{padding:9px 20px;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:700;color:var(--orange);cursor:pointer;transition:transform .15s;}
+    .btn-checkin:active{transform:scale(.96);}
+
+    /* task cards */
+    .task-card{background:rgba(255,255,255,.65);backdrop-filter:blur(12px);border:1px solid rgba(59,130,246,.13);border-radius:18px;padding:20px;margin-bottom:12px;text-align:center;}
+    .task-plan-badge{display:inline-block;background:var(--blue);color:#fff;font-size:.7rem;font-weight:700;padding:3px 12px;border-radius:20px;margin-bottom:12px;}
+    .task-earn-label{font-size:.72rem;color:rgba(0,0,0,.4);font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
+    .task-earn-val{font-size:1.8rem;font-weight:700;font-variant-numeric:tabular-nums;color:var(--orange);margin-bottom:16px;}
+    .curr-sm{font-size:55%;color:rgba(0,0,0,.35);font-weight:500;}
+    .btn-claim{width:100%;padding:13px;background:linear-gradient(135deg,var(--green) 0%,var(--blue) 100%);color:#fff;border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(16,185,129,.28);transition:transform .15s;}
+    .btn-claim:active{transform:scale(.96);}
+    .task-timer{font-size:.82rem;color:rgba(0,0,0,.45);background:rgba(59,130,246,.05);border-radius:10px;padding:10px;font-weight:500;}
+    .empty-tasks{text-align:center;padding:32px 16px;font-size:.85rem;color:rgba(0,0,0,.4);line-height:1.6;}
+
+    /* notification */
+    .notification{display:none;position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:9999;padding:12px 22px;border-radius:12px;font-size:.85rem;font-weight:600;white-space:nowrap;animation:notif-slide .3s ease;box-shadow:0 6px 24px rgba(0,0,0,.12);max-width:90vw;text-align:center;}
+    @keyframes notif-slide{from{opacity:0;top:8px}to{opacity:1;top:20px}}
+    .notif-success{background:linear-gradient(135deg,var(--green) 0%,var(--blue) 100%);color:#fff;}
+    .notif-error{background:var(--red);color:#fff;}
+
+    /* overlay */
+    #processing-overlay{display:none;position:fixed;inset:0;background:rgba(255,255,255,.62);backdrop-filter:blur(10px);z-index:9000;flex-direction:column;align-items:center;justify-content:center;gap:20px;}
+    .spinner{width:52px;height:52px;border:3px solid rgba(59,130,246,.15);border-top-color:var(--blue);border-radius:50%;animation:spin .9s linear infinite;}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    #processing-msg{font-size:.9rem;font-weight:600;color:var(--blue);}
+
+    /* bottom nav */
+    .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.75);backdrop-filter:blur(18px);border-top:1px solid rgba(59,130,246,.12);display:flex;justify-content:space-around;align-items:center;padding:10px 0 16px;z-index:100;}
+    .nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;text-decoration:none;flex:1;}
+    .nav-item svg{width:22px;height:22px;stroke:rgba(0,0,0,.3);fill:none;stroke-width:2;transition:stroke .2s;}
+    .nav-item span{font-size:.65rem;font-weight:600;color:rgba(0,0,0,.3);transition:color .2s;letter-spacing:.3px;}
+    .nav-item.active svg{stroke:var(--blue);}
+    .nav-item.active span{color:var(--blue);}
+  </style>
+</head>
+<body>
+  <div class="deco-circle tl-1"></div><div class="deco-circle tl-2"></div>
+  <div class="deco-circle br-1"></div><div class="deco-circle br-2"></div>
+  <div id="notification" class="notification"></div>
+  <div id="processing-overlay"><div class="spinner"></div><div id="processing-msg">A processar...</div></div>
+
+  <div class="page">
+    <div class="page-header">
+      <div class="page-title">Investimentos</div>
+      <div class="page-sub">Planos activos e ganhos diarios</div>
+    </div>
+
+    <!-- MAIN TABS -->
+    <div class="main-tabs">
+      <button class="main-tab-btn active" id="maintab-plans" onclick="switchMainTab('plans')">Investir</button>
+      <button class="main-tab-btn" id="maintab-tasks" onclick="switchMainTab('tasks')">Ganhar</button>
+    </div>
+
+    <!-- PLANS PANEL -->
+    <div id="panel-plans">
+      <div class="plan-tabs">
+        <button class="plan-tab-btn active" id="plantab-M" onclick="switchPlanTab('M')">Planos M</button>
+        <button class="plan-tab-btn" id="plantab-F" onclick="switchPlanTab('F')">Planos F</button>
+      </div>
+
+      <!-- M PLANS -->
+      <div id="plans-M">
+        <!-- FREE -->
+        <div class="promo-card">
+          <div class="promo-title">Promocao Activa</div>
+          <div class="promo-desc">Plano Gratuito — Ganhe 50 AOA por dia durante 31 dias</div>
+          <button class="promo-btn" onclick="investPlan('free',0,50,1550,'Plano Gratuito','free')">Activar Agora</button>
+          <div class="promo-validity">Validade: 31 dias — Apenas uma vez por conta</div>
+        </div>
+
+        <!-- M1 -->
+        <div class="plan-card">
+          <div class="plan-card-head">
+            <div class="plan-name">Plano M1</div>
+            <div class="plan-badge badge-m">M</div>
+          </div>
+          <div class="plan-rows">
+            <div class="plan-stat">
+              <div class="plan-stat-label">Investimento</div>
+              <div class="plan-stat-val val-blue">6.000 <span style="font-size:60%;color:rgba(0,0,0,.35);">AOA</span></div>
+            </div>
+            <div class="plan-stat">
+              <div class="plan-stat-label">Performance Diaria</div>
+              <div class="plan-stat-val val-orange">300 <span style="font-size:60%;color:rgba(0,0,0,.35);">AOA</span></div>
+            </div>
+          </div>
+          <div class="plan-cycle">Ganho diario — sem ciclo fixo de encerramento</div>
+          <button class="btn-invest" onclick="investPlan('M1',6000,300,0,'M1','M')">Investir Agora</button>
+        </div>
+
+        <!-- M2 -->
+        <div class="plan-card">
+          <div class="plan-card-head"><div class="plan-name">Plano M2</div><div class="plan-badge badge-m">M</div></div>
+          <div class="plan-rows">
+            <div class="plan-stat"><div class="plan-stat-label">Investimento</div><div class="plan-stat-val val-blue">12.000 <span style="font-size:60%;color:rgba(0,0,0,.35);">AOA</span></div></div>
+            <div class="plan-stat"><div class="plan-stat-label">Performance Diaria</div><div class="plan-stat-val val-orange">600 <span style="font-size:60%;color:rgba(0,0,0,.35);">AOA</span></div></div>
+          </div>
+          <div class="plan-cycle">Ganho diario — sem ciclo fixo de encerramento</div>
+          <button class="btn-invest" onclick="investPlan('M2',12000,600,0,'M2','M')">Investir Agora</button>
+        </div>
+
+        <!-- M3 -->
+        <div class="plan-card">
+          <div class="plan-card-head"><div class="plan-name">Plano M3</div><div class="plan-badge badge-m">M</div></div>
+          <div class="plan-rows">
+            <div class="plan-stat"><div class="plan-stat-label">Investimento</div><div class="plan-stat-val val-blue">18.000 <span style="font-size:60%;color:rgba(0,0,0,.35);">AOA</span></div></div>
+            <div class="plan-stat"><div class="plan-stat-label">Performance Diaria</div><div class="plan-stat-val val-orange">1.200 <span style="font-size:60%;color:rgba(0,0,0,.35);">AOA</span></div></div>
+          </div>
+          <div class="plan-cycle">Ganho diario — sem ciclo fixo de encerramento</div>
+          <button class="btn-invest" onclick="investPlan('M3',18000,1200,0,'M3','M')">Investir Agora</button>
+        </div>
+      </div>
+
+      <!-- F PLANS -->
+      <div id="plans-F" class="hidden">
+        <div style="background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.15);border-radius:14px;padding:12px 16px;margin-bottom:16px;font-size:.8rem;color:var(--green);font-weight:500;line-height:1.5;">
+          Planos F: retorno total no final do ciclo de 35 dias.
+        </div>
+
+        <!-- F2 -->
+        <div class="plan-card">
+          <div class="plan-card-head"><div class="plan-name">Plano F2</div><div class="plan-badge badge-f">F</div></div>
+          <div class="plan-rows">
+            <div class="plan-stat"><div class="plan-stat-label">Investimento</div><div class="plan-stat-val val-blue">5.000 <span style="font-size:60%;color:rgba(0,0,0,.35);">AOA</span></div></div>
+            <div class="plan-stat"><div class="plan-stat-label">Ciclo de Lucro</div><div class="plan-stat-val val-green2">15.000 <span style="font-size:60%;color:rgba(0,0,0,.35);">AOA</span></div></div>
+          </div>
+          <div class="plan-cycle">Ciclo de 35 dias — retorno no final</div>
+          <button class="btn-invest" onclick="investPlan('F2',5000,0,15000,'F2','F')">Investir Agora</button>
+        </div>
+
+        <!-- F3 -->
+        <div class="plan-card">
+          <div class="plan-card-head"><div class="plan-name">Plano F3</div><div class="plan-badge badge-f">F</div></div>
+          <div class="plan-rows">
+            <div class="plan-stat"><div class="plan-stat-label">Investimento</div><div class="plan-stat-val val-blue">10.000 <span style="font-size:60%;color:rgba(0,0,0,.35);">AOA</span></div></div>
+            <div class="plan-stat"><div class="plan-stat-label">Ciclo de Lucro</div><div class="plan-stat-val val-green2">25.000 <span style="font-size:60%;color:rgba(0,0,0,.35);">AOA</span></div></div>
+          </div>
+          <div class="plan-cycle">Ciclo de 35 dias — retorno no final</div>
+          <button class="btn-invest" onclick="investPlan('F3',10000,0,25000,'F3','F')">Investir Agora</button>
+        </div>
+
+        <!-- F4 -->
+        <div class="plan-card">
+          <div class="plan-card-head"><div class="plan-name">Plano F4</div><div class="plan-badge badge-f">F</div></div>
+          <div class="plan-rows">
+            <div class="plan-stat"><div class="plan-stat-label">Investimento</div><div class="plan-stat-val val-blue">15.000 <span style="font-size:60%;color:rgba(0,0,0,.35);">AOA</span></div></div>
+            <div class="plan-stat"><div class="plan-stat-label">Ciclo de Lucro</div><div class="plan-stat-val val-green2">35.000 <span style="font-size:60%;color:rgba(0,0,0,.35);">AOA</span></div></div>
+          </div>
+          <div class="plan-cycle">Ciclo de 35 dias — retorno no final</div>
+          <button class="btn-invest" onclick="investPlan('F4',15000,0,35000,'F4','F')">Investir Agora</button>
+        </div>
+
+        <!-- F5 -->
+        <div class="plan-card">
+          <div class="plan-card-head"><div class="plan-name">Plano F5</div><div class="plan-badge badge-f">F</div></div>
+          <div class="plan-rows">
+            <div class="plan-stat"><div class="plan-stat-label">Investimento</div><div class="plan-stat-val val-blue">50.000 <span style="font-size:60%;color:rgba(0,0,0,.35);">AOA</span></div></div>
+            <div class="plan-stat"><div class="plan-stat-label">Ciclo de Lucro</div><div class="plan-stat-val val-green2">121.000 <span style="font-size:60%;color:rgba(0,0,0,.35);">AOA</span></div></div>
+          </div>
+          <div class="plan-cycle">Ciclo de 35 dias — retorno no final</div>
+          <button class="btn-invest" onclick="investPlan('F5',50000,0,121000,'F5','F')">Investir Agora</button>
+        </div>
+
+        <!-- F6 -->
+        <div class="plan-card">
+          <div class="plan-card-head"><div class="plan-name">Plano F6</div><div class="plan-badge badge-f">F</div></div>
+          <div class="plan-rows">
+            <div class="plan-stat"><div class="plan-stat-label">Investimento</div><div class="plan-stat-val val-blue">100.000 <span style="font-size:60%;color:rgba(0,0,0,.35);">AOA</span></div></div>
+            <div class="plan-stat"><div class="plan-stat-label">Ciclo de Lucro</div><div class="plan-stat-val val-green2">242.000 <span style="font-size:60%;color:rgba(0,0,0,.35);">AOA</span></div></div>
+          </div>
+          <div class="plan-cycle">Ciclo de 35 dias — retorno no final</div>
+          <button class="btn-invest" onclick="investPlan('F6',100000,0,242000,'F6','F')">Investir Agora</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TASKS PANEL -->
+    <div id="panel-tasks" class="hidden">
+      <p class="tasks-intro">Reivindique os seus ganhos diarios abaixo. Disponivel a cada 24h a partir do momento de activacao.</p>
+
+      <!-- live feed -->
+      <div class="live-feed-card">
+        <div class="live-feed-title"><span class="live-blink"></span> Pagamentos em Tempo Real</div>
+        <div id="live-feed"></div>
+      </div>
+
+      <!-- task cards -->
+      <div id="tasks-container"></div>
+
+      <!-- tips -->
+      <div class="tips-card">
+        <div class="tips-title">Dicas Financeiras</div>
+        <div class="tip-item">Reinvista os ganhos diarios para maximizar o retorno composto.</div>
+        <div class="tip-item">Diversifique entre planos M e F para equilibrar liquidez e lucro.</div>
+        <div class="tip-item">Convide amigos e ganhe 12% sobre o primeiro investimento deles.</div>
+      </div>
+
+      <!-- checkin -->
+      <div class="checkin-card">
+        <div class="checkin-title">Fidelidade — Check-in Diario</div>
+        <div class="checkin-days">
+          <div class="day-dot done">S</div><div class="day-dot done">T</div>
+          <div class="day-dot done">Q</div><div class="day-dot">Q</div>
+          <div class="day-dot">S</div><div class="day-dot">S</div><div class="day-dot">D</div>
+        </div>
+        <button class="btn-checkin" onclick="doCheckin()">Fazer Check-in Hoje</button>
+      </div>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <a class="nav-item" href="index.html"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg><span>Inicial</span></a>
+    <a class="nav-item active" href="plans.html"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg><span>Planos</span></a>
+    <a class="nav-item" href="plans.html#tasks" onclick="switchMainTab('tasks')"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg><span>Tarefas</span></a>
+    <a class="nav-item" href="menu.html"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg><span>Menu</span></a>
+  </nav>
+</body>
+</html>
