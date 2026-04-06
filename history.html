@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Filmora Meta — Historico</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, collection, query, where, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAZ27ogn8Us8FZct_DdYkFFv9vQkaHrPL4",
+      authDomain: "pinnacle-finance-b2626.firebaseapp.com",
+      projectId: "pinnacle-finance-b2626",
+      storageBucket: "pinnacle-finance-b2626.firebasestorage.app",
+      messagingSenderId: "1032490368286",
+      appId: "1:1032490368286:web:d77c9a1a888dd3c1c5dd0f"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    function fmt(n) { return Number(n||0).toLocaleString('pt-AO',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+    function fmtDate(ts) {
+      if(!ts) return '—';
+      const d = ts.toDate ? ts.toDate() : new Date(ts);
+      return d.toLocaleDateString('pt-AO',{day:'2-digit',month:'short',year:'numeric'}) + ' ' + d.toLocaleTimeString('pt-AO',{hour:'2-digit',minute:'2-digit'});
+    }
+
+    const typeMap = {
+      deposit:  { label:'Deposito',       cls:'green',  sign:'+' },
+      earning:  { label:'Ganho Diario',   cls:'orange', sign:'+' },
+      debit:    { label:'Levantamento',   cls:'red',    sign:'-' },
+      bonus:    { label:'Bonus',          cls:'green',  sign:'+' },
+      referral: { label:'Comissao Ref.',  cls:'green',  sign:'+' },
+    };
+
+    let allTx = [];
+    let activeFilter = 'all';
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) { window.location.href='auth.html'; return; }
+      const q = query(collection(db,'transactions'), where('uid','==',user.uid), orderBy('createdAt','desc'));
+      const snap = await getDocs(q);
+      allTx = [];
+      snap.forEach(d => allTx.push({ id:d.id, ...d.data() }));
+      renderList(allTx);
+    });
+
+    window.filterTx = function(type) {
+      activeFilter = type;
+      document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+      document.getElementById('filter-'+type).classList.add('active');
+      const filtered = type==='all' ? allTx : allTx.filter(t=>t.type===type);
+      renderList(filtered);
+    };
+
+    function renderList(txs) {
+      const list = document.getElementById('tx-list');
+      const empty = document.getElementById('tx-empty');
+      if(!txs.length) { list.innerHTML=''; empty.style.display='block'; return; }
+      empty.style.display='none';
+      const groups = {};
+      txs.forEach(t => {
+        const d = t.createdAt?.toDate ? t.createdAt.toDate() : new Date();
+        const key = d.toLocaleDateString('pt-AO',{day:'2-digit',month:'long',year:'numeric'});
+        if(!groups[key]) groups[key]=[];
+        groups[key].push(t);
+      });
+      list.innerHTML = Object.entries(groups).map(([date, items])=>`
+        <div class="tx-group">
+          <div class="tx-date-label">${date}</div>
+          ${items.map(t=>{
+            const info = typeMap[t.type]||{label:t.type||'—',cls:'blue',sign:'+'};
+            return `<div class="tx-item">
+              <div class="tx-left">
+                <div class="tx-icon tx-icon-${info.cls}">
+                  ${iconFor(t.type)}
+                </div>
+                <div>
+                  <div class="tx-label">${t.description||info.label}</div>
+                  <div class="tx-time">${fmtDate(t.createdAt)}</div>
+                </div>
+              </div>
+              <div class="tx-amount tx-${info.cls}">${info.sign} ${fmt(t.amount)} <span class="curr">AOA</span></div>
+            </div>`;
+          }).join('')}
+        </div>`).join('');
+    }
+
+    function iconFor(type) {
+      const icons = {
+        deposit:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>',
+        earning:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>',
+        debit:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M12 5l7 7-7 7"/></svg>',
+        bonus:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1"/></svg>',
+        referral: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>',
+      };
+      return icons[type] || icons.deposit;
+    }
+  </script>
+
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--blue:#3B82F6;--orange:#F59E0B;--green:#10B981;--red:#EF4444;--black:#000;--white:#fff;}
+    html{height:100%;}
+    body{font-family:'DM Sans',sans-serif;background:#fff;color:var(--black);min-height:100vh;overflow-y:auto;overflow-x:hidden;padding-bottom:90px;}
+    body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 0% 0%,rgba(59,130,246,.08) 0%,transparent 55%),radial-gradient(ellipse at 100% 100%,rgba(59,130,246,.08) 0%,transparent 55%);pointer-events:none;z-index:0;}
+    .deco-circle{position:fixed;border-radius:50%;background:transparent;pointer-events:none;z-index:0;}
+    .tl-1{width:420px;height:420px;top:-140px;left:-140px;border:1.5px solid rgba(59,130,246,.14);}
+    .tl-2{width:280px;height:280px;top:-70px;left:-70px;border:1.5px solid rgba(59,130,246,.10);}
+    .br-1{width:360px;height:360px;bottom:-120px;right:-120px;border:1.5px solid rgba(59,130,246,.14);}
+    .br-2{width:200px;height:200px;bottom:-60px;right:-60px;border:1.5px solid rgba(59,130,246,.10);}
+    .page{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:0 16px;}
+
+    .page-header{padding:20px 0 16px;display:flex;align-items:center;gap:12px;}
+    .back-arrow{width:36px;height:36px;border-radius:11px;background:rgba(59,130,246,.08);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+    .back-arrow svg{width:16px;height:16px;stroke:var(--blue);fill:none;stroke-width:2;}
+    .page-title{font-size:1.1rem;font-weight:700;}
+
+    .filter-row{display:flex;gap:7px;overflow-x:auto;padding-bottom:4px;margin-bottom:18px;scrollbar-width:none;}
+    .filter-row::-webkit-scrollbar{display:none;}
+    .filter-btn{padding:7px 16px;border-radius:20px;border:1px solid rgba(59,130,246,.18);background:transparent;font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:600;color:rgba(0,0,0,.45);cursor:pointer;white-space:nowrap;transition:all .18s;flex-shrink:0;}
+    .filter-btn.active{background:var(--blue);color:#fff;border-color:var(--blue);}
+
+    .tx-group{margin-bottom:20px;}
+    .tx-date-label{font-size:.72rem;font-weight:700;color:rgba(0,0,0,.35);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;padding-left:2px;}
+    .tx-item{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;background:rgba(255,255,255,.65);backdrop-filter:blur(10px);border:1px solid rgba(59,130,246,.1);border-radius:14px;margin-bottom:6px;}
+    .tx-left{display:flex;align-items:center;gap:11px;}
+    .tx-icon{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .tx-icon svg{width:17px;height:17px;}
+    .tx-icon-green{background:rgba(16,185,129,.1);color:var(--green);}
+    .tx-icon-orange{background:rgba(245,158,11,.1);color:var(--orange);}
+    .tx-icon-red{background:rgba(239,68,68,.1);color:var(--red);}
+    .tx-icon-blue{background:rgba(59,130,246,.1);color:var(--blue);}
+    .tx-label{font-size:.83rem;font-weight:600;color:var(--black);}
+    .tx-time{font-size:.68rem;color:rgba(0,0,0,.35);margin-top:2px;}
+    .tx-amount{font-size:.9rem;font-weight:700;font-variant-numeric:tabular-nums;text-align:right;}
+    .tx-amount .curr{font-size:58%;color:rgba(0,0,0,.3);font-weight:500;}
+    .tx-green{color:var(--green);}
+    .tx-orange{color:var(--orange);}
+    .tx-red{color:var(--red);}
+    .tx-blue{color:var(--blue);}
+    #tx-empty{display:none;text-align:center;padding:48px 16px;font-size:.85rem;color:rgba(0,0,0,.35);line-height:1.6;}
+    #tx-empty svg{width:40px;height:40px;stroke:rgba(0,0,0,.15);fill:none;stroke-width:1.5;margin-bottom:12px;display:block;margin-left:auto;margin-right:auto;}
+
+    .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.75);backdrop-filter:blur(18px);border-top:1px solid rgba(59,130,246,.12);display:flex;justify-content:space-around;align-items:center;padding:10px 0 16px;z-index:100;}
+    .nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;text-decoration:none;flex:1;}
+    .nav-item svg{width:22px;height:22px;stroke:rgba(0,0,0,.3);fill:none;stroke-width:2;}
+    .nav-item span{font-size:.65rem;font-weight:600;color:rgba(0,0,0,.3);letter-spacing:.3px;}
+  </style>
+</head>
+<body>
+  <div class="deco-circle tl-1"></div><div class="deco-circle tl-2"></div>
+  <div class="deco-circle br-1"></div><div class="deco-circle br-2"></div>
+
+  <div class="page">
+    <div class="page-header">
+      <button class="back-arrow" onclick="history.back()"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg></button>
+      <div class="page-title">Historico de Movimentos</div>
+    </div>
+
+    <div class="filter-row">
+      <button class="filter-btn active" id="filter-all" onclick="filterTx('all')">Todos</button>
+      <button class="filter-btn" id="filter-deposit" onclick="filterTx('deposit')">Depositos</button>
+      <button class="filter-btn" id="filter-earning" onclick="filterTx('earning')">Ganhos</button>
+      <button class="filter-btn" id="filter-debit" onclick="filterTx('debit')">Levantamentos</button>
+      <button class="filter-btn" id="filter-bonus" onclick="filterTx('bonus')">Bonus</button>
+    </div>
+
+    <div id="tx-list"></div>
+    <div id="tx-empty">
+      <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      Nenhum movimento encontrado.
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <a class="nav-item" href="index.html"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg><span>Inicial</span></a>
+    <a class="nav-item" href="plans.html"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg><span>Planos</span></a>
+    <a class="nav-item" href="plans.html#tasks"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg><span>Tarefas</span></a>
+    <a class="nav-item" href="menu.html"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg><span>Menu</span></a>
+  </nav>
+</body>
+</html>
