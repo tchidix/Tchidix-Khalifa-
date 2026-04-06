@@ -4,13 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Filmora Meta — Menu</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, updatePassword, reauthenticateWithCredential, EmailAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAZ27ogn8Us8FZct_DdYkFFv9vQkaHrPL4",
@@ -24,375 +24,432 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-    let currentUser = null;
-    let userData = null;
+
+    function showOverlay(msg) { document.getElementById('processing-overlay').style.display='flex'; document.getElementById('processing-msg').textContent=msg||'A processar...'; }
+    function hideOverlay() { document.getElementById('processing-overlay').style.display='none'; }
+    function showNotif(msg, type) {
+      const n = document.getElementById('notification');
+      n.textContent=msg; n.className='notification '+(type==='error'?'notif-error':'notif-success');
+      n.style.display='block'; setTimeout(()=>{ n.style.display='none'; },4000);
+    }
 
     onAuthStateChanged(auth, async (user) => {
-      if (!user) { window.location.href = "auth.html"; return; }
-      currentUser = user;
+      if (!user) { window.location.href='auth.html'; return; }
+      const snap = await getDoc(doc(db,'users',user.uid));
+      if (!snap.exists()) { window.location.href='auth.html'; return; }
+      const data = snap.data();
 
-      const snap = await getDoc(doc(db, "users", user.uid));
-      if (!snap.exists()) { window.location.href = "auth.html"; return; }
-      userData = snap.data();
+      document.getElementById('user-email').textContent = data.email || '—';
+      document.getElementById('user-account-id').textContent = data.accountId || '—';
+      document.getElementById('user-balance').textContent = Number(data.balance||0).toLocaleString('pt-AO',{minimumFractionDigits:2});
 
-      document.getElementById("menu-name").textContent = userData.nomeCompleto || "—";
-      document.getElementById("menu-account").textContent = userData.accountNumber || "—";
-      document.getElementById("menu-saldo").textContent = formatVal(userData.saldo || 0) + " Kz";
+      // load active investments for chart
+      const invQ = query(collection(db,'investments'), where('uid','==',user.uid), where('status','==','active'));
+      const invSnap = await getDocs(invQ);
+      const invs = [];
+      invSnap.forEach(d => invs.push(d.data()));
 
-      await buildChart();
+      buildChart(invs);
+
+      // change password
+      window.handleChangePassword = async function() {
+        const cur  = document.getElementById('cur-pass').value;
+        const nw   = document.getElementById('new-pass').value;
+        const conf = document.getElementById('conf-pass').value;
+        if (!cur||!nw||!conf) { showNotif('Preencha todos os campos.','error'); return; }
+        if (nw.length!==6||!/^\d{6}$/.test(nw)) { showNotif('A nova senha deve ter 6 digitos numericos.','error'); return; }
+        if (nw!==conf) { showNotif('As senhas nao coincidem.','error'); return; }
+        showOverlay('A alterar a senha...');
+        try {
+          const cred = EmailAuthProvider.credential(user.email, cur);
+          await reauthenticateWithCredential(user, cred);
+          await updatePassword(user, nw);
+          hideOverlay();
+          showNotif('Senha alterada com sucesso!','success');
+          document.getElementById('cur-pass').value='';
+          document.getElementById('new-pass').value='';
+          document.getElementById('conf-pass').value='';
+          closeSection();
+        } catch(e) {
+          hideOverlay();
+          showNotif(e.code==='auth/wrong-password'?'Senha actual incorrecta.':'Erro ao alterar senha.','error');
+        }
+      };
     });
 
-    async function buildChart() {
-      const invQ = query(collection(db, "users", currentUser.uid, "investimentos"), where("status", "==", "ativo"));
-      const invSnap = await getDocs(invQ);
-      const plans = invSnap.docs.map(d => d.data());
-      const labels = plans.map(p => p.nome);
-      const values = plans.map(p => p.valor || 0);
-
-      const ctx = document.getElementById("investChart").getContext("2d");
+    function buildChart(invs) {
+      const labels = invs.length ? invs.map(i=>i.label) : ['Sem dados'];
+      const values = invs.length ? invs.map(i=>i.cost||0) : [0];
+      const ctx = document.getElementById('inv-chart').getContext('2d');
       new Chart(ctx, {
-        type: "doughnut",
+        type: 'doughnut',
         data: {
-          labels: labels.length ? labels : ["Sem investimentos"],
-          datasets: [{
-            data: values.length ? values : [1],
-            backgroundColor: values.length
-              ? ["#F97316","#16A34A","#1D4ED8","#DC2626","#9333EA","#0891B2"]
-              : ["#E5E7EB"],
-            borderWidth: 0, hoverOffset: 6
-          }]
+          labels,
+          datasets: [{ data: values, backgroundColor: ['#3B82F6','#10B981','#F59E0B','#EF4444','#8B5CF6','#EC4899'], borderWidth: 0, hoverOffset: 6 }]
         },
         options: {
-          cutout: "70%",
-          plugins: { legend: { position: "bottom", labels: { font: { family: "DM Sans", size: 11 }, color: "#6B7280", boxWidth: 10, padding: 10 } } },
-          responsive: true, maintainAspectRatio: false
+          cutout: '72%',
+          plugins: { legend: { position:'bottom', labels:{ font:{family:'DM Sans',size:11}, color:'rgba(0,0,0,0.5)', padding:12, boxWidth:10, borderRadius:4 }}},
+          animation: { animateScale: true }
         }
       });
-
-      if (!values.length) document.getElementById("chart-empty").style.display = "flex";
     }
 
-    window.alterarSenha = async function () {
-      const senhaAtual = document.getElementById("senha-atual").value;
-      const senhaNova  = document.getElementById("senha-nova").value;
-      const senhaConf  = document.getElementById("senha-confirmar").value;
-      if (!senhaAtual || !senhaNova || !senhaConf) return showToast("Preencha todos os campos.", "error");
-      if (senhaNova.length !== 6 || !/^\d{6}$/.test(senhaNova)) return showToast("A nova senha deve ter 6 digitos numericos.", "error");
-      if (senhaNova !== senhaConf) return showToast("As senhas nao coincidem.", "error");
-      showOverlay();
-      try {
-        const cred = EmailAuthProvider.credential(currentUser.email, senhaAtual);
-        await reauthenticateWithCredential(currentUser, cred);
-        await updatePassword(currentUser, senhaNova);
-        hideOverlay();
-        showToast("Senha alterada com sucesso.", "success");
-        document.getElementById("senha-atual").value = "";
-        document.getElementById("senha-nova").value = "";
-        document.getElementById("senha-confirmar").value = "";
-        closeSection("section-senha");
-      } catch (e) {
-        hideOverlay();
-        showToast(e.code === "auth/wrong-password" ? "Senha actual incorrecta." : "Erro ao alterar senha.", "error");
-      }
+    window.openSection = function(id) {
+      document.querySelectorAll('.menu-section').forEach(s=>s.classList.remove('active'));
+      document.getElementById('section-'+id).classList.add('active');
+      document.getElementById('menu-main').classList.add('hidden');
+    };
+    window.closeSection = function() {
+      document.querySelectorAll('.menu-section').forEach(s=>s.classList.remove('active'));
+      document.getElementById('menu-main').classList.remove('hidden');
     };
 
-    window.doLogout = async function () {
-      await signOut(auth);
-      window.location.href = "auth.html";
+    window.toggleEye = function(id, btn) {
+      const inp=document.getElementById(id);
+      const show=inp.type==='text';
+      inp.type=show?'password':'text';
+      btn.querySelector('svg').style.opacity=show?'1':'0.5';
     };
-
-    window.toggleSection = function (id) {
-      document.getElementById(id).classList.toggle("open");
-    };
-    window.closeSection = function (id) {
-      document.getElementById(id).classList.remove("open");
-    };
-
-    function formatVal(v) { return Number(v).toLocaleString("pt-AO", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
-    function showOverlay() { document.getElementById("processingOverlay").classList.add("active"); }
-    function hideOverlay() { document.getElementById("processingOverlay").classList.remove("active"); }
-    function showToast(msg, type = "success") {
-      const t = document.getElementById("toast"); t.textContent = msg;
-      t.className = "toast " + type; t.classList.add("show");
-      setTimeout(() => t.classList.remove("show"), 3500);
-    }
   </script>
 
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --orange: #F97316; --green: #16A34A; --red: #DC2626; --blue: #1D4ED8;
-      --black: #111111; --gray: #6B7280; --gray-light: #F3F4F6; --border: #E5E7EB;
-      --font: 'DM Sans', sans-serif;
-    }
-    body { font-family: var(--font); background: #fff; color: var(--black); overflow-y: auto; overflow-x: hidden; min-height: 100vh; padding-bottom: 90px; }
-    body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(ellipse at 0% 0%, rgba(249,115,22,0.09) 0%, transparent 55%), radial-gradient(ellipse at 100% 100%, rgba(249,115,22,0.08) 0%, transparent 55%); pointer-events: none; z-index: 0; }
-    .deco-circle { position: fixed; border-radius: 50%; border: 1.5px solid rgba(249,115,22,0.16); background: transparent; pointer-events: none; z-index: 0; }
-    .dc1 { width: 420px; height: 420px; top: -140px; left: -140px; }
-    .dc2 { width: 280px; height: 280px; top: -60px; left: -60px; border-color: rgba(249,115,22,0.12); }
-    .dc3 { width: 360px; height: 360px; bottom: -120px; right: -120px; }
-    .dc4 { width: 200px; height: 200px; bottom: -50px; right: -50px; border-color: rgba(249,115,22,0.13); }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--blue:#3B82F6;--orange:#F59E0B;--green:#10B981;--red:#EF4444;--black:#000;--white:#fff;}
+    html{height:100%;}
+    body{font-family:'DM Sans',sans-serif;background:#fff;color:var(--black);min-height:100vh;overflow-y:auto;overflow-x:hidden;padding-bottom:90px;}
+    body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 0% 0%,rgba(59,130,246,.08) 0%,transparent 55%),radial-gradient(ellipse at 100% 100%,rgba(59,130,246,.08) 0%,transparent 55%);pointer-events:none;z-index:0;}
+    .deco-circle{position:fixed;border-radius:50%;background:transparent;pointer-events:none;z-index:0;}
+    .tl-1{width:420px;height:420px;top:-140px;left:-140px;border:1.5px solid rgba(59,130,246,.14);}
+    .tl-2{width:280px;height:280px;top:-70px;left:-70px;border:1.5px solid rgba(59,130,246,.10);}
+    .br-1{width:360px;height:360px;bottom:-120px;right:-120px;border:1.5px solid rgba(59,130,246,.14);}
+    .br-2{width:200px;height:200px;bottom:-60px;right:-60px;border:1.5px solid rgba(59,130,246,.10);}
+    .page{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:0 16px;}
+    .hidden{display:none!important;}
 
-    .page-wrap { position: relative; z-index: 1; max-width: 480px; margin: 0 auto; padding: 20px; }
+    /* HEADER */
+    .page-header{padding:20px 0 16px;}
+    .page-title{font-size:1.15rem;font-weight:700;}
 
-    /* perfil */
-    .profile-card {
-      background: var(--black); border-radius: 18px; padding: 18px 18px 16px;
-      display: flex; align-items: center; gap: 14px; margin-bottom: 18px;
-    }
-    .avatar { width: 48px; height: 48px; border-radius: 50%; background: rgba(249,115,22,0.18); border: 2px solid rgba(249,115,22,0.35); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .avatar svg { width: 22px; height: 22px; stroke: var(--orange); fill: none; stroke-width: 1.8; }
-    .profile-info { flex: 1; min-width: 0; }
-    .profile-name  { font-size: 14px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .profile-acc   { font-size: 11px; color: rgba(255,255,255,0.38); margin-top: 2px; }
-    .profile-saldo { font-size: 13px; color: var(--orange); font-weight: 700; margin-top: 3px; }
+    /* USER CARD */
+    .user-card{background:linear-gradient(135deg,#1D4ED8 0%,#3B82F6 60%,#60A5FA 100%);border-radius:20px;padding:22px 20px;margin-bottom:20px;box-shadow:0 6px 24px rgba(59,130,246,.25);position:relative;overflow:hidden;}
+    .user-card::before{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.07);}
+    .user-email{font-size:.75rem;color:rgba(255,255,255,.65);font-weight:500;margin-bottom:2px;}
+    .user-name{font-size:1rem;font-weight:700;color:#fff;margin-bottom:12px;}
+    .user-meta{display:flex;gap:16px;}
+    .user-meta-item{flex:1;}
+    .user-meta-label{font-size:.62rem;color:rgba(255,255,255,.5);font-weight:600;text-transform:uppercase;letter-spacing:1px;}
+    .user-meta-val{font-size:.85rem;font-weight:700;color:#fff;font-family:'DM Mono',monospace;font-variant-numeric:tabular-nums;margin-top:2px;}
 
-    /* grafico */
-    .chart-box { border: 1px solid var(--border); border-radius: 16px; padding: 14px; background: #fff; margin-bottom: 16px; }
-    .chart-title { font-size: 11px; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
-    .chart-wrap { height: 160px; position: relative; }
-    #chart-empty { display: none; position: absolute; inset: 0; align-items: center; justify-content: center; font-size: 11px; color: var(--gray); text-align: center; }
+    /* CHART CARD */
+    .chart-card{background:rgba(255,255,255,.65);backdrop-filter:blur(12px);border:1px solid rgba(59,130,246,.12);border-radius:18px;padding:18px 20px;margin-bottom:20px;}
+    .chart-title{font-size:.8rem;font-weight:700;color:var(--black);margin-bottom:14px;}
+    .chart-wrap{position:relative;height:180px;display:flex;align-items:center;justify-content:center;}
+    #inv-chart{max-height:180px;}
 
-    /* botoes deposito/levantar — IDENTICOS ao index e quick actions */
-    .quick-actions { display: flex; gap: 10px; margin-bottom: 18px; }
-    .qa-btn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 7px; padding: 14px 6px; border-radius: 14px; border: 1.5px solid var(--border); background: #fff; cursor: pointer; text-decoration: none; transition: border-color 0.2s; }
-    .qa-btn:hover { border-color: var(--orange); }
-    .qa-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
-    .qa-icon svg { width: 18px; height: 18px; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-    .qa-icon.green { background: rgba(22,163,74,0.08); } .qa-icon.green svg { stroke: var(--green); }
-    .qa-icon.red   { background: rgba(220,38,38,0.08); } .qa-icon.red svg   { stroke: var(--red); }
-    .qa-label { font-size: 12px; font-weight: 600; color: var(--black); }
+    /* TIMELINE MENU */
+    .timeline{position:relative;padding-left:28px;margin-bottom:20px;}
+    .timeline::before{content:'';position:absolute;left:10px;top:16px;bottom:16px;width:1.5px;background:linear-gradient(to bottom,var(--blue),rgba(59,130,246,.1));}
+    .tl-item{position:relative;margin-bottom:8px;}
+    .tl-dot{position:absolute;left:-22px;top:14px;width:12px;height:12px;border-radius:50%;border:2px solid var(--blue);background:#fff;transition:background .2s;}
+    .tl-item:hover .tl-dot{background:var(--blue);}
+    .tl-btn{width:100%;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:rgba(255,255,255,.55);backdrop-filter:blur(10px);border:1px solid rgba(59,130,246,.12);border-radius:14px;cursor:pointer;transition:transform .15s,box-shadow .2s;text-align:left;}
+    .tl-btn:active{transform:scale(.97);}
+    .tl-btn:hover{box-shadow:0 2px 12px rgba(59,130,246,.1);}
+    .tl-btn-left{display:flex;align-items:center;gap:12px;}
+    .tl-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .tl-icon svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2;}
+    .tl-label{font-size:.88rem;font-weight:600;color:var(--black);}
+    .tl-sub{font-size:.7rem;color:rgba(0,0,0,.4);margin-top:1px;}
+    .tl-arrow{color:rgba(0,0,0,.25);}
+    .tl-arrow svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;}
 
-    /* menu items */
-    .menu-item { border: 1px solid var(--border); border-radius: 14px; margin-bottom: 10px; overflow: hidden; background: #fff; }
-    .menu-item-header { display: flex; align-items: center; justify-content: space-between; padding: 15px 16px; cursor: pointer; transition: background 0.15s; }
-    .menu-item-header:hover { background: var(--gray-light); }
-    .menu-item-left { display: flex; align-items: center; gap: 12px; }
-    .menu-icon { width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center; }
-    .menu-icon svg { width: 18px; height: 18px; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-    .menu-icon.orange { background: rgba(249,115,22,0.1); } .menu-icon.orange svg { stroke: var(--orange); }
-    .menu-icon.green  { background: rgba(22,163,74,0.08);  } .menu-icon.green svg  { stroke: var(--green); }
-    .menu-icon.blue   { background: rgba(29,78,216,0.08);   } .menu-icon.blue svg   { stroke: var(--blue); }
-    .menu-icon.red    { background: rgba(220,38,38,0.08);   } .menu-icon.red svg    { stroke: var(--red); }
-    .menu-icon.wa     { background: rgba(37,211,102,0.12);  } .menu-icon.wa svg     { stroke: #25D366; }
-    .menu-label { font-size: 14px; font-weight: 700; color: var(--black); }
-    .menu-sub   { font-size: 11px; color: var(--gray); margin-top: 1px; }
-    .chevron { width: 16px; height: 16px; stroke: var(--gray); fill: none; stroke-width: 2; transition: transform 0.25s; stroke-linecap: round; stroke-linejoin: round; }
-    .menu-item.open .chevron { transform: rotate(180deg); }
-    .menu-body { display: none; padding: 0 16px 16px; border-top: 1px solid var(--border); }
-    .menu-item.open .menu-body { display: block; }
+    /* SECTION PANELS */
+    .menu-section{display:none;}
+    .menu-section.active{display:block;}
+    .section-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-top:4px;}
+    .back-btn{width:36px;height:36px;border-radius:11px;background:rgba(59,130,246,.08);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+    .back-btn svg{width:16px;height:16px;stroke:var(--blue);fill:none;stroke-width:2;}
+    .section-title{font-size:1rem;font-weight:700;}
 
-    /* link de navegacao direto (sem accordion) */
-    .menu-item-link { display: flex; align-items: center; justify-content: space-between; padding: 15px 16px; text-decoration: none; cursor: pointer; transition: background 0.15s; }
-    .menu-item-link:hover { background: var(--gray-light); }
+    /* FORMS */
+    .form-group{margin-bottom:16px;}
+    .form-label{display:block;font-size:.75rem;font-weight:600;color:rgba(0,0,0,.5);letter-spacing:.5px;text-transform:uppercase;margin-bottom:7px;}
+    .input-wrap{position:relative;display:flex;align-items:center;}
+    .input-icon{position:absolute;left:13px;color:rgba(59,130,246,.55);display:flex;align-items:center;}
+    .input-icon svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;}
+    .form-input{width:100%;padding:11px 14px 11px 40px;border:1px solid rgba(59,130,246,.18);border-radius:12px;background:rgba(255,255,255,.7);font-family:'DM Sans',sans-serif;font-size:.9rem;color:var(--black);outline:none;transition:border-color .2s,box-shadow .2s;}
+    .form-input:focus{border-color:rgba(59,130,246,.5);box-shadow:0 0 0 3px rgba(59,130,246,.08);}
+    .form-input::placeholder{color:rgba(0,0,0,.3);}
+    .eye-btn{position:absolute;right:12px;background:none;border:none;cursor:pointer;color:rgba(0,0,0,.35);display:flex;align-items:center;padding:0;}
+    .eye-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;}
+    .btn-primary{width:100%;padding:13px;background:var(--blue);color:#fff;border:none;border-radius:13px;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;box-shadow:0 4px 18px rgba(59,130,246,.28);margin-top:6px;transition:transform .15s;}
+    .btn-primary:active{transform:scale(.96);}
 
-    /* formulario senha */
-    .mform-group { margin-top: 13px; }
-    .mform-group label { display: block; font-size: 11px; font-weight: 700; color: var(--gray); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.4px; }
-    .mform-group input { width: 100%; padding: 10px 13px; border: 1.5px solid var(--border); border-radius: 9px; font-family: var(--font); font-size: 14px; color: var(--black); background: #fafafa; outline: none; transition: border-color 0.2s; }
-    .mform-group input:focus { border-color: var(--orange); background: #fff; }
-    .btn-form { width: 100%; margin-top: 13px; padding: 12px; background: var(--orange); color: #fff; border: none; border-radius: 10px; font-family: var(--font); font-size: 14px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
-    .btn-form:hover { opacity: 0.88; }
+    /* ABOUT */
+    .about-logo{text-align:center;margin-bottom:24px;}
+    .about-logo-box{display:inline-flex;align-items:center;justify-content:center;width:64px;height:64px;background:linear-gradient(135deg,var(--blue) 0%,#60A5FA 100%);border-radius:18px;margin-bottom:10px;box-shadow:0 4px 20px rgba(59,130,246,.3);}
+    .about-logo-box svg{width:32px;height:32px;fill:none;stroke:#fff;stroke-width:2;}
+    .about-name{font-size:1.2rem;font-weight:700;color:var(--black);}
+    .about-tag{font-size:.72rem;font-weight:500;color:var(--blue);letter-spacing:2px;text-transform:uppercase;margin-top:2px;}
+    .about-block{background:rgba(255,255,255,.6);backdrop-filter:blur(12px);border:1px solid rgba(59,130,246,.12);border-radius:16px;padding:16px 18px;margin-bottom:12px;}
+    .about-block-title{font-size:.75rem;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+    .about-text{font-size:.85rem;color:rgba(0,0,0,.6);line-height:1.65;}
+    .about-stat-row{display:flex;gap:12px;margin-bottom:12px;}
+    .about-stat{flex:1;background:rgba(59,130,246,.05);border:1px solid rgba(59,130,246,.1);border-radius:14px;padding:14px;text-align:center;}
+    .about-stat-val{font-size:1.1rem;font-weight:700;color:var(--blue);font-variant-numeric:tabular-nums;}
+    .about-stat-label{font-size:.68rem;color:rgba(0,0,0,.4);margin-top:3px;font-weight:500;}
 
-    /* quem somos body */
-    .about-body { padding: 4px 0 4px; }
-    .about-p { font-size: 13px; color: var(--gray); line-height: 1.65; margin-bottom: 10px; }
-    .about-p:last-child { margin-bottom: 0; }
-    .about-highlight { color: var(--orange); font-weight: 700; }
+    /* LOGOUT */
+    .logout-btn{width:100%;padding:13px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:13px;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:700;color:var(--red);cursor:pointer;margin-top:8px;transition:transform .15s;}
+    .logout-btn:active{transform:scale(.96);}
 
-    /* whatsapp link */
-    .wa-link {
-      display: flex; align-items: center; gap: 10px;
-      padding: 12px 14px; background: rgba(37,211,102,0.06);
-      border: 1px solid rgba(37,211,102,0.2); border-radius: 10px;
-      margin-top: 13px; text-decoration: none;
-    }
-    .wa-link-icon { width: 36px; height: 36px; border-radius: 50%; background: #25D366; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .wa-link-icon svg { width: 18px; height: 18px; fill: #fff; }
-    .wa-link-text .wt-title { font-size: 13px; font-weight: 700; color: var(--black); }
-    .wa-link-text .wt-num   { font-size: 12px; color: var(--gray); margin-top: 1px; }
+    /* notification */
+    .notification{display:none;position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:9999;padding:12px 22px;border-radius:12px;font-size:.85rem;font-weight:600;white-space:nowrap;animation:notif-slide .3s ease;box-shadow:0 6px 24px rgba(0,0,0,.12);max-width:90vw;text-align:center;}
+    @keyframes notif-slide{from{opacity:0;top:8px}to{opacity:1;top:20px}}
+    .notif-success{background:linear-gradient(135deg,var(--green) 0%,var(--blue) 100%);color:#fff;}
+    .notif-error{background:var(--red);color:#fff;}
+    #processing-overlay{display:none;position:fixed;inset:0;background:rgba(255,255,255,.62);backdrop-filter:blur(10px);z-index:9000;flex-direction:column;align-items:center;justify-content:center;gap:20px;}
+    .spinner{width:52px;height:52px;border:3px solid rgba(59,130,246,.15);border-top-color:var(--blue);border-radius:50%;animation:spin .9s linear infinite;}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    #processing-msg{font-size:.9rem;font-weight:600;color:var(--blue);}
 
-    /* logout */
-    .btn-logout { width: 100%; margin-top: 6px; padding: 14px; background: transparent; color: var(--red); border: 1.5px solid rgba(220,38,38,0.25); border-radius: 12px; font-family: var(--font); font-size: 14px; font-weight: 700; cursor: pointer; transition: background 0.2s; }
-    .btn-logout:hover { background: rgba(220,38,38,0.05); }
-
-    /* overlay / toast / nav */
-    #processingOverlay { position: fixed; inset: 0; background: rgba(255,255,255,0.82); backdrop-filter: blur(6px); z-index: 999; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 18px; }
-    #processingOverlay.active { display: flex; }
-    .spinner { width: 52px; height: 52px; border: 3px solid rgba(249,115,22,0.15); border-top-color: var(--orange); border-radius: 50%; animation: spin 0.85s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .overlay-text { font-size: 14px; font-weight: 600; color: var(--black); }
-
-    .toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--black); color: #fff; padding: 12px 22px; border-radius: 50px; font-size: 13px; font-weight: 500; opacity: 0; transition: opacity 0.3s, transform 0.3s; z-index: 1000; white-space: nowrap; max-width: 90vw; text-align: center; }
-    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-    .toast.success { background: var(--green); }
-    .toast.error   { background: var(--red); }
-
-    .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid var(--border); display: flex; z-index: 100; max-width: 480px; margin: 0 auto; }
-    .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 6px 12px; text-decoration: none; }
-    .nav-item svg { width: 22px; height: 22px; stroke: var(--gray); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-    .nav-item span { font-size: 10px; font-weight: 600; color: var(--gray); }
-    .nav-item.active svg { stroke: var(--orange); }
-    .nav-item.active span { color: var(--orange); }
+    /* BOTTOM NAV */
+    .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.75);backdrop-filter:blur(18px);border-top:1px solid rgba(59,130,246,.12);display:flex;justify-content:space-around;align-items:center;padding:10px 0 16px;z-index:100;}
+    .nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;text-decoration:none;flex:1;}
+    .nav-item svg{width:22px;height:22px;stroke:rgba(0,0,0,.3);fill:none;stroke-width:2;transition:stroke .2s;}
+    .nav-item span{font-size:.65rem;font-weight:600;color:rgba(0,0,0,.3);transition:color .2s;letter-spacing:.3px;}
+    .nav-item.active svg{stroke:var(--blue);}
+    .nav-item.active span{color:var(--blue);}
   </style>
 </head>
 <body>
-  <div class="deco-circle dc1"></div><div class="deco-circle dc2"></div>
-  <div class="deco-circle dc3"></div><div class="deco-circle dc4"></div>
-  <div id="processingOverlay"><div class="spinner"></div><p class="overlay-text">A processar...</p></div>
-  <div class="toast" id="toast"></div>
+  <div class="deco-circle tl-1"></div><div class="deco-circle tl-2"></div>
+  <div class="deco-circle br-1"></div><div class="deco-circle br-2"></div>
+  <div id="notification" class="notification"></div>
+  <div id="processing-overlay"><div class="spinner"></div><div id="processing-msg">A processar...</div></div>
 
-  <div class="page-wrap">
-
-    <!-- perfil -->
-    <div class="profile-card">
-      <div class="avatar"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>
-      <div class="profile-info">
-        <div class="profile-name" id="menu-name">—</div>
-        <div class="profile-acc" id="menu-account">—</div>
-        <div class="profile-saldo" id="menu-saldo">—</div>
+  <div class="page">
+    <!-- MAIN MENU -->
+    <div id="menu-main">
+      <div class="page-header">
+        <div class="page-title">Menu</div>
       </div>
-    </div>
 
-    <!-- grafico -->
-    <div class="chart-box">
-      <div class="chart-title">Investimentos Activos</div>
-      <div class="chart-wrap">
-        <canvas id="investChart"></canvas>
-        <div id="chart-empty">Sem dados de investimento</div>
-      </div>
-    </div>
-
-    <!-- botoes deposito e levantar — iguais ao index -->
-    <div class="quick-actions">
-      <a class="qa-btn" href="deposito.html">
-        <div class="qa-icon green"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg></div>
-        <span class="qa-label">Deposito</span>
-      </a>
-      <a class="qa-btn" href="levantar.html">
-        <div class="qa-icon red"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></div>
-        <span class="qa-label">Levantar</span>
-      </a>
-    </div>
-
-    <!-- historico -->
-    <div class="menu-item" onclick="location.href='historico.html'" style="cursor:pointer">
-      <div class="menu-item-header">
-        <div class="menu-item-left">
-          <div class="menu-icon orange"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 10h16M4 14h10" stroke-linecap="round"/></svg></div>
-          <div><div class="menu-label">Historico</div><div class="menu-sub">Todos os movimentos da conta</div></div>
-        </div>
-        <svg class="chevron" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
-      </div>
-    </div>
-
-    <!-- minha rede -->
-    <div class="menu-item" onclick="location.href='rede.html'" style="cursor:pointer">
-      <div class="menu-item-header">
-        <div class="menu-item-left">
-          <div class="menu-icon green"><svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="3"/><path d="M3 21v-2a4 4 0 014-4h4"/><circle cx="17" cy="11" r="3"/><path d="M13 21v-2a4 4 0 014-4h4v6H13z"/></svg></div>
-          <div><div class="menu-label">Minha Rede</div><div class="menu-sub">Referidos e comissoes</div></div>
-        </div>
-        <svg class="chevron" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
-      </div>
-    </div>
-
-    <!-- alterar senha -->
-    <div class="menu-item" id="section-senha">
-      <div class="menu-item-header" onclick="toggleSection('section-senha')">
-        <div class="menu-item-left">
-          <div class="menu-icon blue"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 118 0v4"/></svg></div>
-          <div><div class="menu-label">Alterar Senha</div><div class="menu-sub">Actualizar senha de acesso</div></div>
-        </div>
-        <svg class="chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
-      </div>
-      <div class="menu-body">
-        <div class="mform-group">
-          <label>Senha Actual</label>
-          <input type="password" id="senha-atual" placeholder="------" maxlength="6" />
-        </div>
-        <div class="mform-group">
-          <label>Nova Senha (6 digitos)</label>
-          <input type="password" id="senha-nova" placeholder="------" maxlength="6" />
-        </div>
-        <div class="mform-group">
-          <label>Confirmar Nova Senha</label>
-          <input type="password" id="senha-confirmar" placeholder="------" maxlength="6" />
-        </div>
-        <button class="btn-form" onclick="alterarSenha()">Actualizar Senha</button>
-      </div>
-    </div>
-
-    <!-- atendimento whatsapp -->
-    <div class="menu-item" id="section-wa">
-      <div class="menu-item-header" onclick="toggleSection('section-wa')">
-        <div class="menu-item-left">
-          <div class="menu-icon wa">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke="#25D366"/>
-            </svg>
+      <!-- user card -->
+      <div class="user-card">
+        <div class="user-email" id="user-email">—</div>
+        <div class="user-name">Investidor Filmora</div>
+        <div class="user-meta">
+          <div class="user-meta-item">
+            <div class="user-meta-label">ID da Conta</div>
+            <div class="user-meta-val" id="user-account-id">—</div>
           </div>
-          <div><div class="menu-label">Atendimento</div><div class="menu-sub">Suporte via WhatsApp</div></div>
+          <div class="user-meta-item">
+            <div class="user-meta-label">Saldo</div>
+            <div class="user-meta-val"><span id="user-balance">0,00</span> <span style="font-size:65%;opacity:.7;">AOA</span></div>
+          </div>
         </div>
-        <svg class="chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
       </div>
-      <div class="menu-body">
-        <p style="font-size:13px;color:var(--gray);line-height:1.6;margin-top:12px;">A nossa equipa esta disponivel para ajudar com qualquer questao relacionada com a sua conta, depositos, levantamentos ou planos de investimento.</p>
-        <a class="wa-link" href="https://wa.me/244937359561" target="_blank" rel="noopener">
-          <div class="wa-link-icon">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-            </svg>
-          </div>
-          <div class="wa-link-text">
-            <div class="wt-title">Falar com Suporte</div>
-            <div class="wt-num">+244 937 359 561</div>
-          </div>
-        </a>
+
+      <!-- chart -->
+      <div class="chart-card">
+        <div class="chart-title">Investimentos Activos</div>
+        <div class="chart-wrap">
+          <canvas id="inv-chart"></canvas>
+        </div>
       </div>
+
+      <!-- TIMELINE NAV -->
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <button class="tl-btn" onclick="window.location.href='finance.html?tab=deposit'">
+            <div class="tl-btn-left">
+              <div class="tl-icon" style="background:linear-gradient(135deg,#3B82F6,#60A5FA);">
+                <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+              </div>
+              <div><div class="tl-label">Depositar</div><div class="tl-sub">Adicionar fundos a conta</div></div>
+            </div>
+            <div class="tl-arrow"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></div>
+          </button>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <button class="tl-btn" onclick="window.location.href='plans.html'">
+            <div class="tl-btn-left">
+              <div class="tl-icon" style="background:linear-gradient(135deg,#F59E0B,#FBBF24);">
+                <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+              </div>
+              <div><div class="tl-label">Investir</div><div class="tl-sub">Escolher um plano de investimento</div></div>
+            </div>
+            <div class="tl-arrow"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></div>
+          </button>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <button class="tl-btn" onclick="window.location.href='plans.html#tasks'">
+            <div class="tl-btn-left">
+              <div class="tl-icon" style="background:linear-gradient(135deg,#10B981,#34D399);">
+                <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+              </div>
+              <div><div class="tl-label">Reivindicar Ganhos</div><div class="tl-sub">Recolher rendimento diario</div></div>
+            </div>
+            <div class="tl-arrow"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></div>
+          </button>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <button class="tl-btn" onclick="window.location.href='finance.html?tab=withdraw'">
+            <div class="tl-btn-left">
+              <div class="tl-icon" style="background:linear-gradient(135deg,#8B5CF6,#A78BFA);">
+                <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </div>
+              <div><div class="tl-label">Levantar</div><div class="tl-sub">Transferir lucro para a conta bancaria</div></div>
+            </div>
+            <div class="tl-arrow"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></div>
+          </button>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <button class="tl-btn" onclick="window.location.href='network.html'">
+            <div class="tl-btn-left">
+              <div class="tl-icon" style="background:linear-gradient(135deg,#EC4899,#F472B6);">
+                <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              </div>
+              <div><div class="tl-label">Minha Rede</div><div class="tl-sub">Gerir convites e comissoes</div></div>
+            </div>
+            <div class="tl-arrow"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></div>
+          </button>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <button class="tl-btn" onclick="window.location.href='history.html'">
+            <div class="tl-btn-left">
+              <div class="tl-icon" style="background:linear-gradient(135deg,#64748B,#94A3B8);">
+                <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              </div>
+              <div><div class="tl-label">Historico</div><div class="tl-sub">Todos os movimentos da conta</div></div>
+            </div>
+            <div class="tl-arrow"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></div>
+          </button>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <button class="tl-btn" onclick="openSection('password')">
+            <div class="tl-btn-left">
+              <div class="tl-icon" style="background:linear-gradient(135deg,#0EA5E9,#38BDF8);">
+                <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path stroke-linecap="round" d="M7 11V7a5 5 0 0110 0v4"/></svg>
+              </div>
+              <div><div class="tl-label">Alterar Senha</div><div class="tl-sub">Actualizar credenciais de acesso</div></div>
+            </div>
+            <div class="tl-arrow"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></div>
+          </button>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <button class="tl-btn" onclick="openSection('about')">
+            <div class="tl-btn-left">
+              <div class="tl-icon" style="background:linear-gradient(135deg,#3B82F6,#1D4ED8);">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              </div>
+              <div><div class="tl-label">Quem Somos</div><div class="tl-sub">Sobre a Filmora Meta</div></div>
+            </div>
+            <div class="tl-arrow"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></div>
+          </button>
+        </div>
+      </div>
+
+      <button class="logout-btn" onclick="doLogout()">Terminar Sessao</button>
     </div>
 
-    <!-- quem somos -->
-    <div class="menu-item" id="section-about">
-      <div class="menu-item-header" onclick="toggleSection('section-about')">
-        <div class="menu-item-left">
-          <div class="menu-icon orange"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg></div>
-          <div><div class="menu-label">Quem Somos</div><div class="menu-sub">Sobre a Filmora Meta</div></div>
-        </div>
-        <svg class="chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+    <!-- CHANGE PASSWORD SECTION -->
+    <div id="section-password" class="menu-section">
+      <div class="section-header">
+        <button class="back-btn" onclick="closeSection()"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg></button>
+        <div class="section-title">Alterar Senha</div>
       </div>
-      <div class="menu-body">
-        <div class="about-body">
-          <p class="about-p">A <span class="about-highlight">Filmora Meta</span> e uma plataforma angolana de investimentos digitais, criada para democratizar o acesso a oportunidades de crescimento financeiro de forma simples, segura e acessivel.</p>
-          <p class="about-p">A nossa missao e proporcionar aos nossos usuarios planos de investimento transparentes com retornos atractivos, suportados por uma equipa dedicada e disponivel.</p>
-          <p class="about-p">Oferecemos planos diarios e de ciclo para todos os perfis de investidor, desde os que estao a comecar com o nosso plano gratuito ate aos investidores mais avancados com os planos F.</p>
-          <p class="about-p">A Filmora Meta opera com base nos valores de <span class="about-highlight">transparencia</span>, <span class="about-highlight">confianca</span> e <span class="about-highlight">crescimento conjunto</span>.</p>
+      <div class="form-group">
+        <label class="form-label">Senha Actual</label>
+        <div class="input-wrap">
+          <span class="input-icon"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path stroke-linecap="round" d="M7 11V7a5 5 0 0110 0v4"/></svg></span>
+          <input type="password" id="cur-pass" class="form-input" placeholder="______" maxlength="6" inputmode="numeric"/>
+          <button class="eye-btn" onclick="toggleEye('cur-pass',this)" type="button"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></button>
         </div>
       </div>
+      <div class="form-group">
+        <label class="form-label">Nova Senha</label>
+        <div class="input-wrap">
+          <span class="input-icon"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path stroke-linecap="round" d="M7 11V7a5 5 0 0110 0v4"/></svg></span>
+          <input type="password" id="new-pass" class="form-input" placeholder="______" maxlength="6" inputmode="numeric"/>
+          <button class="eye-btn" onclick="toggleEye('new-pass',this)" type="button"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Confirmar Nova Senha</label>
+        <div class="input-wrap">
+          <span class="input-icon"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg></span>
+          <input type="password" id="conf-pass" class="form-input" placeholder="______" maxlength="6" inputmode="numeric"/>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="handleChangePassword()">Actualizar Senha</button>
     </div>
 
-    <!-- logout -->
-    <button class="btn-logout" onclick="doLogout()">Terminar Sessao</button>
-
+    <!-- ABOUT SECTION -->
+    <div id="section-about" class="menu-section">
+      <div class="section-header">
+        <button class="back-btn" onclick="closeSection()"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg></button>
+        <div class="section-title">Quem Somos</div>
+      </div>
+      <div class="about-logo">
+        <div class="about-logo-box"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg></div>
+        <div class="about-name">Filmora Meta</div>
+        <div class="about-tag">Plataforma de Investimento</div>
+      </div>
+      <div class="about-stat-row">
+        <div class="about-stat"><div class="about-stat-val">+5.000</div><div class="about-stat-label">Investidores</div></div>
+        <div class="about-stat"><div class="about-stat-val">100%</div><div class="about-stat-label">Digital</div></div>
+        <div class="about-stat"><div class="about-stat-val">35 dias</div><div class="about-stat-label">Ciclo maximo</div></div>
+      </div>
+      <div class="about-block">
+        <div class="about-block-title">A Nossa Missao</div>
+        <div class="about-text">A Filmora Meta e uma plataforma digital de investimento criada para democratizar o acesso a rendimentos passivos em Angola. O nosso objetivo e oferecer planos simples, transparentes e rentaveis a qualquer pessoa com acesso a internet.</div>
+      </div>
+      <div class="about-block">
+        <div class="about-block-title">Como Funciona</div>
+        <div class="about-text">O investidor escolhe um plano, deposita o valor correspondente e comeca a receber rendimentos de acordo com o ciclo do plano. Os planos M oferecem ganhos diarios enquanto os planos F oferecem retorno total no final do ciclo de 35 dias.</div>
+      </div>
+      <div class="about-block">
+        <div class="about-block-title">Seguranca</div>
+        <div class="about-text">A plataforma utiliza tecnologia Firebase para autenticacao e armazenamento seguro de dados. Todas as transacoes sao registadas e o historico esta sempre disponivel para consulta.</div>
+      </div>
+    </div>
   </div>
 
-  <nav class="nav-bar">
-    <a class="nav-item" href="index.html">
-      <svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg>
-      <span>Inicial</span>
-    </a>
-    <a class="nav-item" href="planos.html">
-      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-      <span>Planos</span>
-    </a>
-    <a class="nav-item" href="tarefas.html">
-      <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-      <span>Tarefas</span>
-    </a>
-    <a class="nav-item active" href="menu.html">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-      <span>Menu</span>
-    </a>
+  <nav class="bottom-nav">
+    <a class="nav-item" href="index.html"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg><span>Inicial</span></a>
+    <a class="nav-item" href="plans.html"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg><span>Planos</span></a>
+    <a class="nav-item" href="plans.html#tasks"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg><span>Tarefas</span></a>
+    <a class="nav-item active" href="menu.html"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg><span>Menu</span></a>
   </nav>
+
+  <script>
+    window.doLogout = async function() {
+      const { getAuth, signOut } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js');
+    };
+    document.addEventListener('click', e => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      btn.style.transform = 'scale(0.96)';
+      setTimeout(() => { btn.style.transform = ''; }, 150);
+    });
+  </script>
 </body>
 </html>
