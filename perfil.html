@@ -17,12 +17,13 @@
   --ok-bg:rgba(34,197,94,0.10);--ok-b:rgba(34,197,94,0.28);
   --r:18px;--nav-h:68px;
 }
-html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+html{min-height:100%}
+body{min-height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;overflow-y:auto}
 body::before,body::after{content:'';position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0}
 body::before{width:420px;height:420px;background:radial-gradient(circle,rgba(34,197,94,0.15) 0%,transparent 70%);top:-100px;left:-80px}
 body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,123,255,0.10) 0%,transparent 70%);bottom:-80px;right:-60px}
 
-.page{position:relative;z-index:1;min-height:100dvh;padding-bottom:calc(var(--nav-h)+20px);overflow-y:auto}
+.page{position:relative;z-index:1;min-height:100dvh;padding-bottom:calc(var(--nav-h) + 32px);overflow-x:hidden}
 
 /* ── TOP BAR ── */
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 12px;position:sticky;top:0;z-index:20;background:rgba(240,242,245,0.85);backdrop-filter:blur(14px)}
@@ -138,6 +139,7 @@ canvas#investChart{width:100%;height:120px}
 /* spinner */
 .spinner-sm{display:inline-block;width:20px;height:20px;border:2.5px solid rgba(34,197,94,.25);border-top-color:var(--green-s);border-radius:50%;animation:spin .75s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
+@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
@@ -201,8 +203,8 @@ canvas#investChart{width:100%;height:120px}
 
   <!-- See balance -->
   <div class="section">
-    <button class="btn-see-balance" onclick="openBalPopup()">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+    <button class="btn-see-balance" onclick="openBalPopup()" style="padding:10px 18px;font-size:13px;width:auto;border-radius:11px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
       Ver Saldo Detalhado
     </button>
   </div>
@@ -257,47 +259,67 @@ canvas#investChart{width:100%;height:120px}
     <div class="hf-text" id="hfText">Investidores que praticam meditacao diaria de 10 minutos apresentam maior tolerancia ao risco calculado.</div>
   </div>
 
-  <!-- Referral system -->
+  <!-- Referral + FAQ tabbed section -->
   <div class="section">
-    <div class="section-title">Compartilhar e Ganhar</div>
-    <div class="referral-card">
-      <div class="rc-label">Programa de Referidos</div>
-      <div class="rc-title">Ganhe ate 10% por Referido</div>
-      <div class="rc-sub">Partilhe o seu link exclusivo e receba 10% do primeiro investimento de cada pessoa que convidar.</div>
+    <div class="section-title">Programa e Suporte</div>
+    <!-- Tab switcher -->
+    <div style="display:flex;gap:0;background:rgba(255,255,255,.50);border:1px solid var(--glass-b);border-radius:13px;padding:4px;backdrop-filter:blur(12px);margin-bottom:12px">
+      <button onclick="switchPerfTab('referral',this)" id="ptab-referral" style="flex:1;padding:9px 0;border:none;border-radius:10px;background:transparent;color:var(--muted);font-family:'Inter',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Referidos
+      </button>
+      <button onclick="switchPerfTab('faq',this)" id="ptab-faq" style="flex:1;padding:9px 0;border:none;border-radius:10px;background:transparent;color:var(--muted);font-family:'Inter',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        Perguntas
+      </button>
+    </div>
 
-      <div class="levels-grid">
-        <div class="level-item">
-          <div class="li-val" id="refCount">0</div>
-          <div class="li-label">Referidos</div>
+    <!-- Tab: Referral — hidden by default, shows on tab click -->
+    <div id="pane-referral" style="display:none;flex-direction:column;gap:12px">
+      <div class="referral-card">
+        <div class="rc-label">Programa de Referidos</div>
+        <div class="rc-title">Ganhe ate 10% por Referido</div>
+        <div class="rc-sub">Partilhe o seu link exclusivo e receba 10% do primeiro investimento de cada pessoa que convidar.</div>
+        <div class="levels-grid">
+          <div class="level-item">
+            <div class="li-val" id="refCount">0</div>
+            <div class="li-label">Referidos</div>
+          </div>
+          <div class="level-item">
+            <div class="li-val" id="refEarned">0</div>
+            <div class="li-label">AOA Ganhos</div>
+          </div>
+          <div class="level-item">
+            <div class="li-val">10%</div>
+            <div class="li-label">Comissao</div>
+          </div>
         </div>
-        <div class="level-item">
-          <div class="li-val" id="refEarned">0</div>
-          <div class="li-label">AOA Ganhos</div>
+        <div class="link-box">
+          <div class="link-text" id="refLink">A gerar link...</div>
+          <button class="link-copy" onclick="copyLink()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copiar
+          </button>
         </div>
-        <div class="level-item">
-          <div class="li-val">10%</div>
-          <div class="li-label">Comissao</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.75);line-height:1.5">
+          Quando o seu convidado fizer o primeiro investimento, a comissao e creditada automaticamente no seu saldo disponivel.
         </div>
       </div>
 
-      <div class="link-box">
-        <div class="link-text" id="refLink">A gerar link...</div>
-        <button class="link-copy" onclick="copyLink()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-          Copiar
-        </button>
-      </div>
-
-      <div style="font-size:12px;color:rgba(255,255,255,.75);line-height:1.5">
-        Quando o seu convidado fizer o primeiro investimento, a comissao e creditada automaticamente no seu saldo disponivel.
+      <!-- Lista de referidos -->
+      <div style="font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;margin-top:4px">Lista de Referidos</div>
+      <div id="refListWrap" style="display:flex;flex-direction:column;gap:8px">
+        <div id="refListLoading" style="display:flex;align-items:center;gap:10px;padding:14px;background:var(--glass);border:1px solid var(--glass-b);border-radius:14px;backdrop-filter:blur(12px)">
+          <div style="width:18px;height:18px;border:2.5px solid rgba(0,123,255,.20);border-top-color:var(--blue-s);border-radius:50%;animation:spin .75s linear infinite;flex-shrink:0"></div>
+          <span style="font-size:13px;color:var(--muted);font-weight:500">A carregar referidos...</span>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- FAQ -->
-  <div class="section">
-    <div class="section-title">Perguntas Frequentes</div>
-    <div style="display:flex;flex-direction:column;gap:8px" id="faqList"></div>
+    <!-- Tab: FAQ -->
+    <div id="pane-faq" style="display:none">
+      <div style="display:flex;flex-direction:column;gap:8px" id="faqList"></div>
+    </div>
   </div>
 
   <!-- WhatsApp support -->
@@ -307,9 +329,9 @@ canvas#investChart{width:100%;height:120px}
       <div class="alert-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
       <span>A nossa equipa de suporte esta disponivel 24 horas para esclarecer as suas duvidas.</span>
     </div>
-    <a class="wa-btn" href="https://wa.me/244937359561" target="_blank">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-      Falar com Suporte via WhatsApp
+    <a class="wa-btn" href="https://wa.me/244937359561" target="_blank" style="padding:12px 20px;font-size:13.5px;width:auto;border-radius:12px;">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+      Suporte via WhatsApp
     </a>
     <div style="text-align:center;font-size:12px;color:var(--muted);margin-top:8px;font-weight:500">+244 937 359 561</div>
   </div>
@@ -344,6 +366,8 @@ import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "ht
 
 const app=initializeApp({apiKey:"AIzaSyDp02RqKrac4ogFRGDcJjPLpA2inOV2rsk",authDomain:"pro-2c872.firebaseapp.com",projectId:"pro-2c872",storageBucket:"pro-2c872.firebasestorage.app",messagingSenderId:"778229616930",appId:"1:778229616930:web:b56177b322241b103ad57b"});
 const auth=getAuth(app);const db=getFirestore(app);
+window._db_ref=db;
+window._fbs_ref={collection,query,where,getDocs};
 
 function fmt(v){return 'AOA '+Number(v).toLocaleString('pt-AO',{minimumFractionDigits:2,maximumFractionDigits:2})}
 function fmt0(v){return Number(v).toLocaleString('pt-AO',{minimumFractionDigits:0,maximumFractionDigits:0})}
@@ -416,6 +440,65 @@ function renderChart(d){
 </script>
 
 <script>
+/* ── Perf tabs ── */
+let _refLoaded = false;
+function switchPerfTab(tab, btn){
+  const pane = document.getElementById('pane-'+tab);
+  const isOpen = pane.style.display !== 'none';
+  // Close all
+  ['referral','faq'].forEach(t=>{
+    document.getElementById('pane-'+t).style.display='none';
+    const b=document.getElementById('ptab-'+t);
+    if(b){b.style.background='transparent';b.style.color='var(--muted)';}
+  });
+  // If was closed, open it
+  if(!isOpen){
+    pane.style.display = tab==='referral' ? 'flex' : 'block';
+    btn.style.background='var(--blue)';
+    btn.style.color='#fff';
+    // Load referrals on first open
+    if(tab==='referral' && !_refLoaded){ _refLoaded=true; loadReferralList(); }
+  }
+}
+
+/* ── Load referral list ── */
+async function loadReferralList(){
+  const wrap = document.getElementById('refListWrap');
+  try{
+    const db = window._db_ref;
+    if(!db || !window._uid){ wrap.innerHTML='<div style="padding:14px;background:var(--glass);border:1px solid var(--glass-b);border-radius:14px;font-size:13px;color:var(--muted);text-align:center">Erro ao carregar. Tente mais tarde.</div>'; return; }
+    // Query users whose inviteId matches this user's userId
+    const myId = window._uData?.userId || window._uid;
+    const { collection, query, where, getDocs } = window._fbs_ref;
+    const q = query(collection(db,'users'), where('inviteId','==', myId));
+    const snap = await getDocs(q);
+    if(snap.empty){
+      wrap.innerHTML='<div style="padding:18px 14px;background:var(--glass);border:1px solid var(--glass-b);border-radius:14px;backdrop-filter:blur(12px);text-align:center"><div style="font-size:13px;color:var(--muted);font-weight:500">Nenhum referido ainda.</div><div style="font-size:12px;color:var(--muted);margin-top:4px">Partilhe o seu link para comecar a ganhar comissoes.</div></div>';
+      return;
+    }
+    let html='';
+    snap.forEach((d,i)=>{
+      const u=d.data();
+      const initials=(u.name||'U').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+      const joined = u.createdAt?.toDate ? u.createdAt.toDate().toLocaleDateString('pt-AO') : '—';
+      const invested = u.totalDeposit > 0;
+      html+=`<div style="display:flex;align-items:center;gap:12px;background:var(--glass);border:1px solid var(--glass-b);border-radius:14px;padding:12px 14px;backdrop-filter:blur(12px)">
+        <div style="width:38px;height:38px;border-radius:11px;background:var(--alert-bg);border:1px solid var(--alert-b);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:var(--blue-s);flex-shrink:0">${initials}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${u.name||'Utilizador'}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px">Aderiu em ${joined}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;${invested?'background:var(--ok-bg);border:1px solid var(--ok-b);color:var(--green-s)':'background:rgba(251,146,60,.10);border:1px solid rgba(251,146,60,.28);color:#ea580c'}">${invested?'Investiu':'Pendente'}</div>
+        </div>
+      </div>`;
+    });
+    wrap.innerHTML=html;
+  }catch(e){
+    wrap.innerHTML='<div style="padding:14px;background:var(--glass);border:1px solid var(--glass-b);border-radius:14px;font-size:13px;color:var(--muted);text-align:center">Erro ao carregar referidos.</div>';
+  }
+}
+
 /* ── Balance popup ── */
 function openBalPopup(){document.getElementById('balOverlay').classList.add('show');}
 function closeBalPopup(){document.getElementById('balOverlay').classList.remove('show');}
