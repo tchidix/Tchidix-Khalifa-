@@ -27,13 +27,14 @@
   --r:18px;
   --nav-h:68px;
 }
-html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+html{min-height:100%}
+body{min-height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;overflow-y:auto}
 body::before,body::after{content:'';position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0}
 body::before{width:400px;height:400px;background:radial-gradient(circle,rgba(34,197,94,0.15) 0%,transparent 70%);top:-100px;left:-80px}
 body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,123,255,0.11) 0%,transparent 70%);bottom:-80px;right:-60px}
 
 /* ── SCROLLABLE MAIN ── */
-.page{position:relative;z-index:1;min-height:100dvh;padding-bottom:calc(var(--nav-h) + 16px);overflow-y:auto}
+.page{position:relative;z-index:1;min-height:100dvh;padding-bottom:calc(var(--nav-h) + 32px)}
 
 /* ── TOP BAR ── */
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 0;position:sticky;top:0;z-index:10;background:transparent}
@@ -73,7 +74,7 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
 .stat-icon.green{background:var(--ok-bg);border:1px solid var(--ok-b);color:var(--green-s)}
 .stat-icon.blue{background:var(--alert-bg);border:1px solid var(--alert-b);color:var(--blue-s)}
 .stat-icon.orange{background:rgba(251,146,60,0.10);border:1px solid rgba(251,146,60,0.28);color:#ea580c}
-.stat-val{font-size:15px;font-weight:800;color:var(--text)}
+.stat-val{font-size:15px;font-weight:800;color:#ea580c}
 .stat-lbl{font-size:10px;color:var(--muted);font-weight:500;margin-top:2px;line-height:1.3}
 
 /* ── HISTORY ── */
@@ -252,35 +253,37 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
     </div>
   </div>
 
-  <!-- Balance card -->
-  <div class="balance-card">
-    <div class="balance-label">
-      Saldo Disponivel
-      <button class="eye-btn" id="eyeBtn" onclick="toggleBalance()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-      </button>
-    </div>
-    <div class="balance-amount" id="balanceAmount">
-      <span class="balance-currency">AOA</span><span id="balanceVal">0.00</span>
-    </div>
-    <div class="balance-row">
-      <div class="balance-mini">
-        <div class="bm-label">Ganhos</div>
-        <div class="bm-value" id="earningsVal">0.00</div>
+  <!-- First Aid Health Card -->
+  <div style="margin:14px 16px 0;background:linear-gradient(135deg,rgba(0,123,255,0.72) 0%,rgba(59,130,246,0.68) 100%);border:1px solid rgba(255,255,255,0.40);border-radius:22px;padding:20px 18px;backdrop-filter:blur(18px);box-shadow:0 8px 32px rgba(0,123,255,0.18);position:relative;overflow:hidden">
+    <div style="position:absolute;top:-24px;right:-24px;width:110px;height:110px;background:rgba(255,255,255,0.09);border-radius:50%;pointer-events:none"></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+      <div style="width:38px;height:38px;border-radius:11px;background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.30);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
       </div>
-      <div class="balance-mini">
-        <div class="bm-label">Plano Gratuito</div>
-        <div class="bm-value" id="freeVal">0.00</div>
-      </div>
-      <div class="balance-mini">
-        <div class="bm-label">Valor de Compra</div>
-        <div class="bm-value" id="depositVal">0.00</div>
-      </div>
-      <div class="balance-mini">
-        <div class="bm-label">Em Analise</div>
-        <div class="bm-value" id="pendingVal">0.00</div>
+      <div>
+        <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.75);letter-spacing:.06em;text-transform:uppercase">Numeros de Emergencia</div>
+        <div style="font-size:15px;font-weight:800;color:#fff;margin-top:1px">Primeiros Socorros em Saude</div>
       </div>
     </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div style="background:rgba(255,255,255,0.16);border:1px solid rgba(255,255,255,0.26);border-radius:13px;padding:11px 13px">
+        <div style="font-size:10px;color:rgba(255,255,255,0.70);font-weight:700;text-transform:uppercase;letter-spacing:.04em">Emergencia Medica</div>
+        <div style="font-size:17px;font-weight:800;color:#fff;margin-top:3px;letter-spacing:.02em">112</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.16);border:1px solid rgba(255,255,255,0.26);border-radius:13px;padding:11px 13px">
+        <div style="font-size:10px;color:rgba(255,255,255,0.70);font-weight:700;text-transform:uppercase;letter-spacing:.04em">Urgencias Angola</div>
+        <div style="font-size:17px;font-weight:800;color:#fff;margin-top:3px;letter-spacing:.02em">118</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.16);border:1px solid rgba(255,255,255,0.26);border-radius:13px;padding:11px 13px">
+        <div style="font-size:10px;color:rgba(255,255,255,0.70);font-weight:700;text-transform:uppercase;letter-spacing:.04em">Bombeiros</div>
+        <div style="font-size:17px;font-weight:800;color:#fff;margin-top:3px;letter-spacing:.02em">115</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.16);border:1px solid rgba(255,255,255,0.26);border-radius:13px;padding:11px 13px">
+        <div style="font-size:10px;color:rgba(255,255,255,0.70);font-weight:700;text-transform:uppercase;letter-spacing:.04em">Suporte UnitedHealth</div>
+        <div style="font-size:15px;font-weight:800;color:#fff;margin-top:3px;letter-spacing:.01em">937 359 561</div>
+      </div>
+    </div>
+    <div style="margin-top:12px;font-size:12px;color:rgba(255,255,255,0.72);font-weight:500;line-height:1.5">Em caso de emergencia medica, ligue imediatamente para os numeros acima. A sua saude e o activo mais valioso.</div>
   </div>
 
   <!-- Stats -->
@@ -654,13 +657,20 @@ function fmt(v){ return Number(v).toLocaleString('pt-AO',{minimumFractionDigits:
 
 async function loadHistory(uid){
   try{
-    const q = query(collection(db,'transactions'),where('uid','==',uid),orderBy('createdAt','desc'),limit(10));
+    const q = query(collection(db,'transactions'),where('uid','==',uid),limit(10));
     const snap = await getDocs(q);
     const list = document.getElementById('historyList');
     if(snap.empty){ list.innerHTML='<div class="hist-empty">Nenhuma transaccao registada ainda. Inicie o seu primeiro deposito.</div>'; return; }
+    // Sort client-side by createdAt desc
+    const docs = [];
+    snap.forEach(d=>docs.push(d.data()));
+    docs.sort((a,b)=>{
+      const ta = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
+      const tb = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
+      return tb - ta;
+    });
     list.innerHTML='';
-    snap.forEach(d=>{
-      const t=d.data();
+    docs.forEach(t=>{
       const cls = t.type==='in'?'in': t.type==='out'?'out':'pend';
       const sign= t.type==='in'?'+': t.type==='out'?'-':'';
       const icon = t.type==='in'
@@ -675,7 +685,10 @@ async function loadHistory(uid){
         <div class="hist-amount ${cls}">${sign} AOA ${fmt(t.amount||0)}</div>
       </div>`;
     });
-  }catch(e){ console.error(e); }
+  }catch(e){ 
+    console.error('History error:',e);
+    document.getElementById('historyList').innerHTML='<div class="hist-empty">Erro ao carregar historico. Verifique a ligacao.</div>';
+  }
 }
 
 function checkBankData(data){
