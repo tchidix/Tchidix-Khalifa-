@@ -127,7 +127,6 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
 
 .plan-chip{display:inline-flex;align-items:center;gap:8px;background:var(--alert-bg);border:1px solid var(--alert-b);border-radius:10px;padding:9px 14px;font-size:13px;font-weight:700;color:var(--blue-s)}
 
-/* Saldo card no step 3 */
 .balance-card{background:rgba(255,255,255,.70);border:1px solid rgba(203,213,225,.55);border-radius:14px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
 .balance-label{font-size:12px;font-weight:600;color:var(--text2)}
 .balance-value{font-size:15px;font-weight:800;color:var(--green-s)}
@@ -312,7 +311,7 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
             <span class="i-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
             <input class="form-input" type="tel" id="cReferral" placeholder="Numero do amigo que o convidou"/>
           </div>
-          <div style="font-size:11.5px;color:var(--muted);margin-top:5px">O seu referenciador receberá comissao sobre o seu primeiro investimento.</div>
+          <div style="font-size:11.5px;color:var(--muted);margin-top:5px">O seu referenciador recebera comissao sobre o seu primeiro investimento.</div>
         </div>
       </div>
       <div id="step2Alert" style="display:none" class="alert alert-err">
@@ -327,8 +326,6 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
       <div class="g-card">
         <div class="g-card-title">Confirmacao do Investimento</div>
         <div class="g-card-sub">Verifique os dados antes de confirmar. O valor sera debitado imediatamente.</div>
-
-        <!-- Resumo saldo vs custo -->
         <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
           <div class="balance-card">
             <div>
@@ -345,7 +342,6 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
           </div>
         </div>
-
         <div class="terms-box">
           <h4>Requisitos de Subscricao</h4>
           <p>1. O utilizador deve ter pelo menos 18 anos de idade para subscrever qualquer plano de investimento.</p>
@@ -382,7 +378,7 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
       </div>
       <div class="alert alert-ok">
         <div class="alert-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-        <span>O plano esta activo. Acompanhe os rendimentos na seccao Gestao da sua conta.</span>
+        <span>O plano esta activo. Acompanhe os rendimentos na seccao Saude da sua conta.</span>
       </div>
       <button class="btn-p" onclick="closeAll()">Voltar aos Planos</button>
     </div>
@@ -413,7 +409,7 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, updateDoc, serverTimestamp, collection, addDoc, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, doc, getDoc, updateDoc, serverTimestamp, collection, addDoc, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const app = initializeApp({
   apiKey:"AIzaSyDp02RqKrac4ogFRGDcJjPLpA2inOV2rsk",
@@ -429,7 +425,7 @@ const db   = getFirestore(app);
 
 window._auth = auth;
 window._db   = db;
-window._fbs  = { doc, getDoc, setDoc, updateDoc, serverTimestamp, collection, addDoc, runTransaction };
+window._fbs  = { doc, getDoc, updateDoc, serverTimestamp, collection, addDoc, runTransaction };
 
 onAuthStateChanged(auth, user => {
   if (!user) {
@@ -438,7 +434,7 @@ onAuthStateChanged(auth, user => {
     window._uid = user.uid;
     getDoc(doc(db, 'users', user.uid)).then(s => {
       if (s.exists()) {
-        window._userData = s.data();
+        window._userData    = s.data();
         window._userBalance = s.data().balance || 0;
       }
     });
@@ -449,33 +445,32 @@ onAuthStateChanged(auth, user => {
 <script>
 /* ── Dados dos planos ── */
 const UHC = [
-  {name:'Medicare Advantage',          invest:2900,  yield:'+5% diario',     cycle:'60 dias',  cycleDays:60,  tier:'tier1', badge:'green'},
-  {name:'Employer-Sponsored Plans',    invest:4900,  yield:'+5% diario',     cycle:'60 dias',  cycleDays:60,  tier:'tier1', badge:'green'},
-  {name:'Individual & Family Plans',   invest:6900,  yield:'+5% diario',     cycle:'60 dias',  cycleDays:60,  tier:'tier2', badge:'blue'},
-  {name:'Medicaid Plans',              invest:8900,  yield:'+5% diario',     cycle:'60 dias',  cycleDays:60,  tier:'tier2', badge:'blue'},
-  {name:'UnitedHealthcare Dental',     invest:17000, yield:'+5% diario',     cycle:'60 dias',  cycleDays:60,  tier:'tier3', badge:'orange'},
-  {name:'UnitedHealthcare Vision',     invest:25900, yield:'+5% diario',     cycle:'60 dias',  cycleDays:60,  tier:'tier3', badge:'orange'},
-  {name:'Medicare Part D',             invest:35900, yield:'+5% diario',     cycle:'60 dias',  cycleDays:60,  tier:'tier4', badge:'purple'},
-  {name:'Dual Special Needs Plans (D-SNP)', invest:55900, yield:'+5% diario',cycle:'60 dias',  cycleDays:60,  tier:'tier4', badge:'purple'},
+  {name:'Medicare Advantage',               invest:2900,  yieldStr:'+5% diario',     cycle:'60 dias',  cycleDays:60,  tier:'tier1', badge:'green'},
+  {name:'Employer-Sponsored Plans',         invest:4900,  yieldStr:'+5% diario',     cycle:'60 dias',  cycleDays:60,  tier:'tier1', badge:'green'},
+  {name:'Individual & Family Plans',        invest:6900,  yieldStr:'+5% diario',     cycle:'60 dias',  cycleDays:60,  tier:'tier2', badge:'blue'},
+  {name:'Medicaid Plans',                   invest:8900,  yieldStr:'+5% diario',     cycle:'60 dias',  cycleDays:60,  tier:'tier2', badge:'blue'},
+  {name:'UnitedHealthcare Dental',          invest:17000, yieldStr:'+5% diario',     cycle:'60 dias',  cycleDays:60,  tier:'tier3', badge:'orange'},
+  {name:'UnitedHealthcare Vision',          invest:25900, yieldStr:'+5% diario',     cycle:'60 dias',  cycleDays:60,  tier:'tier3', badge:'orange'},
+  {name:'Medicare Part D',                  invest:35900, yieldStr:'+5% diario',     cycle:'60 dias',  cycleDays:60,  tier:'tier4', badge:'purple'},
+  {name:'Dual Special Needs Plans (D-SNP)', invest:55900, yieldStr:'+5% diario',     cycle:'60 dias',  cycleDays:60,  tier:'tier4', badge:'purple'},
 ];
 const OPTUM = [
-  {name:'Optum Home Delivery Pharmacy',invest:0,     yield:'AOA 100 diario', cycle:'5 dias',   cycleDays:5,   tier:'free-plan', badge:'free', isFree:true},
-  {name:'Specialty Pharmacy',          invest:8000,  yield:'+10% a cada 72h',cycle:'250 dias', cycleDays:250, tier:'tier1', badge:'green'},
-  {name:'Urgent Care Centers',         invest:14000, yield:'+10% a cada 72h',cycle:'250 dias', cycleDays:250, tier:'tier2', badge:'blue'},
-  {name:'Surgical Care Affiliates',    invest:19000, yield:'+10% a cada 72h',cycle:'250 dias', cycleDays:250, tier:'tier2', badge:'blue'},
-  {name:'In-Home Wellness',            invest:29000, yield:'+10% a cada 72h',cycle:'250 dias', cycleDays:250, tier:'tier3', badge:'orange'},
-  {name:'Optum Bank',                  invest:60000, yield:'+10% a cada 72h',cycle:'250 dias', cycleDays:250, tier:'tier4', badge:'purple'},
-  {name:'Avery (AI Companion)',        invest:75000, yield:'+10% a cada 72h',cycle:'250 dias', cycleDays:250, tier:'tier4', badge:'purple'},
+  {name:'Optum Home Delivery Pharmacy',     invest:0,     yieldStr:'AOA 100 diario', cycle:'5 dias',   cycleDays:5,   tier:'free-plan', badge:'free', isFree:true},
+  {name:'Specialty Pharmacy',               invest:8000,  yieldStr:'+10% a cada 72h',cycle:'250 dias', cycleDays:250, tier:'tier1', badge:'green'},
+  {name:'Urgent Care Centers',              invest:14000, yieldStr:'+10% a cada 72h',cycle:'250 dias', cycleDays:250, tier:'tier2', badge:'blue'},
+  {name:'Surgical Care Affiliates',         invest:19000, yieldStr:'+10% a cada 72h',cycle:'250 dias', cycleDays:250, tier:'tier2', badge:'blue'},
+  {name:'In-Home Wellness',                 invest:29000, yieldStr:'+10% a cada 72h',cycle:'250 dias', cycleDays:250, tier:'tier3', badge:'orange'},
+  {name:'Optum Bank',                       invest:60000, yieldStr:'+10% a cada 72h',cycle:'250 dias', cycleDays:250, tier:'tier4', badge:'purple'},
+  {name:'Avery (AI Companion)',             invest:75000, yieldStr:'+10% a cada 72h',cycle:'250 dias', cycleDays:250, tier:'tier4', badge:'purple'},
 ];
 const INSIGHT = [
-  {name:'Data Analytics',              invest:4000,  yield:'2x capital',     cycle:'31 dias',  cycleDays:31,  tier:'tier1', badge:'green'},
-  {name:'Revenue Cycle Management',    invest:8000,  yield:'2x capital',     cycle:'31 dias',  cycleDays:31,  tier:'tier1', badge:'green'},
-  {name:'Telehealth Services',         invest:16000, yield:'2x capital',     cycle:'31 dias',  cycleDays:31,  tier:'tier2', badge:'blue'},
-  {name:'Clinical Research',           invest:32000, yield:'2x capital',     cycle:'31 dias',  cycleDays:31,  tier:'tier2', badge:'blue'},
-  {name:'Optum Store',                 invest:54500, yield:'2x capital',     cycle:'31 dias',  cycleDays:31,  tier:'tier3', badge:'orange'},
+  {name:'Data Analytics',                   invest:4000,  yieldStr:'2x capital',     cycle:'31 dias',  cycleDays:31,  tier:'tier1', badge:'green'},
+  {name:'Revenue Cycle Management',         invest:8000,  yieldStr:'2x capital',     cycle:'31 dias',  cycleDays:31,  tier:'tier1', badge:'green'},
+  {name:'Telehealth Services',              invest:16000, yieldStr:'2x capital',     cycle:'31 dias',  cycleDays:31,  tier:'tier2', badge:'blue'},
+  {name:'Clinical Research',                invest:32000, yieldStr:'2x capital',     cycle:'31 dias',  cycleDays:31,  tier:'tier2', badge:'blue'},
+  {name:'Optum Store',                      invest:54500, yieldStr:'2x capital',     cycle:'31 dias',  cycleDays:31,  tier:'tier3', badge:'orange'},
 ];
 
-/* Mapa rápido de plano pelo nome */
 const ALL_PLANS = [...UHC, ...OPTUM, ...INSIGHT];
 
 function fmt(v){ return Number(v).toLocaleString('pt-AO',{minimumFractionDigits:0,maximumFractionDigits:0}); }
@@ -491,7 +486,7 @@ function renderPlan(p){
     <div class="plan-meta-row">
       <div class="plan-meta green">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-        ${p.yield}
+        ${p.yieldStr}
       </div>
       <div class="plan-meta blue">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -519,7 +514,7 @@ function switchPlanTab(idx, el){
 }
 
 /* ── Subscribe flow ── */
-let currentPlan = '';
+let currentPlan     = '';
 let currentPlanData = null;
 
 function startSubscribe(planEnc){
@@ -571,7 +566,6 @@ function contNext(from){
       return;
     }
     stepTo(1, 2);
-
   } else if(from === 2){
     const s  = document.getElementById('cSource').value;
     const al = document.getElementById('step2Alert');
@@ -586,13 +580,11 @@ function contNext(from){
       document.getElementById('step2AlertText').textContent = 'Insira o numero do amigo referenciador.';
       return;
     }
-    /* Ao entrar no step 3, actualiza os valores de saldo e custo */
     loadBalanceForStep3();
     stepTo(2, 3);
   }
 }
 
-/* Carrega e exibe saldo actual + custo do plano no step 3 */
 async function loadBalanceForStep3(){
   document.getElementById('balanceDisplay').textContent = 'A carregar...';
   try {
@@ -602,10 +594,8 @@ async function loadBalanceForStep3(){
       window._userData    = snap.data();
     }
   } catch(e){ /* usa valor em cache */ }
-
   const bal  = window._userBalance || 0;
   const cost = currentPlanData ? currentPlanData.invest : 0;
-
   document.getElementById('balanceDisplay').textContent  = `AOA ${fmt(bal)}`;
   document.getElementById('planCostDisplay').textContent = cost === 0 ? 'Gratuito' : `AOA ${fmt(cost)}`;
 }
@@ -618,22 +608,26 @@ function stepTo(from, to){
   document.getElementById('csd' + (to-1)).classList.add('active');
 }
 
-/* ── Submit: verifica saldo e activa imediatamente ── */
+/* ══════════════════════════════════════════════
+   submitPlan — CORRIGIDO
+   Escreve em "subscriptions" (não "active_plans")
+   com os campos que saude.html e index.html leem:
+   uid, plan, status, yieldStr, activatedAt, createdAt
+══════════════════════════════════════════════ */
 async function submitPlan(){
   const al = document.getElementById('step3Alert');
   al.style.display = 'none';
 
-  document.getElementById('submitPlanTxt').style.display    = 'none';
-  document.getElementById('submitSpinner').style.display    = 'inline-flex';
-  document.getElementById('btnSubmitPlan').disabled         = true;
+  document.getElementById('submitPlanTxt').style.display = 'none';
+  document.getElementById('submitSpinner').style.display = 'inline-flex';
+  document.getElementById('btnSubmitPlan').disabled      = true;
 
   try {
     const cost = currentPlanData ? currentPlanData.invest : 0;
-    const uid  = window._uid || 'anon';
+    const uid  = window._uid;
     const db   = window._db;
     const { doc, getDoc, runTransaction, collection, serverTimestamp } = window._fbs;
 
-    /* ── Transaccao: verifica saldo e debita ── */
     await runTransaction(db, async (tx) => {
       const userRef  = doc(db, 'users', uid);
       const userSnap = await tx.get(userRef);
@@ -642,56 +636,49 @@ async function submitPlan(){
 
       const balance = userSnap.data().balance || 0;
 
-      /* Verificacao de saldo (planos gratuitos nao precisam) */
       if(cost > 0 && balance < cost){
         throw new Error(`Saldo insuficiente. Disponivel: AOA ${fmt(balance)}. Necessario: AOA ${fmt(cost)}.`);
       }
 
-      /* Calcula datas do ciclo */
-      const now      = new Date();
-      const endDate  = new Date(now);
-      endDate.setDate(endDate.getDate() + (currentPlanData.cycleDays || 0));
+      /* Referencia para o novo documento em "subscriptions" */
+      const subRef = doc(collection(db, 'subscriptions'));
 
-      /* Referencia para o novo plano */
-      const planRef = doc(collection(db, 'active_plans'));
-
-      /* Debita saldo e guarda referencia do plano no user */
+      /* Debita saldo do utilizador */
       tx.update(userRef, {
-        balance: balance - cost,
-        blockedBalance: (userSnap.data().blockedBalance || 0) + cost,
+        balance:       balance - cost,
+        blockedBalance:(userSnap.data().blockedBalance || 0) + cost,
+        activePlan:    currentPlan,
+        planDaysLeft:  currentPlanData.cycleDays,
       });
 
-      /* Cria documento do plano activo */
-      tx.set(planRef, {
+      /* Cria documento em subscriptions com campos esperados por saude.html */
+      tx.set(subRef, {
         uid,
         plan:       currentPlan,
-        invest:     cost,
-        yieldInfo:  currentPlanData.yield,
+        yieldStr:   currentPlanData.yieldStr,
         cycle:      currentPlanData.cycle,
         cycleDays:  currentPlanData.cycleDays,
-        status:     'active',
-        startedAt:  serverTimestamp(),
-        endsAt:     endDate,
+        invest:     cost,
+        status:     'approved',        /* saude.html verifica status==='approved'||'active' */
+        activatedAt: serverTimestamp(), /* saude.html usa activatedAt para calcular dias */
+        createdAt:  serverTimestamp(),
         name:       document.getElementById('cName').value.trim(),
         dob:        document.getElementById('cDob').value,
         phone:      document.getElementById('cPhone').value.trim(),
         phone2:     document.getElementById('cPhone2').value.trim(),
         source:     document.getElementById('cSource').value,
         referral:   document.getElementById('cReferral').value.trim(),
-        createdAt:  serverTimestamp(),
       });
     });
 
     /* Actualiza cache local */
     window._userBalance = (window._userBalance || 0) - cost;
 
-    /* Mensagem de sucesso */
     document.getElementById('successMsg').textContent =
       cost === 0
         ? `O plano "${currentPlan}" foi activado gratuitamente na sua conta.`
         : `O plano "${currentPlan}" foi activado. AOA ${fmt(cost)} foram debitados do seu saldo.`;
 
-    /* Avanca para ecra de sucesso */
     ['contStep1','contStep2','contStep3'].forEach(id =>
       document.getElementById(id).classList.remove('active')
     );
@@ -715,6 +702,13 @@ function sourceChanged(){
 
 function openFS(id){ document.getElementById(id).classList.add('open'); }
 function closeFS(id){ document.getElementById(id).classList.remove('open'); }
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  document.getElementById('toastText').textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
 </script>
 </body>
 </html>
