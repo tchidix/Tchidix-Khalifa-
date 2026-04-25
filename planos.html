@@ -31,34 +31,70 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
 .tab-bar::-webkit-scrollbar{display:none}
 .tab-item{flex-shrink:0;padding:12px 18px;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2.5px solid transparent;transition:color .2s,border-color .2s;white-space:nowrap}
 .tab-item.active{color:var(--green-s);border-bottom-color:var(--green-s)}
-.plans-grid{padding:14px 16px 30px;display:flex;flex-direction:column;gap:12px}
-.plan-card{background:var(--glass);border:1px solid var(--glass-b);border-radius:var(--r);padding:18px 16px;backdrop-filter:blur(18px);box-shadow:0 4px 20px rgba(0,0,0,0.06);position:relative;overflow:hidden}
+
+/* GRID E CARDS */
+.plans-grid{padding:16px 16px 30px;display:flex;flex-direction:column;gap:14px}
+
+/* Container interno dos cards com gap */
+.plans-inner{display:flex;flex-direction:column;gap:14px}
+
+.plan-card{
+  background:var(--glass);
+  border:1px solid var(--glass-b);
+  border-radius:var(--r);
+  padding:22px 18px 20px;
+  backdrop-filter:blur(18px);
+  box-shadow:0 6px 24px rgba(0,0,0,0.09);
+  position:relative;
+  overflow:hidden;
+  cursor:pointer;
+  user-select:none;
+  transition:box-shadow .15s;
+}
+@keyframes vibrate{
+  0%  {transform:translateX(0)}
+  15% {transform:translateX(-5px)}
+  30% {transform:translateX(5px)}
+  45% {transform:translateX(-4px)}
+  60% {transform:translateX(4px)}
+  75% {transform:translateX(-2px)}
+  90% {transform:translateX(2px)}
+  100%{transform:translateX(0)}
+}
+.plan-card.vibrating{animation:vibrate 0.4s ease;}
 .plan-card::before{content:'';position:absolute;top:0;right:0;width:80px;height:80px;border-radius:50%;filter:blur(30px);pointer-events:none}
 .plan-card.tier1::before{background:rgba(34,197,94,0.25)}
 .plan-card.tier2::before{background:rgba(0,123,255,0.20)}
 .plan-card.tier3::before{background:rgba(251,146,60,0.22)}
 .plan-card.tier4::before{background:rgba(168,85,247,0.20)}
 .plan-card.free-plan{border-color:rgba(34,197,94,0.45);background:rgba(34,197,94,0.07)}
-.plan-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.plan-name{font-size:16px;font-weight:800;color:var(--text);line-height:1.3}
-.plan-invest{font-size:18px;font-weight:800;color:var(--red)}
-.plan-invest span{font-size:12px;font-weight:600;color:var(--muted)}
+.plan-card.free-plan.used{opacity:0.55}
+.plan-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:10px}
+.plan-name{font-size:16px;font-weight:800;color:var(--text);line-height:1.3;flex:1}
+.plan-invest{font-size:18px;font-weight:800;color:var(--red);white-space:nowrap;text-align:right}
+.plan-invest span{font-size:12px;font-weight:600;color:var(--muted);display:block}
 .plan-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;margin-bottom:10px}
 .plan-badge.green{background:var(--ok-bg);border:1px solid var(--ok-b);color:var(--green-s)}
 .plan-badge.blue{background:var(--alert-bg);border:1px solid var(--alert-b);color:var(--blue-s)}
 .plan-badge.orange{background:rgba(251,146,60,.10);border:1px solid rgba(251,146,60,.28);color:#ea580c}
 .plan-badge.purple{background:rgba(168,85,247,.10);border:1px solid rgba(168,85,247,.28);color:#7c3aed}
 .plan-badge.free{background:rgba(34,197,94,.18);border:1px solid rgba(34,197,94,.40);color:var(--green-s)}
-.plan-meta-row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 14px}
+.plan-meta-row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 16px}
 .plan-meta{display:flex;align-items:center;gap:5px;padding:6px 10px;border-radius:9px;font-size:12px;font-weight:600;background:rgba(255,255,255,.55);border:1px solid rgba(203,213,225,.50)}
 .plan-meta.green{color:var(--green-s)}
 .plan-meta.blue{color:var(--blue-s)}
-.plan-meta.orange{color:#ea580c}
-.btn-subscribe{padding:8px 16px;border-radius:20px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .12s ease;display:inline-flex;align-items:center;justify-content:center;gap:5px;border:1.5px solid rgba(0,123,255,.4);background:var(--blue);color:#fff;width:auto;margin-top:4px}
+.btn-subscribe{
+  padding:10px 20px;border-radius:20px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;
+  cursor:pointer;transition:transform .12s,opacity .12s;display:inline-flex;align-items:center;
+  justify-content:center;gap:6px;border:1.5px solid rgba(0,123,255,.4);
+  background:var(--blue);color:#fff;
+}
 .btn-subscribe:active{transform:scale(0.95)}
 .btn-subscribe.free-btn{background:var(--green);border-color:rgba(34,197,94,.5)}
-.btn-subscribe:disabled{opacity:.55;cursor:not-allowed;transform:none}
-.plan-free-note{font-size:11px;color:var(--green-s);font-weight:600;text-align:center;margin-top:6px}
+.btn-subscribe.used-btn{background:rgba(148,163,184,0.5);border-color:rgba(148,163,184,0.4);cursor:not-allowed}
+.plan-free-note{font-size:11px;color:var(--green-s);font-weight:600;margin-top:8px}
+.plan-free-used-note{font-size:11px;color:var(--muted);font-weight:600;margin-top:8px}
+
 .fs-modal{position:fixed;inset:0;z-index:200;background:var(--bg);overflow-y:auto;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
 .fs-modal.open{transform:translateX(0)}
 .fs-header{display:flex;align-items:center;gap:12px;padding:16px 16px 12px;background:rgba(255,255,255,.70);border-bottom:1px solid rgba(255,255,255,.80);backdrop-filter:blur(14px);position:sticky;top:0;z-index:10}
@@ -149,7 +185,7 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
         <div class="alert-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
         <span>Planos com ciclo de 60 dias. Rendimento de +5% diario sobre o capital investido.</span>
       </div>
-      <div id="plansUHC"></div>
+      <div class="plans-inner" id="plansUHC"></div>
     </div>
   </div>
 
@@ -159,7 +195,7 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
         <div class="alert-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
         <span>Rendimento a cada 72 horas. Plano gratuito disponivel. Validade de ate 250 dias.</span>
       </div>
-      <div id="plansOptum"></div>
+      <div class="plans-inner" id="plansOptum"></div>
     </div>
   </div>
 
@@ -169,7 +205,7 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
         <div class="alert-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
         <span>Planos de curto prazo de 31 dias. Retorno de 2x o capital no final do ciclo.</span>
       </div>
-      <div id="plansInsight"></div>
+      <div class="plans-inner" id="plansInsight"></div>
     </div>
   </div>
 </div>
@@ -193,7 +229,7 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
         <p>3. Os rendimentos indicados representam retornos estimados com base no desempenho historico dos portfolios UnitedHealth Group. Rentabilidades passadas nao garantem rentabilidades futuras.</p>
         <p>4. Levantamentos estao disponiveis apos aprovacao e sao processados em ate 24 horas uteis, com taxa de 16% sobre o valor solicitado.</p>
         <p>5. Cada utilizador pode ter apenas um plano activo de cada categoria em simultaneo.</p>
-        <p>6. O plano gratuito (Optum Home Delivery Pharmacy) tem validade de 5 dias e nao requer investimento inicial.</p>
+        <p>6. O plano gratuito (Optum Home Delivery Pharmacy) tem validade de 5 dias e pode ser activado apenas uma vez por conta.</p>
         <p>7. Planos do tipo Optum Insight retornam 2x o capital no final dos 31 dias, sem pagamentos intermediarios.</p>
         <p>8. Em caso de cancelamento antecipado solicitado pelo utilizador, a UnitedHealth reserva-se o direito de aplicar penalizacoes conforme os termos especificos de cada plano.</p>
         <p>9. O utilizador declara ter lido, compreendido e aceite todos estes termos ao prosseguir com a subscricao.</p>
@@ -215,7 +251,7 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
     <span class="fs-title">Contrato de Saude</span>
   </div>
   <div class="fs-body">
-    <div class="step-bar" id="contStepBar">
+    <div class="step-bar">
       <div class="step-dot active" id="csd0"></div>
       <div class="step-dot" id="csd1"></div>
       <div class="step-dot" id="csd2"></div>
@@ -223,7 +259,7 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
 
     <!-- Step 1 -->
     <div class="view-step active" id="contStep1">
-      <div class="plan-chip" id="planChip">
+      <div class="plan-chip">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
         <span id="planChipText">Plano Seleccionado</span>
       </div>
@@ -320,13 +356,13 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
         </div>
         <div class="terms-box">
           <h4>Requisitos de Subscricao</h4>
-          <p>1. O utilizador deve ter pelo menos 18 anos de idade para subscrever qualquer plano de investimento.</p>
-          <p>2. Os dados fornecidos devem ser verdadeiros e corresponder a documentos validos de identificacao.</p>
+          <p>1. O utilizador deve ter pelo menos 18 anos de idade.</p>
+          <p>2. Os dados fornecidos devem ser verdadeiros e corresponder a documentos validos.</p>
           <p>3. O capital necessario sera debitado imediatamente do seu saldo disponivel.</p>
           <p>4. O plano entra em vigor imediatamente apos a confirmacao.</p>
           <p>5. Cada conta pode ter apenas um plano activo por categoria em simultaneo.</p>
-          <p>6. O utilizador compromete-se a nao utilizar fundos de origem ilicita para investimentos nesta plataforma.</p>
-          <p>7. A UnitedHealth reserva-se o direito de rejeitar pedidos de subscricao sem justificacao obrigatoria.</p>
+          <p>6. O utilizador compromete-se a nao utilizar fundos de origem ilicita.</p>
+          <p>7. A UnitedHealth reserva-se o direito de rejeitar pedidos sem justificacao obrigatoria.</p>
         </div>
       </div>
       <div class="alert alert-info">
@@ -350,7 +386,7 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
           <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
         </div>
         <div class="success-title">Plano Activado</div>
-        <div class="success-sub" id="successMsg">O seu plano foi activado com sucesso e o capital debitado do seu saldo.</div>
+        <div class="success-sub" id="successMsg">O seu plano foi activado com sucesso.</div>
       </div>
       <div class="alert alert-ok">
         <div class="alert-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
@@ -371,7 +407,7 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, getDoc, updateDoc, serverTimestamp, collection, addDoc, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, doc, getDoc, updateDoc, serverTimestamp, collection, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const app = initializeApp({
   apiKey:"AIzaSyDp02RqKrac4ogFRGDcJjPLpA2inOV2rsk",
@@ -386,21 +422,24 @@ const auth = getAuth(app);
 const db   = getFirestore(app);
 window._auth = auth;
 window._db   = db;
-window._fbs  = { doc, getDoc, updateDoc, serverTimestamp, collection, addDoc, runTransaction };
+window._fbs  = { doc, getDoc, updateDoc, serverTimestamp, collection, runTransaction };
 
-onAuthStateChanged(auth, user => {
+onAuthStateChanged(auth, async user => {
   if (!user) { window.location.href = 'auth.html'; return; }
   window._uid = user.uid;
-  getDoc(doc(db, 'users', user.uid)).then(s => {
-    if (s.exists()) {
-      window._userData    = s.data();
-      window._userBalance = s.data().balance || 0;
-    }
-  });
+  const snap = await getDoc(doc(db, 'users', user.uid));
+  if (snap.exists()) {
+    window._userData     = snap.data();
+    window._userBalance  = snap.data().balance || 0;
+    window._freePlanUsed = snap.data().freePlanUsed || false;
+  }
+  renderAllPlans();
 });
 </script>
 
 <script>
+const FREE_PLAN_NAME = 'Optum Home Delivery Pharmacy';
+
 const UHC = [
   {name:'Medicare Advantage',               invest:2900,  yieldStr:'+5% diario',     cycle:'60 dias', cycleDays:60,  tier:'tier1', badge:'green'},
   {name:'Employer-Sponsored Plans',         invest:4900,  yieldStr:'+5% diario',     cycle:'60 dias', cycleDays:60,  tier:'tier1', badge:'green'},
@@ -412,7 +451,7 @@ const UHC = [
   {name:'Dual Special Needs Plans (D-SNP)', invest:55900, yieldStr:'+5% diario',     cycle:'60 dias', cycleDays:60,  tier:'tier4', badge:'purple'},
 ];
 const OPTUM = [
-  {name:'Optum Home Delivery Pharmacy',     invest:0,     yieldStr:'AOA 100 diario', cycle:'5 dias',  cycleDays:5,   tier:'free-plan', badge:'free', isFree:true},
+  {name:FREE_PLAN_NAME,                     invest:0,     yieldStr:'AOA 100 diario', cycle:'5 dias',  cycleDays:5,   tier:'free-plan', badge:'free', isFree:true},
   {name:'Specialty Pharmacy',               invest:8000,  yieldStr:'+10% a cada 72h',cycle:'250 dias',cycleDays:250, tier:'tier1', badge:'green'},
   {name:'Urgent Care Centers',              invest:14000, yieldStr:'+10% a cada 72h',cycle:'250 dias',cycleDays:250, tier:'tier2', badge:'blue'},
   {name:'Surgical Care Affiliates',         invest:19000, yieldStr:'+10% a cada 72h',cycle:'250 dias',cycleDays:250, tier:'tier2', badge:'blue'},
@@ -433,12 +472,38 @@ const ALL_PLANS = [...UHC, ...OPTUM, ...INSIGHT];
 function fmt(v){ return Number(v).toLocaleString('pt-AO',{minimumFractionDigits:0,maximumFractionDigits:0}); }
 
 function renderPlan(p){
-  const isFree = p.isFree;
-  return `<div class="plan-card ${p.tier}" style="margin-bottom:0">
+  const isFree   = p.isFree || false;
+  const freeUsed = isFree && (window._freePlanUsed === true);
+
+  let btnHtml  = '';
+  let noteHtml = '';
+
+  if(isFree){
+    if(freeUsed){
+      btnHtml  = `<button class="btn-subscribe used-btn" disabled>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Ja Utilizado
+      </button>`;
+      noteHtml = `<div class="plan-free-used-note">Este plano gratuito ja foi activado nesta conta</div>`;
+    } else {
+      btnHtml  = `<button class="btn-subscribe free-btn" onclick="event.stopPropagation();startSubscribe('${encodeURIComponent(p.name)}')">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Activar Gratuito
+      </button>`;
+      noteHtml = `<div class="plan-free-note">Plano de demonstracao — rendimento de AOA 100/dia por 5 dias</div>`;
+    }
+  } else {
+    btnHtml = `<button class="btn-subscribe" onclick="event.stopPropagation();startSubscribe('${encodeURIComponent(p.name)}')">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Subscrever
+    </button>`;
+  }
+
+  return `<div class="plan-card ${p.tier}${freeUsed ? ' used' : ''}" onclick="onCardClick(this,'${encodeURIComponent(p.name)}',${freeUsed})">
     <div class="plan-badge ${p.badge}">${p.cycle}</div>
     <div class="plan-header">
       <div class="plan-name">${p.name}</div>
-      <div class="plan-invest">${isFree ? 'Gratuito' : `AOA ${fmt(p.invest)}`}<span>${isFree ? '' : ' capital'}</span></div>
+      <div class="plan-invest">${isFree ? 'Gratuito' : `AOA ${fmt(p.invest)}`}<span>${isFree ? '' : 'capital'}</span></div>
     </div>
     <div class="plan-meta-row">
       <div class="plan-meta green">
@@ -450,17 +515,35 @@ function renderPlan(p){
         ${p.cycle}
       </div>
     </div>
-    <button class="btn-subscribe ${isFree ? 'free-btn' : ''}" onclick="startSubscribe('${encodeURIComponent(p.name)}')">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-      ${isFree ? 'Activar Gratuito' : 'Subscrever'}
-    </button>
-    ${isFree ? '<div class="plan-free-note">Plano de demonstracao — rendimento de AOA 100/dia por 5 dias</div>' : ''}
+    ${btnHtml}
+    ${noteHtml}
   </div>`;
 }
 
-document.getElementById('plansUHC').innerHTML     = UHC.map(renderPlan).join('');
-document.getElementById('plansOptum').innerHTML   = OPTUM.map(renderPlan).join('');
-document.getElementById('plansInsight').innerHTML = INSIGHT.map(renderPlan).join('');
+function renderAllPlans(){
+  document.getElementById('plansUHC').innerHTML     = UHC.map(renderPlan).join('');
+  document.getElementById('plansOptum').innerHTML   = OPTUM.map(renderPlan).join('');
+  document.getElementById('plansInsight').innerHTML = INSIGHT.map(renderPlan).join('');
+}
+
+// Renderiza inicial (antes do auth carregar)
+renderAllPlans();
+
+/* ── Vibração no card ao clicar ── */
+function triggerVibrate(cardEl){
+  cardEl.classList.remove('vibrating');
+  void cardEl.offsetWidth; // reflow
+  cardEl.classList.add('vibrating');
+  cardEl.addEventListener('animationend', () => cardEl.classList.remove('vibrating'), {once:true});
+}
+
+/* Clique no CARD (só vibra) */
+function onCardClick(cardEl, planEnc, freeUsed){
+  triggerVibrate(cardEl);
+  if(freeUsed){
+    showToast('Este plano gratuito ja foi utilizado nesta conta.');
+  }
+}
 
 function switchPlanTab(idx, el){
   document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
@@ -472,11 +555,18 @@ function switchPlanTab(idx, el){
 let currentPlan     = '';
 let currentPlanData = null;
 
+/* Clique no BOTÃO Subscrever (abre o contrato) */
 function startSubscribe(planEnc){
   currentPlan     = decodeURIComponent(planEnc);
   currentPlanData = ALL_PLANS.find(p => p.name === currentPlan) || null;
+
+  if(currentPlanData && currentPlanData.isFree && window._freePlanUsed){
+    showToast('Este plano gratuito ja foi utilizado nesta conta.');
+    return;
+  }
+
   document.getElementById('planChipText').textContent = currentPlan;
-  if (window._userData) document.getElementById('cName').value = window._userData.name || '';
+  if(window._userData) document.getElementById('cName').value = window._userData.name || '';
   openFS('fsIntro');
 }
 
@@ -504,158 +594,154 @@ function resetContSteps(){
   ['csd0','csd1','csd2'].forEach((id,i) => {
     const d = document.getElementById(id);
     d.classList.remove('active','done');
-    if(i === 0) d.classList.add('active');
+    if(i===0) d.classList.add('active');
   });
 }
 
 function contNext(from){
-  if(from === 1){
+  if(from===1){
     const n  = document.getElementById('cName').value.trim();
     const d  = document.getElementById('cDob').value;
     const p  = document.getElementById('cPhone').value.trim();
     const al = document.getElementById('step1Alert');
-    al.style.display = 'none';
-    if(!n || !d || !p){
-      al.style.display = 'flex';
-      document.getElementById('step1AlertText').textContent = 'Preencha todos os campos obrigatorios.';
+    al.style.display='none';
+    if(!n||!d||!p){
+      al.style.display='flex';
+      document.getElementById('step1AlertText').textContent='Preencha todos os campos obrigatorios.';
       return;
     }
-    stepTo(1, 2);
-  } else if(from === 2){
+    stepTo(1,2);
+  } else if(from===2){
     const s  = document.getElementById('cSource').value;
     const al = document.getElementById('step2Alert');
-    al.style.display = 'none';
+    al.style.display='none';
     if(!s){
-      al.style.display = 'flex';
-      document.getElementById('step2AlertText').textContent = 'Seleccione como nos conheceu.';
+      al.style.display='flex';
+      document.getElementById('step2AlertText').textContent='Seleccione como nos conheceu.';
       return;
     }
-    if(s === 'Amigos' && !document.getElementById('cReferral').value.trim()){
-      al.style.display = 'flex';
-      document.getElementById('step2AlertText').textContent = 'Insira o numero do amigo referenciador.';
+    if(s==='Amigos'&&!document.getElementById('cReferral').value.trim()){
+      al.style.display='flex';
+      document.getElementById('step2AlertText').textContent='Insira o numero do amigo referenciador.';
       return;
     }
     loadBalanceForStep3();
-    stepTo(2, 3);
+    stepTo(2,3);
   }
 }
 
 async function loadBalanceForStep3(){
-  document.getElementById('balanceDisplay').textContent = 'A carregar...';
-  try {
-    const snap = await window._fbs.getDoc(window._fbs.doc(window._db, 'users', window._uid));
+  document.getElementById('balanceDisplay').textContent='A carregar...';
+  try{
+    const snap = await window._fbs.getDoc(window._fbs.doc(window._db,'users',window._uid));
     if(snap.exists()){
-      window._userBalance = snap.data().balance || 0;
-      window._userData    = snap.data();
+      window._userBalance  = snap.data().balance||0;
+      window._userData     = snap.data();
+      window._freePlanUsed = snap.data().freePlanUsed||false;
     }
-  } catch(e){}
-  const bal  = window._userBalance || 0;
-  const cost = currentPlanData ? currentPlanData.invest : 0;
+  }catch(e){}
+  const bal  = window._userBalance||0;
+  const cost = currentPlanData?currentPlanData.invest:0;
   document.getElementById('balanceDisplay').textContent  = `AOA ${fmt(bal)}`;
-  document.getElementById('planCostDisplay').textContent = cost === 0 ? 'Gratuito' : `AOA ${fmt(cost)}`;
+  document.getElementById('planCostDisplay').textContent = cost===0?'Gratuito':`AOA ${fmt(cost)}`;
 }
 
-function stepTo(from, to){
-  document.getElementById('contStep' + from).classList.remove('active');
-  document.getElementById('contStep' + to).classList.add('active');
-  document.getElementById('csd' + (from-1)).classList.remove('active');
-  document.getElementById('csd' + (from-1)).classList.add('done');
-  document.getElementById('csd' + (to-1)).classList.add('active');
+function stepTo(from,to){
+  document.getElementById('contStep'+from).classList.remove('active');
+  document.getElementById('contStep'+to).classList.add('active');
+  document.getElementById('csd'+(from-1)).classList.remove('active');
+  document.getElementById('csd'+(from-1)).classList.add('done');
+  document.getElementById('csd'+(to-1)).classList.add('active');
 }
 
 async function submitPlan(){
   const al = document.getElementById('step3Alert');
-  al.style.display = 'none';
+  al.style.display='none';
+  document.getElementById('submitPlanTxt').style.display='none';
+  document.getElementById('submitSpinner').style.display='inline-flex';
+  document.getElementById('btnSubmitPlan').disabled=true;
 
-  document.getElementById('submitPlanTxt').style.display = 'none';
-  document.getElementById('submitSpinner').style.display = 'inline-flex';
-  document.getElementById('btnSubmitPlan').disabled      = true;
+  try{
+    const cost   = currentPlanData?currentPlanData.invest:0;
+    const isFree = currentPlanData?currentPlanData.isFree:false;
+    const uid    = window._uid;
+    const db     = window._db;
+    const {doc,getDoc,runTransaction,collection,serverTimestamp} = window._fbs;
 
-  try {
-    const cost = currentPlanData ? currentPlanData.invest : 0;
-    const uid  = window._uid;
-    const db   = window._db;
-    const { doc, getDoc, runTransaction, collection, serverTimestamp } = window._fbs;
-
-    await runTransaction(db, async (tx) => {
-      const userRef  = doc(db, 'users', uid);
+    await runTransaction(db, async(tx)=>{
+      const userRef  = doc(db,'users',uid);
       const userSnap = await tx.get(userRef);
-
       if(!userSnap.exists()) throw new Error('Utilizador nao encontrado.');
 
-      const balance = userSnap.data().balance || 0;
+      const balance      = userSnap.data().balance||0;
+      const freePlanUsed = userSnap.data().freePlanUsed||false;
 
-      if(cost > 0 && balance < cost){
-        throw new Error(`Saldo insuficiente. Disponivel: AOA ${fmt(balance)}. Necessario: AOA ${fmt(cost)}.`);
-      }
+      if(isFree&&freePlanUsed) throw new Error('O plano gratuito ja foi utilizado nesta conta. Apenas uma activacao permitida.');
+      if(cost>0&&balance<cost) throw new Error(`Saldo insuficiente. Disponivel: AOA ${fmt(balance)}. Necessario: AOA ${fmt(cost)}.`);
 
-      const subRef = doc(collection(db, 'subscriptions'));
-
-      tx.update(userRef, {
-        balance:        balance - cost,
-        blockedBalance: (userSnap.data().blockedBalance || 0) + cost,
-        totalDeposit:   (userSnap.data().totalDeposit || 0) + cost,
+      const subRef    = doc(collection(db,'subscriptions'));
+      const updateData = {
+        balance:        balance-cost,
+        blockedBalance: (userSnap.data().blockedBalance||0)+cost,
+        totalDeposit:   (userSnap.data().totalDeposit||0)+cost,
         activePlan:     currentPlan,
         planDaysLeft:   currentPlanData.cycleDays,
-      });
+      };
+      if(isFree) updateData.freePlanUsed=true;
 
-      tx.set(subRef, {
-        uid,
-        plan:        currentPlan,
-        yieldStr:    currentPlanData.yieldStr,
-        cycle:       currentPlanData.cycle,
-        cycleDays:   currentPlanData.cycleDays,
-        invest:      cost,
-        // CORRIGIDO: status sempre 'approved' para aparecer imediatamente em saude.html
-        status:      'approved',
-        activatedAt: serverTimestamp(),
-        createdAt:   serverTimestamp(),
-        name:        document.getElementById('cName').value.trim(),
-        dob:         document.getElementById('cDob').value,
-        phone:       document.getElementById('cPhone').value.trim(),
-        phone2:      document.getElementById('cPhone2').value.trim(),
-        source:      document.getElementById('cSource').value,
-        referral:    document.getElementById('cReferral').value.trim(),
+      tx.update(userRef,updateData);
+      tx.set(subRef,{
+        uid, plan:currentPlan,
+        yieldStr:currentPlanData.yieldStr,
+        cycle:currentPlanData.cycle,
+        cycleDays:currentPlanData.cycleDays,
+        invest:cost, status:'approved',
+        activatedAt:serverTimestamp(), createdAt:serverTimestamp(),
+        name:document.getElementById('cName').value.trim(),
+        dob:document.getElementById('cDob').value,
+        phone:document.getElementById('cPhone').value.trim(),
+        phone2:document.getElementById('cPhone2').value.trim(),
+        source:document.getElementById('cSource').value,
+        referral:document.getElementById('cReferral').value.trim(),
       });
     });
 
-    window._userBalance = (window._userBalance || 0) - cost;
+    window._userBalance=(window._userBalance||0)-cost;
+    if(isFree) window._freePlanUsed=true;
 
     document.getElementById('successMsg').textContent =
-      cost === 0
+      cost===0
         ? `O plano "${currentPlan}" foi activado gratuitamente na sua conta.`
         : `O plano "${currentPlan}" foi activado. AOA ${fmt(cost)} foram debitados do seu saldo.`;
 
-    ['contStep1','contStep2','contStep3'].forEach(id =>
-      document.getElementById(id).classList.remove('active')
-    );
+    ['contStep1','contStep2','contStep3'].forEach(id=>document.getElementById(id).classList.remove('active'));
     document.getElementById('contSuccess').classList.add('active');
+    renderAllPlans();
 
-  } catch(e) {
-    al.style.display = 'flex';
-    document.getElementById('step3AlertText').textContent =
-      e.message || 'Erro ao activar plano. Verifique a sua ligacao.';
+  }catch(e){
+    al.style.display='flex';
+    document.getElementById('step3AlertText').textContent=e.message||'Erro ao activar plano. Verifique a sua ligacao.';
   }
 
-  document.getElementById('submitPlanTxt').style.display = 'inline';
-  document.getElementById('submitSpinner').style.display = 'none';
-  document.getElementById('btnSubmitPlan').disabled      = false;
+  document.getElementById('submitPlanTxt').style.display='inline';
+  document.getElementById('submitSpinner').style.display='none';
+  document.getElementById('btnSubmitPlan').disabled=false;
 }
 
 function sourceChanged(){
-  const v = document.getElementById('cSource').value;
-  document.getElementById('referralGroup').style.display = v === 'Amigos' ? 'block' : 'none';
+  document.getElementById('referralGroup').style.display =
+    document.getElementById('cSource').value==='Amigos'?'block':'none';
 }
 
-function openFS(id){ document.getElementById(id).classList.add('open'); }
-function closeFS(id){ document.getElementById(id).classList.remove('open'); }
+function openFS(id){document.getElementById(id).classList.add('open');}
+function closeFS(id){document.getElementById(id).classList.remove('open');}
 
 function showToast(msg){
-  const t = document.getElementById('toast');
-  document.getElementById('toastText').textContent = msg;
+  const t=document.getElementById('toast');
+  document.getElementById('toastText').textContent=msg;
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
+  setTimeout(()=>t.classList.remove('show'),3000);
 }
 </script>
 </body>
-</html>
+            </html>
