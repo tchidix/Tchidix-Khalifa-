@@ -416,7 +416,7 @@ import { getFirestore, doc, getDoc, updateDoc, collection, query, where, getDocs
 const app=initializeApp({apiKey:"AIzaSyDp02RqKrac4ogFRGDcJjPLpA2inOV2rsk",authDomain:"pro-2c872.firebaseapp.com",projectId:"pro-2c872",storageBucket:"pro-2c872.firebasestorage.app",messagingSenderId:"778229616930",appId:"1:778229616930:web:b56177b322241b103ad57b"});
 const auth=getAuth(app),db=getFirestore(app);
 window._auth=auth;window._db=db;
-window._fbs={signOut,updatePassword,EmailAuthProvider,reauthenticateWithCredential,doc,getDoc,updateDoc,collection,query,where,getDocs,orderBy,limit};
+window._fbs={signOut,updatePassword,EmailAuthProvider,reauthenticateWithCredential,doc,getDoc,updateDoc,collection,query,where,getDocs,limit};
 
 onAuthStateChanged(auth,async user=>{
   if(!user){window.location.href='auth.html';return;}
@@ -426,16 +426,6 @@ onAuthStateChanged(auth,async user=>{
   window._uid=user.uid;window._userData=d;
   document.getElementById('userName').textContent=d.name||'Utilizador';
   document.getElementById('userId').textContent='ID: '+(d.userId||'—');
-  document.getElementById('balanceVal').textContent=fmt(d.balance||0);
-  document.getElementById('planActive').textContent=d.activePlan||'Nenhum';
-  document.getElementById('planDays').textContent=d.planDaysLeft||0;
-  document.getElementById('referralsCount').textContent=d.referrals||0;
-  document.getElementById('popBalMain').textContent=fmt(d.balance||0);
-  document.getElementById('popEarnings').textContent=fmt(d.earnings||0);
-  document.getElementById('popFree').textContent=fmt(d.freeEarnings||0);
-  document.getElementById('popDeposit').textContent=fmt(d.totalDeposit||0);
-  document.getElementById('popPending').textContent=fmt(d.pendingBalance||0);
-  document.getElementById('popPlan').textContent=d.activePlan||'Free';
   loadHistory(user.uid);
   checkBankData(d);
 });
