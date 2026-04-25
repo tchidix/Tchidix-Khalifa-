@@ -412,7 +412,7 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, getDoc, updateDoc, collection, query, where, getDocs, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, doc, getDoc, updateDoc, collection, query, where, getDocs, limit } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const app=initializeApp({apiKey:"AIzaSyDp02RqKrac4ogFRGDcJjPLpA2inOV2rsk",authDomain:"pro-2c872.firebaseapp.com",projectId:"pro-2c872",storageBucket:"pro-2c872.firebasestorage.app",messagingSenderId:"778229616930",appId:"1:778229616930:web:b56177b322241b103ad57b"});
 const auth=getAuth(app),db=getFirestore(app);
 window._auth=auth;window._db=db;
@@ -444,20 +444,22 @@ function fmt(v){return Number(v).toLocaleString('pt-AO',{minimumFractionDigits:2
 
 async function loadHistory(uid){
   try{
-    const q=query(collection(db,'transactions'),where('uid','==',uid),orderBy('createdAt','desc'),limit(10));
+    const q=query(collection(db,'transactions'),where('uid','==',uid),limit(20));
     const snap=await getDocs(q);
     const list=document.getElementById('historyList');
     if(snap.empty){list.innerHTML='<div class="hist-empty">Nenhuma transaccao registada ainda.</div>';return;}
     list.innerHTML='';
-    snap.forEach(d=>{
-      const t=d.data();
+    // ordena no cliente por data
+    const docs=[];snap.forEach(d=>docs.push(d.data()));
+    docs.sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
+    docs.forEach(t=>{
       const cls=t.type==='in'?'in':t.type==='out'?'out':'pend';
       const sign=t.type==='in'?'+':t.type==='out'?'-':'';
       const icon=t.type==='in'?`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>`:t.type==='out'?`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>`:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
       const date=t.createdAt?.toDate?t.createdAt.toDate().toLocaleDateString('pt-AO'):'—';
       list.innerHTML+=`<div class="hist-item"><div class="hist-dot ${cls}">${icon}</div><div class="hist-info"><div class="hist-title">${t.description||'Transaccao'}</div><div class="hist-date">${date}</div></div><div class="hist-amount ${cls}">${sign} AOA ${fmt(t.amount||0)}</div></div>`;
     });
-  }catch(e){console.error(e);}
+  }catch(e){console.error('History error:',e);document.getElementById('historyList').innerHTML='<div class="hist-empty">Erro ao carregar transaccoes.</div>';}
 }
 
 function checkBankData(data){
