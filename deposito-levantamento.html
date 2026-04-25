@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+<title>UnitedHealth — Deposito e Levantamento</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0f2f5;--glass:rgba(255,255,255,0.58);--glass-b:rgba(255,255,255,0.78);
+  --green:rgba(34,197,94,0.82);--green-s:#16a34a;
+  --blue:rgba(0,123,255,0.88);--blue-s:#007bff;
+  --text:#0f172a;--text2:#475569;--muted:#94a3b8;
+  --alert-bg:rgba(0,123,255,0.10);--alert-b:rgba(0,123,255,0.28);
+  --err-bg:rgba(239,68,68,0.10);--err-b:rgba(239,68,68,0.28);
+  --ok-bg:rgba(34,197,94,0.10);--ok-b:rgba(34,197,94,0.28);
+  --r:18px;--nav-h:68px;
+}
+html{min-height:100%}
+body{min-height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;overflow-y:auto}
+body::before,body::after{content:'';position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0}
+body::before{width:420px;height:420px;background:radial-gradient(circle,rgba(0,123,255,0.13) 0%,transparent 70%);top:-100px;left:-80px}
+body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(34,197,94,0.12) 0%,transparent 70%);bottom:-80px;right:-60px}
+
+.page{position:relative;z-index:1;min-height:100dvh;padding-bottom:calc(var(--nav-h) + 32px)}
+
+/* ── TOP BAR ── */
+.topbar{display:flex;align-items:center;gap:12px;padding:16px 16px 12px;position:sticky;top:0;z-index:20;background:rgba(240,242,245,0.88);backdrop-filter:blur(14px)}
+.back-btn{width:38px;height:38px;border-radius:11px;border:1px solid rgba(203,213,225,.55);background:rgba(255,255,255,.65);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);flex-shrink:0;transition:transform .12s;text-decoration:none}
+.back-btn:active{transform:scale(0.92)}
+.topbar-info{flex:1}
+.topbar-title{font-size:18px;font-weight:800;color:var(--text)}
+.topbar-sub{font-size:12px;color:var(--muted);font-weight:500}
+
+/* ── TAB SWITCH ── */
+.main-tabs{display:flex;gap:0;margin:0 16px 0;background:rgba(255,255,255,.50);border:1px solid var(--glass-b);border-radius:14px;padding:4px;backdrop-filter:blur(12px)}
+.main-tab{flex:1;padding:11px 0;border:none;border-radius:11px;background:transparent;font-family:'Inter',sans-serif;font-size:13.5px;font-weight:700;color:var(--muted);cursor:pointer;transition:all .22s;display:flex;align-items:center;justify-content:center;gap:7px}
+.main-tab.active{background:var(--blue);color:#fff;box-shadow:0 4px 14px rgba(0,123,255,.22)}
+.main-tab:active{transform:scale(0.97)}
+
+/* ── SECTION ── */
+.section{padding:16px 16px 0}
+.section-title{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
+
+/* ── GLASS CARD ── */
+.g-card{background:var(--glass);border:1px solid var(--glass-b);border-radius:var(--r);padding:22px 20px;backdrop-filter:blur(18px);box-shadow:0 6px 28px rgba(0,0,0,.07)}
+.g-card-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px}
+.g-card-sub{font-size:13px;color:var(--text2);line-height:1.5;margin-bottom:16px}
+
+/* ── ALERT ── */
+.alert{padding:12px 16px;border-radius:12px;font-size:13px;font-weight:500;line-height:1.5;display:flex;align-items:flex-start;gap:10px}
+.alert-info{background:var(--alert-bg);border:1px solid var(--alert-b);color:var(--blue-s)}
+.alert-ok{background:var(--ok-bg);border:1px solid var(--ok-b);color:var(--green-s)}
+.alert-err{background:var(--err-bg);border:1px solid var(--err-b);color:#dc2626}
+.alert-warn{background:rgba(251,146,60,.10);border:1px solid rgba(251,146,60,.28);color:#ea580c}
+.alert-icon{flex-shrink:0;margin-top:1px}
+
+/* ── STEP BAR ── */
+.step-bar{display:flex;gap:6px;align-items:center;margin-bottom:4px}
+.step-dot{width:8px;height:8px;border-radius:50%;background:rgba(203,213,225,.65);transition:background .2s,width .2s}
+.step-dot.active{background:var(--blue-s);width:22px;border-radius:4px}
+.step-dot.done{background:var(--green-s)}
+
+/* ── VIEW STEP ── */
+.view-step{display:none;flex-direction:column;gap:14px}
+.view-step.active{display:flex}
+
+/* ── FORM ── */
+.form-group{margin-bottom:14px}
+.form-label{display:block;font-size:11.5px;font-weight:700;color:var(--text2);margin-bottom:6px;letter-spacing:.04em;text-transform:uppercase}
+.input-wrap{position:relative;display:flex;align-items:center}
+.i-icon{position:absolute;left:13px;color:var(--muted);pointer-events:none;display:flex;align-items:center}
+.form-input{width:100%;padding:13px 13px 13px 40px;background:rgba(255,255,255,.65);border:1.5px solid rgba(203,213,225,.65);border-radius:12px;font-family:'Inter',sans-serif;font-size:14px;color:var(--text);outline:none;transition:border-color .2s,box-shadow .2s}
+.form-input::placeholder{color:var(--muted)}
+.form-input:focus{border-color:var(--blue-s);box-shadow:0 0 0 3px rgba(0,123,255,.10);background:rgba(255,255,255,.85)}
+.form-input.no-icon{padding-left:13px}
+
+/* ── MONETARY INPUT ── */
+.money-wrap{position:relative;display:flex;align-items:center;background:rgba(255,255,255,.65);border:1.5px solid rgba(203,213,225,.65);border-radius:12px;overflow:hidden;transition:border-color .2s,box-shadow .2s}
+.money-wrap:focus-within{border-color:var(--blue-s);box-shadow:0 0 0 3px rgba(0,123,255,.10);background:rgba(255,255,255,.85)}
+.money-prefix{padding:0 0 0 14px;font-size:15px;font-weight:700;color:var(--text2);white-space:nowrap;flex-shrink:0}
+.money-input{flex:1;padding:14px 13px;background:transparent;border:none;font-family:'Inter',sans-serif;font-size:20px;font-weight:800;color:var(--text);outline:none;min-width:0}
+.money-input::placeholder{color:var(--muted);font-weight:400;font-size:15px}
+
+/* ── PAYMENT INFO BOX ── */
+.pay-info-box{background:rgba(255,255,255,.75);border:1.5px solid rgba(0,123,255,.25);border-radius:16px;padding:20px 18px;backdrop-filter:blur(14px)}
+.pay-info-title{font-size:14px;font-weight:800;color:var(--text);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.pay-row{display:flex;align-items:flex-start;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(203,213,225,.35)}
+.pay-row:last-child{border-bottom:none;padding-bottom:0}
+.pr-label{font-size:12px;color:var(--text2);font-weight:600;flex-shrink:0;margin-right:10px}
+.pr-value{font-size:13px;font-weight:700;color:var(--text);text-align:right;word-break:break-all}
+.pr-value.mono{font-family:monospace;font-size:12.5px;letter-spacing:.03em}
+.copy-val{display:inline-flex;align-items:center;gap:4px;background:var(--alert-bg);border:1px solid var(--alert-b);border-radius:7px;padding:3px 8px;font-size:11px;font-weight:700;color:var(--blue-s);cursor:pointer;margin-top:4px;transition:background .13s}
+.copy-val:active{background:rgba(0,123,255,.20)}
+
+/* ── UPLOAD AREA ── */
+.upload-area{border:2px dashed rgba(0,123,255,.35);border-radius:14px;padding:24px 16px;text-align:center;background:var(--alert-bg);cursor:pointer;transition:border-color .2s,background .2s;position:relative}
+.upload-area:hover{border-color:var(--blue-s);background:rgba(0,123,255,.12)}
+.upload-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.ua-icon{width:44px;height:44px;border-radius:12px;background:rgba(0,123,255,.15);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;color:var(--blue-s)}
+.ua-title{font-size:14px;font-weight:700;color:var(--blue-s)}
+.ua-sub{font-size:12px;color:var(--text2);margin-top:4px}
+.ua-preview{display:none;flex-direction:column;align-items:center;gap:8px}
+.ua-preview img{max-width:100%;max-height:200px;border-radius:10px;object-fit:contain}
+.ua-filename{font-size:12px;color:var(--text2);font-weight:500}
+
+/* ── AMOUNT DISPLAY ── */
+.amount-display{background:linear-gradient(135deg,rgba(0,123,255,0.75),rgba(59,130,246,0.70));border-radius:16px;padding:18px 20px;text-align:center;border:1px solid rgba(255,255,255,.30)}
+.ad-label{font-size:11px;font-weight:700;color:rgba(255,255,255,.75);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.ad-amount{font-size:28px;font-weight:800;color:#fff;letter-spacing:-0.02em}
+.ad-note{font-size:12px;color:rgba(255,255,255,.75);margin-top:4px}
+
+/* ── WITHD SUMMARY ── */
+.withd-summary{background:rgba(255,255,255,.60);border:1px solid rgba(203,213,225,.55);border-radius:14px;padding:16px}
+.ws-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(203,213,225,.35)}
+.ws-row:last-child{border-bottom:none;padding-bottom:0}
+.ws-label{font-size:12.5px;color:var(--text2);font-weight:500}
+.ws-value{font-size:13px;font-weight:800;color:var(--text)}
+.ws-value.green{color:var(--green-s)}
+.ws-value.red{color:#dc2626}
+
+/* ── BUTTONS ── */
+.btn-p{width:100%;padding:14px;background:var(--blue);border:1px solid rgba(0,123,255,.35);border-radius:13px;font-family:'Inter',sans-serif;font-size:14.5px;font-weight:700;color:#fff;cursor:pointer;transition:transform .12s,box-shadow .2s;box-shadow:0 4px 18px rgba(0,123,255,.22);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-p:active{transform:scale(0.965)}
+.btn-p:disabled{opacity:.55;cursor:not-allowed;transform:none}
+.btn-g{width:100%;padding:14px;background:var(--green);border:1px solid rgba(34,197,94,.35);border-radius:13px;font-family:'Inter',sans-serif;font-size:14.5px;font-weight:700;color:#fff;cursor:pointer;transition:transform .12s;box-shadow:0 4px 18px rgba(34,197,94,.18);display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-g:active{transform:scale(0.965)}
+.btn-g:disabled{opacity:.55;cursor:not-allowed;transform:none}
+.btn-outline{width:100%;padding:13px;background:rgba(255,255,255,.55);border:1.5px solid rgba(203,213,225,.65);border-radius:13px;font-family:'Inter',sans-serif;font-size:14px;font-weight:600;color:var(--text2);cursor:pointer;transition:transform .12s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-outline:active{transform:scale(0.965)}
+
+/* ── TERMS BOX ── */
+.terms-box{background:rgba(255,255,255,.55);border:1px solid rgba(203,213,255,.55);border-radius:14px;padding:16px;max-height:220px;overflow-y:auto;font-size:12.5px;color:var(--text2);line-height:1.65}
+.terms-box h4{font-size:13px;font-weight:700;color:var(--text);margin-bottom:8px}
+.terms-box p{margin-bottom:8px}
+
+/* ── SPINNER ── */
+.spinner{width:18px;height:18px;border:2.5px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .75s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── SUCCESS ── */
+.success-screen{display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px;padding:16px 0}
+.success-icon{width:72px;height:72px;border-radius:50%;background:var(--ok-bg);border:2px solid var(--ok-b);display:flex;align-items:center;justify-content:center;color:var(--green-s)}
+.success-title{font-size:20px;font-weight:800}
+.success-sub{font-size:13.5px;color:var(--text2);line-height:1.5;max-width:300px}
+
+/* ── TOAST ── */
+.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-80px);background:rgba(255,255,255,.92);border:1px solid var(--glass-b);border-radius:14px;padding:12px 18px;font-size:13px;font-weight:600;color:var(--text);backdrop-filter:blur(18px);box-shadow:0 8px 28px rgba(0,0,0,.12);z-index:999;transition:transform .3s;display:flex;align-items:center;gap:8px;max-width:90vw}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* ── TAB CONTENT ── */
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:var(--nav-h);background:rgba(255,255,255,.75);border-top:1px solid rgba(255,255,255,.85);backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:space-around;padding:0 8px;padding-bottom:env(safe-area-inset-bottom,0);z-index:50}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 14px;border-radius:14px;cursor:pointer;transition:transform .12s;border:none;background:none;color:var(--muted);text-decoration:none}
+.nav-item:active{transform:scale(0.92)}
+.nav-item.active{color:var(--green-s)}
+.nav-dot{width:4px;height:4px;border-radius:50%;background:var(--green-s);opacity:0;transition:opacity .2s}
+.nav-item.active .nav-dot{opacity:1}
+
+/* min note */
+.min-note{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);font-weight:500;background:rgba(255,255,255,.55);border:1px solid rgba(203,213,225,.55);border-radius:10px;padding:9px 12px;margin-top:6px}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast">
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+  <span id="toastText"></span>
+</div>
+
+<div class="page">
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <a class="back-btn" href="perfil.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </a>
+    <div class="topbar-info">
+      <div class="topbar-title">Deposito e Levantamento</div>
+      <div class="topbar-sub">Gerencie os seus fundos</div>
+    </div>
+  </div>
+
+  <!-- MAIN TAB SWITCH -->
+  <div style="padding:0 16px 14px">
+    <div class="main-tabs">
+      <button class="main-tab active" id="tabDeposito" onclick="switchMainTab('deposito')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+        Deposito
+      </button>
+      <button class="main-tab" id="tabLevantamento" onclick="switchMainTab('levantamento')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+        Levantamento
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════
+       DEPOSITO
+  ══════════════════════ -->
+  <div class="tab-content active" id="tcDeposito">
+
+    <div style="padding:0 16px">
+      <div class="step-bar" id="depStepBar">
+        <div class="step-dot active" id="ds0"></div>
+        <div class="step-dot" id="ds1"></div>
+        <div class="step-dot" id="ds2"></div>
+      </div>
+    </div>
+
+    <!-- DEP STEP 1: Terms -->
+    <div class="view-step active" id="depStep1" style="padding:12px 16px 0">
+      <div class="g-card">
+        <div class="g-card-title">Instrucoes de Deposito</div>
+        <div class="g-card-sub">Leia atentamente antes de efectuar o pagamento.</div>
+        <div class="terms-box">
+          <h4>Regras e Instrucoes de Deposito</h4>
+          <p>1. O deposito minimo aceite e de AOA 2.000. Valores inferiores nao serao processados.</p>
+          <p>2. O pagamento deve ser realizado exclusivamente atraves dos dados bancarios fornecidos nesta plataforma.</p>
+          <p>3. Apos efectuar a transferencia, e obrigatorio submeter o comprovativo original e legivel neste formulario.</p>
+          <p>4. Comprovativas falsificados ou alterados resultarao na suspensao permanente da conta.</p>
+          <p>5. Apos verificacao do comprovativo pela equipa administrativa, o valor sera creditado na sua conta em ate 24 horas uteis.</p>
+          <p>6. Nao efectue pagamentos a partir de contas de terceiros. O titular do pagamento deve ser o mesmo da conta UnitedHealth.</p>
+          <p>7. Guarde sempre o comprovativo original do pagamento para eventuais esclarecimentos.</p>
+          <p>8. Em caso de deposito sem comprovativo, a UnitedHealth nao pode garantir o credito dos fundos.</p>
+        </div>
+      </div>
+      <div class="alert alert-info">
+        <div class="alert-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+        <span>Deposito minimo: AOA 2.000. Envie sempre o comprovativo original e valido.</span>
+      </div>
+      <button class="btn-p" onclick="depNext(1)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Entendi, Prosseguir
+      </button>
+    </div>
+
+    <!-- DEP STEP 2: Amount + Payment data -->
+    <div class="view-step" id="depStep2" style="padding:12px 16px 0">
+      <div class="g-card">
+        <div class="g-card-title">Valor do Deposito</div>
+        <div class="g-card-sub">Digite o valor que pretende depositar.</div>
+        <div class="form-group" style="margin-bottom:6px">
+          <label class="form-label">Valor em AOA</label>
+          <div class="money-wrap" id="depMoneyWrap">
+            <span class="money-prefix">AOA</span>
+            <input class="money-input" type="tel" id="depAmount" placeholder="0.00" oninput="maskMoney(this,'depAmountRaw')" />
+            <input type="hidden" id="depAmountRaw" value="0"/>
+          </div>
+        </div>
+        <div class="min-note">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Minimo: AOA 2.000
+        </div>
+      </div>
+
+      <div id="depAmountAlert" style="display:none" class="alert alert-err">
+        <div class="alert-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+        <span id="depAmountAlertText"></span>
+      </div>
+
+      <button class="btn-p" onclick="depNext(2)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        Visualizar Dados de Pagamento
+      </button>
+    </div>
+
+    <!-- DEP STEP 3: Payment info + upload proof -->
+    <div class="view-step" id="depStep3" style="padding:12px 16px 0">
+      <div class="amount-display" id="depAmountDisplay">
+        <div class="ad-label">Valor a Transferir</div>
+        <div class="ad-amount" id="depAmountShow">AOA 0.00</div>
+        <div class="ad-note">Transfira exactamente este valor para a conta abaixo</div>
+      </div>
+
+      <div class="pay-info-box">
+        <div class="pay-info-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          Dados de Pagamento
+        </div>
+
+        <div class="pay-row">
+          <span class="pr-label">Banco</span>
+          <span class="pr-value">BAI — Banco Angolano de Investimentos</span>
+        </div>
+        <div class="pay-row">
+          <span class="pr-label">IBAN</span>
+          <div style="text-align:right">
+            <span class="pr-value mono">0040.0000.5823.3661.1013.5</span>
+            <div><span class="copy-val" onclick="copyText('0040000058233661101350','IBAN copiado.')">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Copiar IBAN
+            </span></div>
+          </div>
+        </div>
+        <div class="pay-row">
+          <span class="pr-label">Titular</span>
+          <span class="pr-value">JONATA DUMBA</span>
+        </div>
+        <div class="pay-row">
+          <span class="pr-label">Express</span>
+          <div style="text-align:right">
+            <span class="pr-value">937 359 561</span>
+            <div><span class="copy-val" onclick="copyText('937359561','Numero Express copiado.')">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Copiar
+            </span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="g-card">
+        <div class="g-card-title">Enviar Comprovativo</div>
+        <div class="g-card-sub">Carregue o comprovativo de pagamento original. Formatos aceites: JPG, PNG, PDF.</div>
+        <div class="upload-area" id="uploadArea">
+          <input type="file" id="proofFile" accept="image/*,application/pdf" onchange="handleFileSelect(this)"/>
+          <div id="uploadDefault">
+            <div class="ua-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            </div>
+            <div class="ua-title">Toque para carregar comprovativo</div>
+            <div class="ua-sub">Imagem ou PDF — maximo 10MB</div>
+          </div>
+          <div class="ua-preview" id="uploadPreview">
+            <img id="previewImg" src="" alt="Comprovativo"/>
+            <div class="ua-filename" id="previewName"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="depSubmitAlert" style="display:none" class="alert"></div>
+
+      <button class="btn-g" id="btnSubmitDep" onclick="submitDeposit()">
+        <span id="depSubmitTxt">Enviar Comprovativo e Solicitar Deposito</span>
+        <span id="depSubmitSpinner" style="display:none"><div class="spinner"></div></span>
+      </button>
+    </div>
+
+    <!-- DEP SUCCESS -->
+    <div class="view-step" id="depSuccess" style="padding:12px 16px 0">
+      <div class="success-screen">
+        <div class="success-icon">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="success-title">Deposito Solicitado</div>
+        <div class="success-sub">O seu comprovativo foi recebido e esta a ser verificado. O credito sera efectuado em ate 24 horas uteis.</div>
+      </div>
+      <div class="alert alert-ok">
+        <div class="alert-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <span>Acompanhe o estado no historico de transaccoes na pagina inicial.</span>
+      </div>
+      <button class="btn-p" onclick="resetDeposit()">Fazer Novo Deposito</button>
+      <a href="index.html" class="btn-outline" style="text-decoration:none">Voltar ao Inicio</a>
+    </div>
+  </div>
+
+  <!-- ══════════════════════
+       LEVANTAMENTO
+  ══════════════════════ -->
+  <div class="tab-content" id="tcLevantamento">
+
+    <!-- No bank data warning -->
+    <div id="noBankWarning" style="display:none;padding:14px 16px 0;flex-direction:column;gap:12px">
+      <div class="alert alert-warn">
+        <div class="alert-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+        <span>Ainda nao tem uma conta bancaria vinculada. Adicione os seus dados bancarios antes de solicitar um levantamento.</span>
+      </div>
+      <a href="index.html" class="btn-p" style="text-decoration:none" onclick="openBankFromHere()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        Vincular Conta Bancaria
+      </a>
+    </div>
+
+    <!-- Withdrawal form -->
+    <div id="levForm" style="padding:0 16px">
+      <div class="step-bar" style="margin-bottom:4px;margin-top:4px">
+        <div class="step-dot active" id="ls0"></div>
+        <div class="step-dot" id="ls1"></div>
+      </div>
+
+      <!-- LEV STEP 1 -->
+      <div class="view-step active" id="levStep1">
+        <div class="g-card">
+          <div class="g-card-title">Solicitar Levantamento</div>
+          <div class="g-card-sub">Digite o valor que pretende levantar. O valor minimo e AOA 600.</div>
+          <div class="form-group" style="margin-bottom:6px">
+            <label class="form-label">Valor em AOA</label>
+            <div class="money-wrap">
+              <span class="money-prefix">AOA</span>
+              <input class="money-input" type="tel" id="levAmount" placeholder="0.00" oninput="maskMoney(this,'levAmountRaw')" />
+              <input type="hidden" id="levAmountRaw" value="0"/>
+            </div>
+          </div>
+          <div class="min-note">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Minimo: AOA 600 — Taxa: 16% — Processamento: ate 24h
+          </div>
+        </div>
+
+        <!-- Bank data preview -->
+        <div class="g-card" id="bankPreviewCard" style="display:none">
+          <div class="g-card-title">Conta de Destino</div>
+          <div id="bankPreviewContent"></div>
+        </div>
+
+        <div class="alert alert-info">
+          <div class="alert-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+          <span>Uma taxa de 16% sera deduzida do valor solicitado. O processamento ocorre em ate 24 horas uteis.</span>
+        </div>
+
+        <div id="levAmountAlert" style="display:none" class="alert alert-err">
+          <div class="alert-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+          <span id="levAmountAlertText"></span>
+        </div>
+
+        <button class="btn-p" onclick="levNext()">Continuar para Confirmacao</button>
+      </div>
+
+      <!-- LEV STEP 2: Summary + confirm -->
+      <div class="view-step" id="levStep2">
+        <div class="g-card">
+          <div class="g-card-title">Resumo do Levantamento</div>
+          <div class="g-card-sub">Verifique os detalhes antes de confirmar.</div>
+          <div class="withd-summary">
+            <div class="ws-row"><span class="ws-label">Valor Solicitado</span><span class="ws-value" id="wsSolic">—</span></div>
+            <div class="ws-row"><span class="ws-label">Taxa (16%)</span><span class="ws-value red" id="wsTaxa">—</span></div>
+            <div class="ws-row"><span class="ws-label">Valor Liquido a Receber</span><span class="ws-value green" id="wsLiq">—</span></div>
+            <div class="ws-row"><span class="ws-label">Saldo Apos Levantamento</span><span class="ws-value" id="wsAfter">—</span></div>
+          </div>
+        </div>
+
+        <div class="g-card">
+          <div class="g-card-title">Destino do Pagamento</div>
+          <div id="levBankSummary"></div>
+        </div>
+
+        <div class="alert alert-warn">
+          <div class="alert-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+          <span>Apos confirmacao o pedido nao pode ser cancelado. Verifique todos os dados.</span>
+        </div>
+
+        <div id="levConfirmAlert" style="display:none" class="alert"></div>
+
+        <button class="btn-p" id="btnConfirmLev" onclick="submitWithdrawal()">
+          <span id="levConfirmTxt">Confirmar Levantamento</span>
+          <span id="levConfirmSpinner" style="display:none"><div class="spinner"></div></span>
+        </button>
+        <button class="btn-outline" onclick="levBack()">Voltar e Editar</button>
+      </div>
+
+      <!-- LEV SUCCESS -->
+      <div class="view-step" id="levSuccess">
+        <div class="success-screen">
+          <div class="success-icon">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="success-title">Levantamento Solicitado</div>
+          <div class="success-sub">O seu pedido foi recebido e sera processado em ate 24 horas uteis. O valor sera transferido para a conta bancaria vinculada.</div>
+        </div>
+        <div class="alert alert-ok">
+          <div class="alert-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <span>Consulte o historico na pagina inicial para acompanhar o estado do seu levantamento.</span>
+        </div>
+        <button class="btn-p" onclick="resetWithdrawal()">Novo Levantamento</button>
+        <a href="index.html" class="btn-outline" style="text-decoration:none">Voltar ao Inicio</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── BOTTOM NAV ── -->
+<nav class="bottom-nav">
+  <a class="nav-item" href="index.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <div class="nav-dot"></div>
+  </a>
+  <a class="nav-item" href="planos.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+    <div class="nav-dot"></div>
+  </a>
+  <a class="nav-item" href="saude.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+    <div class="nav-dot"></div>
+  </a>
+  <a class="nav-item active" href="perfil.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <div class="nav-dot"></div>
+  </a>
+</nav>
+
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, getDoc, updateDoc, addDoc, collection, serverTimestamp, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+const app=initializeApp({apiKey:"AIzaSyDp02RqKrac4ogFRGDcJjPLpA2inOV2rsk",authDomain:"pro-2c872.firebaseapp.com",projectId:"pro-2c872",storageBucket:"pro-2c872.firebasestorage.app",messagingSenderId:"778229616930",appId:"1:778229616930:web:b56177b322241b103ad57b"});
+const auth=getAuth(app);const db=getFirestore(app);const storage=getStorage(app);
+window._db=db;window._auth=auth;window._storage=storage;
+window._fbs={doc,getDoc,updateDoc,addDoc,collection,serverTimestamp,increment,ref,uploadBytes,getDownloadURL};
+
+function fmt(v){return 'AOA '+Number(v).toLocaleString('pt-AO',{minimumFractionDigits:2,maximumFractionDigits:2})}
+
+onAuthStateChanged(auth,async user=>{
+  if(!user){window.location.href='auth.html';return;}
+  window._uid=user.uid;
+  const snap=await getDoc(doc(db,'users',user.uid));
+  if(!snap.exists()){window.location.href='auth.html';return;}
+  const d=snap.data();
+  window._uData=d;
+
+  // Check for tab param
+  const params=new URLSearchParams(location.search);
+  if(params.get('tab')==='levantamento') switchMainTab('levantamento');
+
+  // Check bank data
+  if(!d.bankData){
+    document.getElementById('noBankWarning').style.display='flex';
+    document.getElementById('levForm').style.display='none';
+  } else {
+    document.getElementById('noBankWarning').style.display='none';
+    document.getElementById('levForm').style.display='block';
+    // Show bank preview
+    const bd=d.bankData;
+    const bankHtml=`
+      <div style="display:flex;flex-direction:column;gap:0">
+        <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(203,213,225,.35)"><span style="font-size:12px;color:var(--text2);font-weight:500">Titular</span><span style="font-size:13px;font-weight:700">${bd.name}</span></div>
+        <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(203,213,225,.35)"><span style="font-size:12px;color:var(--text2);font-weight:500">Banco</span><span style="font-size:13px;font-weight:700">${bd.bank}</span></div>
+        <div style="display:flex;justify-content:space-between;padding:9px 0"><span style="font-size:12px;color:var(--text2);font-weight:500">IBAN</span><span style="font-size:12px;font-weight:700;font-family:monospace">${bd.iban}</span></div>
+      </div>`;
+    document.getElementById('bankPreviewContent').innerHTML=bankHtml;
+    document.getElementById('bankPreviewCard').style.display='block';
+    document.getElementById('levBankSummary').innerHTML=bankHtml;
+  }
+});
+
+window.submitDeposit = async function(){
+  const raw=parseInt(document.getElementById('depAmountRaw').value)||0;
+  const file=document.getElementById('proofFile').files[0];
+  const al=document.getElementById('depSubmitAlert');
+  al.style.display='none';
+  if(!file){
+    al.className='alert alert-err';al.style.display='flex';
+    al.innerHTML=`<div class="alert-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><span>Carregue o comprovativo de pagamento para continuar.</span>`;
+    return;
+  }
+  document.getElementById('depSubmitTxt').style.display='none';
+  document.getElementById('depSubmitSpinner').style.display='inline-flex';
+  document.getElementById('btnSubmitDep').disabled=true;
+  try{
+    // Upload proof
+    const storRef=window._fbs.ref(storage,`proofs/${window._uid}_${Date.now()}`);
+    await window._fbs.uploadBytes(storRef,file);
+    const url=await window._fbs.getDownloadURL(storRef);
+    // Save deposit request
+    await window._fbs.addDoc(window._fbs.collection(db,'deposits'),{
+      uid:window._uid,amount:raw,proofUrl:url,status:'pending',createdAt:window._fbs.serverTimestamp()
+    });
+    await window._fbs.addDoc(window._fbs.collection(db,'transactions'),{
+      uid:window._uid,type:'pend',amount:raw,description:'Deposito em analise',createdAt:window._fbs.serverTimestamp()
+    });
+    await window._fbs.updateDoc(window._fbs.doc(db,'users',window._uid),{pendingBalance:window._fbs.increment(raw)});
+    // Success
+    ['depStep1','depStep2','depStep3'].forEach(id=>document.getElementById(id).classList.remove('active'));
+    document.getElementById('depSuccess').classList.add('active');
+  }catch(e){
+    al.className='alert alert-err';al.style.display='flex';
+    al.innerHTML=`<div class="alert-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><span>Erro ao enviar. Verifique a ligacao e tente novamente.</span>`;
+  }
+  document.getElementById('depSubmitTxt').style.display='inline';
+  document.getElementById('depSubmitSpinner').style.display='none';
+  document.getElementById('btnSubmitDep').disabled=false;
+};
+
+window.submitWithdrawal = async function(){
+  const raw=parseInt(document.getElementById('levAmountRaw').value)||0;
+  const taxa=Math.round(raw*0.16);
+  const liq=raw-taxa;
+  const bal=window._uData?.balance||0;
+  const al=document.getElementById('levConfirmAlert');
+  al.style.display='none';
+  if(bal<raw){
+    al.className='alert alert-err';al.style.display='flex';
+    al.innerHTML=`<div class="alert-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><span>Saldo insuficiente para este levantamento.</span>`;
+    return;
+  }
+  document.getElementById('levConfirmTxt').style.display='none';
+  document.getElementById('levConfirmSpinner').style.display='inline-flex';
+  document.getElementById('btnConfirmLev').disabled=true;
+  try{
+    await window._fbs.addDoc(window._fbs.collection(db,'withdrawals'),{
+      uid:window._uid,amount:raw,tax:taxa,net:liq,bankData:window._uData.bankData,status:'pending',createdAt:window._fbs.serverTimestamp()
+    });
+    await window._fbs.updateDoc(window._fbs.doc(db,'users',window._uid),{balance:window._fbs.increment(-raw)});
+    await window._fbs.addDoc(window._fbs.collection(db,'transactions'),{
+      uid:window._uid,type:'out',amount:raw,description:'Levantamento solicitado',createdAt:window._fbs.serverTimestamp()
+    });
+    window._uData.balance=bal-raw;
+    ['levStep1','levStep2'].forEach(id=>document.getElementById(id).classList.remove('active'));
+    document.getElementById('levSuccess').classList.add('active');
+  }catch(e){
+    al.className='alert alert-err';al.style.display='flex';
+    al.innerHTML=`<div class="alert-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><span>Erro ao processar. Tente novamente.</span>`;
+  }
+  document.getElementById('levConfirmTxt').style.display='inline';
+  document.getElementById('levConfirmSpinner').style.display='none';
+  document.getElementById('btnConfirmLev').disabled=false;
+};
+</script>
+
+<script>
+/* ── Main tab switch ── */
+function switchMainTab(tab){
+  document.getElementById('tcDeposito').classList.toggle('active',tab==='deposito');
+  document.getElementById('tcLevantamento').classList.toggle('active',tab==='levantamento');
+  document.getElementById('tabDeposito').classList.toggle('active',tab==='deposito');
+  document.getElementById('tabLevantamento').classList.toggle('active',tab==='levantamento');
+}
+
+/* ── Real-time monetary mask ── */
+function maskMoney(input, rawId){
+  let digits=input.value.replace(/\D/g,'');
+  if(digits==='') digits='0';
+  const intVal=parseInt(digits,10);
+  document.getElementById(rawId).value=intVal;
+  const formatted=(intVal/100).toLocaleString('pt-AO',{minimumFractionDigits:2,maximumFractionDigits:2});
+  input.value=formatted;
+  // Move cursor to end
+  setTimeout(()=>{input.selectionStart=input.selectionEnd=input.value.length;},0);
+}
+
+/* ── Deposit steps ── */
+function depNext(from){
+  if(from===1){
+    depStepTo(0,1);
+    document.getElementById('depStep1').classList.remove('active');
+    document.getElementById('depStep2').classList.add('active');
+  } else if(from===2){
+    const raw=parseInt(document.getElementById('depAmountRaw').value)||0;
+    const al=document.getElementById('depAmountAlert');
+    al.style.display='none';
+    if(raw<2000){
+      al.style.display='flex';document.getElementById('depAmountAlertText').textContent='O valor minimo de deposito e AOA 2.000.';return;
+    }
+    const fmt2=(v)=>'AOA '+Number(v).toLocaleString('pt-AO',{minimumFractionDigits:2,maximumFractionDigits:2});
+    document.getElementById('depAmountShow').textContent=fmt2(raw);
+    depStepTo(1,2);
+    document.getElementById('depStep2').classList.remove('active');
+    document.getElementById('depStep3').classList.add('active');
+  }
+}
+function depStepTo(from,to){
+  const d=document.getElementById('ds'+from);d.classList.remove('active');d.classList.add('done');
+  document.getElementById('ds'+to).classList.add('active');
+}
+
+/* ── Withdrawal steps ── */
+function levNext(){
+  const raw=parseInt(document.getElementById('levAmountRaw').value)||0;
+  const al=document.getElementById('levAmountAlert');
+  al.style.display='none';
+  if(raw<600){al.style.display='flex';document.getElementById('levAmountAlertText').textContent='O valor minimo de levantamento e AOA 600.';return;}
+  const bal=window._uData?.balance||0;
+  if(raw>bal){al.style.display='flex';document.getElementById('levAmountAlertText').textContent='Saldo insuficiente. O seu saldo disponivel e AOA '+bal.toLocaleString('pt-AO',{minimumFractionDigits:2})+'.';return;}
+  const taxa=Math.round(raw*0.16);
+  const liq=raw-taxa;
+  const fmt2=(v)=>'AOA '+Number(v).toLocaleString('pt-AO',{minimumFractionDigits:2,maximumFractionDigits:2});
+  document.getElementById('wsSolic').textContent=fmt2(raw);
+  document.getElementById('wsTaxa').textContent='- '+fmt2(taxa);
+  document.getElementById('wsLiq').textContent=fmt2(liq);
+  document.getElementById('wsAfter').textContent=fmt2(bal-raw);
+  // step dots
+  const l0=document.getElementById('ls0');l0.classList.remove('active');l0.classList.add('done');
+  document.getElementById('ls1').classList.add('active');
+  document.getElementById('levStep1').classList.remove('active');
+  document.getElementById('levStep2').classList.add('active');
+}
+function levBack(){
+  const l0=document.getElementById('ls0');l0.classList.add('active');l0.classList.remove('done');
+  document.getElementById('ls1').classList.remove('active');
+  document.getElementById('levStep2').classList.remove('active');
+  document.getElementById('levStep1').classList.add('active');
+}
+
+/* ── File upload preview ── */
+function handleFileSelect(input){
+  const file=input.files[0];
+  if(!file) return;
+  document.getElementById('uploadDefault').style.display='none';
+  const prev=document.getElementById('uploadPreview');
+  prev.style.display='flex';
+  document.getElementById('previewName').textContent=file.name;
+  if(file.type.startsWith('image/')){
+    const reader=new FileReader();
+    reader.onload=e=>document.getElementById('previewImg').src=e.target.result;
+    reader.readAsDataURL(file);
+    document.getElementById('previewImg').style.display='block';
+  } else {
+    document.getElementById('previewImg').style.display='none';
+  }
+}
+
+/* ── Reset flows ── */
+function resetDeposit(){
+  ['depStep1','depStep2','depStep3','depSuccess'].forEach(id=>document.getElementById(id).classList.remove('active'));
+  document.getElementById('depStep1').classList.add('active');
+  ['ds0','ds1','ds2'].forEach((id,i)=>{const d=document.getElementById(id);d.classList.remove('active','done');if(i===0)d.classList.add('active');});
+  document.getElementById('depAmount').value='';
+  document.getElementById('depAmountRaw').value='0';
+  document.getElementById('proofFile').value='';
+  document.getElementById('uploadDefault').style.display='block';
+  document.getElementById('uploadPreview').style.display='none';
+}
+function resetWithdrawal(){
+  ['levStep1','levStep2','levSuccess'].forEach(id=>document.getElementById(id).classList.remove('active'));
+  document.getElementById('levStep1').classList.add('active');
+  const l0=document.getElementById('ls0');l0.classList.remove('done');l0.classList.add('active');
+  document.getElementById('ls1').classList.remove('active','done');
+  document.getElementById('levAmount').value='';
+  document.getElementById('levAmountRaw').value='0';
+}
+
+/* ── Copy helpers ── */
+function copyText(text, msg){
+  navigator.clipboard.writeText(text).then(()=>showToast(msg)).catch(()=>showToast('Erro ao copiar.'));
+}
+
+/* ── Toast ── */
+function showToast(msg){const t=document.getElementById('toast');document.getElementById('toastText').textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
+</script>
+</body>
+</html>

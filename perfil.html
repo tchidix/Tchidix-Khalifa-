@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+<title>UnitedHealth — Perfil</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0f2f5;--glass:rgba(255,255,255,0.58);--glass-b:rgba(255,255,255,0.78);
+  --green:rgba(34,197,94,0.82);--green-s:#16a34a;
+  --blue:rgba(0,123,255,0.88);--blue-s:#007bff;
+  --text:#0f172a;--text2:#475569;--muted:#94a3b8;
+  --alert-bg:rgba(0,123,255,0.10);--alert-b:rgba(0,123,255,0.28);
+  --err-bg:rgba(239,68,68,0.10);--err-b:rgba(239,68,68,0.28);
+  --ok-bg:rgba(34,197,94,0.10);--ok-b:rgba(34,197,94,0.28);
+  --r:18px;--nav-h:68px;
+}
+html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+body::before,body::after{content:'';position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0}
+body::before{width:420px;height:420px;background:radial-gradient(circle,rgba(34,197,94,0.15) 0%,transparent 70%);top:-100px;left:-80px}
+body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,123,255,0.10) 0%,transparent 70%);bottom:-80px;right:-60px}
+
+.page{position:relative;z-index:1;min-height:100dvh;padding-bottom:calc(var(--nav-h)+20px);overflow-y:auto}
+
+/* ── TOP BAR ── */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 12px;position:sticky;top:0;z-index:20;background:rgba(240,242,245,0.85);backdrop-filter:blur(14px)}
+.topbar-title{font-size:20px;font-weight:800}
+.topbar-sub{font-size:12px;color:var(--muted);font-weight:500}
+
+/* ── SECTION ── */
+.section{padding:14px 16px 0}
+.section-title{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
+
+/* ── GLASS CARD ── */
+.g-card{background:var(--glass);border:1px solid var(--glass-b);border-radius:var(--r);padding:20px 18px;backdrop-filter:blur(18px);box-shadow:0 6px 28px rgba(0,0,0,.07)}
+
+/* ── PROFILE HERO ── */
+.profile-hero{display:flex;align-items:center;gap:14px;margin:14px 16px 0;background:var(--glass);border:1px solid var(--glass-b);border-radius:22px;padding:20px 18px;backdrop-filter:blur(18px);box-shadow:0 6px 28px rgba(0,0,0,.07)}
+.avatar{width:60px;height:60px;border-radius:18px;background:linear-gradient(135deg,rgba(34,197,94,0.75),rgba(16,185,129,0.68));display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:#fff;flex-shrink:0;border:2px solid rgba(255,255,255,.50)}
+.ph-info{flex:1;min-width:0}
+.ph-name{font-size:17px;font-weight:800;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ph-email{font-size:12px;color:var(--text2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ph-id{font-size:11px;color:var(--muted);font-weight:600;margin-top:4px;letter-spacing:.04em}
+
+/* ── BALANCE BUTTON ── */
+.btn-see-balance{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;background:var(--blue);border:1px solid rgba(0,123,255,.35);border-radius:13px;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;color:#fff;cursor:pointer;transition:transform .12s,box-shadow .2s;box-shadow:0 4px 18px rgba(0,123,255,.22);backdrop-filter:blur(6px)}
+.btn-see-balance:active{transform:scale(0.965)}
+
+/* ── BALANCE POPUP OVERLAY ── */
+.bal-overlay{position:fixed;inset:0;z-index:200;display:none;align-items:flex-end;justify-content:center;background:rgba(15,23,42,.40);backdrop-filter:blur(6px)}
+.bal-overlay.show{display:flex}
+.bal-sheet{width:100%;max-width:480px;background:rgba(255,255,255,.92);border-radius:24px 24px 0 0;padding:28px 22px 40px;backdrop-filter:blur(24px);border:1px solid var(--glass-b);box-shadow:0 -8px 40px rgba(0,0,0,.14);animation:slideUp .3s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.bs-handle{width:40px;height:4px;background:rgba(203,213,225,.70);border-radius:2px;margin:0 auto 20px}
+.bs-title{font-size:18px;font-weight:800;color:var(--text);margin-bottom:16px;text-align:center}
+.bs-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bs-item{background:rgba(240,242,245,.80);border:1px solid rgba(203,213,225,.55);border-radius:14px;padding:14px 12px;text-align:center}
+.bs-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.bs-val{font-size:17px;font-weight:800;color:var(--text)}
+.bs-val.green{color:var(--green-s)}
+.bs-val.blue{color:var(--blue-s)}
+.bs-close{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;background:rgba(241,245,249,.80);border:1px solid rgba(203,213,225,.55);border-radius:13px;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;color:var(--text2);cursor:pointer;margin-top:16px;transition:transform .12s}
+.bs-close:active{transform:scale(0.965)}
+
+/* ── MINI CHART ── */
+.chart-container{position:relative;width:100%;height:120px;overflow:hidden}
+canvas#investChart{width:100%;height:120px}
+.chart-no-data{display:flex;align-items:center;justify-content:center;height:120px;font-size:13px;color:var(--muted);font-weight:500}
+
+/* ── ACTION BUTTONS ── */
+.action-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.action-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:16px 12px;background:var(--glass);border:1px solid var(--glass-b);border-radius:16px;cursor:pointer;transition:transform .12s,border-color .15s;backdrop-filter:blur(14px);text-decoration:none}
+.action-btn:active{transform:scale(0.96)}
+.action-btn:hover{border-color:rgba(0,123,255,.35)}
+.ab-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center}
+.ab-icon.blue{background:var(--alert-bg);border:1px solid var(--alert-b);color:var(--blue-s)}
+.ab-icon.green{background:var(--ok-bg);border:1px solid var(--ok-b);color:var(--green-s)}
+.ab-label{font-size:13px;font-weight:700;color:var(--text)}
+.ab-sub{font-size:11px;color:var(--muted);text-align:center}
+
+/* ── REFERRAL ── */
+.referral-card{background:linear-gradient(135deg,rgba(0,123,255,0.75) 0%,rgba(59,130,246,0.70) 100%);border:1px solid rgba(255,255,255,.35);border-radius:22px;padding:22px 20px;backdrop-filter:blur(18px);box-shadow:0 8px 32px rgba(0,123,255,.18);position:relative;overflow:hidden}
+.referral-card::after{content:'';position:absolute;top:-20px;right:-20px;width:100px;height:100px;background:rgba(255,255,255,.10);border-radius:50%;pointer-events:none}
+.rc-label{font-size:11px;font-weight:700;color:rgba(255,255,255,.75);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
+.rc-title{font-size:17px;font-weight:800;color:#fff;margin-bottom:4px}
+.rc-sub{font-size:12.5px;color:rgba(255,255,255,.80);margin-bottom:16px;line-height:1.5}
+
+.levels-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+.level-item{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);border-radius:12px;padding:10px 8px;text-align:center}
+.li-val{font-size:15px;font-weight:800;color:#fff}
+.li-label{font-size:10px;color:rgba(255,255,255,.70);font-weight:600;margin-top:2px}
+
+.link-box{display:flex;align-items:center;gap:0;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.30);border-radius:12px;overflow:hidden;margin-bottom:12px}
+.link-text{flex:1;padding:11px 14px;font-size:12px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:'Inter',sans-serif}
+.link-copy{padding:11px 14px;background:rgba(255,255,255,.20);border:none;border-left:1px solid rgba(255,255,255,.25);color:#fff;cursor:pointer;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;display:flex;align-items:center;gap:5px;transition:background .15s;white-space:nowrap}
+.link-copy:active{background:rgba(255,255,255,.35);transform:scale(0.96)}
+
+/* ── HEALTH TICKER FOOTER ── */
+.health-footer{margin:0 16px;background:var(--ok-bg);border:1px solid var(--ok-b);border-radius:14px;padding:12px 16px;overflow:hidden}
+.hf-label{font-size:10.5px;font-weight:700;color:var(--green-s);letter-spacing:.05em;text-transform:uppercase;margin-bottom:4px}
+.hf-text{font-size:12.5px;color:var(--text2);font-weight:500;line-height:1.45;animation:fadeIn .5s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── FAQ ── */
+.faq-item{background:var(--glass);border:1px solid var(--glass-b);border-radius:14px;overflow:hidden;backdrop-filter:blur(14px)}
+.faq-q{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;transition:background .13s}
+.faq-q:hover{background:rgba(255,255,255,.40)}
+.faq-q-text{font-size:13.5px;font-weight:700;color:var(--text);flex:1;padding-right:10px}
+.faq-chevron{color:var(--muted);transition:transform .25s;flex-shrink:0}
+.faq-a{font-size:13px;color:var(--text2);line-height:1.6;padding:0 16px 14px;display:none}
+.faq-item.open .faq-chevron{transform:rotate(180deg)}
+.faq-item.open .faq-a{display:block}
+
+/* ── WHATSAPP BUTTON ── */
+.wa-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:15px;background:rgba(37,211,102,0.88);border:1px solid rgba(37,211,102,.40);border-radius:14px;font-family:'Inter',sans-serif;font-size:15px;font-weight:700;color:#fff;cursor:pointer;transition:transform .12s;box-shadow:0 4px 18px rgba(37,211,102,.25);text-decoration:none}
+.wa-btn:active{transform:scale(0.965)}
+
+/* ── ALERT ── */
+.alert{padding:12px 16px;border-radius:12px;font-size:13px;font-weight:500;line-height:1.5;display:flex;align-items:flex-start;gap:10px}
+.alert-info{background:var(--alert-bg);border:1px solid var(--alert-b);color:var(--blue-s)}
+.alert-ok{background:var(--ok-bg);border:1px solid var(--ok-b);color:var(--green-s)}
+.alert-icon{flex-shrink:0;margin-top:1px}
+
+/* ── TOAST ── */
+.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-80px);background:rgba(255,255,255,.92);border:1px solid var(--glass-b);border-radius:14px;padding:12px 18px;font-size:13px;font-weight:600;color:var(--text);backdrop-filter:blur(18px);box-shadow:0 8px 28px rgba(0,0,0,.12);z-index:999;transition:transform .3s;white-space:nowrap;display:flex;align-items:center;gap:8px}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:var(--nav-h);background:rgba(255,255,255,.75);border-top:1px solid rgba(255,255,255,.85);backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:space-around;padding:0 8px;padding-bottom:env(safe-area-inset-bottom,0);z-index:50}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 14px;border-radius:14px;cursor:pointer;transition:transform .12s;border:none;background:none;color:var(--muted);text-decoration:none}
+.nav-item:active{transform:scale(0.92)}
+.nav-item.active{color:var(--green-s)}
+.nav-dot{width:4px;height:4px;border-radius:50%;background:var(--green-s);opacity:0;transition:opacity .2s}
+.nav-item.active .nav-dot{opacity:1}
+
+/* spinner */
+.spinner-sm{display:inline-block;width:20px;height:20px;border:2.5px solid rgba(34,197,94,.25);border-top-color:var(--green-s);border-radius:50%;animation:spin .75s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast">
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+  <span id="toastText"></span>
+</div>
+
+<!-- Balance Overlay -->
+<div class="bal-overlay" id="balOverlay" onclick="closeBalOverlay(event)">
+  <div class="bal-sheet" id="balSheet">
+    <div class="bs-handle"></div>
+    <div class="bs-title">Os Seus Saldos</div>
+    <div class="bs-grid">
+      <div class="bs-item">
+        <div class="bs-label">Saldo Disponivel</div>
+        <div class="bs-val green" id="bsBalance">AOA 0.00</div>
+      </div>
+      <div class="bs-item">
+        <div class="bs-label">Ganhos Totais</div>
+        <div class="bs-val green" id="bsEarnings">AOA 0.00</div>
+      </div>
+      <div class="bs-item">
+        <div class="bs-label">Capital Investido</div>
+        <div class="bs-val blue" id="bsDeposit">AOA 0.00</div>
+      </div>
+      <div class="bs-item">
+        <div class="bs-label">Plano Gratuito</div>
+        <div class="bs-val" id="bsFree">AOA 0.00</div>
+      </div>
+      <div class="bs-item" style="grid-column:1/-1">
+        <div class="bs-label">Em Analise</div>
+        <div class="bs-val" id="bsPending" style="color:var(--muted)">AOA 0.00</div>
+      </div>
+    </div>
+    <button class="bs-close" onclick="closeBalPopup()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      Fechar
+    </button>
+  </div>
+</div>
+
+<div class="page">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title">Perfil</div>
+      <div class="topbar-sub">Gerencie a sua conta</div>
+    </div>
+  </div>
+
+  <!-- Profile hero -->
+  <div class="profile-hero">
+    <div class="avatar" id="avatarEl">—</div>
+    <div class="ph-info">
+      <div class="ph-name" id="phName">Carregando...</div>
+      <div class="ph-email" id="phEmail">—</div>
+      <div class="ph-id" id="phId">ID: —</div>
+    </div>
+  </div>
+
+  <!-- See balance -->
+  <div class="section">
+    <button class="btn-see-balance" onclick="openBalPopup()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      Ver Saldo Detalhado
+    </button>
+  </div>
+
+  <!-- Action buttons -->
+  <div class="section">
+    <div class="action-row">
+      <a class="action-btn" href="deposito-levantamento.html?tab=deposito">
+        <div class="ab-icon blue">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+        </div>
+        <div class="ab-label">Deposito</div>
+        <div class="ab-sub">Adicionar fundos</div>
+      </a>
+      <a class="action-btn" href="deposito-levantamento.html?tab=levantamento">
+        <div class="ab-icon green">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+        </div>
+        <div class="ab-label">Levantamento</div>
+        <div class="ab-sub">Solicitar saque</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Investment chart -->
+  <div class="section">
+    <div class="section-title">Evolucao do Investimento</div>
+    <div class="g-card">
+      <div id="chartWrap">
+        <div class="chart-container">
+          <canvas id="investChart"></canvas>
+        </div>
+      </div>
+      <div id="chartNoData" class="chart-no-data" style="display:none">Nenhum historico de investimento registado ainda.</div>
+      <div style="display:flex;gap:16px;margin-top:12px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--text2)">
+          <div style="width:10px;height:10px;border-radius:50%;background:rgba(34,197,94,.80)"></div>Saldo
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--text2)">
+          <div style="width:10px;height:10px;border-radius:50%;background:rgba(0,123,255,.70)"></div>Ganhos
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Health tips footer ticker -->
+  <div class="section">
+    <div class="section-title">Saude e Investimento</div>
+  </div>
+  <div class="health-footer">
+    <div class="hf-label">Facto de Saude</div>
+    <div class="hf-text" id="hfText">Investidores que praticam meditacao diaria de 10 minutos apresentam maior tolerancia ao risco calculado.</div>
+  </div>
+
+  <!-- Referral system -->
+  <div class="section">
+    <div class="section-title">Compartilhar e Ganhar</div>
+    <div class="referral-card">
+      <div class="rc-label">Programa de Referidos</div>
+      <div class="rc-title">Ganhe ate 10% por Referido</div>
+      <div class="rc-sub">Partilhe o seu link exclusivo e receba 10% do primeiro investimento de cada pessoa que convidar.</div>
+
+      <div class="levels-grid">
+        <div class="level-item">
+          <div class="li-val" id="refCount">0</div>
+          <div class="li-label">Referidos</div>
+        </div>
+        <div class="level-item">
+          <div class="li-val" id="refEarned">0</div>
+          <div class="li-label">AOA Ganhos</div>
+        </div>
+        <div class="level-item">
+          <div class="li-val">10%</div>
+          <div class="li-label">Comissao</div>
+        </div>
+      </div>
+
+      <div class="link-box">
+        <div class="link-text" id="refLink">A gerar link...</div>
+        <button class="link-copy" onclick="copyLink()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copiar
+        </button>
+      </div>
+
+      <div style="font-size:12px;color:rgba(255,255,255,.75);line-height:1.5">
+        Quando o seu convidado fizer o primeiro investimento, a comissao e creditada automaticamente no seu saldo disponivel.
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="section">
+    <div class="section-title">Perguntas Frequentes</div>
+    <div style="display:flex;flex-direction:column;gap:8px" id="faqList"></div>
+  </div>
+
+  <!-- WhatsApp support -->
+  <div class="section">
+    <div class="section-title">Suporte e Ajuda</div>
+    <div class="alert alert-info" style="margin-bottom:10px">
+      <div class="alert-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+      <span>A nossa equipa de suporte esta disponivel 24 horas para esclarecer as suas duvidas.</span>
+    </div>
+    <a class="wa-btn" href="https://wa.me/244937359561" target="_blank">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+      Falar com Suporte via WhatsApp
+    </a>
+    <div style="text-align:center;font-size:12px;color:var(--muted);margin-top:8px;font-weight:500">+244 937 359 561</div>
+  </div>
+
+  <div style="height:20px"></div>
+</div>
+
+<!-- ── BOTTOM NAV ── -->
+<nav class="bottom-nav">
+  <a class="nav-item" href="index.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <div class="nav-dot"></div>
+  </a>
+  <a class="nav-item" href="planos.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+    <div class="nav-dot"></div>
+  </a>
+  <a class="nav-item" href="saude.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+    <div class="nav-dot"></div>
+  </a>
+  <a class="nav-item active" href="perfil.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <div class="nav-dot"></div>
+  </a>
+</nav>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const app=initializeApp({apiKey:"AIzaSyDp02RqKrac4ogFRGDcJjPLpA2inOV2rsk",authDomain:"pro-2c872.firebaseapp.com",projectId:"pro-2c872",storageBucket:"pro-2c872.firebasestorage.app",messagingSenderId:"778229616930",appId:"1:778229616930:web:b56177b322241b103ad57b"});
+const auth=getAuth(app);const db=getFirestore(app);
+
+function fmt(v){return 'AOA '+Number(v).toLocaleString('pt-AO',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function fmt0(v){return Number(v).toLocaleString('pt-AO',{minimumFractionDigits:0,maximumFractionDigits:0})}
+
+onAuthStateChanged(auth, async user=>{
+  if(!user){window.location.href='auth.html';return;}
+  window._uid=user.uid;
+  const snap=await getDoc(doc(db,'users',user.uid));
+  if(!snap.exists()){window.location.href='auth.html';return;}
+  const d=snap.data();
+  window._uData=d;
+
+  // Profile hero
+  const fname=(d.name||'U')[0].toUpperCase();
+  document.getElementById('avatarEl').textContent=fname;
+  document.getElementById('phName').textContent=d.name||'Utilizador';
+  document.getElementById('phEmail').textContent=user.email||'—';
+  document.getElementById('phId').textContent='ID: '+(d.userId||'—');
+
+  // Balance popup values
+  document.getElementById('bsBalance').textContent=fmt(d.balance||0);
+  document.getElementById('bsEarnings').textContent=fmt(d.earnings||0);
+  document.getElementById('bsDeposit').textContent=fmt(d.totalDeposit||0);
+  document.getElementById('bsFree').textContent=fmt(d.freeEarnings||0);
+  document.getElementById('bsPending').textContent=fmt(d.pendingBalance||0);
+
+  // Referral
+  document.getElementById('refCount').textContent=d.referrals||0;
+  document.getElementById('refEarned').textContent=fmt0(d.referralEarnings||0);
+  const link=`${location.origin}/auth.html?ref=${d.userId||user.uid}`;
+  document.getElementById('refLink').textContent=link;
+  window._refLink=link;
+
+  // Chart
+  renderChart(d);
+});
+
+function renderChart(d){
+  const canvas=document.getElementById('investChart');
+  const ctx=canvas.getContext('2d');
+  canvas.width=canvas.offsetWidth*window.devicePixelRatio||600;
+  canvas.height=240;
+  const w=canvas.width,h=canvas.height;
+  const bal=d.balance||0,earn=d.earnings||0;
+  if(bal===0&&earn===0){document.getElementById('chartWrap').style.display='none';document.getElementById('chartNoData').style.display='flex';return;}
+  // Simple 7-point simulated line
+  const pts=7;
+  const balPts=Array.from({length:pts},(_,i)=>Math.max(0,bal*(0.3+i*0.12)+Math.random()*bal*0.05));
+  balPts[pts-1]=bal;
+  const earnPts=Array.from({length:pts},(_,i)=>Math.max(0,earn*(0.2+i*0.14)+Math.random()*earn*0.04));
+  earnPts[pts-1]=earn;
+  const maxV=Math.max(...balPts,...earnPts,1);
+  const pad=20,chartW=w-pad*2,chartH=h-pad*2;
+  const xStep=chartW/(pts-1);
+  function drawLine(pts,color){
+    ctx.beginPath();
+    pts.forEach((v,i)=>{
+      const x=pad+i*xStep,y=pad+chartH*(1-v/maxV);
+      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    });
+    ctx.strokeStyle=color;ctx.lineWidth=2.5*window.devicePixelRatio;ctx.lineJoin='round';ctx.lineCap='round';ctx.stroke();
+    // Fill
+    ctx.lineTo(pad+chartW,pad+chartH);ctx.lineTo(pad,pad+chartH);ctx.closePath();
+    ctx.fillStyle=color.replace('0.80','0.08').replace('0.70','0.07');ctx.fill();
+  }
+  ctx.clearRect(0,0,w,h);
+  drawLine(balPts,'rgba(34,197,94,0.80)');
+  drawLine(earnPts,'rgba(0,123,255,0.70)');
+}
+</script>
+
+<script>
+/* ── Balance popup ── */
+function openBalPopup(){document.getElementById('balOverlay').classList.add('show');}
+function closeBalPopup(){document.getElementById('balOverlay').classList.remove('show');}
+function closeBalOverlay(e){if(e.target===document.getElementById('balOverlay'))closeBalPopup();}
+
+/* ── Copy referral link ── */
+function copyLink(){
+  const link=window._refLink||document.getElementById('refLink').textContent;
+  navigator.clipboard.writeText(link).then(()=>showToast('Link de convite copiado com sucesso.')).catch(()=>showToast('Erro ao copiar. Tente manualmente.'));
+}
+
+/* ── Toast ── */
+function showToast(msg){const t=document.getElementById('toast');document.getElementById('toastText').textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
+
+/* ── Health ticker ── */
+const tips=[
+  'Investidores que praticam meditacao diaria de 10 minutos apresentam maior tolerancia ao risco calculado.',
+  'Uma dieta rica em omega-3 melhora a funcao cognitiva e a capacidade de analise financeira.',
+  'Caminhar 30 minutos por dia reduz o estresse financeiro e melhora a tomada de decisoes.',
+  'O sono adequado e o melhor aliado do investidor: consolida a memoria e melhora o raciocinio.',
+  'Investir em saude preventiva pode reduzir custos medicos em ate 60% a longo prazo.',
+  'Hidratar-se corretamente aumenta o foco e a produtividade em analises de investimento.',
+  'O exercicio fisico regular esta associado a maior disciplina financeira e controlo emocional.',
+];
+let ti=0;
+setInterval(()=>{
+  ti=(ti+1)%tips.length;
+  const el=document.getElementById('hfText');
+  el.style.animation='none';el.offsetHeight;el.style.animation='fadeIn .5s ease';
+  el.textContent=tips[ti];
+},7000);
+
+/* ── FAQ ── */
+const FAQS=[
+  {q:'Como funciona o rendimento diario?',a:'Os rendimentos sao calculados automaticamente com base no plano subscrito. O percentual e aplicado diariamente sobre o capital investido e acumulado na sua conta de ganhos, disponivel para liquidacao a qualquer momento.'},
+  {q:'Qual e o deposito minimo?',a:'O deposito minimo para iniciar um investimento e de AOA 2.000 para o plano Medicare Advantage. Existe ainda o plano gratuito Optum Home Delivery que nao requer qualquer deposito inicial.'},
+  {q:'Como solicito um levantamento?',a:'Aceda a secao de Deposito e Levantamento no seu perfil, seleccione Levantamento, insira o valor desejado (minimo AOA 600) e confirme. O processamento ocorre em ate 24 horas uteis com uma taxa de 16%.'},
+  {q:'Os meus dados estao seguros?',a:'Sim. Toda a informacao e encriptada com tecnologia AES-256. Os dados bancarios sao armazenados de forma segura e nunca sao partilhados com terceiros sem o seu consentimento expresso.'},
+  {q:'Posso ter mais de um plano activo?',a:'Pode ter um plano activo de cada categoria em simultaneo: um plano UnitedHealthcare, um Optum Rx e um Optum Insight, perfazendo ate tres planos em paralelo.'},
+  {q:'Como funciona o programa de referidos?',a:'Partilhe o seu link exclusivo. Quando alguem se registar e fizer o primeiro investimento usando o seu link, voce recebe automaticamente 10% do valor desse primeiro investimento como comissao no seu saldo disponivel.'},
+  {q:'Quanto tempo demora a aprovacao do plano?',a:'A aprovacao dos pedidos de subscricao e realizada pela equipa administrativa em ate 24 horas uteis apos a recepcao do pedido e verificacao do comprovativo de pagamento.'},
+];
+const faqList=document.getElementById('faqList');
+FAQS.forEach((f,i)=>{
+  const el=document.createElement('div');
+  el.className='faq-item';
+  el.innerHTML=`<div class="faq-q" onclick="toggleFaq(this)">
+    <span class="faq-q-text">${f.q}</span>
+    <svg class="faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+  <div class="faq-a">${f.a}</div>`;
+  faqList.appendChild(el);
+});
+function toggleFaq(el){
+  const item=el.closest('.faq-item');
+  const wasOpen=item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
+  if(!wasOpen)item.classList.add('open');
+}
+</script>
+</body>
+</html>
