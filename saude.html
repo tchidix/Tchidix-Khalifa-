@@ -17,24 +17,29 @@
   --ok-bg:rgba(34,197,94,0.10);--ok-b:rgba(34,197,94,0.28);
   --r:18px;--nav-h:68px;
 }
-html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+html{min-height:100%}
+body{min-height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;overflow-y:auto}
 body::before,body::after{content:'';position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0}
 body::before{width:420px;height:420px;background:radial-gradient(circle,rgba(34,197,94,0.16) 0%,transparent 70%);top:-100px;left:-80px}
 body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,123,255,0.11) 0%,transparent 70%);bottom:-80px;right:-60px}
 
-.page{position:relative;z-index:1;min-height:100dvh;padding-bottom:calc(var(--nav-h)+20px);overflow-y:auto}
+.page{position:relative;z-index:1;min-height:100dvh;padding-bottom:calc(var(--nav-h) + 60px)}
 
+/* ── TOP BAR ── */
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 12px;position:sticky;top:0;z-index:20;background:rgba(240,242,245,0.85);backdrop-filter:blur(14px)}
 .topbar-title{font-size:20px;font-weight:800;color:var(--text)}
 .topbar-sub{font-size:12px;color:var(--muted);font-weight:500}
 
+/* ── SECTION ── */
 .section{padding:16px 16px 0}
 .section-title{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
 
+/* ── GLASS CARD ── */
 .g-card{background:var(--glass);border:1px solid var(--glass-b);border-radius:var(--r);padding:22px 20px;backdrop-filter:blur(18px);box-shadow:0 6px 28px rgba(0,0,0,.07)}
 .g-card-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px}
 .g-card-sub{font-size:13px;color:var(--text2);line-height:1.5;margin-bottom:16px}
 
+/* ── ALERT ── */
 .alert{padding:12px 16px;border-radius:12px;font-size:13px;font-weight:500;line-height:1.5;display:flex;align-items:flex-start;gap:10px}
 .alert-info{background:var(--alert-bg);border:1px solid var(--alert-b);color:var(--blue-s)}
 .alert-ok{background:var(--ok-bg);border:1px solid var(--ok-b);color:var(--green-s)}
@@ -42,6 +47,7 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
 .alert-warn{background:rgba(251,146,60,.10);border:1px solid rgba(251,146,60,.28);color:#ea580c}
 .alert-icon{flex-shrink:0;margin-top:1px}
 
+/* ── PLAN STATUS CARD ── */
 .plan-hero{background:linear-gradient(135deg,rgba(34,197,94,0.75) 0%,rgba(16,185,129,0.70) 100%);border:1px solid rgba(255,255,255,.45);border-radius:22px;padding:22px 20px;backdrop-filter:blur(18px);box-shadow:0 8px 32px rgba(34,197,94,.18);margin:14px 16px 0;position:relative;overflow:hidden}
 .plan-hero::after{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;background:rgba(255,255,255,.10);border-radius:50%;pointer-events:none}
 .ph-label{font-size:11px;font-weight:700;color:rgba(255,255,255,.75);letter-spacing:.06em;text-transform:uppercase}
@@ -49,17 +55,20 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
 .ph-yield{font-size:13px;color:rgba(255,255,255,.85);font-weight:600;margin-bottom:14px}
 .ph-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .ph-stat{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.30);border-radius:11px;padding:10px 12px;text-align:center}
-.ph-stat-val{font-size:15px;font-weight:800;color:#fff}
+.ph-stat-val{font-size:15px;font-weight:800;color:#ea580c}
+.ph-stat-val.red{color:#dc2626}
 .ph-stat-lbl{font-size:10px;color:rgba(255,255,255,.70);font-weight:600;margin-top:2px}
 .ph-status{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.20);border:1px solid rgba(255,255,255,.35);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:700;color:#fff;margin-bottom:14px}
 .ph-dot{width:7px;height:7px;border-radius:50%;background:#fff;animation:pulse 1.5s ease infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
+/* ── NO PLAN STATE ── */
 .no-plan{display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;padding:30px 20px;background:var(--glass);border:1px solid var(--glass-b);border-radius:var(--r);backdrop-filter:blur(18px);margin:14px 16px 0}
 .no-plan-icon{width:64px;height:64px;border-radius:50%;background:var(--alert-bg);border:1px solid var(--alert-b);display:flex;align-items:center;justify-content:center;color:var(--blue-s)}
 .no-plan-title{font-size:17px;font-weight:700;color:var(--text)}
 .no-plan-sub{font-size:13px;color:var(--text2);line-height:1.5;max-width:280px}
 
+/* ── DONUT CHART ── */
 .chart-wrap{display:flex;flex-direction:column;align-items:center;gap:16px;padding:16px 0 8px}
 .donut-outer{position:relative;width:160px;height:160px}
 .donut-svg{width:160px;height:160px;transform:rotate(-90deg)}
@@ -70,10 +79,12 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
 .donut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .dc-val{font-size:20px;font-weight:800;color:var(--text)}
 .dc-lbl{font-size:11px;color:var(--muted);font-weight:600}
+
 .chart-legend{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
 .legend-item{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--text2)}
 .legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
 
+/* ── EARNINGS TICKER ── */
 .earnings-ticker{display:flex;flex-direction:column;gap:10px}
 .et-row{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--glass);border:1px solid var(--glass-b);border-radius:14px;backdrop-filter:blur(12px)}
 .et-left{display:flex;align-items:center;gap:10px}
@@ -85,38 +96,46 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
 .et-sub{font-size:11px;color:var(--muted);margin-top:1px}
 .et-val{font-size:15px;font-weight:800;color:var(--green-s)}
 
+/* ── LIQUIDATE BUTTON ── */
 .btn-liquidate{width:100%;padding:15px;background:linear-gradient(135deg,rgba(34,197,94,0.85) 0%,rgba(16,185,129,0.82) 100%);border:1px solid rgba(34,197,94,.40);border-radius:14px;font-family:'Inter',sans-serif;font-size:15px;font-weight:800;color:#fff;cursor:pointer;transition:transform .12s,box-shadow .2s;box-shadow:0 6px 22px rgba(34,197,94,.28);display:flex;align-items:center;justify-content:center;gap:10px;letter-spacing:.01em}
 .btn-liquidate:active{transform:scale(0.965);box-shadow:0 3px 12px rgba(34,197,94,.18)}
 .btn-liquidate:disabled{opacity:.5;cursor:not-allowed;transform:none}
 
+/* ── PROGRESS BAR ── */
 .progress-wrap{margin:6px 0 0}
 .progress-label{display:flex;justify-content:space-between;font-size:11.5px;font-weight:600;color:var(--text2);margin-bottom:6px}
 .progress-bar{width:100%;height:8px;background:rgba(203,213,225,.45);border-radius:10px;overflow:hidden}
 .progress-fill{height:100%;border-radius:10px;background:linear-gradient(90deg,rgba(34,197,94,.85),rgba(16,185,129,.80));transition:width .8s ease}
 
+/* ── SPINNER ── */
 .spinner{width:18px;height:18px;border:2.5px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .75s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
+/* ── BTN PRIMARY ── */
 .btn-p{width:100%;padding:14px;background:var(--blue);border:1px solid rgba(0,123,255,.35);border-radius:13px;font-family:'Inter',sans-serif;font-size:14.5px;font-weight:700;color:#fff;cursor:pointer;transition:transform .12s;box-shadow:0 4px 18px rgba(0,123,255,.22);display:flex;align-items:center;justify-content:center;gap:8px}
 .btn-p:active{transform:scale(0.965)}
 
+/* ── TOAST ── */
 .toast{position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-80px);background:rgba(255,255,255,.92);border:1px solid var(--glass-b);border-radius:14px;padding:12px 18px;font-size:13px;font-weight:600;color:var(--text);backdrop-filter:blur(18px);box-shadow:0 8px 28px rgba(0,0,0,.12);z-index:999;transition:transform .3s;white-space:nowrap;display:flex;align-items:center;gap:8px;max-width:90vw;white-space:normal;text-align:center}
 .toast.show{transform:translateX(-50%) translateY(0)}
 
-.pending-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(251,146,60,.10);border:1px solid rgba(251,146,60,.28);border-radius:10px;padding:8px 12px;font-size:12px;font-weight:600;color:#ea580c}
-
-.data-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(203,213,225,.35)}
-.data-row:last-child{border-bottom:none;padding-bottom:0}
-.dr-l{font-size:12.5px;color:var(--text2);font-weight:500}
-.dr-r{font-size:13px;font-weight:700;color:var(--text)}
-.dr-r.green{color:var(--green-s)}
-
+/* ── BOTTOM NAV ── */
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;height:var(--nav-h);background:rgba(255,255,255,.75);border-top:1px solid rgba(255,255,255,.85);backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:space-around;padding:0 8px;padding-bottom:env(safe-area-inset-bottom,0);z-index:50}
 .nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 14px;border-radius:14px;cursor:pointer;transition:transform .12s;border:none;background:none;color:var(--muted);text-decoration:none}
 .nav-item:active{transform:scale(0.92)}
 .nav-item.active{color:var(--green-s)}
 .nav-dot{width:4px;height:4px;border-radius:50%;background:var(--green-s);opacity:0;transition:opacity .2s}
 .nav-item.active .nav-dot{opacity:1}
+
+/* pending badge */
+.pending-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(251,146,60,.10);border:1px solid rgba(251,146,60,.28);border-radius:10px;padding:8px 12px;font-size:12px;font-weight:600;color:#ea580c}
+
+/* data row */
+.data-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(203,213,225,.35)}
+.data-row:last-child{border-bottom:none;padding-bottom:0}
+.dr-l{font-size:12.5px;color:var(--text2);font-weight:500}
+.dr-r{font-size:13px;font-weight:700;color:var(--text)}
+.dr-r.green{color:var(--green-s)}
 </style>
 </head>
 <body>
@@ -134,20 +153,20 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
     </div>
   </div>
 
-  <!-- Loading -->
+  <!-- Loading state -->
   <div id="loadingState" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;gap:14px">
     <div style="width:36px;height:36px;border:3px solid rgba(34,197,94,.25);border-top-color:var(--green-s);border-radius:50%;animation:spin .75s linear infinite"></div>
     <div style="font-size:13px;color:var(--muted);font-weight:500">A verificar plano activo...</div>
   </div>
 
-  <!-- Sem plano -->
+  <!-- No plan state -->
   <div id="noPlanState" style="display:none;padding:0 0 20px">
     <div class="no-plan">
       <div class="no-plan-icon">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
       </div>
       <div class="no-plan-title">Nenhum Plano Activo</div>
-      <div class="no-plan-sub">Subscreva um plano de investimento para comecar a gerar rendimentos automaticamente.</div>
+      <div class="no-plan-sub">Subscreva um plano de investimento para comecar a gerar rendimentos saudaveis automaticamente.</div>
       <a href="planos.html" class="btn-p" style="text-decoration:none;margin-top:4px;width:auto;padding:12px 24px">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
         Ver Planos Disponiveis
@@ -166,7 +185,7 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
     </div>
   </div>
 
-  <!-- Pendente -->
+  <!-- Pending state -->
   <div id="pendingState" style="display:none;padding:14px 16px 0">
     <div class="pending-badge">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -174,32 +193,46 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
     </div>
     <div class="g-card" style="margin-top:12px">
       <div class="g-card-title">Pedido em Processamento</div>
-      <div class="g-card-sub">O seu plano esta a ser analisado. Normalmente a aprovacao e concluida em ate 24 horas.</div>
+      <div class="g-card-sub">O seu plano esta a ser analisado pela equipa administrativa. Normalmente a aprovacao e concluida em ate 24 horas.</div>
       <div id="pendingPlanName" style="font-size:15px;font-weight:700;color:var(--blue-s);margin-bottom:14px"></div>
       <div class="data-row"><span class="dr-l">Estado</span><span class="dr-r" style="color:#ea580c">Em Analise</span></div>
-      <div class="data-row"><span class="dr-l">Data do Pedido</span><span class="dr-r" id="pendingDate">—</span></div>
+      <div class="data-row" id="pendingDateRow"><span class="dr-l">Data do Pedido</span><span class="dr-r" id="pendingDate">—</span></div>
     </div>
     <div class="alert alert-warn" style="margin-top:12px">
       <div class="alert-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
-      <span>Os rendimentos comecam a ser gerados automaticamente apos aprovacao do administrador.</span>
+      <span>Os rendimentos comecam a ser gerados automaticamente apos a aprovacao do administrador.</span>
     </div>
   </div>
 
-  <!-- Plano activo -->
+  <!-- Active plan state -->
   <div id="activePlanState" style="display:none">
 
-    <div class="plan-hero">
-      <div class="ph-status"><div class="ph-dot"></div>Plano Activo</div>
-      <div class="ph-label">Plano de Investimento</div>
-      <div class="ph-name" id="heroName">—</div>
-      <div class="ph-yield" id="heroYield">—</div>
-      <div class="ph-row">
-        <div class="ph-stat"><div class="ph-stat-val" id="heroDays">—</div><div class="ph-stat-lbl">Dias Rest.</div></div>
-        <div class="ph-stat"><div class="ph-stat-val" id="heroEarned">—</div><div class="ph-stat-lbl">Ganhos AOA</div></div>
-        <div class="ph-stat"><div class="ph-stat-val" id="heroPct">—</div><div class="ph-stat-lbl">Ciclo</div></div>
+    <!-- Plan status card (glassmorphism, no green gradient) -->
+    <div style="margin:14px 16px 0;background:var(--glass);border:1px solid var(--glass-b);border-radius:22px;padding:20px 18px;backdrop-filter:blur(18px);box-shadow:0 6px 28px rgba(0,0,0,.08)" id="planHero">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+        <div style="width:8px;height:8px;border-radius:50%;background:#16a34a;animation:pulse 1.5s ease infinite;flex-shrink:0"></div>
+        <span style="font-size:11px;font-weight:700;color:var(--green-s);letter-spacing:.06em;text-transform:uppercase">Plano Activo</span>
+      </div>
+      <div style="font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;margin-bottom:4px">Plano de Investimento</div>
+      <div style="font-size:17px;font-weight:800;color:var(--text);margin-bottom:3px" id="heroName">—</div>
+      <div style="font-size:13px;color:var(--text2);font-weight:600;margin-bottom:16px" id="heroYield">—</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+        <div style="background:rgba(234,88,12,0.08);border:1px solid rgba(234,88,12,0.22);border-radius:13px;padding:11px 10px;text-align:center">
+          <div class="ph-stat-val" id="heroDays">—</div>
+          <div class="ph-stat-lbl">Dias Rest.</div>
+        </div>
+        <div style="background:rgba(220,38,38,0.08);border:1px solid rgba(220,38,38,0.22);border-radius:13px;padding:11px 10px;text-align:center">
+          <div class="ph-stat-val red" id="heroEarned">—</div>
+          <div class="ph-stat-lbl">Ganhos AOA</div>
+        </div>
+        <div style="background:rgba(234,88,12,0.08);border:1px solid rgba(234,88,12,0.22);border-radius:13px;padding:11px 10px;text-align:center">
+          <div class="ph-stat-val" id="heroPct">—</div>
+          <div class="ph-stat-lbl">Ciclo</div>
+        </div>
       </div>
     </div>
 
+    <!-- Progress -->
     <div class="section" style="margin-top:16px">
       <div class="section-title">Progresso do Ciclo</div>
       <div class="g-card">
@@ -210,15 +243,16 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
           </div>
           <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
         </div>
-        <div style="margin-top:14px">
+        <div style="margin-top:14px;display:flex;flex-direction:column;gap:0">
           <div class="data-row"><span class="dr-l">Inicio do Plano</span><span class="dr-r" id="planStart">—</span></div>
           <div class="data-row"><span class="dr-l">Termino Previsto</span><span class="dr-r" id="planEnd">—</span></div>
           <div class="data-row"><span class="dr-l">Capital Investido</span><span class="dr-r green" id="planCapital">—</span></div>
-          <div class="data-row"><span class="dr-l">Ganhos Acumulados</span><span class="dr-r green" id="planTotal">—</span></div>
+          <div class="data-row"><span class="dr-l">Rendimento Total</span><span class="dr-r green" id="planTotal">—</span></div>
         </div>
       </div>
     </div>
 
+    <!-- Donut chart -->
     <div class="section" style="margin-top:0">
       <div class="section-title">Composicao do Portfolio</div>
       <div class="g-card">
@@ -227,8 +261,8 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
             <svg class="donut-svg" viewBox="0 0 160 160">
               <circle class="donut-bg" cx="80" cy="80" r="60"/>
               <circle class="donut-arc1" id="arc1" cx="80" cy="80" r="60" stroke-dasharray="377" stroke-dashoffset="377"/>
-              <circle class="donut-arc2" id="arc2" cx="80" cy="80" r="60" stroke-dasharray="377" stroke-dashoffset="377"/>
-              <circle class="donut-arc3" id="arc3" cx="80" cy="80" r="60" stroke-dasharray="377" stroke-dashoffset="377"/>
+              <circle class="donut-arc2" id="arc2" cx="80" cy="80" r="60" stroke-dasharray="377" stroke-dashoffset="377" style="transform:rotate(0deg);transform-origin:center"/>
+              <circle class="donut-arc3" id="arc3" cx="80" cy="80" r="60" stroke-dasharray="377" stroke-dashoffset="377" style="transform:rotate(0deg);transform-origin:center"/>
             </svg>
             <div class="donut-center">
               <div class="dc-val" id="donutCenter">0%</div>
@@ -244,11 +278,13 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
       </div>
     </div>
 
+    <!-- Earnings breakdown -->
     <div class="section" style="margin-top:0">
       <div class="section-title">Rendimentos por Categoria</div>
       <div class="earnings-ticker" id="earningsTicker"></div>
     </div>
 
+    <!-- Liquidate button -->
     <div class="section" style="margin-top:12px;padding-bottom:0">
       <div id="liquidateAlert" style="display:none;margin-bottom:12px" class="alert"></div>
       <button class="btn-liquidate" id="btnLiquidate" onclick="liquidateEarnings()">
@@ -264,6 +300,7 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
   </div>
 </div>
 
+<!-- ── BOTTOM NAV ── -->
 <nav class="bottom-nav">
   <a class="nav-item" href="index.html">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
@@ -283,204 +320,195 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
   </a>
 </nav>
 
+<!-- Firebase -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, getDoc, updateDoc, collection, query, where, getDocs, addDoc, serverTimestamp, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, doc, getDoc, updateDoc, collection, query, where, getDocs, orderBy, limit, addDoc, serverTimestamp, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const app = initializeApp({
-  apiKey:"AIzaSyDp02RqKrac4ogFRGDcJjPLpA2inOV2rsk",
-  authDomain:"pro-2c872.firebaseapp.com",
-  projectId:"pro-2c872",
-  storageBucket:"pro-2c872.firebasestorage.app",
-  messagingSenderId:"778229616930",
-  appId:"1:778229616930:web:b56177b322241b103ad57b"
-});
+const app=initializeApp({apiKey:"AIzaSyDp02RqKrac4ogFRGDcJjPLpA2inOV2rsk",authDomain:"pro-2c872.firebaseapp.com",projectId:"pro-2c872",storageBucket:"pro-2c872.firebasestorage.app",messagingSenderId:"778229616960",appId:"1:778229616930:web:b56177b322241b103ad57b"});
+const auth=getAuth(app);const db=getFirestore(app);
+window._db=db;window._auth=auth;
+window._fbs={doc,getDoc,updateDoc,collection,query,where,getDocs,orderBy,limit,addDoc,serverTimestamp,increment};
 
-const auth = getAuth(app);
-const db   = getFirestore(app);
-window._db  = db;
-window._fbs = { doc, getDoc, updateDoc, collection, addDoc, serverTimestamp, increment };
+function fmt(v){return Number(v).toLocaleString('pt-AO',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function fmt0(v){return Number(v).toLocaleString('pt-AO',{minimumFractionDigits:0,maximumFractionDigits:0})}
 
-function fmt(v){ return Number(v).toLocaleString('pt-AO',{minimumFractionDigits:2,maximumFractionDigits:2}); }
-function fmt0(v){ return Number(v).toLocaleString('pt-AO',{minimumFractionDigits:0,maximumFractionDigits:0}); }
+onAuthStateChanged(auth, async user=>{
+  if(!user){window.location.href='auth.html';return;}
+  window._uid=user.uid;
+  try{
+    // Get user data
+    const uSnap=await getDoc(doc(db,'users',user.uid));
+    if(!uSnap.exists()){window.location.href='auth.html';return;}
+    const uData=uSnap.data();
+    window._userData=uData;
 
-onAuthStateChanged(auth, async user => {
-  if(!user){ window.location.href='auth.html'; return; }
-  window._uid = user.uid;
+    // Check for active subscription
+    const subQ=query(collection(db,'subscriptions'),where('uid','==',user.uid),orderBy('createdAt','desc'),limit(1));
+    const subSnap=await getDocs(subQ);
 
-  try {
-    const uSnap = await getDoc(doc(db,'users',user.uid));
-    if(!uSnap.exists()){ window.location.href='auth.html'; return; }
-    const uData = uSnap.data();
-    window._userData = uData;
-
-    /* ── CORRIGIDO: query sem orderBy para evitar erro de índice ── */
-    const subQ    = query(collection(db,'subscriptions'), where('uid','==',user.uid));
-    const subSnap = await getDocs(subQ);
-
-    document.getElementById('loadingState').style.display = 'none';
+    document.getElementById('loadingState').style.display='none';
 
     if(subSnap.empty){
-      document.getElementById('noPlanState').style.display = 'block';
+      // No plan at all
+      document.getElementById('noPlanState').style.display='block';
       return;
     }
 
-    /* Pega o mais recente manualmente (evita orderBy + índice composto) */
-    let latestDoc  = null;
-    let latestTime = 0;
-    subSnap.forEach(d => {
-      const data = d.data();
-      /* createdAt pode ser Timestamp ou null se ainda não sincronizou */
-      const t = data.createdAt?.toMillis ? data.createdAt.toMillis() : 0;
-      if(t >= latestTime){ latestTime = t; latestDoc = d; }
-    });
+    const sub=subSnap.docs[0].data();
+    const subId=subSnap.docs[0].id;
+    window._activeSub=sub;
+    window._activeSubId=subId;
 
-    /* Se todos os docs ainda não têm timestamp (escrita muito recente),
-       pega o primeiro disponível */
-    if(!latestDoc) latestDoc = subSnap.docs[0];
-
-    const sub   = latestDoc.data();
-    const subId = latestDoc.id;
-    window._activeSub   = sub;
-    window._activeSubId = subId;
-
-    if(sub.status === 'pending'){
-      document.getElementById('pendingState').style.display = 'block';
-      document.getElementById('pendingPlanName').textContent = sub.plan || '—';
+    if(sub.status==='pending'){
+      document.getElementById('pendingState').style.display='block';
+      document.getElementById('pendingPlanName').textContent=sub.plan||'—';
       if(sub.createdAt?.toDate){
-        document.getElementById('pendingDate').textContent = sub.createdAt.toDate().toLocaleDateString('pt-AO');
+        document.getElementById('pendingDate').textContent=sub.createdAt.toDate().toLocaleDateString('pt-AO');
       }
       return;
     }
 
-    if(sub.status === 'approved' || sub.status === 'active'){
-      document.getElementById('activePlanState').style.display = 'block';
+    if(sub.status==='approved'||sub.status==='active'){
+      document.getElementById('activePlanState').style.display='block';
       renderActivePlan(sub, uData);
     } else {
-      document.getElementById('noPlanState').style.display = 'block';
+      document.getElementById('noPlanState').style.display='block';
     }
-
-  } catch(e){
+  }catch(e){
     console.error(e);
-    document.getElementById('loadingState').style.display = 'none';
-    document.getElementById('noPlanState').style.display  = 'block';
+    document.getElementById('loadingState').style.display='none';
+    document.getElementById('noPlanState').style.display='block';
   }
 });
 
 function renderActivePlan(sub, uData){
-  const planName  = sub.plan     || 'Plano Activo';
-  const capital   = sub.invest   || uData.totalDeposit || 0;
-  const earned    = uData.earnings || 0;
-  const yieldStr  = sub.yieldStr || '+5% diario';
-  const cycleDays = sub.cycleDays || 60;
+  const planName=sub.plan||'Plano Activo';
+  const capital=uData.totalDeposit||0;
+  const earned=uData.earnings||0;
+  const yieldStr=sub.yieldStr||'+5% diario';
 
-  /* activatedAt pode ser Timestamp ou null — fallback para agora */
+  // Determine cycle days
+  const cycleDays = planName.includes('Insight')||planName.includes('Data Analytics')||planName.includes('Revenue')||planName.includes('Telehealth')||planName.includes('Clinical')||planName.includes('Optum Store') ? 31
+    : planName.includes('Home Delivery') ? 5
+    : planName.includes('Specialty')||planName.includes('Urgent')||planName.includes('Surgical')||planName.includes('In-Home')||planName.includes('Optum Bank')||planName.includes('Avery') ? 250
+    : 60;
+
   const startDate = sub.activatedAt?.toDate ? sub.activatedAt.toDate() : new Date();
-  const now       = new Date();
-  const elapsed   = Math.max(0, Math.floor((now - startDate) / (1000*60*60*24)));
-  const remaining = Math.max(0, cycleDays - elapsed);
-  const pct       = Math.min(100, Math.round((elapsed / cycleDays) * 100));
+  const now=new Date();
+  const elapsed=Math.max(0,Math.floor((now-startDate)/(1000*60*60*24)));
+  const remaining=Math.max(0,cycleDays-elapsed);
+  const pct=Math.min(100,Math.round((elapsed/cycleDays)*100));
 
-  document.getElementById('heroName').textContent  = planName;
-  document.getElementById('heroYield').textContent = yieldStr;
-  document.getElementById('heroDays').textContent  = remaining;
-  document.getElementById('heroEarned').textContent= fmt0(earned);
-  document.getElementById('heroPct').textContent   = pct + '%';
+  // Hero
+  window._estimatedEarnings = earned; // store for liquidate
+  document.getElementById('heroName').textContent=planName;
+  document.getElementById('heroYield').textContent=yieldStr||'Rendimento activo';
+  document.getElementById('heroDays').textContent=remaining;
+  document.getElementById('heroEarned').textContent=fmt0(earned);
+  document.getElementById('heroPct').textContent=pct+'%';
 
-  document.getElementById('progressLabel').textContent = elapsed + ' dias decorridos de ' + cycleDays;
-  document.getElementById('progressPct').textContent   = pct + '%';
-  document.getElementById('progressFill').style.width  = pct + '%';
-  document.getElementById('planStart').textContent     = startDate.toLocaleDateString('pt-AO');
-  const endDate = new Date(startDate);
-  endDate.setDate(endDate.getDate() + cycleDays);
-  document.getElementById('planEnd').textContent    = endDate.toLocaleDateString('pt-AO');
-  document.getElementById('planCapital').textContent= 'AOA ' + fmt(capital);
-  document.getElementById('planTotal').textContent  = 'AOA ' + fmt(earned);
+  // Progress
+  document.getElementById('progressLabel').textContent=elapsed+' dias decorridos de '+cycleDays;
+  document.getElementById('progressPct').textContent=pct+'%';
+  document.getElementById('progressFill').style.width=pct+'%';
+  document.getElementById('planStart').textContent=startDate.toLocaleDateString('pt-AO');
+  const endDate=new Date(startDate);endDate.setDate(endDate.getDate()+cycleDays);
+  document.getElementById('planEnd').textContent=endDate.toLocaleDateString('pt-AO');
+  document.getElementById('planCapital').textContent='AOA '+fmt(capital);
+  const totalReturn=capital*(pct/100);
+  document.getElementById('planTotal').textContent='AOA '+fmt(earned);
 
-  /* Donut */
-  const circ = 377;
-  const p1 = 0.55, p2 = earned > 0 ? 0.25 : 0.10, p3 = 1 - p1 - p2;
-  setTimeout(() => {
-    document.getElementById('arc1').style.strokeDashoffset = circ - circ*p1;
-    const arc2 = document.getElementById('arc2');
-    arc2.style.strokeDashoffset  = circ - circ*p2;
-    arc2.style.transform         = `rotate(${p1*360}deg)`;
-    arc2.style.transformOrigin   = '80px 80px';
-    const arc3 = document.getElementById('arc3');
-    arc3.style.strokeDashoffset  = circ - circ*p3;
-    arc3.style.transform         = `rotate(${(p1+p2)*360}deg)`;
-    arc3.style.transformOrigin   = '80px 80px';
-  }, 200);
-  document.getElementById('donutCenter').textContent = pct + '%';
+  // Donut chart
+  const circ=377;
+  const p1=capital>0?Math.min(0.55,0.55):0.55; // capital share ~55%
+  const p2=earned>0?0.25:0.10;                  // earned share
+  const p3=1-p1-p2;                              // pending
+  const offset1=circ-(circ*p1);
+  const offset2=circ-(circ*p2);
+  const offset3=circ-(circ*p3);
+  const arc1=document.getElementById('arc1');
+  const arc2=document.getElementById('arc2');
+  const arc3=document.getElementById('arc3');
+  setTimeout(()=>{
+    arc1.style.strokeDashoffset=offset1;
+    arc2.style.strokeDashoffset=offset2;
+    arc2.style.transform=`rotate(${p1*360}deg)`;
+    arc2.style.transformOrigin='80px 80px';
+    arc3.style.strokeDashoffset=offset3;
+    arc3.style.transform=`rotate(${(p1+p2)*360}deg)`;
+    arc3.style.transformOrigin='80px 80px';
+  },200);
+  document.getElementById('donutCenter').textContent=pct+'%';
 
-  /* Earnings breakdown */
-  const ticker = document.getElementById('earningsTicker');
-  const items = [
-    {label:'Rendimento do Plano', sub:yieldStr,                          val:'AOA '+fmt(earned),  cls:'green'},
-    {label:'Capital em Ciclo',    sub:cycleDays+' dias totais',           val:'AOA '+fmt(capital), cls:'blue'},
-    {label:'Proximo Rendimento',  sub:'Liquidavel a qualquer momento',    val:'Disponivel',        cls:'orange'},
+  // Earnings breakdown
+  const ticker=document.getElementById('earningsTicker');
+  const items=[
+    {label:'Rendimento Diario',sub:yieldStr,val:'AOA '+fmt(earned),cls:'green'},
+    {label:'Capital em Ciclo',sub:cycleDays+' dias totais',val:'AOA '+fmt(capital),cls:'blue'},
+    {label:'Proximo Rendimento',sub:'Liquidavel a qualquer momento',val:'Disponivel',cls:'orange'},
   ];
-  ticker.innerHTML = items.map(it => `
+  ticker.innerHTML=items.map(it=>`
     <div class="et-row">
       <div class="et-left">
         <div class="et-icon ${it.cls}">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
         </div>
-        <div><div class="et-title">${it.label}</div><div class="et-sub">${it.sub}</div></div>
+        <div>
+          <div class="et-title">${it.label}</div>
+          <div class="et-sub">${it.sub}</div>
+        </div>
       </div>
       <div class="et-val">${it.val}</div>
     </div>`).join('');
 }
 
 window.liquidateEarnings = async function(){
-  const al = document.getElementById('liquidateAlert');
-  al.style.display = 'none';
-  const earned = window._userData?.earnings || 0;
-  if(earned <= 0){
-    al.className = 'alert alert-warn'; al.style.display = 'flex';
-    al.innerHTML = `<div class="alert-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><span>Nenhum rendimento disponivel para liquidar no momento.</span>`;
+  const al=document.getElementById('liquidateAlert');
+  al.style.display='none';
+  // Use Firestore earnings OR estimated computed earnings (whichever is greater)
+  const firestoreEarned=window._userData?.earnings||0;
+  const computedEarned=window._estimatedEarnings||0;
+  const earned=Math.max(firestoreEarned, computedEarned);
+  if(earned<=0){
+    al.className='alert alert-warn';al.style.display='flex';
+    al.innerHTML=`<div class="alert-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><span>Os seus ganhos ainda estao a ser processados pelo administrador. Aguarde a creditacao diaria.</span>`;
     return;
   }
-  document.getElementById('liqTxt').style.display    = 'none';
-  document.getElementById('liqSpinner').style.display= 'inline-flex';
-  document.getElementById('btnLiquidate').disabled   = true;
+  document.getElementById('liqTxt').style.display='none';
+  document.getElementById('liqSpinner').style.display='inline-flex';
+  document.getElementById('btnLiquidate').disabled=true;
   try{
-    const { doc, updateDoc, addDoc, collection, serverTimestamp, increment } = window._fbs;
-    await updateDoc(doc(window._db,'users',window._uid),{
-      balance:  increment(earned),
-      earnings: 0
+    await window._fbs.updateDoc(window._fbs.doc(db,'users',window._uid),{
+      balance:window._fbs.increment(earned),
+      earnings:0
     });
-    await addDoc(collection(window._db,'transactions'),{
-      uid:         window._uid,
-      type:        'in',
-      amount:      earned,
-      description: 'Liquidacao de Ganho Saudavel — '+(window._activeSub?.plan||'Plano'),
-      createdAt:   serverTimestamp()
+    await window._fbs.addDoc(window._fbs.collection(db,'transactions'),{
+      uid:window._uid,
+      type:'in',
+      amount:earned,
+      description:'Liquidacao de Ganho Saudavel — '+(window._activeSub?.plan||'Plano'),
+      createdAt:window._fbs.serverTimestamp()
     });
-    window._userData.balance  = (window._userData.balance||0) + earned;
-    window._userData.earnings = 0;
+    window._userData.balance=(window._userData.balance||0)+earned;
+    window._userData.earnings=0;
+    window._estimatedEarnings=0;
     showToast('AOA '+Number(earned).toLocaleString('pt-AO',{minimumFractionDigits:2})+' adicionado ao saldo disponivel.');
-    document.getElementById('heroEarned').textContent = '0.00';
-    al.className = 'alert alert-ok'; al.style.display = 'flex';
-    al.innerHTML = `<div class="alert-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div><span>Ganhos liquidados com sucesso e adicionados ao seu saldo.</span>`;
-  } catch(e){
-    al.className = 'alert alert-err'; al.style.display = 'flex';
-    al.innerHTML = `<div class="alert-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><span>Erro ao liquidar. Verifique a sua ligacao e tente novamente.</span>`;
+    document.getElementById('heroEarned').textContent='0.00';
+    al.className='alert alert-ok';al.style.display='flex';
+    al.innerHTML=`<div class="alert-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div><span>Ganhos de AOA ${Number(earned).toLocaleString('pt-AO',{minimumFractionDigits:2})} liquidados e adicionados ao seu saldo.</span>`;
+  }catch(e){
+    al.className='alert alert-err';al.style.display='flex';
+    al.innerHTML=`<div class="alert-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><span>Erro ao liquidar. Verifique a sua ligacao e tente novamente.</span>`;
   }
-  document.getElementById('liqTxt').style.display    = 'inline';
-  document.getElementById('liqSpinner').style.display= 'none';
-  document.getElementById('btnLiquidate').disabled   = false;
+  document.getElementById('liqTxt').style.display='inline';
+  document.getElementById('liqSpinner').style.display='none';
+  document.getElementById('btnLiquidate').disabled=false;
 };
 </script>
-
 <script>
-function showToast(msg){
-  const t = document.getElementById('toast');
-  document.getElementById('toastText').textContent = msg;
-  t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), 3500);
-}
+function showToast(msg){const t=document.getElementById('toast');document.getElementById('toastText').textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
 </script>
 </body>
 </html>
