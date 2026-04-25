@@ -23,18 +23,14 @@ body{overflow-y:auto !important;height:auto !important;min-height:100vh}
 body::before,body::after{content:'';position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0}
 body::before{width:400px;height:400px;background:radial-gradient(circle,rgba(34,197,94,0.15) 0%,transparent 70%);top:-100px;left:-80px}
 body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,123,255,0.11) 0%,transparent 70%);bottom:-80px;right:-60px}
-
 .page{position:relative;z-index:1;min-height:100vh;padding-bottom:120px}
-
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 12px;position:sticky;top:0;z-index:20;background:rgba(240,242,245,0.85);backdrop-filter:blur(14px)}
 .topbar-title{font-size:20px;font-weight:800;color:var(--text)}
 .topbar-sub{font-size:12px;color:var(--muted);font-weight:500}
-
 .tab-bar{display:flex;gap:0;padding:0 16px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid rgba(203,213,225,.40);margin-bottom:0;background:rgba(240,242,245,0.60);backdrop-filter:blur(10px);position:sticky;top:62px;z-index:19}
 .tab-bar::-webkit-scrollbar{display:none}
 .tab-item{flex-shrink:0;padding:12px 18px;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2.5px solid transparent;transition:color .2s,border-color .2s;white-space:nowrap}
 .tab-item.active{color:var(--green-s);border-bottom-color:var(--green-s)}
-
 .plans-grid{padding:14px 16px 30px;display:flex;flex-direction:column;gap:12px}
 .plan-card{background:var(--glass);border:1px solid var(--glass-b);border-radius:var(--r);padding:18px 16px;backdrop-filter:blur(18px);box-shadow:0 4px 20px rgba(0,0,0,0.06);position:relative;overflow:hidden}
 .plan-card::before{content:'';position:absolute;top:0;right:0;width:80px;height:80px;border-radius:50%;filter:blur(30px);pointer-events:none}
@@ -43,32 +39,26 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
 .plan-card.tier3::before{background:rgba(251,146,60,0.22)}
 .plan-card.tier4::before{background:rgba(168,85,247,0.20)}
 .plan-card.free-plan{border-color:rgba(34,197,94,0.45);background:rgba(34,197,94,0.07)}
-
 .plan-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 .plan-name{font-size:16px;font-weight:800;color:var(--text);line-height:1.3}
 .plan-invest{font-size:18px;font-weight:800;color:var(--red)}
 .plan-invest span{font-size:12px;font-weight:600;color:var(--muted)}
-
 .plan-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;margin-bottom:10px}
 .plan-badge.green{background:var(--ok-bg);border:1px solid var(--ok-b);color:var(--green-s)}
 .plan-badge.blue{background:var(--alert-bg);border:1px solid var(--alert-b);color:var(--blue-s)}
 .plan-badge.orange{background:rgba(251,146,60,.10);border:1px solid rgba(251,146,60,.28);color:#ea580c}
 .plan-badge.purple{background:rgba(168,85,247,.10);border:1px solid rgba(168,85,247,.28);color:#7c3aed}
 .plan-badge.free{background:rgba(34,197,94,.18);border:1px solid rgba(34,197,94,.40);color:var(--green-s)}
-
 .plan-meta-row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 14px}
 .plan-meta{display:flex;align-items:center;gap:5px;padding:6px 10px;border-radius:9px;font-size:12px;font-weight:600;background:rgba(255,255,255,.55);border:1px solid rgba(203,213,225,.50)}
 .plan-meta.green{color:var(--green-s)}
 .plan-meta.blue{color:var(--blue-s)}
 .plan-meta.orange{color:#ea580c}
-
 .btn-subscribe{padding:8px 16px;border-radius:20px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .12s ease;display:inline-flex;align-items:center;justify-content:center;gap:5px;border:1.5px solid rgba(0,123,255,.4);background:var(--blue);color:#fff;width:auto;margin-top:4px}
 .btn-subscribe:active{transform:scale(0.95)}
 .btn-subscribe.free-btn{background:var(--green);border-color:rgba(34,197,94,.5)}
 .btn-subscribe:disabled{opacity:.55;cursor:not-allowed;transform:none}
-
 .plan-free-note{font-size:11px;color:var(--green-s);font-weight:600;text-align:center;margin-top:6px}
-
 .fs-modal{position:fixed;inset:0;z-index:200;background:var(--bg);overflow-y:auto;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
 .fs-modal.open{transform:translateX(0)}
 .fs-header{display:flex;align-items:center;gap:12px;padding:16px 16px 12px;background:rgba(255,255,255,.70);border-bottom:1px solid rgba(255,255,255,.80);backdrop-filter:blur(14px);position:sticky;top:0;z-index:10}
@@ -76,17 +66,14 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
 .fs-back:active{transform:scale(0.92)}
 .fs-title{font-size:17px;font-weight:700;color:var(--text)}
 .fs-body{flex:1;padding:20px 16px 40px;display:flex;flex-direction:column;gap:16px}
-
 .g-card{background:var(--glass);border:1px solid var(--glass-b);border-radius:var(--r);padding:22px 20px;backdrop-filter:blur(18px);box-shadow:0 6px 28px rgba(0,0,0,.07)}
 .g-card-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px}
 .g-card-sub{font-size:13px;color:var(--text2);line-height:1.5;margin-bottom:16px}
-
 .alert{padding:12px 16px;border-radius:12px;font-size:13px;font-weight:500;line-height:1.5;display:flex;align-items:flex-start;gap:10px}
 .alert-info{background:var(--alert-bg);border:1px solid var(--alert-b);color:var(--blue-s)}
 .alert-ok{background:var(--ok-bg);border:1px solid var(--ok-b);color:var(--green-s)}
 .alert-err{background:var(--err-bg);border:1px solid var(--err-b);color:#dc2626}
 .alert-icon{flex-shrink:0;margin-top:1px}
-
 .form-group{margin-bottom:14px}
 .form-label{display:block;font-size:11.5px;font-weight:700;color:var(--text2);margin-bottom:6px;letter-spacing:.04em;text-transform:uppercase}
 .input-wrap{position:relative;display:flex;align-items:center}
@@ -99,49 +86,38 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
 .form-select:focus{border-color:var(--blue-s);box-shadow:0 0 0 3px rgba(0,123,255,.10)}
 .select-wrap{position:relative}
 .select-wrap::after{content:'';position:absolute;right:13px;top:50%;transform:translateY(-50%);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid var(--muted);pointer-events:none}
-
 .btn-p{width:100%;padding:14px;background:var(--blue);border:1px solid rgba(0,123,255,.35);border-radius:13px;font-family:'Inter',sans-serif;font-size:14.5px;font-weight:700;color:#fff;cursor:pointer;transition:transform .12s;display:flex;align-items:center;justify-content:center;gap:8px}
 .btn-p:active{transform:scale(0.97)}
 .btn-g{width:100%;padding:14px;background:var(--green);border:1px solid rgba(34,197,94,.35);border-radius:13px;font-family:'Inter',sans-serif;font-size:14.5px;font-weight:700;color:#fff;cursor:pointer;transition:transform .12s;display:flex;align-items:center;justify-content:center;gap:8px}
 .btn-g:active{transform:scale(0.97)}
-
 .step-bar{display:flex;gap:6px;align-items:center}
 .step-dot{width:8px;height:8px;border-radius:50%;background:rgba(203,213,225,.65);transition:background .2s,width .2s}
 .step-dot.active{background:var(--blue-s);width:22px;border-radius:4px}
 .step-dot.done{background:var(--green-s)}
-
 .view-step{display:none}
 .view-step.active{display:flex;flex-direction:column;gap:14px}
-
 .terms-box{background:rgba(255,255,255,.55);border:1px solid rgba(203,213,225,.55);border-radius:14px;padding:16px;max-height:230px;overflow-y:auto;font-size:12.5px;color:var(--text2);line-height:1.6}
 .terms-box h4{font-size:13px;font-weight:700;color:var(--text);margin-bottom:8px}
 .terms-box p{margin-bottom:8px}
-
 .spinner{width:18px;height:18px;border:2.5px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .75s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-
 .success-screen{display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px;padding:20px 0}
 .success-icon{width:72px;height:72px;border-radius:50%;background:var(--ok-bg);border:2px solid var(--ok-b);display:flex;align-items:center;justify-content:center;color:var(--green-s)}
 .success-title{font-size:20px;font-weight:800;color:var(--text)}
 .success-sub{font-size:13.5px;color:var(--text2);line-height:1.5;max-width:300px}
-
 .plan-chip{display:inline-flex;align-items:center;gap:8px;background:var(--alert-bg);border:1px solid var(--alert-b);border-radius:10px;padding:9px 14px;font-size:13px;font-weight:700;color:var(--blue-s)}
-
 .balance-card{background:rgba(255,255,255,.70);border:1px solid rgba(203,213,225,.55);border-radius:14px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
 .balance-label{font-size:12px;font-weight:600;color:var(--text2)}
 .balance-value{font-size:15px;font-weight:800;color:var(--green-s)}
 .balance-need{font-size:13px;font-weight:700;color:var(--red)}
-
 .toast{position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-80px);background:rgba(255,255,255,.92);border:1px solid var(--glass-b);border-radius:14px;padding:12px 18px;font-size:13px;font-weight:600;color:var(--text);backdrop-filter:blur(18px);box-shadow:0 8px 28px rgba(0,0,0,.12);z-index:999;transition:transform .3s;white-space:nowrap;display:flex;align-items:center;gap:8px}
 .toast.show{transform:translateX(-50%) translateY(0)}
-
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;height:var(--nav-h);background:rgba(255,255,255,.75);border-top:1px solid rgba(255,255,255,.85);backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:space-around;padding:0 8px;padding-bottom:env(safe-area-inset-bottom,0);z-index:50}
 .nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 14px;border-radius:14px;cursor:pointer;transition:transform .12s;border:none;background:none;color:var(--muted);text-decoration:none}
 .nav-item:active{transform:scale(0.92)}
 .nav-item.active{color:var(--green-s)}
 .nav-dot{width:4px;height:4px;border-radius:50%;background:var(--green-s);opacity:0;transition:opacity .2s}
 .nav-item.active .nav-dot{opacity:1}
-
 .tab-content{display:none}
 .tab-content.active{display:block}
 </style>
@@ -245,7 +221,7 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
       <div class="step-dot" id="csd2"></div>
     </div>
 
-    <!-- Step 1: Dados pessoais -->
+    <!-- Step 1 -->
     <div class="view-step active" id="contStep1">
       <div class="plan-chip" id="planChip">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
@@ -287,7 +263,7 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
       <button class="btn-p" onclick="contNext(1)">Continuar</button>
     </div>
 
-    <!-- Step 2: Canal & referral -->
+    <!-- Step 2 -->
     <div class="view-step" id="contStep2">
       <div class="g-card">
         <div class="g-card-title">Como nos Conheceu?</div>
@@ -321,7 +297,7 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
       <button class="btn-p" onclick="contNext(2)">Continuar</button>
     </div>
 
-    <!-- Step 3: Confirmacao + saldo -->
+    <!-- Step 3 -->
     <div class="view-step" id="contStep3">
       <div class="g-card">
         <div class="g-card-title">Confirmacao do Investimento</div>
@@ -387,25 +363,12 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
 
 <!-- BOTTOM NAV -->
 <nav class="bottom-nav">
-  <a class="nav-item" href="index.html">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-    <div class="nav-dot"></div>
-  </a>
-  <a class="nav-item active" href="planos.html">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-    <div class="nav-dot"></div>
-  </a>
-  <a class="nav-item" href="saude.html">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-    <div class="nav-dot"></div>
-  </a>
-  <a class="nav-item" href="perfil.html">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-    <div class="nav-dot"></div>
-  </a>
+  <a class="nav-item" href="index.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><div class="nav-dot"></div></a>
+  <a class="nav-item active" href="planos.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg><div class="nav-dot"></div></a>
+  <a class="nav-item" href="saude.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg><div class="nav-dot"></div></a>
+  <a class="nav-item" href="perfil.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><div class="nav-dot"></div></a>
 </nav>
 
-<!-- Firebase -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -422,53 +385,48 @@ const app = initializeApp({
 
 const auth = getAuth(app);
 const db   = getFirestore(app);
-
 window._auth = auth;
 window._db   = db;
 window._fbs  = { doc, getDoc, updateDoc, serverTimestamp, collection, addDoc, runTransaction };
 
 onAuthStateChanged(auth, user => {
-  if (!user) {
-    window.location.href = 'auth.html';
-  } else {
-    window._uid = user.uid;
-    getDoc(doc(db, 'users', user.uid)).then(s => {
-      if (s.exists()) {
-        window._userData    = s.data();
-        window._userBalance = s.data().balance || 0;
-      }
-    });
-  }
+  if (!user) { window.location.href = 'auth.html'; return; }
+  window._uid = user.uid;
+  getDoc(doc(db, 'users', user.uid)).then(s => {
+    if (s.exists()) {
+      window._userData    = s.data();
+      window._userBalance = s.data().balance || 0;
+    }
+  });
 });
 </script>
 
 <script>
-/* ── Dados dos planos ── */
 const UHC = [
-  {name:'Medicare Advantage',               invest:2900,  yieldStr:'+5% diario',     cycle:'60 dias',  cycleDays:60,  tier:'tier1', badge:'green'},
-  {name:'Employer-Sponsored Plans',         invest:4900,  yieldStr:'+5% diario',     cycle:'60 dias',  cycleDays:60,  tier:'tier1', badge:'green'},
-  {name:'Individual & Family Plans',        invest:6900,  yieldStr:'+5% diario',     cycle:'60 dias',  cycleDays:60,  tier:'tier2', badge:'blue'},
-  {name:'Medicaid Plans',                   invest:8900,  yieldStr:'+5% diario',     cycle:'60 dias',  cycleDays:60,  tier:'tier2', badge:'blue'},
-  {name:'UnitedHealthcare Dental',          invest:17000, yieldStr:'+5% diario',     cycle:'60 dias',  cycleDays:60,  tier:'tier3', badge:'orange'},
-  {name:'UnitedHealthcare Vision',          invest:25900, yieldStr:'+5% diario',     cycle:'60 dias',  cycleDays:60,  tier:'tier3', badge:'orange'},
-  {name:'Medicare Part D',                  invest:35900, yieldStr:'+5% diario',     cycle:'60 dias',  cycleDays:60,  tier:'tier4', badge:'purple'},
-  {name:'Dual Special Needs Plans (D-SNP)', invest:55900, yieldStr:'+5% diario',     cycle:'60 dias',  cycleDays:60,  tier:'tier4', badge:'purple'},
+  {name:'Medicare Advantage',               invest:2900,  yieldStr:'+5% diario',     cycle:'60 dias', cycleDays:60,  tier:'tier1', badge:'green'},
+  {name:'Employer-Sponsored Plans',         invest:4900,  yieldStr:'+5% diario',     cycle:'60 dias', cycleDays:60,  tier:'tier1', badge:'green'},
+  {name:'Individual & Family Plans',        invest:6900,  yieldStr:'+5% diario',     cycle:'60 dias', cycleDays:60,  tier:'tier2', badge:'blue'},
+  {name:'Medicaid Plans',                   invest:8900,  yieldStr:'+5% diario',     cycle:'60 dias', cycleDays:60,  tier:'tier2', badge:'blue'},
+  {name:'UnitedHealthcare Dental',          invest:17000, yieldStr:'+5% diario',     cycle:'60 dias', cycleDays:60,  tier:'tier3', badge:'orange'},
+  {name:'UnitedHealthcare Vision',          invest:25900, yieldStr:'+5% diario',     cycle:'60 dias', cycleDays:60,  tier:'tier3', badge:'orange'},
+  {name:'Medicare Part D',                  invest:35900, yieldStr:'+5% diario',     cycle:'60 dias', cycleDays:60,  tier:'tier4', badge:'purple'},
+  {name:'Dual Special Needs Plans (D-SNP)', invest:55900, yieldStr:'+5% diario',     cycle:'60 dias', cycleDays:60,  tier:'tier4', badge:'purple'},
 ];
 const OPTUM = [
-  {name:'Optum Home Delivery Pharmacy',     invest:0,     yieldStr:'AOA 100 diario', cycle:'5 dias',   cycleDays:5,   tier:'free-plan', badge:'free', isFree:true},
-  {name:'Specialty Pharmacy',               invest:8000,  yieldStr:'+10% a cada 72h',cycle:'250 dias', cycleDays:250, tier:'tier1', badge:'green'},
-  {name:'Urgent Care Centers',              invest:14000, yieldStr:'+10% a cada 72h',cycle:'250 dias', cycleDays:250, tier:'tier2', badge:'blue'},
-  {name:'Surgical Care Affiliates',         invest:19000, yieldStr:'+10% a cada 72h',cycle:'250 dias', cycleDays:250, tier:'tier2', badge:'blue'},
-  {name:'In-Home Wellness',                 invest:29000, yieldStr:'+10% a cada 72h',cycle:'250 dias', cycleDays:250, tier:'tier3', badge:'orange'},
-  {name:'Optum Bank',                       invest:60000, yieldStr:'+10% a cada 72h',cycle:'250 dias', cycleDays:250, tier:'tier4', badge:'purple'},
-  {name:'Avery (AI Companion)',             invest:75000, yieldStr:'+10% a cada 72h',cycle:'250 dias', cycleDays:250, tier:'tier4', badge:'purple'},
+  {name:'Optum Home Delivery Pharmacy',     invest:0,     yieldStr:'AOA 100 diario', cycle:'5 dias',  cycleDays:5,   tier:'free-plan', badge:'free', isFree:true},
+  {name:'Specialty Pharmacy',               invest:8000,  yieldStr:'+10% a cada 72h',cycle:'250 dias',cycleDays:250, tier:'tier1', badge:'green'},
+  {name:'Urgent Care Centers',              invest:14000, yieldStr:'+10% a cada 72h',cycle:'250 dias',cycleDays:250, tier:'tier2', badge:'blue'},
+  {name:'Surgical Care Affiliates',         invest:19000, yieldStr:'+10% a cada 72h',cycle:'250 dias',cycleDays:250, tier:'tier2', badge:'blue'},
+  {name:'In-Home Wellness',                 invest:29000, yieldStr:'+10% a cada 72h',cycle:'250 dias',cycleDays:250, tier:'tier3', badge:'orange'},
+  {name:'Optum Bank',                       invest:60000, yieldStr:'+10% a cada 72h',cycle:'250 dias',cycleDays:250, tier:'tier4', badge:'purple'},
+  {name:'Avery (AI Companion)',             invest:75000, yieldStr:'+10% a cada 72h',cycle:'250 dias',cycleDays:250, tier:'tier4', badge:'purple'},
 ];
 const INSIGHT = [
-  {name:'Data Analytics',                   invest:4000,  yieldStr:'2x capital',     cycle:'31 dias',  cycleDays:31,  tier:'tier1', badge:'green'},
-  {name:'Revenue Cycle Management',         invest:8000,  yieldStr:'2x capital',     cycle:'31 dias',  cycleDays:31,  tier:'tier1', badge:'green'},
-  {name:'Telehealth Services',              invest:16000, yieldStr:'2x capital',     cycle:'31 dias',  cycleDays:31,  tier:'tier2', badge:'blue'},
-  {name:'Clinical Research',                invest:32000, yieldStr:'2x capital',     cycle:'31 dias',  cycleDays:31,  tier:'tier2', badge:'blue'},
-  {name:'Optum Store',                      invest:54500, yieldStr:'2x capital',     cycle:'31 dias',  cycleDays:31,  tier:'tier3', badge:'orange'},
+  {name:'Data Analytics',          invest:4000,  yieldStr:'2x capital', cycle:'31 dias', cycleDays:31, tier:'tier1', badge:'green'},
+  {name:'Revenue Cycle Management',invest:8000,  yieldStr:'2x capital', cycle:'31 dias', cycleDays:31, tier:'tier1', badge:'green'},
+  {name:'Telehealth Services',     invest:16000, yieldStr:'2x capital', cycle:'31 dias', cycleDays:31, tier:'tier2', badge:'blue'},
+  {name:'Clinical Research',       invest:32000, yieldStr:'2x capital', cycle:'31 dias', cycleDays:31, tier:'tier2', badge:'blue'},
+  {name:'Optum Store',             invest:54500, yieldStr:'2x capital', cycle:'31 dias', cycleDays:31, tier:'tier3', badge:'orange'},
 ];
 
 const ALL_PLANS = [...UHC, ...OPTUM, ...INSIGHT];
@@ -505,7 +463,6 @@ document.getElementById('plansUHC').innerHTML     = UHC.map(renderPlan).join('')
 document.getElementById('plansOptum').innerHTML   = OPTUM.map(renderPlan).join('');
 document.getElementById('plansInsight').innerHTML = INSIGHT.map(renderPlan).join('');
 
-/* ── Tab switch ── */
 function switchPlanTab(idx, el){
   document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -513,7 +470,6 @@ function switchPlanTab(idx, el){
   document.getElementById('ptab' + idx).classList.add('active');
 }
 
-/* ── Subscribe flow ── */
 let currentPlan     = '';
 let currentPlanData = null;
 
@@ -593,7 +549,7 @@ async function loadBalanceForStep3(){
       window._userBalance = snap.data().balance || 0;
       window._userData    = snap.data();
     }
-  } catch(e){ /* usa valor em cache */ }
+  } catch(e){}
   const bal  = window._userBalance || 0;
   const cost = currentPlanData ? currentPlanData.invest : 0;
   document.getElementById('balanceDisplay').textContent  = `AOA ${fmt(bal)}`;
@@ -608,12 +564,6 @@ function stepTo(from, to){
   document.getElementById('csd' + (to-1)).classList.add('active');
 }
 
-/* ══════════════════════════════════════════════
-   submitPlan — CORRIGIDO
-   Escreve em "subscriptions" (não "active_plans")
-   com os campos que saude.html e index.html leem:
-   uid, plan, status, yieldStr, activatedAt, createdAt
-══════════════════════════════════════════════ */
 async function submitPlan(){
   const al = document.getElementById('step3Alert');
   al.style.display = 'none';
@@ -640,38 +590,36 @@ async function submitPlan(){
         throw new Error(`Saldo insuficiente. Disponivel: AOA ${fmt(balance)}. Necessario: AOA ${fmt(cost)}.`);
       }
 
-      /* Referencia para o novo documento em "subscriptions" */
       const subRef = doc(collection(db, 'subscriptions'));
 
-      /* Debita saldo do utilizador */
+      /* CORRECÇÃO: totalDeposit actualizado correctamente */
       tx.update(userRef, {
-        balance:       balance - cost,
-        blockedBalance:(userSnap.data().blockedBalance || 0) + cost,
-        activePlan:    currentPlan,
-        planDaysLeft:  currentPlanData.cycleDays,
+        balance:        balance - cost,
+        blockedBalance: (userSnap.data().blockedBalance || 0) + cost,
+        totalDeposit:   (userSnap.data().totalDeposit || 0) + cost,
+        activePlan:     currentPlan,
+        planDaysLeft:   currentPlanData.cycleDays,
       });
 
-      /* Cria documento em subscriptions com campos esperados por saude.html */
       tx.set(subRef, {
         uid,
-        plan:       currentPlan,
-        yieldStr:   currentPlanData.yieldStr,
-        cycle:      currentPlanData.cycle,
-        cycleDays:  currentPlanData.cycleDays,
-        invest:     cost,
-        status:     'approved',        /* saude.html verifica status==='approved'||'active' */
-        activatedAt: serverTimestamp(), /* saude.html usa activatedAt para calcular dias */
-        createdAt:  serverTimestamp(),
-        name:       document.getElementById('cName').value.trim(),
-        dob:        document.getElementById('cDob').value,
-        phone:      document.getElementById('cPhone').value.trim(),
-        phone2:     document.getElementById('cPhone2').value.trim(),
-        source:     document.getElementById('cSource').value,
-        referral:   document.getElementById('cReferral').value.trim(),
+        plan:        currentPlan,
+        yieldStr:    currentPlanData.yieldStr,
+        cycle:       currentPlanData.cycle,
+        cycleDays:   currentPlanData.cycleDays,
+        invest:      cost,
+        status:      'approved',
+        activatedAt: serverTimestamp(),
+        createdAt:   serverTimestamp(),
+        name:        document.getElementById('cName').value.trim(),
+        dob:         document.getElementById('cDob').value,
+        phone:       document.getElementById('cPhone').value.trim(),
+        phone2:      document.getElementById('cPhone2').value.trim(),
+        source:      document.getElementById('cSource').value,
+        referral:    document.getElementById('cReferral').value.trim(),
       });
     });
 
-    /* Actualiza cache local */
     window._userBalance = (window._userBalance || 0) - cost;
 
     document.getElementById('successMsg').textContent =
