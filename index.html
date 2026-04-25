@@ -343,7 +343,11 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
           <p>7. Ao continuar, o utilizador confirma que e o titular legitimo da conta bancaria indicada.</p>
         </div>
       </div>
-      <button class="btn-g" onclick="cardNext()">Entendi, Prosseguir</button>
+      <button class="btn-g" id="cardNextBtn" onclick="cardNext()">Entendi, Prosseguir</button>
+      <div id="cardAlreadyAlert" class="alert alert-err" style="display:none;margin-top:4px">
+        <div class="alert-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+        <span>Ja possui uma conta bancaria cadastrada. Nao e possivel adicionar outra.</span>
+      </div>
     </div>
     <div class="view-step" id="cardStep2">
       <div id="cardFormView">
@@ -526,7 +530,26 @@ function bpopOutside(e){if(e.target===document.getElementById('bpop'))closeBpop(
 function openMenu(){document.getElementById('menuOverlay').classList.add('open');}
 function menuOutsideClick(e){if(e.target.classList.contains('menu-backdrop'))closeMenu();}
 function closeMenu(){document.getElementById('menuOverlay').classList.remove('open');}
-function openFS(id){closeMenu();document.getElementById(id).classList.add('open');}
+function openFS(id){
+  closeMenu();
+  // Reset card steps ao abrir
+  if(id==='fsCard'){
+    document.getElementById('cardStep1').classList.add('active');
+    document.getElementById('cardStep2').classList.remove('active');
+    document.getElementById('cs0').classList.add('active');
+    document.getElementById('cs0').classList.remove('done');
+    document.getElementById('cs1').classList.remove('active');
+    // Se já tem conta, mostra alerta no step1 e muda botão
+    if(window._hasBankData){
+      document.getElementById('cardAlreadyAlert').style.display='flex';
+      document.getElementById('cardNextBtn').textContent='Ver Conta Cadastrada';
+    } else {
+      document.getElementById('cardAlreadyAlert').style.display='none';
+      document.getElementById('cardNextBtn').textContent='Entendi, Prosseguir';
+    }
+  }
+  document.getElementById(id).classList.add('open');
+}
 function closeFS(id){document.getElementById(id).classList.remove('open');}
 
 function cardNext(){
