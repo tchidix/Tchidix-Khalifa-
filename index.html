@@ -16,24 +16,22 @@
   --ok-bg:rgba(34,197,94,0.10);--ok-b:rgba(34,197,94,0.28);
   --r:18px;--nav-h:68px;
 }
-html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
-body::before,body::after{content:'';position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0}
+html{overflow-y:auto;height:100%}
+html,body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+body::before,body::after{content:'';position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0;will-change:transform}
 body::before{width:400px;height:400px;background:radial-gradient(circle,rgba(34,197,94,0.15) 0%,transparent 70%);top:-100px;left:-80px}
 body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,123,255,0.11) 0%,transparent 70%);bottom:-80px;right:-60px}
-.page{position:relative;z-index:1;min-height:100dvh;padding-bottom:calc(var(--nav-h)+16px);overflow-y:auto}
+.page{position:relative;z-index:1;padding-bottom:120px}
 
-/* ── TOP BAR ── */
+/* TOP BAR */
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 0}
 .greeting{font-size:13px;color:var(--text2);font-weight:500}
 .user-name{font-size:19px;font-weight:800;color:var(--text);line-height:1.2;margin-top:1px}
 .user-id{font-size:11px;color:var(--muted);font-weight:500;margin-top:2px;letter-spacing:.04em}
-.topbar-actions{display:flex;gap:10px;align-items:center}
-.icon-btn{width:40px;height:40px;border-radius:12px;border:1px solid var(--glass-b);background:var(--glass);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;color:var(--text2);cursor:pointer;transition:transform .12s;flex-shrink:0}
+.icon-btn{width:40px;height:40px;border-radius:12px;border:1px solid var(--glass-b);background:var(--glass);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;color:var(--text2);cursor:pointer;transition:transform .12s}
 .icon-btn:active{transform:scale(0.93)}
 
-/* ══════════════════════
-   SLIM BALANCE CARD
-══════════════════════ */
+/* SLIM GREEN CARD */
 .bal-card{
   margin:14px 16px 0;
   background:linear-gradient(120deg,#0ea472 0%,#059669 60%,#047857 100%);
@@ -43,7 +41,7 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
   box-shadow:0 5px 20px rgba(5,150,105,0.24);
 }
 .bal-card::before{content:'';position:absolute;top:-22px;right:-18px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,0.08);pointer-events:none}
-.bal-left{display:flex;flex-direction:column;gap:1px;min-width:0}
+.bal-left{display:flex;flex-direction:column;gap:1px}
 .bal-label{font-size:10px;font-weight:700;color:rgba(255,255,255,0.60);letter-spacing:.07em;text-transform:uppercase}
 .bal-row{display:flex;align-items:baseline;gap:3px}
 .bal-cur{font-size:12px;font-weight:600;color:rgba(255,255,255,0.70)}
@@ -52,83 +50,32 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
 .bal-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
 .eye-btn{background:none;border:none;color:rgba(255,255,255,0.55);cursor:pointer;display:flex;align-items:center;padding:4px;border-radius:7px;transition:color .15s}
 .eye-btn:hover{color:#fff}
-.see-btn{
-  display:flex;align-items:center;gap:5px;
-  background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.28);
-  border-radius:10px;padding:7px 12px;
-  color:#fff;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;
-  cursor:pointer;white-space:nowrap;letter-spacing:.01em;
-  transition:background .18s,transform .12s;
-}
+.see-btn{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.28);border-radius:10px;padding:7px 12px;color:#fff;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;transition:background .18s,transform .12s}
 .see-btn:active{transform:scale(0.93)}
 .see-btn:hover{background:rgba(255,255,255,0.26)}
-.see-btn .sbspin{width:12px;height:12px;border:2px solid rgba(255,255,255,0.30);border-top-color:#fff;border-radius:50%;animation:spin .65s linear infinite;display:none}
+.sbspin{width:12px;height:12px;border:2px solid rgba(255,255,255,0.30);border-top-color:#fff;border-radius:50%;animation:spin .65s linear infinite;display:none}
 
-/* ══════════════════════
-   BALANCE POPUP MODAL
-   small · centered · popup
-══════════════════════ */
-.bpop-overlay{
-  position:fixed;inset:0;z-index:500;
-  display:flex;align-items:center;justify-content:center;
-  padding:24px;
-  background:rgba(10,18,35,0.52);backdrop-filter:blur(7px);
-  opacity:0;pointer-events:none;transition:opacity .22s ease;
-}
+/* BALANCE POPUP — small centered */
+.bpop-overlay{position:fixed;inset:0;z-index:500;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(10,18,35,0.52);backdrop-filter:blur(7px);opacity:0;pointer-events:none;transition:opacity .22s ease}
 .bpop-overlay.open{opacity:1;pointer-events:all}
-.bpop{
-  width:100%;max-width:320px;
-  background:#fff;
-  border-radius:22px;
-  overflow:hidden;
-  box-shadow:0 20px 60px rgba(0,0,0,0.22);
-  transform:scale(0.88) translateY(12px);
-  transition:transform .26s cubic-bezier(.34,1.3,.64,1);
-}
+.bpop{width:100%;max-width:300px;background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.22);transform:scale(0.88) translateY(12px);transition:transform .26s cubic-bezier(.34,1.3,.64,1)}
 .bpop-overlay.open .bpop{transform:scale(1) translateY(0)}
-
-/* popup header */
-.bpop-hdr{
-  background:linear-gradient(120deg,#0ea472,#047857);
-  padding:16px 18px 14px;
-  display:flex;align-items:flex-start;justify-content:space-between;
-}
-.bpop-hdr-left{}
+.bpop-hdr{background:linear-gradient(120deg,#0ea472,#047857);padding:16px 18px 14px;display:flex;align-items:flex-start;justify-content:space-between}
 .bpop-hdr-lbl{font-size:10px;font-weight:700;color:rgba(255,255,255,0.65);letter-spacing:.07em;text-transform:uppercase;margin-bottom:3px}
-.bpop-hdr-amount{font-size:28px;font-weight:800;color:#fff;letter-spacing:-0.02em;line-height:1}
-.bpop-hdr-cur{font-size:12px;font-weight:600;color:rgba(255,255,255,0.70);margin-right:3px}
-.bpop-close{
-  width:28px;height:28px;border-radius:8px;
-  background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.25);
-  display:flex;align-items:center;justify-content:center;
-  color:#fff;cursor:pointer;flex-shrink:0;margin-top:1px;
-  transition:background .15s,transform .12s;
-}
+.bpop-hdr-amount{font-size:26px;font-weight:800;color:#fff;letter-spacing:-0.02em;line-height:1}
+.bpop-hdr-cur{font-size:11px;font-weight:600;color:rgba(255,255,255,0.70);margin-right:2px}
+.bpop-close{width:26px;height:26px;border-radius:8px;background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;color:#fff;cursor:pointer;flex-shrink:0;transition:background .15s,transform .12s}
 .bpop-close:active{transform:scale(0.88)}
-
-/* popup rows */
-.bpop-body{padding:14px 18px 18px;display:flex;flex-direction:column;gap:0}
-.bpop-row{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:9px 0;
-  border-bottom:1px solid rgba(203,213,225,0.30);
-}
+.bpop-body{padding:12px 18px 16px;display:flex;flex-direction:column}
+.bpop-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(203,213,225,0.28)}
 .bpop-row:last-child{border-bottom:none}
-.bpop-row-left{display:flex;align-items:center;gap:9px}
+.bpop-rl{display:flex;align-items:center;gap:8px}
 .bpop-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
-.bpop-dot.green{background:#16a34a}
-.bpop-dot.blue{background:#007bff}
-.bpop-dot.orange{background:#ea580c}
-.bpop-dot.purple{background:#7c3aed}
-.bpop-dot.teal{background:#0891b2}
 .bpop-rlabel{font-size:12.5px;font-weight:500;color:var(--text2)}
-.bpop-rval{font-size:13px;font-weight:700;color:var(--text)}
-.bpop-plan-chip{
-  font-size:10px;font-weight:700;padding:2px 9px;border-radius:20px;
-  background:linear-gradient(120deg,#0ea472,#047857);color:#fff;
-}
+.bpop-rval{font-size:12.5px;font-weight:700;color:var(--text)}
+.bpop-chip{font-size:10px;font-weight:700;padding:2px 9px;border-radius:20px;background:linear-gradient(120deg,#0ea472,#047857);color:#fff}
 
-/* ── STATS ── */
+/* STATS */
 .stats-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:14px 16px 0}
 .stat-card{background:var(--glass);border:1px solid var(--glass-b);border-radius:16px;padding:14px 12px;backdrop-filter:blur(14px);text-align:center}
 .stat-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;margin:0 auto 8px}
@@ -138,66 +85,60 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
 .stat-val{font-size:15px;font-weight:800;color:var(--text)}
 .stat-lbl{font-size:10px;color:var(--muted);font-weight:500;margin-top:2px;line-height:1.3}
 
-/* ── SECTION ── */
+/* SECTION */
 .section{padding:18px 16px 0}
 .section-title{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
 
-/* ══════════════════════
-   HEALTH CHARTS SECTION
-══════════════════════ */
+/* HEALTH CHARTS */
 .health-grid{display:flex;flex-direction:column;gap:10px}
-
-/* donut card */
 .hc-card{background:var(--glass);border:1px solid var(--glass-b);border-radius:18px;padding:16px;backdrop-filter:blur(14px)}
-.hc-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.hc-card-title{font-size:13.5px;font-weight:700;color:var(--text)}
-.hc-card-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;background:var(--ok-bg);border:1px solid var(--ok-b);color:var(--green-s)}
-.hc-card-badge.blue{background:var(--alert-bg);border-color:var(--alert-b);color:var(--blue-s)}
-.hc-card-badge.orange{background:rgba(251,146,60,.10);border:1px solid rgba(251,146,60,.28);color:#ea580c}
+.hc-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.hc-title{font-size:13.5px;font-weight:700;color:var(--text)}
+.hc-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;background:var(--ok-bg);border:1px solid var(--ok-b);color:var(--green-s)}
+.hc-badge.blue{background:var(--alert-bg);border-color:var(--alert-b);color:var(--blue-s)}
+.hc-badge.orange{background:rgba(251,146,60,.10);border:1px solid rgba(251,146,60,.28);color:#ea580c}
 
 /* bar chart */
 .hbar-wrap{display:flex;flex-direction:column;gap:9px}
 .hbar-row{display:flex;align-items:center;gap:10px}
-.hbar-label{font-size:11.5px;font-weight:600;color:var(--text2);width:90px;flex-shrink:0}
-.hbar-track{flex:1;height:8px;background:rgba(203,213,225,0.40);border-radius:99px;overflow:hidden}
-.hbar-fill{height:100%;border-radius:99px;transition:width 1.2s cubic-bezier(.4,0,.2,1)}
+.hbar-label{font-size:11.5px;font-weight:600;color:var(--text2);width:86px;flex-shrink:0}
+.hbar-track{flex:1;height:8px;background:rgba(203,213,225,0.35);border-radius:99px;overflow:hidden}
+.hbar-fill{height:100%;border-radius:99px;width:0%;transition:width 1.2s cubic-bezier(.4,0,.2,1)}
 .hbar-fill.green{background:linear-gradient(90deg,#16a34a,#4ade80)}
 .hbar-fill.blue{background:linear-gradient(90deg,#007bff,#60a5fa)}
 .hbar-fill.orange{background:linear-gradient(90deg,#ea580c,#fb923c)}
 .hbar-fill.purple{background:linear-gradient(90deg,#7c3aed,#a78bfa)}
 .hbar-fill.teal{background:linear-gradient(90deg,#0891b2,#22d3ee)}
-.hbar-pct{font-size:11px;font-weight:700;color:var(--text2);width:34px;text-align:right;flex-shrink:0}
+.hbar-pct{font-size:11px;font-weight:700;color:var(--text2);width:32px;text-align:right;flex-shrink:0}
 
-/* ring / donut */
+/* donut */
 .hring-wrap{display:flex;align-items:center;gap:16px}
-.hring-svg{flex-shrink:0}
-.hring-legend{display:flex;flex-direction:column;gap:6px;flex:1}
+.hring-legend{display:flex;flex-direction:column;gap:7px;flex:1}
 .hring-item{display:flex;align-items:center;gap:7px}
 .hring-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 .hring-name{font-size:11.5px;font-weight:500;color:var(--text2);flex:1}
 .hring-pct{font-size:11.5px;font-weight:700;color:var(--text)}
 
 /* sparkline */
-.spark-wrap{position:relative;height:60px;margin-top:4px}
+.spark-wrap{height:58px;margin-top:4px}
 .spark-wrap svg{width:100%;height:100%}
 .spark-label-row{display:flex;justify-content:space-between;margin-top:4px}
 .spark-lbl{font-size:10px;color:var(--muted);font-weight:500}
 
-/* vitals row */
+/* vitals */
 .vitals-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.vital-item{background:rgba(255,255,255,0.50);border:1px solid rgba(203,213,225,0.45);border-radius:13px;padding:11px 13px;display:flex;align-items:center;gap:10px}
+.vital-item{background:rgba(255,255,255,0.50);border:1px solid rgba(203,213,225,0.40);border-radius:13px;padding:11px 12px;display:flex;align-items:center;gap:9px}
 .vital-icon{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .vital-icon.green{background:var(--ok-bg);border:1px solid var(--ok-b);color:var(--green-s)}
 .vital-icon.red{background:var(--err-bg);border:1px solid var(--err-b);color:#dc2626}
 .vital-icon.blue{background:var(--alert-bg);border:1px solid var(--alert-b);color:var(--blue-s)}
 .vital-icon.orange{background:rgba(251,146,60,.10);border:1px solid rgba(251,146,60,.28);color:#ea580c}
-.vital-info{}
-.vital-val{font-size:15px;font-weight:800;color:var(--text);line-height:1}
+.vital-val{font-size:14px;font-weight:800;color:var(--text);line-height:1}
 .vital-lbl{font-size:10px;font-weight:600;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.03em}
 
-/* ── HISTORY ── */
+/* HISTORY */
 .history-list{display:flex;flex-direction:column;gap:8px}
-.hist-item{display:flex;align-items:center;gap:12px;background:var(--glass);border:1px solid var(--glass-b);border-radius:14px;padding:12px 14px;backdrop-filter:blur(12px)}
+.hist-item{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.75);border:1px solid var(--glass-b);border-radius:14px;padding:12px 14px}
 .hist-dot{width:36px;height:36px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .hist-dot.in{background:var(--ok-bg);border:1px solid var(--ok-b);color:var(--green-s)}
 .hist-dot.out{background:var(--err-bg);border:1px solid var(--err-b);color:#dc2626}
@@ -209,9 +150,9 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
 .hist-amount.in{color:var(--green-s)}
 .hist-amount.out{color:#dc2626}
 .hist-amount.pend{color:#ea580c}
-.hist-empty{text-align:center;padding:24px;color:var(--muted);font-size:13px;background:var(--glass);border:1px solid var(--glass-b);border-radius:14px;backdrop-filter:blur(12px)}
+.hist-empty{text-align:center;padding:24px;color:var(--muted);font-size:13px;background:var(--glass);border:1px solid var(--glass-b);border-radius:14px}
 
-/* ── BOTTOM NAV ── */
+/* BOTTOM NAV */
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;height:var(--nav-h);background:rgba(255,255,255,0.75);border-top:1px solid rgba(255,255,255,0.85);backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:space-around;padding:0 8px;padding-bottom:env(safe-area-inset-bottom,0);z-index:50}
 .nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 14px;border-radius:14px;cursor:pointer;transition:transform .12s;border:none;background:none;color:var(--muted);text-decoration:none}
 .nav-item:active{transform:scale(0.92)}
@@ -220,7 +161,7 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
 .nav-dot{width:4px;height:4px;border-radius:50%;background:var(--green-s);opacity:0;transition:opacity .2s}
 .nav-item.active .nav-dot{opacity:1}
 
-/* ── FULL SCREEN MODALS ── */
+/* FULL SCREEN MODALS */
 .fs-modal{position:fixed;inset:0;z-index:200;background:#f0f2f5;overflow-y:auto;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
 .fs-modal.open{transform:translateX(0)}
 .fs-header{display:flex;align-items:center;gap:12px;padding:16px 16px 12px;background:rgba(255,255,255,0.70);border-bottom:1px solid rgba(255,255,255,0.80);backdrop-filter:blur(14px);position:sticky;top:0;z-index:10}
@@ -248,7 +189,7 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
 .form-select:focus{border-color:var(--blue-s);box-shadow:0 0 0 3px rgba(0,123,255,.10)}
 .select-wrap{position:relative}
 .select-wrap::after{content:'';position:absolute;right:13px;top:50%;transform:translateY(-50%);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid var(--muted);pointer-events:none}
-.btn-p{width:100%;padding:14px;background:var(--blue);border:1px solid rgba(0,123,255,.35);border-radius:13px;font-family:'Inter',sans-serif;font-size:14.5px;font-weight:700;color:#fff;cursor:pointer;transition:transform .12s,box-shadow .2s;box-shadow:0 4px 18px rgba(0,123,255,.22);display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-p{width:100%;padding:14px;background:var(--blue);border:1px solid rgba(0,123,255,.35);border-radius:13px;font-family:'Inter',sans-serif;font-size:14.5px;font-weight:700;color:#fff;cursor:pointer;transition:transform .12s;box-shadow:0 4px 18px rgba(0,123,255,.22);display:flex;align-items:center;justify-content:center;gap:8px}
 .btn-p:active{transform:scale(0.965)}
 .btn-p:disabled{opacity:.6;cursor:not-allowed;transform:none}
 .btn-g{width:100%;padding:14px;background:var(--green);border:1px solid rgba(34,197,94,.35);border-radius:13px;font-family:'Inter',sans-serif;font-size:14.5px;font-weight:700;color:#fff;cursor:pointer;transition:transform .12s;box-shadow:0 4px 18px rgba(34,197,94,.18);display:flex;align-items:center;justify-content:center;gap:8px}
@@ -303,17 +244,13 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
   <span id="toastText"></span>
 </div>
 
-<!-- ══════════════════════════
-     BALANCE POPUP — small centered
-════════════════════════════ -->
+<!-- BALANCE POPUP -->
 <div class="bpop-overlay" id="bpop" onclick="bpopOutside(event)">
   <div class="bpop">
     <div class="bpop-hdr">
-      <div class="bpop-hdr-left">
+      <div>
         <div class="bpop-hdr-lbl">Saldo Disponivel</div>
-        <div class="bpop-hdr-amount">
-          <span class="bpop-hdr-cur">AOA</span><span id="popBalMain">0,00</span>
-        </div>
+        <div class="bpop-hdr-amount"><span class="bpop-hdr-cur">AOA</span><span id="popBalMain">0,00</span></div>
       </div>
       <button class="bpop-close" onclick="closeBpop()">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -321,32 +258,30 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
     </div>
     <div class="bpop-body">
       <div class="bpop-row">
-        <div class="bpop-row-left"><span class="bpop-dot green"></span><span class="bpop-rlabel">Ganhos</span></div>
+        <div class="bpop-rl"><span class="bpop-dot" style="background:#16a34a"></span><span class="bpop-rlabel">Ganhos</span></div>
         <span class="bpop-rval">AOA <span id="popEarnings">0,00</span></span>
       </div>
       <div class="bpop-row">
-        <div class="bpop-row-left"><span class="bpop-dot blue"></span><span class="bpop-rlabel">Plano Gratuito</span></div>
+        <div class="bpop-rl"><span class="bpop-dot" style="background:#007bff"></span><span class="bpop-rlabel">Plano Gratuito</span></div>
         <span class="bpop-rval">AOA <span id="popFree">0,00</span></span>
       </div>
       <div class="bpop-row">
-        <div class="bpop-row-left"><span class="bpop-dot orange"></span><span class="bpop-rlabel">Valor de Compra</span></div>
+        <div class="bpop-rl"><span class="bpop-dot" style="background:#ea580c"></span><span class="bpop-rlabel">Valor de Compra</span></div>
         <span class="bpop-rval">AOA <span id="popDeposit">0,00</span></span>
       </div>
       <div class="bpop-row">
-        <div class="bpop-row-left"><span class="bpop-dot purple"></span><span class="bpop-rlabel">Em Analise</span></div>
+        <div class="bpop-rl"><span class="bpop-dot" style="background:#7c3aed"></span><span class="bpop-rlabel">Em Analise</span></div>
         <span class="bpop-rval">AOA <span id="popPending">0,00</span></span>
       </div>
       <div class="bpop-row">
-        <div class="bpop-row-left"><span class="bpop-dot teal"></span><span class="bpop-rlabel">Plano Activo</span></div>
-        <span class="bpop-plan-chip" id="popPlan">Free</span>
+        <div class="bpop-rl"><span class="bpop-dot" style="background:#0891b2"></span><span class="bpop-rlabel">Plano Activo</span></div>
+        <span class="bpop-chip" id="popPlan">Free</span>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ══════════════════════════
-     MAIN PAGE
-════════════════════════════ -->
+<!-- MAIN PAGE -->
 <div class="page">
 
   <div class="topbar">
@@ -355,10 +290,8 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
       <div class="user-name" id="userName">Carregando...</div>
       <div class="user-id" id="userId">ID: —</div>
     </div>
-    <div class="topbar-actions">
-      <div class="icon-btn" onclick="openMenu()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
-      </div>
+    <div class="icon-btn" onclick="openMenu()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
     </div>
   </div>
 
@@ -402,75 +335,40 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
     </div>
   </div>
 
-  <!-- ══════════════════════
-       SAÚDE E GRÁFICOS
-  ══════════════════════ -->
+  <!-- HEALTH CHARTS -->
   <div class="section">
     <div class="section-title">Saude e Bem-estar</div>
     <div class="health-grid">
 
-      <!-- CARD 1: Barras de indicadores de saude -->
+      <!-- Barras de indicadores -->
       <div class="hc-card">
-        <div class="hc-card-header">
-          <div class="hc-card-title">Indicadores de Saude Preventiva</div>
-          <div class="hc-card-badge">Mensal</div>
+        <div class="hc-hdr">
+          <div class="hc-title">Indicadores de Saude Preventiva</div>
+          <div class="hc-badge">Mensal</div>
         </div>
-        <div class="hbar-wrap" id="hbarWrap">
-          <div class="hbar-row">
-            <div class="hbar-label">Actividade</div>
-            <div class="hbar-track"><div class="hbar-fill green" style="width:0%" data-w="78%"></div></div>
-            <div class="hbar-pct">78%</div>
-          </div>
-          <div class="hbar-row">
-            <div class="hbar-label">Nutricao</div>
-            <div class="hbar-track"><div class="hbar-fill blue" style="width:0%" data-w="65%"></div></div>
-            <div class="hbar-pct">65%</div>
-          </div>
-          <div class="hbar-row">
-            <div class="hbar-label">Sono</div>
-            <div class="hbar-track"><div class="hbar-fill purple" style="width:0%" data-w="82%"></div></div>
-            <div class="hbar-pct">82%</div>
-          </div>
-          <div class="hbar-row">
-            <div class="hbar-label">Hidratacao</div>
-            <div class="hbar-track"><div class="hbar-fill teal" style="width:0%" data-w="55%"></div></div>
-            <div class="hbar-pct">55%</div>
-          </div>
-          <div class="hbar-row">
-            <div class="hbar-label">Stress</div>
-            <div class="hbar-track"><div class="hbar-fill orange" style="width:0%" data-w="42%"></div></div>
-            <div class="hbar-pct">42%</div>
-          </div>
+        <div class="hbar-wrap">
+          <div class="hbar-row"><div class="hbar-label">Actividade</div><div class="hbar-track"><div class="hbar-fill green" data-w="78%"></div></div><div class="hbar-pct">78%</div></div>
+          <div class="hbar-row"><div class="hbar-label">Nutricao</div><div class="hbar-track"><div class="hbar-fill blue" data-w="65%"></div></div><div class="hbar-pct">65%</div></div>
+          <div class="hbar-row"><div class="hbar-label">Sono</div><div class="hbar-track"><div class="hbar-fill purple" data-w="82%"></div></div><div class="hbar-pct">82%</div></div>
+          <div class="hbar-row"><div class="hbar-label">Hidratacao</div><div class="hbar-track"><div class="hbar-fill teal" data-w="55%"></div></div><div class="hbar-pct">55%</div></div>
+          <div class="hbar-row"><div class="hbar-label">Stress</div><div class="hbar-track"><div class="hbar-fill orange" data-w="42%"></div></div><div class="hbar-pct">42%</div></div>
         </div>
       </div>
 
-      <!-- CARD 2: Donut distribuicao de planos -->
+      <!-- Donut distribuicao -->
       <div class="hc-card">
-        <div class="hc-card-header">
-          <div class="hc-card-title">Distribuicao de Cobertura</div>
-          <div class="hc-card-badge blue">Planos</div>
+        <div class="hc-hdr">
+          <div class="hc-title">Distribuicao de Cobertura</div>
+          <div class="hc-badge blue">Planos</div>
         </div>
         <div class="hring-wrap">
-          <svg class="hring-svg" width="90" height="90" viewBox="0 0 90 90">
-            <!-- background ring -->
-            <circle cx="45" cy="45" r="35" fill="none" stroke="rgba(203,213,225,0.35)" stroke-width="12"/>
-            <!-- segment 1: Preventivo 40% -->
-            <circle cx="45" cy="45" r="35" fill="none" stroke="#16a34a" stroke-width="12"
-              stroke-dasharray="87.96 131.95" stroke-dashoffset="0"
-              stroke-linecap="round" transform="rotate(-90 45 45)"/>
-            <!-- segment 2: Premium 30% -->
-            <circle cx="45" cy="45" r="35" fill="none" stroke="#007bff" stroke-width="12"
-              stroke-dasharray="65.97 153.94" stroke-dashoffset="-87.96"
-              stroke-linecap="round" transform="rotate(-90 45 45)"/>
-            <!-- segment 3: Express 18% -->
-            <circle cx="45" cy="45" r="35" fill="none" stroke="#7c3aed" stroke-width="12"
-              stroke-dasharray="39.58 180.33" stroke-dashoffset="-153.93"
-              stroke-linecap="round" transform="rotate(-90 45 45)"/>
-            <!-- segment 4: Free 12% -->
-            <circle cx="45" cy="45" r="35" fill="none" stroke="#ea580c" stroke-width="12"
-              stroke-dasharray="26.39 193.52" stroke-dashoffset="-193.51"
-              stroke-linecap="round" transform="rotate(-90 45 45)"/>
-            <text x="45" y="49" text-anchor="middle" font-size="13" font-weight="800" fill="#0f172a" font-family="Inter">100%</text>
+          <svg width="90" height="90" viewBox="0 0 90 90" style="flex-shrink:0">
+            <circle cx="45" cy="45" r="34" fill="none" stroke="rgba(203,213,225,0.30)" stroke-width="11"/>
+            <circle cx="45" cy="45" r="34" fill="none" stroke="#16a34a" stroke-width="11" stroke-dasharray="85.6 127.2" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 45 45)"/>
+            <circle cx="45" cy="45" r="34" fill="none" stroke="#007bff" stroke-width="11" stroke-dasharray="64.2 148.6" stroke-dashoffset="-85.6" stroke-linecap="round" transform="rotate(-90 45 45)"/>
+            <circle cx="45" cy="45" r="34" fill="none" stroke="#7c3aed" stroke-width="11" stroke-dasharray="38.5 174.3" stroke-dashoffset="-149.8" stroke-linecap="round" transform="rotate(-90 45 45)"/>
+            <circle cx="45" cy="45" r="34" fill="none" stroke="#ea580c" stroke-width="11" stroke-dasharray="25.7 187.1" stroke-dashoffset="-188.3" stroke-linecap="round" transform="rotate(-90 45 45)"/>
+            <text x="45" y="49" text-anchor="middle" font-size="12" font-weight="800" fill="#0f172a" font-family="Inter,sans-serif">100%</text>
           </svg>
           <div class="hring-legend">
             <div class="hring-item"><span class="hring-dot" style="background:#16a34a"></span><span class="hring-name">Preventivo</span><span class="hring-pct">40%</span></div>
@@ -481,34 +379,30 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
         </div>
       </div>
 
-      <!-- CARD 3: Sparkline rendimentos semana -->
+      <!-- Sparkline rendimentos semana -->
       <div class="hc-card">
-        <div class="hc-card-header">
-          <div class="hc-card-title">Rendimentos — Ultima Semana</div>
-          <div class="hc-card-badge">+8.4%</div>
+        <div class="hc-hdr">
+          <div class="hc-title">Rendimentos — Ultima Semana</div>
+          <div class="hc-badge">+8.4%</div>
         </div>
         <div class="spark-wrap">
-          <svg viewBox="0 0 280 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <svg viewBox="0 0 280 58" preserveAspectRatio="none">
             <defs>
-              <linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#16a34a" stop-opacity="0.22"/>
+              <linearGradient id="sg" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#16a34a" stop-opacity="0.20"/>
                 <stop offset="100%" stop-color="#16a34a" stop-opacity="0"/>
               </linearGradient>
             </defs>
-            <!-- fill area -->
-            <path d="M0,48 L40,38 L80,42 L120,28 L160,22 L200,16 L240,8 L280,4 L280,60 L0,60 Z" fill="url(#sparkGrad)"/>
-            <!-- line -->
-            <polyline points="0,48 40,38 80,42 120,28 160,22 200,16 240,8 280,4"
-              fill="none" stroke="#16a34a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-            <!-- dots -->
-            <circle cx="0" cy="48" r="3" fill="#16a34a"/>
-            <circle cx="40" cy="38" r="3" fill="#16a34a"/>
-            <circle cx="80" cy="42" r="3" fill="#16a34a"/>
-            <circle cx="120" cy="28" r="3" fill="#16a34a"/>
-            <circle cx="160" cy="22" r="3" fill="#16a34a"/>
-            <circle cx="200" cy="16" r="3" fill="#16a34a"/>
-            <circle cx="240" cy="8" r="3" fill="#16a34a"/>
-            <circle cx="280" cy="4" r="4" fill="#16a34a"/>
+            <path d="M0,46 L40,36 L80,40 L120,26 L160,20 L200,14 L240,7 L280,3 L280,58 L0,58Z" fill="url(#sg)"/>
+            <polyline points="0,46 40,36 80,40 120,26 160,20 200,14 240,7 280,3" fill="none" stroke="#16a34a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="0" cy="46" r="2.5" fill="#16a34a"/>
+            <circle cx="40" cy="36" r="2.5" fill="#16a34a"/>
+            <circle cx="80" cy="40" r="2.5" fill="#16a34a"/>
+            <circle cx="120" cy="26" r="2.5" fill="#16a34a"/>
+            <circle cx="160" cy="20" r="2.5" fill="#16a34a"/>
+            <circle cx="200" cy="14" r="2.5" fill="#16a34a"/>
+            <circle cx="240" cy="7" r="2.5" fill="#16a34a"/>
+            <circle cx="280" cy="3" r="3.5" fill="#16a34a"/>
           </svg>
         </div>
         <div class="spark-label-row">
@@ -518,51 +412,7 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
         </div>
       </div>
 
-      <!-- CARD 4: Vitais / Metricas -->
-      <div class="hc-card">
-        <div class="hc-card-header">
-          <div class="hc-card-title">Metricas de Bem-estar</div>
-          <div class="hc-card-badge orange">Diario</div>
-        </div>
-        <div class="vitals-row">
-          <div class="vital-item">
-            <div class="vital-icon green">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-            </div>
-            <div class="vital-info">
-              <div class="vital-val">72 bpm</div>
-              <div class="vital-lbl">Cardiaco</div>
-            </div>
-          </div>
-          <div class="vital-item">
-            <div class="vital-icon blue">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20"/><path d="M12 6v6l4 2"/></svg>
-            </div>
-            <div class="vital-info">
-              <div class="vital-val">7h 20m</div>
-              <div class="vital-lbl">Sono</div>
-            </div>
-          </div>
-          <div class="vital-item">
-            <div class="vital-icon orange">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-            </div>
-            <div class="vital-info">
-              <div class="vital-val">6 400</div>
-              <div class="vital-lbl">Passos</div>
-            </div>
-          </div>
-          <div class="vital-item">
-            <div class="vital-icon red">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-            </div>
-            <div class="vital-info">
-              <div class="vital-val">98%</div>
-              <div class="vital-lbl">SpO2</div>
-            </div>
-          </div>
-        </div>
-      </div>
+
 
     </div>
   </div>
@@ -581,31 +431,16 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
 <div class="menu-overlay" id="menuOverlay" onclick="menuOutsideClick(event)">
   <div class="menu-backdrop"></div>
   <div class="menu-panel">
-    <div class="menu-item" onclick="openFS('fsCard')">
-      <div class="mi-icon blue"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
-      <span class="mi-label">Cartao Bancario</span>
-    </div>
-    <div class="menu-item" onclick="openFS('fsReport')">
-      <div class="mi-icon green"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
-      <span class="mi-label">Relatorio de Actividades</span>
-    </div>
-    <div class="menu-item" onclick="openFS('fsSecurity')">
-      <div class="mi-icon orange"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-      <span class="mi-label">Seguranca e Privacidade</span>
-    </div>
-    <div class="menu-item" onclick="handleLogout()">
-      <div class="mi-icon red"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></div>
-      <span class="mi-label">Terminar Sessao</span>
-    </div>
+    <div class="menu-item" onclick="openFS('fsCard')"><div class="mi-icon blue"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div><span class="mi-label">Cartao Bancario</span></div>
+    <div class="menu-item" onclick="openFS('fsReport')"><div class="mi-icon green"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div><span class="mi-label">Relatorio de Actividades</span></div>
+    <div class="menu-item" onclick="openFS('fsSecurity')"><div class="mi-icon orange"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><span class="mi-label">Seguranca e Privacidade</span></div>
+    <div class="menu-item" onclick="handleLogout()"><div class="mi-icon red"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></div><span class="mi-label">Terminar Sessao</span></div>
   </div>
 </div>
 
 <!-- FS: CARTAO BANCARIO -->
 <div class="fs-modal" id="fsCard">
-  <div class="fs-header">
-    <div class="fs-back" onclick="closeFS('fsCard')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></div>
-    <span class="fs-title">Cartao Bancario</span>
-  </div>
+  <div class="fs-header"><div class="fs-back" onclick="closeFS('fsCard')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></div><span class="fs-title">Cartao Bancario</span></div>
   <div class="fs-body">
     <div class="step-bar"><div class="step-dot active" id="cs0"></div><div class="step-dot" id="cs1"></div></div>
     <div class="view-step active" id="cardStep1">
@@ -630,22 +465,10 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
         <div class="g-card">
           <div class="g-card-title">Dados Bancarios</div>
           <div class="g-card-sub">Preencha corretamente. Nao sera possivel editar apos salvar.</div>
-          <div class="form-group">
-            <label class="form-label">Nome do Titular</label>
-            <div class="input-wrap"><span class="i-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span><input class="form-input" type="text" id="bankName" placeholder="Nome conforme no documento"/></div>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Banco</label>
-            <div class="select-wrap"><select class="form-select" id="bankName2"><option value="">Seleccione o banco</option><option>BAI — Banco Angolano de Investimentos</option><option>BFA — Banco de Fomento Angola</option><option>BPC — Banco de Poupanca e Credito</option><option>Atlantico</option><option>Millennium Atlantico</option><option>Sol Pagamentos</option><option>Outro</option></select></div>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Numero IBAN / Conta</label>
-            <div class="input-wrap"><span class="i-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></span><input class="form-input" type="text" id="bankIban" placeholder="0000.0000.0000.0000.0000.0"/></div>
-          </div>
-          <div class="form-group" style="margin-bottom:0">
-            <label class="form-label">Numero Express / Referencia</label>
-            <div class="input-wrap"><span class="i-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12 19.79 19.79 0 0 1 1.05 3.4 2 2 0 0 1 3 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16z"/></svg></span><input class="form-input" type="tel" id="bankExpress" placeholder="Ex: 937359561"/></div>
-          </div>
+          <div class="form-group"><label class="form-label">Nome do Titular</label><div class="input-wrap"><span class="i-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span><input class="form-input" type="text" id="bankName" placeholder="Nome conforme no documento"/></div></div>
+          <div class="form-group"><label class="form-label">Banco</label><div class="select-wrap"><select class="form-select" id="bankName2"><option value="">Seleccione o banco</option><option>BAI — Banco Angolano de Investimentos</option><option>BFA — Banco de Fomento Angola</option><option>BPC — Banco de Poupanca e Credito</option><option>Atlantico</option><option>Millennium Atlantico</option><option>Sol Pagamentos</option><option>Outro</option></select></div></div>
+          <div class="form-group"><label class="form-label">IBAN / Conta</label><div class="input-wrap"><span class="i-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></span><input class="form-input" type="text" id="bankIban" placeholder="0000.0000.0000.0000.0000.0"/></div></div>
+          <div class="form-group" style="margin-bottom:0"><label class="form-label">Numero Express</label><div class="input-wrap"><span class="i-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12 19.79 19.79 0 0 1 1.05 3.4 2 2 0 0 1 3 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16z"/></svg></span><input class="form-input" type="tel" id="bankExpress" placeholder="Ex: 937359561"/></div></div>
         </div>
         <div class="alert alert-info"><div class="alert-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><span>Verifique todos os dados antes de salvar. Esta accao e permanente e irreversivel.</span></div>
         <div id="cardSaveAlert" style="display:none" class="alert alert-err"><div class="alert-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><span id="cardSaveAlertText"></span></div>
@@ -661,19 +484,9 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
 
 <!-- FS: RELATORIO -->
 <div class="fs-modal" id="fsReport">
-  <div class="fs-header">
-    <div class="fs-back" onclick="closeFS('fsReport')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></div>
-    <span class="fs-title">Relatorio de Actividades</span>
-  </div>
+  <div class="fs-header"><div class="fs-back" onclick="closeFS('fsReport')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></div><span class="fs-title">Relatorio de Actividades</span></div>
   <div class="fs-body">
-    <div class="g-card">
-      <div class="g-card-title">Seleccionar Periodo</div>
-      <div class="g-card-sub">Defina o intervalo de datas para gerar o relatorio.</div>
-      <div class="date-row">
-        <div class="form-group" style="margin-bottom:0"><label class="form-label">Data Inicial</label><input class="form-input no-icon" type="date" id="reportStart"/></div>
-        <div class="form-group" style="margin-bottom:0"><label class="form-label">Data Final</label><input class="form-input no-icon" type="date" id="reportEnd"/></div>
-      </div>
-    </div>
+    <div class="g-card"><div class="g-card-title">Seleccionar Periodo</div><div class="g-card-sub">Defina o intervalo de datas para gerar o relatorio.</div><div class="date-row"><div class="form-group" style="margin-bottom:0"><label class="form-label">Data Inicial</label><input class="form-input no-icon" type="date" id="reportStart"/></div><div class="form-group" style="margin-bottom:0"><label class="form-label">Data Final</label><input class="form-input no-icon" type="date" id="reportEnd"/></div></div></div>
     <div class="report-opt" onclick="generateReport('extract')"><div class="ro-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div><div class="ro-info"><div class="ro-title">Extracto de Conta</div><div class="ro-sub">Ver movimentos de entrada e saida no periodo</div></div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--muted)"><polyline points="9 18 15 12 9 6"/></svg></div>
     <div class="report-opt" onclick="generateReport('full')"><div class="ro-icon" style="background:var(--ok-bg);border-color:var(--ok-b);color:var(--green-s)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div><div class="ro-info"><div class="ro-title">Relatorio de Rendimentos</div><div class="ro-sub">Resumo de ganhos por plano de investimento</div></div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--muted)"><polyline points="9 18 15 12 9 6"/></svg></div>
     <div class="report-opt" onclick="generateReport('download')"><div class="ro-icon" style="background:rgba(251,146,60,.10);border-color:rgba(251,146,60,.28);color:#ea580c"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div><div class="ro-info"><div class="ro-title">Descarregar PDF</div><div class="ro-sub">Exportar relatorio completo em formato PDF</div></div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--muted)"><polyline points="9 18 15 12 9 6"/></svg></div>
@@ -683,30 +496,18 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
 
 <!-- FS: SEGURANCA -->
 <div class="fs-modal" id="fsSecurity">
-  <div class="fs-header">
-    <div class="fs-back" onclick="closeFS('fsSecurity')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></div>
-    <span class="fs-title">Seguranca e Privacidade</span>
-  </div>
+  <div class="fs-header"><div class="fs-back" onclick="closeFS('fsSecurity')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></div><span class="fs-title">Seguranca e Privacidade</span></div>
   <div class="fs-body">
     <div class="alert alert-info"><div class="alert-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><span>A sua conta e protegida com encriptacao de ponta a ponta. Nunca partilhe a sua senha com ninguem.</span></div>
     <div class="g-card">
-      <div class="g-card-title">Alterar Senha</div>
-      <div class="g-card-sub">Utilize uma senha numerica de 6 digitos unica e nao reutilizada.</div>
+      <div class="g-card-title">Alterar Senha</div><div class="g-card-sub">Utilize uma senha numerica de 6 digitos unica e nao reutilizada.</div>
       <div class="form-group"><label class="form-label">Senha Actual</label><div class="input-wrap"><span class="i-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span><input class="form-input" type="password" id="secOldPass" placeholder="Senha actual"/><button class="pass-toggle" type="button" onclick="togglePass('secOldPass',this)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
-      <div class="form-group"><label class="form-label">Nova Senha (6 digitos)</label><div class="input-wrap"><span class="i-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span><input class="form-input" type="password" id="secNewPass" placeholder="Nova senha" maxlength="6" inputmode="numeric"/><button class="pass-toggle" type="button" onclick="togglePass('secNewPass',this)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
-      <div class="form-group" style="margin-bottom:0"><label class="form-label">Confirmar Nova Senha</label><div class="input-wrap"><span class="i-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span><input class="form-input" type="password" id="secConfPass" placeholder="Repita a nova senha" maxlength="6" inputmode="numeric"/></div></div>
+      <div class="form-group"><label class="form-label">Nova Senha</label><div class="input-wrap"><span class="i-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span><input class="form-input" type="password" id="secNewPass" placeholder="Nova senha de 6 digitos" maxlength="6" inputmode="numeric"/><button class="pass-toggle" type="button" onclick="togglePass('secNewPass',this)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
+      <div class="form-group" style="margin-bottom:0"><label class="form-label">Confirmar Senha</label><div class="input-wrap"><span class="i-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span><input class="form-input" type="password" id="secConfPass" placeholder="Repita a nova senha" maxlength="6" inputmode="numeric"/></div></div>
     </div>
     <div id="secAlert" style="display:none" class="alert"><div class="alert-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><span id="secAlertText"></span></div>
     <button class="btn-p" onclick="changePassword()"><span id="secBtnTxt">Actualizar Senha</span><span id="secSpinner" style="display:none"><div class="spinner"></div></span></button>
-    <div class="g-card">
-      <div class="g-card-title">Politica de Privacidade</div>
-      <div class="terms-box" style="max-height:180px">
-        <h4>Proteccao de Dados Pessoais</h4>
-        <p>A UnitedHealth Group compromete-se a proteger os dados pessoais dos seus utilizadores em conformidade com as normas internacionais de proteccao de dados.</p>
-        <p>Os dados recolhidos sao utilizados exclusivamente para a prestacao dos servicos de investimento contratados e para comunicacoes relacionadas com a sua conta.</p>
-        <p>Nao partilhamos informacoes pessoais com terceiros sem o seu consentimento expresso, exceto quando exigido por lei ou autoridade regulatoria competente.</p>
-      </div>
-    </div>
+    <div class="g-card"><div class="g-card-title">Politica de Privacidade</div><div class="terms-box" style="max-height:180px"><h4>Proteccao de Dados Pessoais</h4><p>A UnitedHealth Group compromete-se a proteger os dados pessoais dos seus utilizadores em conformidade com as normas internacionais de proteccao de dados.</p><p>Os dados recolhidos sao utilizados exclusivamente para a prestacao dos servicos de investimento contratados.</p><p>Nao partilhamos informacoes pessoais com terceiros sem o seu consentimento expresso, exceto quando exigido por lei.</p></div></div>
   </div>
 </div>
 
@@ -740,7 +541,6 @@ onAuthStateChanged(auth,async user=>{
   document.getElementById('planActive').textContent=d.activePlan||'Nenhum';
   document.getElementById('planDays').textContent=d.planDaysLeft||0;
   document.getElementById('referralsCount').textContent=d.referrals||0;
-  // popup values
   document.getElementById('popBalMain').textContent=fmt(d.balance||0);
   document.getElementById('popEarnings').textContent=fmt(d.earnings||0);
   document.getElementById('popFree').textContent=fmt(d.freeEarnings||0);
@@ -758,7 +558,7 @@ async function loadHistory(uid){
     const q=query(collection(db,'transactions'),where('uid','==',uid),orderBy('createdAt','desc'),limit(10));
     const snap=await getDocs(q);
     const list=document.getElementById('historyList');
-    if(snap.empty){list.innerHTML='<div class="hist-empty">Nenhuma transaccao registada ainda. Inicie o seu primeiro deposito.</div>';return;}
+    if(snap.empty){list.innerHTML='<div class="hist-empty">Nenhuma transaccao registada ainda.</div>';return;}
     list.innerHTML='';
     snap.forEach(d=>{
       const t=d.data();
@@ -777,54 +577,36 @@ function checkBankData(data){
     document.getElementById('cardLockedView').style.display='flex';
     document.getElementById('cardFormView').style.display='none';
     const bd=data.bankData;
-    document.getElementById('bankDataDisplay').innerHTML=`<div class="data-row"><span class="dr-label">Titular</span><span class="dr-value">${bd.name||'—'}</span></div><div class="data-row"><span class="dr-label">Banco</span><span class="dr-value">${bd.bank||'—'}</span></div><div class="data-row"><span class="dr-label">IBAN / Conta</span><span class="dr-value">${bd.iban||'—'}</span></div><div class="data-row"><span class="dr-label">Express</span><span class="dr-value">${bd.express||'—'}</span></div>`;
+    document.getElementById('bankDataDisplay').innerHTML=`<div class="data-row"><span class="dr-label">Titular</span><span class="dr-value">${bd.name||'—'}</span></div><div class="data-row"><span class="dr-label">Banco</span><span class="dr-value">${bd.bank||'—'}</span></div><div class="data-row"><span class="dr-label">IBAN</span><span class="dr-value">${bd.iban||'—'}</span></div><div class="data-row"><span class="dr-label">Express</span><span class="dr-value">${bd.express||'—'}</span></div>`;
   }
 }
 
 window.saveBankData=async function(){
-  const name=document.getElementById('bankName').value.trim();
-  const bank=document.getElementById('bankName2').value;
-  const iban=document.getElementById('bankIban').value.trim();
-  const expr=document.getElementById('bankExpress').value.trim();
+  const name=document.getElementById('bankName').value.trim(),bank=document.getElementById('bankName2').value,iban=document.getElementById('bankIban').value.trim(),expr=document.getElementById('bankExpress').value.trim();
   const al=document.getElementById('cardSaveAlert'),at=document.getElementById('cardSaveAlertText');
   al.style.display='none';
   if(!name||!bank||!iban||!expr){al.style.display='flex';at.textContent='Preencha todos os campos.';return;}
-  document.getElementById('cardSaveTxt').style.display='none';
-  document.getElementById('cardSaveSpinner').style.display='inline-flex';
-  try{
-    await updateDoc(doc(db,'users',window._uid),{bankData:{name,bank,iban,express:expr}});
-    showToast('Dados bancarios guardados com sucesso.');
-    window._userData.bankData={name,bank,iban,express:expr};
-    checkBankData(window._userData);
-  }catch(e){al.style.display='flex';at.textContent='Erro ao guardar. Tente novamente.';}
-  document.getElementById('cardSaveTxt').style.display='inline';
-  document.getElementById('cardSaveSpinner').style.display='none';
+  document.getElementById('cardSaveTxt').style.display='none';document.getElementById('cardSaveSpinner').style.display='inline-flex';
+  try{await updateDoc(doc(db,'users',window._uid),{bankData:{name,bank,iban,express:expr}});showToast('Dados bancarios guardados.');window._userData.bankData={name,bank,iban,express:expr};checkBankData(window._userData);}
+  catch(e){al.style.display='flex';at.textContent='Erro ao guardar.';}
+  document.getElementById('cardSaveTxt').style.display='inline';document.getElementById('cardSaveSpinner').style.display='none';
 };
 
 window.changePassword=async function(){
-  const old=document.getElementById('secOldPass').value;
-  const nw=document.getElementById('secNewPass').value;
-  const cf=document.getElementById('secConfPass').value;
+  const old=document.getElementById('secOldPass').value,nw=document.getElementById('secNewPass').value,cf=document.getElementById('secConfPass').value;
   const sa=document.getElementById('secAlert'),st=document.getElementById('secAlertText');
   sa.style.display='none';
   if(!old||!nw||!cf){sa.className='alert alert-err';sa.style.display='flex';st.textContent='Preencha todos os campos.';return;}
   if(nw.length<6){sa.className='alert alert-err';sa.style.display='flex';st.textContent='A nova senha deve ter 6 digitos.';return;}
   if(nw!==cf){sa.className='alert alert-err';sa.style.display='flex';st.textContent='As senhas nao coincidem.';return;}
-  document.getElementById('secBtnTxt').style.display='none';
-  document.getElementById('secSpinner').style.display='inline-flex';
+  document.getElementById('secBtnTxt').style.display='none';document.getElementById('secSpinner').style.display='inline-flex';
   try{
-    const user=auth.currentUser;
-    const cred=EmailAuthProvider.credential(user.email,old);
-    await reauthenticateWithCredential(user,cred);
-    await updatePassword(user,nw);
+    const user=auth.currentUser,cred=EmailAuthProvider.credential(user.email,old);
+    await reauthenticateWithCredential(user,cred);await updatePassword(user,nw);
     sa.className='alert alert-ok';sa.style.display='flex';st.textContent='Senha actualizada com sucesso.';
     ['secOldPass','secNewPass','secConfPass'].forEach(id=>document.getElementById(id).value='');
-  }catch(e){
-    const msgs={'auth/wrong-password':'Senha actual incorreta.','auth/invalid-credential':'Senha actual incorreta.'};
-    sa.className='alert alert-err';sa.style.display='flex';st.textContent=msgs[e.code]||'Erro ao actualizar.';
-  }
-  document.getElementById('secBtnTxt').style.display='inline';
-  document.getElementById('secSpinner').style.display='none';
+  }catch(e){const m={'auth/wrong-password':'Senha actual incorreta.','auth/invalid-credential':'Senha actual incorreta.'};sa.className='alert alert-err';sa.style.display='flex';st.textContent=m[e.code]||'Erro ao actualizar.';}
+  document.getElementById('secBtnTxt').style.display='inline';document.getElementById('secSpinner').style.display='none';
 };
 
 window.handleLogout=async function(){await signOut(auth);window.location.href='auth.html';};
@@ -839,7 +621,6 @@ window.generateReport=function(type){
 </script>
 
 <script>
-/* ── Balance toggle ── */
 let balVisible=true;
 function toggleBalance(){
   balVisible=!balVisible;
@@ -849,31 +630,20 @@ function toggleBalance(){
     :`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
 }
 
-/* ── Balance popup ── */
 function openBpop(){
-  const btn=document.getElementById('seeBtn');
-  const txt=document.getElementById('seeTxt');
-  const spin=document.getElementById('seeSpin');
-  const ico=document.getElementById('seeIco');
+  const btn=document.getElementById('seeBtn'),txt=document.getElementById('seeTxt'),spin=document.getElementById('seeSpin'),ico=document.getElementById('seeIco');
   btn.disabled=true;txt.style.display='none';ico.style.display='none';spin.style.display='inline-block';
-  setTimeout(()=>{
-    btn.disabled=false;txt.style.display='inline';ico.style.display='inline';spin.style.display='none';
-    document.getElementById('bpop').classList.add('open');
-  },550);
+  setTimeout(()=>{btn.disabled=false;txt.style.display='inline';ico.style.display='inline';spin.style.display='none';document.getElementById('bpop').classList.add('open');},500);
 }
 function closeBpop(){document.getElementById('bpop').classList.remove('open');}
 function bpopOutside(e){if(e.target===document.getElementById('bpop'))closeBpop();}
 
-/* ── Menu ── */
 function openMenu(){document.getElementById('menuOverlay').classList.add('open');}
 function menuOutsideClick(e){if(e.target.classList.contains('menu-backdrop'))closeMenu();}
 function closeMenu(){document.getElementById('menuOverlay').classList.remove('open');}
-
-/* ── Full-screen modals ── */
 function openFS(id){closeMenu();document.getElementById(id).classList.add('open');}
 function closeFS(id){document.getElementById(id).classList.remove('open');}
 
-/* ── Card step ── */
 function cardNext(){
   document.getElementById('cardStep1').classList.remove('active');
   document.getElementById('cardStep2').classList.add('active');
@@ -883,27 +653,20 @@ function cardNext(){
   if(window._hasBankData){document.getElementById('cardFormView').style.display='none';document.getElementById('cardLockedView').style.display='flex';}
 }
 
-/* ── Password toggle ── */
 function togglePass(id,btn){
   const inp=document.getElementById(id);const show=inp.type==='password';inp.type=show?'text':'password';
-  btn.innerHTML=show
-    ?`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
-    :`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+  btn.innerHTML=show?`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`:`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
 }
 
-/* ── Toast ── */
 function showToast(msg){
   const t=document.getElementById('toast');
   document.getElementById('toastText').textContent=msg;
   t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);
 }
 
-/* ── Animate health bars on load ── */
 window.addEventListener('load',()=>{
   setTimeout(()=>{
-    document.querySelectorAll('.hbar-fill').forEach(el=>{
-      el.style.width=el.dataset.w;
-    });
+    document.querySelectorAll('.hbar-fill').forEach(el=>{el.style.width=el.dataset.w;});
   },400);
 });
 </script>
