@@ -8,82 +8,103 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#f0f2f5;
-  --glass:rgba(255,255,255,0.58);
-  --glass-b:rgba(255,255,255,0.78);
-  --green:rgba(34,197,94,0.82);
-  --green-s:#16a34a;
-  --blue:rgba(0,123,255,0.88);
-  --blue-s:#007bff;
-  --text:#0f172a;
-  --text2:#475569;
-  --muted:#94a3b8;
-  --alert-bg:rgba(0,123,255,0.10);
-  --alert-b:rgba(0,123,255,0.28);
-  --err-bg:rgba(239,68,68,0.10);
-  --err-b:rgba(239,68,68,0.28);
-  --ok-bg:rgba(34,197,94,0.10);
-  --ok-b:rgba(34,197,94,0.28);
-  --r:18px;
-  --nav-h:68px;
+  --bg:#f0f2f5;--glass:rgba(255,255,255,0.58);--glass-b:rgba(255,255,255,0.78);
+  --green:rgba(34,197,94,0.82);--green-s:#16a34a;--blue:rgba(0,123,255,0.88);--blue-s:#007bff;
+  --text:#0f172a;--text2:#475569;--muted:#94a3b8;
+  --alert-bg:rgba(0,123,255,0.10);--alert-b:rgba(0,123,255,0.28);
+  --err-bg:rgba(239,68,68,0.10);--err-b:rgba(239,68,68,0.28);
+  --ok-bg:rgba(34,197,94,0.10);--ok-b:rgba(34,197,94,0.28);
+  --r:18px;--nav-h:68px;
 }
-html{min-height:100%}
-body{min-height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;overflow-y:auto}
-body::before,body::after{content:'';position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0}
+html{overflow-y:auto;height:100%}
+html,body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+body::before,body::after{content:'';position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0;will-change:transform}
 body::before{width:400px;height:400px;background:radial-gradient(circle,rgba(34,197,94,0.15) 0%,transparent 70%);top:-100px;left:-80px}
 body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,123,255,0.11) 0%,transparent 70%);bottom:-80px;right:-60px}
+.page{position:relative;z-index:1;padding-bottom:120px}
 
-/* ── SCROLLABLE MAIN ── */
-.page{position:relative;z-index:1;min-height:100dvh;padding-bottom:calc(var(--nav-h) + 32px)}
-
-/* ── TOP BAR ── */
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 0;position:sticky;top:0;z-index:10;background:transparent}
-.topbar-left{}
+/* TOP BAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 0}
 .greeting{font-size:13px;color:var(--text2);font-weight:500}
 .user-name{font-size:19px;font-weight:800;color:var(--text);line-height:1.2;margin-top:1px}
-.user-id{font-size:11px;color:var(--muted);font-weight:500;margin-top:2px;letter-spacing:0.04em}
-.topbar-actions{display:flex;gap:10px;align-items:center}
-.icon-btn{width:40px;height:40px;border-radius:12px;border:1px solid var(--glass-b);background:var(--glass);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;color:var(--text2);cursor:pointer;transition:transform .12s,background .15s;flex-shrink:0}
+.user-id{font-size:11px;color:var(--muted);font-weight:500;margin-top:2px;letter-spacing:.04em}
+.icon-btn{width:40px;height:40px;border-radius:12px;border:1px solid var(--glass-b);background:var(--glass);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;color:var(--text2);cursor:pointer;transition:transform .12s}
 .icon-btn:active{transform:scale(0.93)}
-.icon-btn svg{pointer-events:none}
 
-/* ── CARDS GRID ── */
-.section{padding:18px 16px 0}
-.section-title{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
+/* TICKER BAR */
+.ticker-bar{margin:14px 16px 0;background:linear-gradient(120deg,#0ea472,#047857);border-radius:13px;padding:11px 14px;display:flex;align-items:center;gap:10px;min-height:42px}
+.ticker-icon{width:24px;height:24px;border-radius:7px;background:rgba(255,255,255,0.18);display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0}
+.ticker-msg{font-size:12.5px;font-weight:600;color:#fff;line-height:1.4;animation:fadeMsg .5s ease}
+@keyframes fadeMsg{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 
-/* ── BALANCE CARD ── */
-.balance-card{background:linear-gradient(135deg,rgba(34,197,94,0.72) 0%,rgba(16,185,129,0.68) 100%);border:1px solid rgba(255,255,255,0.45);border-radius:22px;padding:22px 20px 20px;backdrop-filter:blur(18px);box-shadow:0 8px 32px rgba(34,197,94,0.18);margin:14px 16px 0}
-.balance-label{font-size:11.5px;font-weight:600;color:rgba(255,255,255,0.75);letter-spacing:.05em;text-transform:uppercase;display:flex;align-items:center;gap:8px}
-.eye-btn{background:none;border:none;color:rgba(255,255,255,0.75);cursor:pointer;display:flex;align-items:center;padding:2px;border-radius:6px;transition:color .15s}
-.eye-btn:hover{color:#fff}
-.eye-btn:active{transform:scale(0.9)}
-.balance-amount{font-size:34px;font-weight:800;color:#fff;margin:6px 0 2px;letter-spacing:-0.02em;transition:filter .25s}
-.balance-amount.hidden{filter:blur(8px);user-select:none}
-.balance-currency{font-size:14px;font-weight:600;color:rgba(255,255,255,0.80);margin-right:4px}
-
-.balance-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
-.balance-mini{background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.30);border-radius:13px;padding:12px 14px}
-.bm-label{font-size:10.5px;color:rgba(255,255,255,0.70);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
-.bm-value{font-size:16px;font-weight:700;color:#fff;margin-top:3px;transition:filter .25s}
-.bm-value.hidden{filter:blur(6px)}
-
-/* ── STATS STRIP ── */
+/* STATS */
 .stats-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:14px 16px 0}
-.stat-card{background:var(--glass);border:1px solid var(--glass-b);border-radius:16px;padding:14px 12px;backdrop-filter:blur(14px);text-align:center}
+.stat-card{background:rgba(255,255,255,0.80);border:1px solid var(--glass-b);border-radius:16px;padding:14px 12px;text-align:center}
 .stat-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;margin:0 auto 8px}
 .stat-icon.green{background:var(--ok-bg);border:1px solid var(--ok-b);color:var(--green-s)}
 .stat-icon.blue{background:var(--alert-bg);border:1px solid var(--alert-b);color:var(--blue-s)}
-.stat-icon.orange{background:rgba(251,146,60,0.10);border:1px solid rgba(251,146,60,0.28);color:#ea580c}
-.stat-val{font-size:15px;font-weight:800;color:#ea580c}
+.stat-icon.orange{background:rgba(251,146,60,.10);border:1px solid rgba(251,146,60,.28);color:#ea580c}
+.stat-val{font-size:15px;font-weight:800;color:var(--text)}
 .stat-lbl{font-size:10px;color:var(--muted);font-weight:500;margin-top:2px;line-height:1.3}
 
-/* ── HISTORY ── */
+/* SECTION */
+.section{padding:18px 16px 0}
+.section-title{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
+
+/* HEALTH CHARTS */
+.health-grid{display:flex;flex-direction:column;gap:10px}
+.hc-card{background:rgba(255,255,255,0.80);border:1px solid var(--glass-b);border-radius:18px;padding:16px}
+.hc-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.hc-title{font-size:13.5px;font-weight:700;color:var(--text)}
+.hc-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;background:var(--ok-bg);border:1px solid var(--ok-b);color:var(--green-s)}
+.hc-badge.blue{background:var(--alert-bg);border-color:var(--alert-b);color:var(--blue-s)}
+.hc-badge.orange{background:rgba(251,146,60,.10);border:1px solid rgba(251,146,60,.28);color:#ea580c}
+
+/* bar chart */
+.hbar-wrap{display:flex;flex-direction:column;gap:9px}
+.hbar-row{display:flex;align-items:center;gap:10px}
+.hbar-label{font-size:11.5px;font-weight:600;color:var(--text2);width:86px;flex-shrink:0}
+.hbar-track{flex:1;height:8px;background:rgba(203,213,225,0.35);border-radius:99px;overflow:hidden}
+.hbar-fill{height:100%;border-radius:99px;width:0%;transition:width 1.2s cubic-bezier(.4,0,.2,1)}
+.hbar-fill.green{background:linear-gradient(90deg,#16a34a,#4ade80)}
+.hbar-fill.blue{background:linear-gradient(90deg,#007bff,#60a5fa)}
+.hbar-fill.orange{background:linear-gradient(90deg,#ea580c,#fb923c)}
+.hbar-fill.purple{background:linear-gradient(90deg,#7c3aed,#a78bfa)}
+.hbar-fill.teal{background:linear-gradient(90deg,#0891b2,#22d3ee)}
+.hbar-pct{font-size:11px;font-weight:700;color:var(--text2);width:32px;text-align:right;flex-shrink:0}
+
+/* donut */
+.hring-wrap{display:flex;align-items:center;gap:16px}
+.hring-legend{display:flex;flex-direction:column;gap:7px;flex:1}
+.hring-item{display:flex;align-items:center;gap:7px}
+.hring-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.hring-name{font-size:11.5px;font-weight:500;color:var(--text2);flex:1}
+.hring-pct{font-size:11.5px;font-weight:700;color:var(--text)}
+
+/* sparkline */
+.spark-wrap{height:58px;margin-top:4px}
+.spark-wrap svg{width:100%;height:100%}
+.spark-label-row{display:flex;justify-content:space-between;margin-top:4px}
+.spark-lbl{font-size:10px;color:var(--muted);font-weight:500}
+
+/* vitals */
+.vitals-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.vital-item{background:rgba(255,255,255,0.50);border:1px solid rgba(203,213,225,0.40);border-radius:13px;padding:11px 12px;display:flex;align-items:center;gap:9px}
+.vital-icon{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.vital-icon.green{background:var(--ok-bg);border:1px solid var(--ok-b);color:var(--green-s)}
+.vital-icon.red{background:var(--err-bg);border:1px solid var(--err-b);color:#dc2626}
+.vital-icon.blue{background:var(--alert-bg);border:1px solid var(--alert-b);color:var(--blue-s)}
+.vital-icon.orange{background:rgba(251,146,60,.10);border:1px solid rgba(251,146,60,.28);color:#ea580c}
+.vital-val{font-size:14px;font-weight:800;color:var(--text);line-height:1}
+.vital-lbl{font-size:10px;font-weight:600;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.03em}
+
+/* HISTORY */
 .history-list{display:flex;flex-direction:column;gap:8px}
-.hist-item{display:flex;align-items:center;gap:12px;background:var(--glass);border:1px solid var(--glass-b);border-radius:14px;padding:12px 14px;backdrop-filter:blur(12px)}
+.hist-item{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.75);border:1px solid var(--glass-b);border-radius:14px;padding:12px 14px}
 .hist-dot{width:36px;height:36px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .hist-dot.in{background:var(--ok-bg);border:1px solid var(--ok-b);color:var(--green-s)}
 .hist-dot.out{background:var(--err-bg);border:1px solid var(--err-b);color:#dc2626}
-.hist-dot.pend{background:rgba(251,146,60,0.10);border:1px solid rgba(251,146,60,0.28);color:#ea580c}
+.hist-dot.pend{background:rgba(251,146,60,.10);border:1px solid rgba(251,146,60,.28);color:#ea580c}
 .hist-info{flex:1;min-width:0}
 .hist-title{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hist-date{font-size:11px;color:var(--muted);margin-top:1px}
@@ -91,24 +112,18 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
 .hist-amount.in{color:var(--green-s)}
 .hist-amount.out{color:#dc2626}
 .hist-amount.pend{color:#ea580c}
-.hist-empty{text-align:center;padding:24px;color:var(--muted);font-size:13px;background:var(--glass);border:1px solid var(--glass-b);border-radius:14px;backdrop-filter:blur(12px)}
+.hist-empty{text-align:center;padding:24px;color:var(--muted);font-size:13px;background:var(--glass);border:1px solid var(--glass-b);border-radius:14px}
 
-/* ── HEALTH TIPS TICKER ── */
-.health-ticker{margin:0 16px;background:var(--alert-bg);border:1px solid var(--alert-b);border-radius:14px;padding:12px 16px;overflow:hidden}
-.ticker-label{font-size:10.5px;font-weight:700;color:var(--blue-s);letter-spacing:.05em;text-transform:uppercase;margin-bottom:4px}
-.ticker-text{font-size:12.5px;color:var(--text2);font-weight:500;line-height:1.45;animation:fadeMsg 0.5s ease}
-@keyframes fadeMsg{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
-
-/* ── BOTTOM NAV ── */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:var(--nav-h);background:rgba(255,255,255,0.75);border-top:1px solid rgba(255,255,255,0.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:space-around;padding:0 8px;padding-bottom:env(safe-area-inset-bottom,0);z-index:50}
-.nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 14px;border-radius:14px;cursor:pointer;transition:background .15s,transform .12s;border:none;background:none;color:var(--muted);text-decoration:none}
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:var(--nav-h);background:rgba(255,255,255,0.75);border-top:1px solid rgba(255,255,255,0.85);backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:space-around;padding:0 8px;padding-bottom:env(safe-area-inset-bottom,0);z-index:50}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 14px;border-radius:14px;cursor:pointer;transition:transform .12s;border:none;background:none;color:var(--muted);text-decoration:none}
 .nav-item:active{transform:scale(0.92)}
 .nav-item.active{color:var(--green-s)}
 .nav-item.active svg{stroke:var(--green-s)}
 .nav-dot{width:4px;height:4px;border-radius:50%;background:var(--green-s);opacity:0;transition:opacity .2s}
 .nav-item.active .nav-dot{opacity:1}
 
-/* ── FULL SCREEN MODALS ── */
+/* FULL SCREEN MODALS */
 .fs-modal{position:fixed;inset:0;z-index:200;background:#f0f2f5;overflow-y:auto;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
 .fs-modal.open{transform:translateX(0)}
 .fs-header{display:flex;align-items:center;gap:12px;padding:16px 16px 12px;background:rgba(255,255,255,0.70);border-bottom:1px solid rgba(255,255,255,0.80);backdrop-filter:blur(14px);position:sticky;top:0;z-index:10}
@@ -116,24 +131,14 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
 .fs-back:active{transform:scale(0.92)}
 .fs-title{font-size:17px;font-weight:700;color:var(--text)}
 .fs-body{flex:1;padding:20px 16px 40px;display:flex;flex-direction:column;gap:16px}
-.fs-body::before,
-.fs-body::after{content:'';position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:-1}
-.fs-body::before{width:350px;height:350px;background:radial-gradient(circle,rgba(34,197,94,0.13) 0%,transparent 70%);top:-80px;left:-60px}
-.fs-body::after{width:300px;height:300px;background:radial-gradient(circle,rgba(0,123,255,0.10) 0%,transparent 70%);bottom:-60px;right:-40px}
-
-/* ── GLASS CARD in modals ── */
-.g-card{background:var(--glass);border:1px solid var(--glass-b);border-radius:var(--r);padding:22px 20px;backdrop-filter:blur(18px);box-shadow:0 6px 28px rgba(0,0,0,0.07)}
+.g-card{background:var(--glass);border:1px solid var(--glass-b);border-radius:var(--r);padding:22px 20px;backdrop-filter:blur(18px);box-shadow:0 6px 28px rgba(0,0,0,.07)}
 .g-card-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px}
 .g-card-sub{font-size:13px;color:var(--text2);line-height:1.5;margin-bottom:16px}
-
-/* ── ALERT ── */
 .alert{padding:12px 16px;border-radius:12px;font-size:13px;font-weight:500;line-height:1.5;display:flex;align-items:flex-start;gap:10px;width:100%}
 .alert-info{background:var(--alert-bg);border:1px solid var(--alert-b);color:var(--blue-s)}
 .alert-ok{background:var(--ok-bg);border:1px solid var(--ok-b);color:var(--green-s)}
 .alert-err{background:var(--err-bg);border:1px solid var(--err-b);color:#dc2626}
 .alert-icon{flex-shrink:0;margin-top:1px}
-
-/* ── FORM ── */
 .form-group{margin-bottom:14px}
 .form-label{display:block;font-size:11.5px;font-weight:700;color:var(--text2);margin-bottom:6px;letter-spacing:.04em;text-transform:uppercase}
 .input-wrap{position:relative;display:flex;align-items:center}
@@ -146,60 +151,40 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
 .form-select:focus{border-color:var(--blue-s);box-shadow:0 0 0 3px rgba(0,123,255,.10)}
 .select-wrap{position:relative}
 .select-wrap::after{content:'';position:absolute;right:13px;top:50%;transform:translateY(-50%);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid var(--muted);pointer-events:none}
-
-/* ── BUTTONS ── */
-.btn-p{width:100%;padding:14px;background:var(--blue);border:1px solid rgba(0,123,255,.35);border-radius:13px;font-family:'Inter',sans-serif;font-size:14.5px;font-weight:700;color:#fff;cursor:pointer;letter-spacing:.02em;transition:transform .12s,box-shadow .2s;backdrop-filter:blur(6px);box-shadow:0 4px 18px rgba(0,123,255,.22);display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-p{width:100%;padding:14px;background:var(--blue);border:1px solid rgba(0,123,255,.35);border-radius:13px;font-family:'Inter',sans-serif;font-size:14.5px;font-weight:700;color:#fff;cursor:pointer;transition:transform .12s;box-shadow:0 4px 18px rgba(0,123,255,.22);display:flex;align-items:center;justify-content:center;gap:8px}
 .btn-p:active{transform:scale(0.965)}
 .btn-p:disabled{opacity:.6;cursor:not-allowed;transform:none}
 .btn-g{width:100%;padding:14px;background:var(--green);border:1px solid rgba(34,197,94,.35);border-radius:13px;font-family:'Inter',sans-serif;font-size:14.5px;font-weight:700;color:#fff;cursor:pointer;transition:transform .12s;box-shadow:0 4px 18px rgba(34,197,94,.18);display:flex;align-items:center;justify-content:center;gap:8px}
 .btn-g:active{transform:scale(0.965)}
-.btn-outline{width:100%;padding:13px;background:rgba(255,255,255,.50);border:1.5px solid rgba(203,213,225,.65);border-radius:13px;font-family:'Inter',sans-serif;font-size:14px;font-weight:600;color:var(--text2);cursor:pointer;transition:transform .12s,background .15s;display:flex;align-items:center;justify-content:center;gap:8px}
-.btn-outline:active{transform:scale(0.965)}
-
-/* ── SPINNER ── */
 .spinner{width:18px;height:18px;border:2.5px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .75s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-
-/* ── STEP indicator ── */
 .step-bar{display:flex;gap:6px;align-items:center;margin-bottom:4px}
 .step-dot{width:8px;height:8px;border-radius:50%;background:rgba(203,213,225,.65);transition:background .2s,width .2s}
 .step-dot.active{background:var(--blue-s);width:22px;border-radius:4px}
 .step-dot.done{background:var(--green-s)}
-
-/* ── INFO PILL ── */
-.info-pill{display:flex;align-items:center;gap:8px;background:var(--alert-bg);border:1px solid var(--alert-b);border-radius:10px;padding:10px 13px;font-size:12px;color:var(--blue-s);font-weight:500;line-height:1.4}
-
-/* locked badge */
+.terms-box{background:rgba(255,255,255,.55);border:1px solid rgba(203,213,225,.55);border-radius:14px;padding:16px;max-height:220px;overflow-y:auto;font-size:12.5px;color:var(--text2);line-height:1.6}
+.terms-box h4{font-size:13px;font-weight:700;color:var(--text);margin-bottom:8px}
+.terms-box p{margin-bottom:8px}
 .locked-badge{display:flex;align-items:center;gap:6px;background:var(--ok-bg);border:1px solid var(--ok-b);border-radius:10px;padding:9px 13px;font-size:12px;color:var(--green-s);font-weight:600}
-
-/* data display row */
 .data-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid rgba(203,213,225,.35)}
 .data-row:last-child{border-bottom:none}
 .dr-label{font-size:12.5px;color:var(--text2);font-weight:500}
 .dr-value{font-size:13px;font-weight:700;color:var(--text)}
-
-/* date input */
 .date-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-
-/* report options */
 .report-opt{display:flex;align-items:center;gap:12px;background:var(--glass);border:1px solid var(--glass-b);border-radius:14px;padding:14px;backdrop-filter:blur(12px);cursor:pointer;transition:border-color .15s,transform .12s}
 .report-opt:active{transform:scale(0.98)}
-.report-opt:hover{border-color:rgba(0,123,255,.40)}
 .ro-icon{width:40px;height:40px;border-radius:11px;background:var(--alert-bg);border:1px solid var(--alert-b);display:flex;align-items:center;justify-content:center;color:var(--blue-s);flex-shrink:0}
 .ro-info{flex:1}
 .ro-title{font-size:13.5px;font-weight:700;color:var(--text)}
 .ro-sub{font-size:12px;color:var(--muted);margin-top:2px}
-
-/* 3-dot menu overlay */
 .menu-overlay{position:fixed;inset:0;z-index:300;display:none}
 .menu-overlay.open{display:flex;flex-direction:column}
 .menu-backdrop{position:absolute;inset:0;background:rgba(15,23,42,.40);backdrop-filter:blur(5px)}
 .menu-panel{position:absolute;top:70px;right:12px;width:220px;background:rgba(255,255,255,.88);border:1px solid var(--glass-b);border-radius:18px;box-shadow:0 12px 40px rgba(0,0,0,.16);backdrop-filter:blur(22px);overflow:hidden;animation:fadeIn .2s ease}
 @keyframes fadeIn{from{opacity:0;transform:scale(.95) translateY(-8px)}to{opacity:1;transform:scale(1) translateY(0)}}
 .menu-item{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;transition:background .13s;border-bottom:1px solid rgba(203,213,225,.25)}
-.menu-item:last-child{border-bottom:none;color:#dc2626}
+.menu-item:last-child{border-bottom:none}
 .menu-item:hover{background:rgba(241,245,249,.75)}
-.menu-item:active{transform:scale(.98)}
 .mi-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .mi-icon.blue{background:var(--alert-bg);border:1px solid var(--alert-b);color:var(--blue-s)}
 .mi-icon.green{background:var(--ok-bg);border:1px solid var(--ok-b);color:var(--green-s)}
@@ -207,120 +192,127 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
 .mi-icon.red{background:var(--err-bg);border:1px solid var(--err-b);color:#dc2626}
 .mi-label{font-size:13.5px;font-weight:600;color:var(--text)}
 .menu-item:last-child .mi-label{color:#dc2626}
-
-/* notification toast */
 .toast{position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-80px);background:rgba(255,255,255,.92);border:1px solid var(--glass-b);border-radius:14px;padding:12px 18px;font-size:13px;font-weight:600;color:var(--text);backdrop-filter:blur(18px);box-shadow:0 8px 28px rgba(0,0,0,.12);z-index:999;transition:transform .3s;white-space:nowrap;display:flex;align-items:center;gap:8px}
 .toast.show{transform:translateX(-50%) translateY(0)}
-
-/* terms box */
-.terms-box{background:rgba(255,255,255,.55);border:1px solid rgba(203,213,225,.55);border-radius:14px;padding:16px;max-height:220px;overflow-y:auto;font-size:12.5px;color:var(--text2);line-height:1.6}
-.terms-box h4{font-size:13px;font-weight:700;color:var(--text);margin-bottom:8px}
-.terms-box p{margin-bottom:8px}
-
-/* pass toggle */
 .pass-toggle{position:absolute;right:13px;background:none;border:none;color:var(--muted);cursor:pointer;display:flex;align-items:center;padding:4px;border-radius:6px;transition:color .15s}
-.pass-toggle:hover{color:var(--text)}
-
-/* view step control */
 .view-step{display:none}
 .view-step.active{display:flex;flex-direction:column;gap:14px}
 </style>
 </head>
 <body>
 
-<!-- ── TOAST ── -->
 <div class="toast" id="toast">
   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
   <span id="toastText"></span>
 </div>
 
-<!-- ══════════════════════════
-     MAIN PAGE
-════════════════════════════ -->
-<div class="page" id="mainPage">
 
-  <!-- Top bar -->
+<!-- MAIN PAGE -->
+<div class="page">
+
   <div class="topbar">
-    <div class="topbar-left">
+    <div>
       <div class="greeting">Bem-vindo de volta,</div>
       <div class="user-name" id="userName">Carregando...</div>
       <div class="user-id" id="userId">ID: —</div>
     </div>
-    <div class="topbar-actions">
-      <div class="icon-btn" onclick="openMenu()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
-      </div>
+    <div class="icon-btn" onclick="openMenu()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
     </div>
   </div>
 
-  <!-- First Aid Health Card -->
-  <div style="margin:14px 16px 0;background:linear-gradient(135deg,rgba(0,123,255,0.72) 0%,rgba(59,130,246,0.68) 100%);border:1px solid rgba(255,255,255,0.40);border-radius:22px;padding:20px 18px;backdrop-filter:blur(18px);box-shadow:0 8px 32px rgba(0,123,255,0.18);position:relative;overflow:hidden">
-    <div style="position:absolute;top:-24px;right:-24px;width:110px;height:110px;background:rgba(255,255,255,0.09);border-radius:50%;pointer-events:none"></div>
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
-      <div style="width:38px;height:38px;border-radius:11px;background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.30);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-      </div>
-      <div>
-        <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.75);letter-spacing:.06em;text-transform:uppercase">Numeros de Emergencia</div>
-        <div style="font-size:15px;font-weight:800;color:#fff;margin-top:1px">Primeiros Socorros em Saude</div>
-      </div>
+
+  <!-- TICKER -->
+  <div class="ticker-bar">
+    <div class="ticker-icon">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-      <div style="background:rgba(255,255,255,0.16);border:1px solid rgba(255,255,255,0.26);border-radius:13px;padding:11px 13px">
-        <div style="font-size:10px;color:rgba(255,255,255,0.70);font-weight:700;text-transform:uppercase;letter-spacing:.04em">Emergencia Medica</div>
-        <div style="font-size:17px;font-weight:800;color:#fff;margin-top:3px;letter-spacing:.02em">112</div>
-      </div>
-      <div style="background:rgba(255,255,255,0.16);border:1px solid rgba(255,255,255,0.26);border-radius:13px;padding:11px 13px">
-        <div style="font-size:10px;color:rgba(255,255,255,0.70);font-weight:700;text-transform:uppercase;letter-spacing:.04em">Urgencias Angola</div>
-        <div style="font-size:17px;font-weight:800;color:#fff;margin-top:3px;letter-spacing:.02em">118</div>
-      </div>
-      <div style="background:rgba(255,255,255,0.16);border:1px solid rgba(255,255,255,0.26);border-radius:13px;padding:11px 13px">
-        <div style="font-size:10px;color:rgba(255,255,255,0.70);font-weight:700;text-transform:uppercase;letter-spacing:.04em">Bombeiros</div>
-        <div style="font-size:17px;font-weight:800;color:#fff;margin-top:3px;letter-spacing:.02em">115</div>
-      </div>
-      <div style="background:rgba(255,255,255,0.16);border:1px solid rgba(255,255,255,0.26);border-radius:13px;padding:11px 13px">
-        <div style="font-size:10px;color:rgba(255,255,255,0.70);font-weight:700;text-transform:uppercase;letter-spacing:.04em">Suporte UnitedHealth</div>
-        <div style="font-size:15px;font-weight:800;color:#fff;margin-top:3px;letter-spacing:.01em">937 359 561</div>
-      </div>
-    </div>
-    <div style="margin-top:12px;font-size:12px;color:rgba(255,255,255,0.72);font-weight:500;line-height:1.5">Em caso de emergencia medica, ligue imediatamente para os numeros acima. A sua saude e o activo mais valioso.</div>
+    <div class="ticker-msg" id="tickerMsg">A carregar...</div>
   </div>
 
-  <!-- Stats -->
-  <div class="stats-strip">
-    <div class="stat-card">
-      <div class="stat-icon green">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-      </div>
-      <div class="stat-val" id="planActive">—</div>
-      <div class="stat-lbl">Plano Activo</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon blue">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      </div>
-      <div class="stat-val" id="planDays">—</div>
-      <div class="stat-lbl">Dias Restantes</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon orange">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-      </div>
-      <div class="stat-val" id="referralsCount">0</div>
-      <div class="stat-lbl">Referidos</div>
-    </div>
-  </div>
-
-  <!-- Health ticker -->
+  <!-- HEALTH CHARTS -->
   <div class="section">
     <div class="section-title">Saude e Bem-estar</div>
-  </div>
-  <div class="health-ticker" style="margin-top:0">
-    <div class="ticker-label">Dica de Saude</div>
-    <div class="ticker-text" id="tickerText">Investidores que dormem 7 a 8 horas por noite tomam decisoes financeiras 40% mais acertadas.</div>
+    <div class="health-grid">
+
+      <!-- Barras de indicadores -->
+      <div class="hc-card">
+        <div class="hc-hdr">
+          <div class="hc-title">Indicadores de Saude Preventiva</div>
+          <div class="hc-badge">Mensal</div>
+        </div>
+        <div class="hbar-wrap">
+          <div class="hbar-row"><div class="hbar-label">Actividade</div><div class="hbar-track"><div class="hbar-fill green" data-w="78%"></div></div><div class="hbar-pct">78%</div></div>
+          <div class="hbar-row"><div class="hbar-label">Nutricao</div><div class="hbar-track"><div class="hbar-fill blue" data-w="65%"></div></div><div class="hbar-pct">65%</div></div>
+          <div class="hbar-row"><div class="hbar-label">Sono</div><div class="hbar-track"><div class="hbar-fill purple" data-w="82%"></div></div><div class="hbar-pct">82%</div></div>
+          <div class="hbar-row"><div class="hbar-label">Hidratacao</div><div class="hbar-track"><div class="hbar-fill teal" data-w="55%"></div></div><div class="hbar-pct">55%</div></div>
+          <div class="hbar-row"><div class="hbar-label">Stress</div><div class="hbar-track"><div class="hbar-fill orange" data-w="42%"></div></div><div class="hbar-pct">42%</div></div>
+        </div>
+      </div>
+
+      <!-- Donut distribuicao -->
+      <div class="hc-card">
+        <div class="hc-hdr">
+          <div class="hc-title">Distribuicao de Cobertura</div>
+          <div class="hc-badge blue">Planos</div>
+        </div>
+        <div class="hring-wrap">
+          <svg width="90" height="90" viewBox="0 0 90 90" style="flex-shrink:0">
+            <circle cx="45" cy="45" r="34" fill="none" stroke="rgba(203,213,225,0.30)" stroke-width="11"/>
+            <circle cx="45" cy="45" r="34" fill="none" stroke="#16a34a" stroke-width="11" stroke-dasharray="85.6 127.2" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 45 45)"/>
+            <circle cx="45" cy="45" r="34" fill="none" stroke="#007bff" stroke-width="11" stroke-dasharray="64.2 148.6" stroke-dashoffset="-85.6" stroke-linecap="round" transform="rotate(-90 45 45)"/>
+            <circle cx="45" cy="45" r="34" fill="none" stroke="#7c3aed" stroke-width="11" stroke-dasharray="38.5 174.3" stroke-dashoffset="-149.8" stroke-linecap="round" transform="rotate(-90 45 45)"/>
+            <circle cx="45" cy="45" r="34" fill="none" stroke="#ea580c" stroke-width="11" stroke-dasharray="25.7 187.1" stroke-dashoffset="-188.3" stroke-linecap="round" transform="rotate(-90 45 45)"/>
+            <text x="45" y="49" text-anchor="middle" font-size="12" font-weight="800" fill="#0f172a" font-family="Inter,sans-serif">100%</text>
+          </svg>
+          <div class="hring-legend">
+            <div class="hring-item"><span class="hring-dot" style="background:#16a34a"></span><span class="hring-name">Preventivo</span><span class="hring-pct">40%</span></div>
+            <div class="hring-item"><span class="hring-dot" style="background:#007bff"></span><span class="hring-name">Premium</span><span class="hring-pct">30%</span></div>
+            <div class="hring-item"><span class="hring-dot" style="background:#7c3aed"></span><span class="hring-name">Express</span><span class="hring-pct">18%</span></div>
+            <div class="hring-item"><span class="hring-dot" style="background:#ea580c"></span><span class="hring-name">Gratuito</span><span class="hring-pct">12%</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sparkline rendimentos semana -->
+      <div class="hc-card">
+        <div class="hc-hdr">
+          <div class="hc-title">Rendimentos — Ultima Semana</div>
+          <div class="hc-badge">+8.4%</div>
+        </div>
+        <div class="spark-wrap">
+          <svg viewBox="0 0 280 58" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="sg" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#16a34a" stop-opacity="0.20"/>
+                <stop offset="100%" stop-color="#16a34a" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path d="M0,46 L40,36 L80,40 L120,26 L160,20 L200,14 L240,7 L280,3 L280,58 L0,58Z" fill="url(#sg)"/>
+            <polyline points="0,46 40,36 80,40 120,26 160,20 200,14 240,7 280,3" fill="none" stroke="#16a34a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="0" cy="46" r="2.5" fill="#16a34a"/>
+            <circle cx="40" cy="36" r="2.5" fill="#16a34a"/>
+            <circle cx="80" cy="40" r="2.5" fill="#16a34a"/>
+            <circle cx="120" cy="26" r="2.5" fill="#16a34a"/>
+            <circle cx="160" cy="20" r="2.5" fill="#16a34a"/>
+            <circle cx="200" cy="14" r="2.5" fill="#16a34a"/>
+            <circle cx="240" cy="7" r="2.5" fill="#16a34a"/>
+            <circle cx="280" cy="3" r="3.5" fill="#16a34a"/>
+          </svg>
+        </div>
+        <div class="spark-label-row">
+          <span class="spark-lbl">Seg</span><span class="spark-lbl">Ter</span><span class="spark-lbl">Qua</span>
+          <span class="spark-lbl">Qui</span><span class="spark-lbl">Sex</span><span class="spark-lbl">Sab</span>
+          <span class="spark-lbl">Dom</span><span class="spark-lbl">Hoje</span>
+        </div>
+      </div>
+
+
+
+    </div>
   </div>
 
-  <!-- History -->
+  <!-- HISTORY -->
   <div class="section">
     <div class="section-title">Historico de Transaccoes</div>
     <div class="history-list" id="historyList">
@@ -330,48 +322,22 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
 
 </div>
 
-<!-- ══════════════════════════
-     3-DOT MENU
-════════════════════════════ -->
+<!-- 3-DOT MENU -->
 <div class="menu-overlay" id="menuOverlay" onclick="menuOutsideClick(event)">
   <div class="menu-backdrop"></div>
   <div class="menu-panel">
-    <div class="menu-item" onclick="openFS('fsCard')">
-      <div class="mi-icon blue"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
-      <span class="mi-label">Cartao Bancario</span>
-    </div>
-    <div class="menu-item" onclick="openFS('fsReport')">
-      <div class="mi-icon green"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
-      <span class="mi-label">Relatorio de Actividades</span>
-    </div>
-    <div class="menu-item" onclick="openFS('fsSecurity')">
-      <div class="mi-icon orange"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-      <span class="mi-label">Seguranca e Privacidade</span>
-    </div>
-    <div class="menu-item" onclick="handleLogout()">
-      <div class="mi-icon red"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></div>
-      <span class="mi-label">Terminar Sessao</span>
-    </div>
+    <div class="menu-item" onclick="openFS('fsCard')"><div class="mi-icon blue"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div><span class="mi-label">Cartao Bancario</span></div>
+    <div class="menu-item" onclick="openFS('fsReport')"><div class="mi-icon green"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div><span class="mi-label">Relatorio de Actividades</span></div>
+    <div class="menu-item" onclick="openFS('fsSecurity')"><div class="mi-icon orange"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><span class="mi-label">Seguranca e Privacidade</span></div>
+    <div class="menu-item" onclick="handleLogout()"><div class="mi-icon red"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></div><span class="mi-label">Terminar Sessao</span></div>
   </div>
 </div>
 
-<!-- ══════════════════════════
-     FS: CARTAO BANCARIO
-════════════════════════════ -->
+<!-- FS: CARTAO BANCARIO -->
 <div class="fs-modal" id="fsCard">
-  <div class="fs-header">
-    <div class="fs-back" onclick="closeFS('fsCard')">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-    </div>
-    <span class="fs-title">Cartao Bancario</span>
-  </div>
+  <div class="fs-header"><div class="fs-back" onclick="closeFS('fsCard')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></div><span class="fs-title">Cartao Bancario</span></div>
   <div class="fs-body">
-    <div class="step-bar" id="cardStepBar">
-      <div class="step-dot active" id="cs0"></div>
-      <div class="step-dot" id="cs1"></div>
-    </div>
-
-    <!-- Step 1: Terms -->
+    <div class="step-bar"><div class="step-dot active" id="cs0"></div><div class="step-dot" id="cs1"></div></div>
     <div class="view-step active" id="cardStep1">
       <div class="g-card">
         <div class="g-card-title">Informacoes Importantes</div>
@@ -389,306 +355,115 @@ body::after{width:360px;height:360px;background:radial-gradient(circle,rgba(0,12
       </div>
       <button class="btn-g" onclick="cardNext()">Entendi, Prosseguir</button>
     </div>
-
-    <!-- Step 2: Form or locked view -->
     <div class="view-step" id="cardStep2">
       <div id="cardFormView">
         <div class="g-card">
           <div class="g-card-title">Dados Bancarios</div>
           <div class="g-card-sub">Preencha corretamente. Nao sera possivel editar apos salvar.</div>
-          <div class="form-group">
-            <label class="form-label">Nome do Titular</label>
-            <div class="input-wrap">
-              <span class="i-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
-              <input class="form-input" type="text" id="bankName" placeholder="Nome conforme no documento"/>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Banco</label>
-            <div class="select-wrap">
-              <select class="form-select" id="bankName2">
-                <option value="">Seleccione o banco</option>
-                <option>BAI — Banco Angolano de Investimentos</option>
-                <option>BFA — Banco de Fomento Angola</option>
-                <option>BPC — Banco de Poupanca e Credito</option>
-                <option>Atlantico</option>
-                <option>Millennium Atlantico</option>
-                <option>Sol Pagamentos</option>
-                <option>Outro</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Numero IBAN / Conta</label>
-            <div class="input-wrap">
-              <span class="i-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></span>
-              <input class="form-input" type="text" id="bankIban" placeholder="0000.0000.0000.0000.0000.0"/>
-            </div>
-          </div>
-          <div class="form-group" style="margin-bottom:0">
-            <label class="form-label">Numero Express / Referencia</label>
-            <div class="input-wrap">
-              <span class="i-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12 19.79 19.79 0 0 1 1.05 3.4 2 2 0 0 1 3 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16z"/></svg></span>
-              <input class="form-input" type="tel" id="bankExpress" placeholder="Ex: 937359561"/>
-            </div>
-          </div>
+          <div class="form-group"><label class="form-label">Nome do Titular</label><div class="input-wrap"><span class="i-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span><input class="form-input" type="text" id="bankName" placeholder="Nome conforme no documento"/></div></div>
+          <div class="form-group"><label class="form-label">Banco</label><div class="select-wrap"><select class="form-select" id="bankName2"><option value="">Seleccione o banco</option><option>BAI — Banco Angolano de Investimentos</option><option>BFA — Banco de Fomento Angola</option><option>BPC — Banco de Poupanca e Credito</option><option>Atlantico</option><option>Millennium Atlantico</option><option>Sol Pagamentos</option><option>Outro</option></select></div></div>
+          <div class="form-group"><label class="form-label">IBAN / Conta</label><div class="input-wrap"><span class="i-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></span><input class="form-input" type="text" id="bankIban" placeholder="0000.0000.0000.0000.0000.0"/></div></div>
+          <div class="form-group" style="margin-bottom:0"><label class="form-label">Numero Express</label><div class="input-wrap"><span class="i-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12 19.79 19.79 0 0 1 1.05 3.4 2 2 0 0 1 3 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16z"/></svg></span><input class="form-input" type="tel" id="bankExpress" placeholder="Ex: 937359561"/></div></div>
         </div>
-        <div class="alert alert-info">
-          <div class="alert-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
-          <span>Verifique todos os dados antes de salvar. Esta accao e permanente e irreversivel.</span>
-        </div>
-        <div id="cardSaveAlert" style="display:none" class="alert alert-err">
-          <div class="alert-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
-          <span id="cardSaveAlertText"></span>
-        </div>
-        <button class="btn-p" onclick="saveBankData()" style="margin-top:4px">
-          <span id="cardSaveTxt">Salvar Dados Bancarios</span>
-          <span id="cardSaveSpinner" style="display:none"><div class="spinner"></div></span>
-        </button>
+        <div class="alert alert-info"><div class="alert-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><span>Verifique todos os dados antes de salvar. Esta accao e permanente e irreversivel.</span></div>
+        <div id="cardSaveAlert" style="display:none" class="alert alert-err"><div class="alert-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><span id="cardSaveAlertText"></span></div>
+        <button class="btn-p" onclick="saveBankData()" style="margin-top:4px"><span id="cardSaveTxt">Salvar Dados Bancarios</span><span id="cardSaveSpinner" style="display:none"><div class="spinner"></div></span></button>
       </div>
-      <div id="cardLockedView" style="display:none;display:flex;flex-direction:column;gap:14px">
-        <div class="locked-badge">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-          Dados bancarios vinculados e protegidos
-        </div>
-        <div class="g-card">
-          <div class="g-card-title">Conta Registada</div>
-          <div id="bankDataDisplay"></div>
-        </div>
+      <div id="cardLockedView" style="display:none;flex-direction:column;gap:14px">
+        <div class="locked-badge"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Dados bancarios vinculados e protegidos</div>
+        <div class="g-card"><div class="g-card-title">Conta Registada</div><div id="bankDataDisplay"></div></div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ══════════════════════════
-     FS: RELATORIO
-════════════════════════════ -->
+<!-- FS: RELATORIO -->
 <div class="fs-modal" id="fsReport">
-  <div class="fs-header">
-    <div class="fs-back" onclick="closeFS('fsReport')">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-    </div>
-    <span class="fs-title">Relatorio de Actividades</span>
-  </div>
+  <div class="fs-header"><div class="fs-back" onclick="closeFS('fsReport')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></div><span class="fs-title">Relatorio de Actividades</span></div>
   <div class="fs-body">
-    <div class="g-card">
-      <div class="g-card-title">Seleccionar Periodo</div>
-      <div class="g-card-sub">Defina o intervalo de datas para gerar o relatorio ou extracto de conta.</div>
-      <div class="date-row">
-        <div class="form-group" style="margin-bottom:0">
-          <label class="form-label">Data Inicial</label>
-          <input class="form-input no-icon" type="date" id="reportStart"/>
-        </div>
-        <div class="form-group" style="margin-bottom:0">
-          <label class="form-label">Data Final</label>
-          <input class="form-input no-icon" type="date" id="reportEnd"/>
-        </div>
-      </div>
-    </div>
-
-    <div class="report-opt" onclick="generateReport('extract')">
-      <div class="ro-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
-      <div class="ro-info">
-        <div class="ro-title">Extracto de Conta</div>
-        <div class="ro-sub">Ver movimentos de entrada e saida no periodo</div>
-      </div>
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--muted)"><polyline points="9 18 15 12 9 6"/></svg>
-    </div>
-
-    <div class="report-opt" onclick="generateReport('full')">
-      <div class="ro-icon" style="background:var(--ok-bg);border-color:var(--ok-b);color:var(--green-s)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
-      <div class="ro-info">
-        <div class="ro-title">Relatorio de Rendimentos</div>
-        <div class="ro-sub">Resumo de ganhos por plano de investimento</div>
-      </div>
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--muted)"><polyline points="9 18 15 12 9 6"/></svg>
-    </div>
-
-    <div class="report-opt" onclick="generateReport('download')">
-      <div class="ro-icon" style="background:rgba(251,146,60,.10);border-color:rgba(251,146,60,.28);color:#ea580c"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
-      <div class="ro-info">
-        <div class="ro-title">Descarregar PDF</div>
-        <div class="ro-sub">Exportar relatorio completo em formato PDF</div>
-      </div>
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--muted)"><polyline points="9 18 15 12 9 6"/></svg>
-    </div>
-
-    <div id="reportResult" style="display:none">
-      <div class="g-card">
-        <div class="g-card-title">Resultado do Relatorio</div>
-        <div id="reportContent" style="font-size:13px;color:var(--text2);line-height:1.6"></div>
-      </div>
-    </div>
+    <div class="g-card"><div class="g-card-title">Seleccionar Periodo</div><div class="g-card-sub">Defina o intervalo de datas para gerar o relatorio.</div><div class="date-row"><div class="form-group" style="margin-bottom:0"><label class="form-label">Data Inicial</label><input class="form-input no-icon" type="date" id="reportStart"/></div><div class="form-group" style="margin-bottom:0"><label class="form-label">Data Final</label><input class="form-input no-icon" type="date" id="reportEnd"/></div></div></div>
+    <div class="report-opt" onclick="generateReport('extract')"><div class="ro-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div><div class="ro-info"><div class="ro-title">Extracto de Conta</div><div class="ro-sub">Ver movimentos de entrada e saida no periodo</div></div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--muted)"><polyline points="9 18 15 12 9 6"/></svg></div>
+    <div class="report-opt" onclick="generateReport('full')"><div class="ro-icon" style="background:var(--ok-bg);border-color:var(--ok-b);color:var(--green-s)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div><div class="ro-info"><div class="ro-title">Relatorio de Rendimentos</div><div class="ro-sub">Resumo de ganhos por plano de investimento</div></div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--muted)"><polyline points="9 18 15 12 9 6"/></svg></div>
+    <div class="report-opt" onclick="generateReport('download')"><div class="ro-icon" style="background:rgba(251,146,60,.10);border-color:rgba(251,146,60,.28);color:#ea580c"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div><div class="ro-info"><div class="ro-title">Descarregar PDF</div><div class="ro-sub">Exportar relatorio completo em formato PDF</div></div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--muted)"><polyline points="9 18 15 12 9 6"/></svg></div>
+    <div id="reportResult" style="display:none"><div class="g-card"><div class="g-card-title">Resultado</div><div id="reportContent" style="font-size:13px;color:var(--text2);line-height:1.6"></div></div></div>
   </div>
 </div>
 
-<!-- ══════════════════════════
-     FS: SEGURANCA
-════════════════════════════ -->
+<!-- FS: SEGURANCA -->
 <div class="fs-modal" id="fsSecurity">
-  <div class="fs-header">
-    <div class="fs-back" onclick="closeFS('fsSecurity')">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-    </div>
-    <span class="fs-title">Seguranca e Privacidade</span>
-  </div>
+  <div class="fs-header"><div class="fs-back" onclick="closeFS('fsSecurity')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></div><span class="fs-title">Seguranca e Privacidade</span></div>
   <div class="fs-body">
-    <div class="alert alert-info">
-      <div class="alert-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-      <span>A sua conta e protegida com encriptacao de ponta a ponta. Nunca partilhe a sua senha com ninguem.</span>
-    </div>
+    <div class="alert alert-info"><div class="alert-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><span>A sua conta e protegida com encriptacao de ponta a ponta. Nunca partilhe a sua senha com ninguem.</span></div>
     <div class="g-card">
-      <div class="g-card-title">Alterar Senha</div>
-      <div class="g-card-sub">Utilize uma senha numerica de 6 digitos unica e nao reutilizada.</div>
-      <div class="form-group">
-        <label class="form-label">Senha Actual</label>
-        <div class="input-wrap">
-          <span class="i-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
-          <input class="form-input" type="password" id="secOldPass" placeholder="Senha actual"/>
-          <button class="pass-toggle" type="button" onclick="togglePass('secOldPass',this)">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Nova Senha (6 digitos)</label>
-        <div class="input-wrap">
-          <span class="i-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
-          <input class="form-input" type="password" id="secNewPass" placeholder="Nova senha de 6 digitos" maxlength="6" inputmode="numeric"/>
-          <button class="pass-toggle" type="button" onclick="togglePass('secNewPass',this)">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
-        </div>
-      </div>
-      <div class="form-group" style="margin-bottom:0">
-        <label class="form-label">Confirmar Nova Senha</label>
-        <div class="input-wrap">
-          <span class="i-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
-          <input class="form-input" type="password" id="secConfPass" placeholder="Repita a nova senha" maxlength="6" inputmode="numeric"/>
-        </div>
-      </div>
+      <div class="g-card-title">Alterar Senha</div><div class="g-card-sub">Utilize uma senha numerica de 6 digitos unica e nao reutilizada.</div>
+      <div class="form-group"><label class="form-label">Senha Actual</label><div class="input-wrap"><span class="i-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span><input class="form-input" type="password" id="secOldPass" placeholder="Senha actual"/><button class="pass-toggle" type="button" onclick="togglePass('secOldPass',this)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
+      <div class="form-group"><label class="form-label">Nova Senha</label><div class="input-wrap"><span class="i-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span><input class="form-input" type="password" id="secNewPass" placeholder="Nova senha de 6 digitos" maxlength="6" inputmode="numeric"/><button class="pass-toggle" type="button" onclick="togglePass('secNewPass',this)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
+      <div class="form-group" style="margin-bottom:0"><label class="form-label">Confirmar Senha</label><div class="input-wrap"><span class="i-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span><input class="form-input" type="password" id="secConfPass" placeholder="Repita a nova senha" maxlength="6" inputmode="numeric"/></div></div>
     </div>
-    <div id="secAlert" style="display:none" class="alert">
-      <div class="alert-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
-      <span id="secAlertText"></span>
-    </div>
-    <button class="btn-p" onclick="changePassword()">
-      <span id="secBtnTxt">Actualizar Senha</span>
-      <span id="secSpinner" style="display:none"><div class="spinner"></div></span>
-    </button>
-
-    <div class="g-card">
-      <div class="g-card-title">Politica de Privacidade</div>
-      <div class="terms-box" style="max-height:180px">
-        <h4>Proteccao de Dados Pessoais</h4>
-        <p>A UnitedHealth Group compromete-se a proteger os dados pessoais dos seus utilizadores em conformidade com as normas internacionais de proteccao de dados.</p>
-        <p>Os dados recolhidos sao utilizados exclusivamente para a prestacao dos servicos de investimento contratados e para comunicacoes relacionadas com a sua conta.</p>
-        <p>Nao partilhamos informacoes pessoais com terceiros sem o seu consentimento expresso, exceto quando exigido por lei ou autoridade regulatoria competente.</p>
-        <p>Tem o direito de solicitar o acesso, correcao ou eliminacao dos seus dados pessoais a qualquer momento atraves dos canais de suporte oficial.</p>
-      </div>
-    </div>
+    <div id="secAlert" style="display:none" class="alert"><div class="alert-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><span id="secAlertText"></span></div>
+    <button class="btn-p" onclick="changePassword()"><span id="secBtnTxt">Actualizar Senha</span><span id="secSpinner" style="display:none"><div class="spinner"></div></span></button>
+    <div class="g-card"><div class="g-card-title">Politica de Privacidade</div><div class="terms-box" style="max-height:180px"><h4>Proteccao de Dados Pessoais</h4><p>A UnitedHealth Group compromete-se a proteger os dados pessoais dos seus utilizadores em conformidade com as normas internacionais de proteccao de dados.</p><p>Os dados recolhidos sao utilizados exclusivamente para a prestacao dos servicos de investimento contratados.</p><p>Nao partilhamos informacoes pessoais com terceiros sem o seu consentimento expresso, exceto quando exigido por lei.</p></div></div>
   </div>
 </div>
 
-<!-- ══════════════════════════
-     BOTTOM NAV
-════════════════════════════ -->
+<!-- BOTTOM NAV -->
 <nav class="bottom-nav">
-  <a class="nav-item active" href="index.html">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-    <div class="nav-dot"></div>
-  </a>
-  <a class="nav-item" href="planos.html">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-    <div class="nav-dot"></div>
-  </a>
-  <a class="nav-item" href="saude.html">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-    <div class="nav-dot"></div>
-  </a>
-  <a class="nav-item" href="perfil.html">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-    <div class="nav-dot"></div>
-  </a>
+  <a class="nav-item active" href="index.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><div class="nav-dot"></div></a>
+  <a class="nav-item" href="planos.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg><div class="nav-dot"></div></a>
+  <a class="nav-item" href="saude.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg><div class="nav-dot"></div></a>
+  <a class="nav-item" href="perfil.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><div class="nav-dot"></div></a>
 </nav>
 
 <!-- Firebase -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, getDoc, updateDoc, collection, query, where, getDocs, orderBy, limit, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, doc, getDoc, updateDoc, collection, query, where, getDocs, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const app=initializeApp({apiKey:"AIzaSyDp02RqKrac4ogFRGDcJjPLpA2inOV2rsk",authDomain:"pro-2c872.firebaseapp.com",projectId:"pro-2c872",storageBucket:"pro-2c872.firebasestorage.app",messagingSenderId:"778229616930",appId:"1:778229616930:web:b56177b322241b103ad57b"});
+const auth=getAuth(app),db=getFirestore(app);
+window._auth=auth;window._db=db;
+window._fbs={signOut,updatePassword,EmailAuthProvider,reauthenticateWithCredential,doc,getDoc,updateDoc,collection,query,where,getDocs,orderBy,limit};
 
-const app = initializeApp({
-  apiKey:"AIzaSyDp02RqKrac4ogFRGDcJjPLpA2inOV2rsk",
-  authDomain:"pro-2c872.firebaseapp.com",
-  projectId:"pro-2c872",
-  storageBucket:"pro-2c872.firebasestorage.app",
-  messagingSenderId:"778229616930",
-  appId:"1:778229616930:web:b56177b322241b103ad57b"
-});
-const auth = getAuth(app);
-const db   = getFirestore(app);
-window._auth=auth; window._db=db;
-window._fbs={signOut, updatePassword, EmailAuthProvider, reauthenticateWithCredential, doc, getDoc, updateDoc, collection, query, where, getDocs, orderBy, limit, addDoc, serverTimestamp};
-
-onAuthStateChanged(auth, async user => {
-  if (!user) { window.location.href='auth.html'; return; }
-  const snap = await getDoc(doc(db,'users',user.uid));
-  if(!snap.exists()){ window.location.href='auth.html'; return; }
-  const data = snap.data();
-  window._uid = user.uid;
-  window._userData = data;
-  const fname = (data.name||'Utilizador').split(' ')[0];
-  document.getElementById('userName').textContent = data.name || 'Utilizador';
-  document.getElementById('userId').textContent   = 'ID: ' + (data.userId||'—');
-  document.getElementById('balanceVal').textContent  = fmt(data.balance||0);
-  document.getElementById('earningsVal').textContent = fmt(data.earnings||0);
-  document.getElementById('freeVal').textContent     = fmt(data.freeEarnings||0);
-  document.getElementById('depositVal').textContent  = fmt(data.totalDeposit||0);
-  document.getElementById('pendingVal').textContent  = fmt(data.pendingBalance||0);
-  document.getElementById('planActive').textContent  = data.activePlan||'Nenhum';
-  document.getElementById('planDays').textContent    = data.planDaysLeft||0;
-  document.getElementById('referralsCount').textContent = data.referrals||0;
+onAuthStateChanged(auth,async user=>{
+  if(!user){window.location.href='auth.html';return;}
+  const snap=await getDoc(doc(db,'users',user.uid));
+  if(!snap.exists()){window.location.href='auth.html';return;}
+  const d=snap.data();
+  window._uid=user.uid;window._userData=d;
+  document.getElementById('userName').textContent=d.name||'Utilizador';
+  document.getElementById('userId').textContent='ID: '+(d.userId||'—');
+  document.getElementById('balanceVal').textContent=fmt(d.balance||0);
+  document.getElementById('planActive').textContent=d.activePlan||'Nenhum';
+  document.getElementById('planDays').textContent=d.planDaysLeft||0;
+  document.getElementById('referralsCount').textContent=d.referrals||0;
+  document.getElementById('popBalMain').textContent=fmt(d.balance||0);
+  document.getElementById('popEarnings').textContent=fmt(d.earnings||0);
+  document.getElementById('popFree').textContent=fmt(d.freeEarnings||0);
+  document.getElementById('popDeposit').textContent=fmt(d.totalDeposit||0);
+  document.getElementById('popPending').textContent=fmt(d.pendingBalance||0);
+  document.getElementById('popPlan').textContent=d.activePlan||'Free';
   loadHistory(user.uid);
-  checkBankData(data);
+  checkBankData(d);
 });
 
-function fmt(v){ return Number(v).toLocaleString('pt-AO',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function fmt(v){return Number(v).toLocaleString('pt-AO',{minimumFractionDigits:2,maximumFractionDigits:2});}
 
 async function loadHistory(uid){
   try{
-    const q = query(collection(db,'transactions'),where('uid','==',uid),limit(10));
-    const snap = await getDocs(q);
-    const list = document.getElementById('historyList');
-    if(snap.empty){ list.innerHTML='<div class="hist-empty">Nenhuma transaccao registada ainda. Inicie o seu primeiro deposito.</div>'; return; }
-    // Sort client-side by createdAt desc
-    const docs = [];
-    snap.forEach(d=>docs.push(d.data()));
-    docs.sort((a,b)=>{
-      const ta = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
-      const tb = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
-      return tb - ta;
-    });
+    const q=query(collection(db,'transactions'),where('uid','==',uid),orderBy('createdAt','desc'),limit(10));
+    const snap=await getDocs(q);
+    const list=document.getElementById('historyList');
+    if(snap.empty){list.innerHTML='<div class="hist-empty">Nenhuma transaccao registada ainda.</div>';return;}
     list.innerHTML='';
-    docs.forEach(t=>{
-      const cls = t.type==='in'?'in': t.type==='out'?'out':'pend';
-      const sign= t.type==='in'?'+': t.type==='out'?'-':'';
-      const icon = t.type==='in'
-        ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>`
-        : t.type==='out'
-        ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>`
-        : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
-      const date = t.createdAt?.toDate ? t.createdAt.toDate().toLocaleDateString('pt-AO') : '—';
-      list.innerHTML+=`<div class="hist-item">
-        <div class="hist-dot ${cls}">${icon}</div>
-        <div class="hist-info"><div class="hist-title">${t.description||'Transaccao'}</div><div class="hist-date">${date}</div></div>
-        <div class="hist-amount ${cls}">${sign} AOA ${fmt(t.amount||0)}</div>
-      </div>`;
+    snap.forEach(d=>{
+      const t=d.data();
+      const cls=t.type==='in'?'in':t.type==='out'?'out':'pend';
+      const sign=t.type==='in'?'+':t.type==='out'?'-':'';
+      const icon=t.type==='in'?`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>`:t.type==='out'?`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>`:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
+      const date=t.createdAt?.toDate?t.createdAt.toDate().toLocaleDateString('pt-AO'):'—';
+      list.innerHTML+=`<div class="hist-item"><div class="hist-dot ${cls}">${icon}</div><div class="hist-info"><div class="hist-title">${t.description||'Transaccao'}</div><div class="hist-date">${date}</div></div><div class="hist-amount ${cls}">${sign} AOA ${fmt(t.amount||0)}</div></div>`;
     });
-  }catch(e){ 
-    console.error('History error:',e);
-    document.getElementById('historyList').innerHTML='<div class="hist-empty">Erro ao carregar historico. Verifique a ligacao.</div>';
-  }
+  }catch(e){console.error(e);}
 }
 
 function checkBankData(data){
@@ -697,152 +472,121 @@ function checkBankData(data){
     document.getElementById('cardLockedView').style.display='flex';
     document.getElementById('cardFormView').style.display='none';
     const bd=data.bankData;
-    document.getElementById('bankDataDisplay').innerHTML=`
-      <div class="data-row"><span class="dr-label">Titular</span><span class="dr-value">${bd.name||'—'}</span></div>
-      <div class="data-row"><span class="dr-label">Banco</span><span class="dr-value">${bd.bank||'—'}</span></div>
-      <div class="data-row"><span class="dr-label">IBAN / Conta</span><span class="dr-value">${bd.iban||'—'}</span></div>
-      <div class="data-row"><span class="dr-label">Express</span><span class="dr-value">${bd.express||'—'}</span></div>`;
+    document.getElementById('bankDataDisplay').innerHTML=`<div class="data-row"><span class="dr-label">Titular</span><span class="dr-value">${bd.name||'—'}</span></div><div class="data-row"><span class="dr-label">Banco</span><span class="dr-value">${bd.bank||'—'}</span></div><div class="data-row"><span class="dr-label">IBAN</span><span class="dr-value">${bd.iban||'—'}</span></div><div class="data-row"><span class="dr-label">Express</span><span class="dr-value">${bd.express||'—'}</span></div>`;
   }
 }
 
-window.saveBankData = async function(){
-  const name=document.getElementById('bankName').value.trim();
-  const bank=document.getElementById('bankName2').value;
-  const iban=document.getElementById('bankIban').value.trim();
-  const expr=document.getElementById('bankExpress').value.trim();
-  const al=document.getElementById('cardSaveAlert');
-  const at=document.getElementById('cardSaveAlertText');
+window.saveBankData=async function(){
+  const name=document.getElementById('bankName').value.trim(),bank=document.getElementById('bankName2').value,iban=document.getElementById('bankIban').value.trim(),expr=document.getElementById('bankExpress').value.trim();
+  const al=document.getElementById('cardSaveAlert'),at=document.getElementById('cardSaveAlertText');
   al.style.display='none';
   if(!name||!bank||!iban||!expr){al.style.display='flex';at.textContent='Preencha todos os campos.';return;}
-  document.getElementById('cardSaveTxt').style.display='none';
-  document.getElementById('cardSaveSpinner').style.display='inline-flex';
-  try{
-    await updateDoc(doc(db,'users',window._uid),{bankData:{name,bank,iban,express:expr}});
-    showToast('Dados bancarios guardados com sucesso.');
-    window._userData.bankData={name,bank,iban,express:expr};
-    checkBankData(window._userData);
-  }catch(e){al.style.display='flex';at.textContent='Erro ao guardar. Tente novamente.';}
-  document.getElementById('cardSaveTxt').style.display='inline';
-  document.getElementById('cardSaveSpinner').style.display='none';
+  document.getElementById('cardSaveTxt').style.display='none';document.getElementById('cardSaveSpinner').style.display='inline-flex';
+  try{await updateDoc(doc(db,'users',window._uid),{bankData:{name,bank,iban,express:expr}});showToast('Dados bancarios guardados.');window._userData.bankData={name,bank,iban,express:expr};checkBankData(window._userData);}
+  catch(e){al.style.display='flex';at.textContent='Erro ao guardar.';}
+  document.getElementById('cardSaveTxt').style.display='inline';document.getElementById('cardSaveSpinner').style.display='none';
 };
 
-window.changePassword = async function(){
-  const old=document.getElementById('secOldPass').value;
-  const nw=document.getElementById('secNewPass').value;
-  const cf=document.getElementById('secConfPass').value;
-  const sa=document.getElementById('secAlert');
-  const st=document.getElementById('secAlertText');
+window.changePassword=async function(){
+  const old=document.getElementById('secOldPass').value,nw=document.getElementById('secNewPass').value,cf=document.getElementById('secConfPass').value;
+  const sa=document.getElementById('secAlert'),st=document.getElementById('secAlertText');
   sa.style.display='none';
   if(!old||!nw||!cf){sa.className='alert alert-err';sa.style.display='flex';st.textContent='Preencha todos os campos.';return;}
   if(nw.length<6){sa.className='alert alert-err';sa.style.display='flex';st.textContent='A nova senha deve ter 6 digitos.';return;}
   if(nw!==cf){sa.className='alert alert-err';sa.style.display='flex';st.textContent='As senhas nao coincidem.';return;}
-  document.getElementById('secBtnTxt').style.display='none';
-  document.getElementById('secSpinner').style.display='inline-flex';
+  document.getElementById('secBtnTxt').style.display='none';document.getElementById('secSpinner').style.display='inline-flex';
   try{
-    const user=auth.currentUser;
-    const cred=EmailAuthProvider.credential(user.email, old);
-    await reauthenticateWithCredential(user, cred);
-    await updatePassword(user, nw);
+    const user=auth.currentUser,cred=EmailAuthProvider.credential(user.email,old);
+    await reauthenticateWithCredential(user,cred);await updatePassword(user,nw);
     sa.className='alert alert-ok';sa.style.display='flex';st.textContent='Senha actualizada com sucesso.';
-    document.getElementById('secOldPass').value='';
-    document.getElementById('secNewPass').value='';
-    document.getElementById('secConfPass').value='';
-  }catch(e){
-    const msgs={'auth/wrong-password':'Senha actual incorreta.','auth/invalid-credential':'Senha actual incorreta.'};
-    sa.className='alert alert-err';sa.style.display='flex';st.textContent=msgs[e.code]||'Erro ao actualizar. Tente novamente.';
-  }
-  document.getElementById('secBtnTxt').style.display='inline';
-  document.getElementById('secSpinner').style.display='none';
+    ['secOldPass','secNewPass','secConfPass'].forEach(id=>document.getElementById(id).value='');
+  }catch(e){const m={'auth/wrong-password':'Senha actual incorreta.','auth/invalid-credential':'Senha actual incorreta.'};sa.className='alert alert-err';sa.style.display='flex';st.textContent=m[e.code]||'Erro ao actualizar.';}
+  document.getElementById('secBtnTxt').style.display='inline';document.getElementById('secSpinner').style.display='none';
 };
 
-window.handleLogout = async function(){
-  await signOut(auth);
-  window.location.href='auth.html';
-};
-
-window.generateReport = function(type){
-  const s=document.getElementById('reportStart').value;
-  const e=document.getElementById('reportEnd').value;
+window.handleLogout=async function(){await signOut(auth);window.location.href='auth.html';};
+window.generateReport=function(type){
+  const s=document.getElementById('reportStart').value,e=document.getElementById('reportEnd').value;
   if(!s||!e){showToast('Seleccione o periodo de datas.');return;}
-  const rd=document.getElementById('reportResult');
-  const rc=document.getElementById('reportContent');
-  rd.style.display='block';
-  const labels={'extract':'Extracto de Conta','full':'Relatorio de Rendimentos','download':'PDF Exportado'};
-  rc.innerHTML=`<p><strong>Periodo:</strong> ${s} a ${e}</p><p><strong>Tipo:</strong> ${labels[type]}</p><br><p style="color:var(--muted)">Nenhuma transaccao encontrada neste periodo. Quando existirem movimentos, serao listados aqui com todos os detalhes.</p>`;
-  if(type==='download') showToast('Funcionalidade de exportacao em desenvolvimento.');
+  document.getElementById('reportResult').style.display='block';
+  const labels={extract:'Extracto de Conta',full:'Relatorio de Rendimentos',download:'PDF Exportado'};
+  document.getElementById('reportContent').innerHTML=`<p><strong>Periodo:</strong> ${s} a ${e}</p><p><strong>Tipo:</strong> ${labels[type]}</p><br><p style="color:var(--muted)">Nenhuma transaccao encontrada neste periodo.</p>`;
+  if(type==='download')showToast('Funcionalidade de exportacao em desenvolvimento.');
 };
 </script>
 
 <script>
-/* ── Balance toggle ── */
-let balVisible = true;
+let balVisible=true;
 function toggleBalance(){
-  balVisible = !balVisible;
-  document.getElementById('balanceAmount').classList.toggle('hidden', !balVisible);
-  document.querySelectorAll('.bm-value').forEach(el=>el.classList.toggle('hidden', !balVisible));
-  document.getElementById('eyeBtn').innerHTML = balVisible
-    ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`
-    : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+  balVisible=!balVisible;
+  document.getElementById('balanceVal').classList.toggle('hidden',!balVisible);
+  document.getElementById('eyeBtn').innerHTML=balVisible
+    ?`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`
+    :`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
 }
 
-/* ── Menu ── */
-function openMenu(){ document.getElementById('menuOverlay').classList.add('open'); }
-function menuOutsideClick(e){ if(e.target===document.getElementById('menuOverlay')||e.target.classList.contains('menu-backdrop')) closeMenu(); }
-function closeMenu(){ document.getElementById('menuOverlay').classList.remove('open'); }
+function openBpop(){
+  const btn=document.getElementById('seeBtn'),txt=document.getElementById('seeTxt'),spin=document.getElementById('seeSpin'),ico=document.getElementById('seeIco');
+  btn.disabled=true;txt.style.display='none';ico.style.display='none';spin.style.display='inline-block';
+  setTimeout(()=>{btn.disabled=false;txt.style.display='inline';ico.style.display='inline';spin.style.display='none';document.getElementById('bpop').classList.add('open');},500);
+}
+function closeBpop(){document.getElementById('bpop').classList.remove('open');}
+function bpopOutside(e){if(e.target===document.getElementById('bpop'))closeBpop();}
 
-/* ── Full-screen modals ── */
-function openFS(id){ closeMenu(); document.getElementById(id).classList.add('open'); }
-function closeFS(id){ document.getElementById(id).classList.remove('open'); }
+function openMenu(){document.getElementById('menuOverlay').classList.add('open');}
+function menuOutsideClick(e){if(e.target.classList.contains('menu-backdrop'))closeMenu();}
+function closeMenu(){document.getElementById('menuOverlay').classList.remove('open');}
+function openFS(id){closeMenu();document.getElementById(id).classList.add('open');}
+function closeFS(id){document.getElementById(id).classList.remove('open');}
 
-/* ── Card step ── */
 function cardNext(){
   document.getElementById('cardStep1').classList.remove('active');
   document.getElementById('cardStep2').classList.add('active');
-  document.getElementById('cs0').classList.remove('active'); document.getElementById('cs0').classList.add('done');
+  document.getElementById('cs0').classList.remove('active');
+  document.getElementById('cs0').classList.add('done');
   document.getElementById('cs1').classList.add('active');
-  if(window._hasBankData){
-    document.getElementById('cardFormView').style.display='none';
-    document.getElementById('cardLockedView').style.display='flex';
-  }
+  if(window._hasBankData){document.getElementById('cardFormView').style.display='none';document.getElementById('cardLockedView').style.display='flex';}
 }
 
-/* ── Password toggle ── */
-function togglePass(id, btn){
-  const inp=document.getElementById(id);
-  const show=inp.type==='password';
-  inp.type=show?'text':'password';
-  btn.innerHTML=show
-    ? `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
-    : `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+function togglePass(id,btn){
+  const inp=document.getElementById(id);const show=inp.type==='password';inp.type=show?'text':'password';
+  btn.innerHTML=show?`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`:`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
 }
 
-/* ── Toast ── */
 function showToast(msg){
   const t=document.getElementById('toast');
   document.getElementById('toastText').textContent=msg;
-  t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),3000);
+  t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);
 }
 
-/* ── Health tips ticker ── */
-const tips=[
-  'Investidores que dormem 7 a 8 horas por noite tomam decisoes financeiras 40% mais acertadas.',
-  'Pratica de exercicio regular reduz o risco de doencas cronicas em ate 35%, preservando o seu capital de saude a longo prazo.',
-  'Manter uma alimentacao equilibrada melhora a concentracao e a capacidade analitica dos investidores.',
-  'A gestao do stress e fundamental: altos niveis de cortisol afectam a tomada de decisoes financeiras.',
-  'Revisoes medicas periodicas permitem detectar condicoes precocemente, reduzindo custos de saude futuros.',
-  'Hidratacao adequada de 2 litros por dia aumenta a produtividade cognitiva em ate 14%.',
-  'Investir em saude preventiva retorna em media 3 vezes mais do que tratamentos curativos.',
+/* ── Ticker mensagens ── */
+const tickerMsgs=[
+  '💊 Lembre-se de tomar os seus medicamentos diarios.',
+  '💧 Beba pelo menos 2 litros de agua hoje.',
+  '🏃 30 minutos de caminhada reduzem o risco cardiaco em 35%.',
+  '😴 Durma 7 a 8 horas para melhorar as suas decisoes financeiras.',
+  '🥦 Uma alimentacao equilibrada aumenta a sua produtividade em 20%.',
+  '🧘 Gerir o stress protege o seu coracao e a sua carteira.',
+  '📈 Os seus investimentos em saude crescem a cada dia.',
+  '🔒 A sua conta esta protegida com encriptacao de nivel bancario.',
+  '👥 Convide amigos e ganhe comissoes automaticas.',
+  '✅ Revisoes medicas preventivas reduzem custos futuros em 60%.',
 ];
-let tipIdx=0;
-setInterval(()=>{
-  tipIdx=(tipIdx+1)%tips.length;
-  const el=document.getElementById('tickerText');
+let tickerIdx=Math.floor(Math.random()*tickerMsgs.length);
+function rotateTicker(){
+  tickerIdx=(tickerIdx+1)%tickerMsgs.length;
+  const el=document.getElementById('tickerMsg');
   el.style.animation='none';
   el.offsetHeight;
-  el.style.animation='fadeMsg 0.5s ease';
-  el.textContent=tips[tipIdx];
-},6000);
+  el.style.animation='fadeMsg .5s ease';
+  el.textContent=tickerMsgs[tickerIdx];
+}
+document.getElementById('tickerMsg').textContent=tickerMsgs[tickerIdx];
+setInterval(rotateTicker,5000);
+
+window.addEventListener('load',()=>{
+  setTimeout(()=>{document.querySelectorAll('.hbar-fill').forEach(el=>{el.style.width=el.dataset.w;});},400);
+});
 </script>
 </body>
 </html>
