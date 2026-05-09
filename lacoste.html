@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lacoste — Investimentos</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, doc, getDoc, updateDoc, setDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  const cfg={apiKey:"AIzaSyAZ27ogn8Us8FZct_DdYkFFv9vQkaHrPL4",authDomain:"pinnacle-finance-b2626.firebaseapp.com",projectId:"pinnacle-finance-b2626",storageBucket:"pinnacle-finance-b2626.firebasestorage.app",messagingSenderId:"1032490368286",appId:"1:1032490368286:web:d77c9a1a888dd3c1c5dd0f"};
+  const app=initializeApp(cfg);
+  const db=getFirestore(app);
+  window._db=db;
+  window._fs={doc,getDoc,updateDoc,setDoc,collection,addDoc};
+  document.dispatchEvent(new Event('dbReady'));
+</script>
+
+<style>
+:root{
+  --blue:#007bff;--blue-dark:#0062d1;--blue-glow:rgba(0,123,255,0.20);
+  --blue-light:rgba(0,123,255,0.07);--red:#c0392b;--red-dark:#9b2d23;
+  --bg:#f3f5fb;--white:#fff;--text:#111;--muted:#7a8394;
+  --border:rgba(0,0,0,0.09);--success:#18a558;--danger:#dc3545;
+  --card-bg:rgba(255,255,255,0.88);--nav-h:68px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%;overflow-x:hidden;}
+body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);padding-bottom:24px;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 70% 50% at 5% 5%,rgba(0,123,255,0.08) 0%,transparent 65%),
+  radial-gradient(ellipse 50% 55% at 95% 90%,rgba(0,98,209,0.07) 0%,transparent 65%),
+  linear-gradient(160deg,#edf3ff 0%,#f3f5fb 55%,#eef2fc 100%);}
+
+/* SPINNER */
+.spin-ov{position:fixed;inset:0;z-index:9999;background:rgba(255,255,255,0.80);backdrop-filter:blur(10px);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;}
+.spin-ov.on{opacity:1;pointer-events:all;}
+.spinner{width:50px;height:50px;border-radius:50%;border:4px solid var(--blue-glow);border-top-color:var(--blue);animation:sp .7s linear infinite;}
+@keyframes sp{to{transform:rotate(360deg);}}
+.spin-lbl{margin-top:14px;font-size:14px;font-weight:700;color:var(--blue);}
+
+/* MODAL ALERT */
+.modal-bg{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.25);backdrop-filter:blur(8px);
+  display:flex;align-items:center;justify-content:center;padding:20px;
+  opacity:0;pointer-events:none;transition:opacity .25s;}
+.modal-bg.on{opacity:1;pointer-events:all;}
+.modal-box{background:rgba(255,255,255,0.93);backdrop-filter:blur(22px);
+  border:1px solid rgba(255,255,255,0.95);border-radius:22px;padding:32px 26px 26px;
+  width:100%;max-width:350px;text-align:center;
+  transform:scale(.9);transition:transform .35s cubic-bezier(.34,1.56,.64,1);}
+.modal-bg.on .modal-box{transform:scale(1);}
+.modal-icon{width:62px;height:62px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  margin:0 auto 14px;font-size:26px;font-weight:800;}
+.ico-ok{background:rgba(24,165,88,0.12);color:var(--success);}
+.ico-err{background:rgba(220,53,69,0.12);color:var(--danger);}
+.ico-info{background:var(--blue-light);color:var(--blue);}
+.modal-title{font-size:17px;font-weight:800;margin-bottom:7px;}
+.modal-msg{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:22px;}
+.modal-btns{display:flex;gap:10px;}
+.modal-btns .mbtn{flex:1;padding:13px;border:none;border-radius:10px;font-family:'Barlow',sans-serif;font-size:14px;font-weight:800;cursor:pointer;transition:all .2s;}
+.mbtn-blue{background:var(--blue);color:#fff;}
+.mbtn-outline{background:transparent;color:var(--blue);border:2px solid var(--blue);}
+.mbtn-red{background:var(--red);color:#fff;box-shadow:0 4px 16px rgba(192,57,43,0.30);}
+.mbtn:hover{filter:brightness(1.08);transform:translateY(-1px);}
+
+/* FULLSCREEN MODAL */
+.fs-modal{position:fixed;inset:0;z-index:8000;background:#f3f5fb;
+  transform:translateY(100%);transition:transform .4s cubic-bezier(.22,1,.36,1);overflow-y:auto;}
+.fs-modal.open{transform:translateY(0);}
+.fs-header{position:sticky;top:0;z-index:10;background:rgba(255,255,255,0.90);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;padding:16px 20px;}
+.fs-back{width:38px;height:38px;border-radius:50%;border:none;background:var(--blue-light);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--blue);transition:all .2s;}
+.fs-back:hover{background:var(--blue);color:#fff;}
+.fs-header h2{font-size:17px;font-weight:800;letter-spacing:-.3px;}
+.fs-body{padding:20px;}
+
+/* TOPBAR */
+.topbar{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.90);backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--border);padding:14px 20px;
+  display:flex;align-items:center;gap:14px;}
+.back-btn{width:38px;height:38px;border-radius:50%;border:none;background:var(--blue-light);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--blue);transition:all .2s;flex-shrink:0;}
+.back-btn:hover{background:var(--blue);color:#fff;}
+.topbar-title{font-size:17px;font-weight:800;letter-spacing:-.3px;}
+
+/* HEADER BANNER */
+.header-banner{position:relative;z-index:1;margin:0;overflow:hidden;}
+.header-banner img{width:100%;height:200px;object-fit:cover;display:block;}
+.banner-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 30%,rgba(0,0,0,0.55) 100%);}
+.banner-text{position:absolute;bottom:16px;left:20px;right:20px;color:#fff;}
+.banner-text h1{font-size:22px;font-weight:800;letter-spacing:-.5px;margin-bottom:3px;}
+.banner-text p{font-size:13px;opacity:.85;font-weight:500;}
+
+/* TABS */
+.plan-tabs{display:flex;background:rgba(255,255,255,0.80);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);position:sticky;top:68px;z-index:90;}
+.plan-tab{flex:1;padding:14px;border:none;background:transparent;
+  font-family:'Barlow',sans-serif;font-size:14px;font-weight:700;color:var(--muted);
+  cursor:pointer;transition:all .25s;border-bottom:3px solid transparent;letter-spacing:.3px;}
+.plan-tab.active{color:var(--blue);border-bottom-color:var(--blue);}
+
+/* MAIN */
+.main{padding:20px;position:relative;z-index:1;}
+
+/* PLAN CARD */
+.plan-card{
+  background:var(--card-bg);backdrop-filter:blur(14px);
+  border:1px solid rgba(255,255,255,0.9);border-radius:20px;
+  margin-bottom:16px;overflow:hidden;
+  box-shadow:0 4px 20px rgba(0,0,0,0.07);
+  transition:all .3s cubic-bezier(.22,1,.36,1);
+  cursor:pointer;
+}
+.plan-card:hover{transform:translateY(-4px);box-shadow:0 12px 36px rgba(0,123,255,0.14);}
+.plan-card:active{transform:scale(.98);}
+.plan-img{width:100%;height:170px;object-fit:cover;display:block;transition:transform .4s;}
+.plan-card:hover .plan-img{transform:scale(1.04);}
+.plan-body{padding:16px;}
+.plan-name{font-size:16px;font-weight:800;letter-spacing:-.3px;margin-bottom:4px;}
+.plan-row{display:flex;justify-content:space-between;align-items:center;margin-top:10px;}
+.plan-price{font-size:22px;font-weight:800;color:var(--blue);}
+.plan-price span{font-size:12px;font-weight:600;color:var(--muted);}
+.plan-daily{background:rgba(24,165,88,0.10);border-radius:8px;padding:6px 10px;text-align:right;}
+.plan-daily-val{font-size:14px;font-weight:800;color:var(--success);}
+.plan-daily-lbl{font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.4px;}
+.plan-invest-btn{
+  margin:14px 16px 16px;width:calc(100% - 32px);
+  padding:14px;border:none;border-radius:12px;
+  background:linear-gradient(135deg,var(--red) 0%,var(--red-dark) 100%);
+  color:#fff;font-family:'Barlow',sans-serif;font-size:14px;font-weight:800;
+  cursor:pointer;letter-spacing:.3px;
+  box-shadow:0 4px 18px rgba(192,57,43,0.32);
+  transition:all .25s;position:relative;overflow:hidden;
+}
+.plan-invest-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(192,57,43,0.40);}
+.plan-invest-btn:active{transform:scale(.97);}
+.plan-invest-btn::after{content:'';position:absolute;border-radius:50%;background:rgba(255,255,255,0.25);
+  transform:scale(0);opacity:1;width:100px;height:100px;top:50%;left:50%;
+  margin:-50px 0 0 -50px;transition:transform .5s,opacity .4s;pointer-events:none;}
+.plan-invest-btn:active::after{transform:scale(4);opacity:0;transition:0s;}
+
+/* FUNCIONALIDADES */
+.func-card{background:var(--card-bg);border-radius:18px;padding:20px;margin-bottom:16px;
+  box-shadow:0 2px 12px rgba(0,0,0,0.06);}
+.func-title{font-size:15px;font-weight:800;margin-bottom:8px;letter-spacing:-.3px;}
+.func-desc{font-size:13px;color:var(--muted);line-height:1.65;margin-bottom:14px;}
+.func-tags{display:flex;flex-wrap:wrap;gap:6px;}
+.func-tag{font-size:11px;font-weight:700;padding:5px 10px;border-radius:20px;
+  background:var(--blue-light);color:var(--blue);}
+
+/* CHART PLACEHOLDER */
+.chart-box{background:var(--blue-light);border-radius:14px;padding:18px;margin-top:14px;
+  display:flex;align-items:flex-end;gap:8px;height:100px;overflow:hidden;}
+.chart-bar{flex:1;border-radius:4px 4px 0 0;background:var(--blue);opacity:.6;transition:height .4s;
+  animation:barUp .6s ease both;}
+@keyframes barUp{from{height:0}to{height:var(--h)}}
+
+/* DETAIL MODAL */
+.detail-modal{position:fixed;inset:0;z-index:8500;background:rgba(0,0,0,0.30);backdrop-filter:blur(10px);
+  display:flex;align-items:flex-end;padding:0;
+  opacity:0;pointer-events:none;transition:opacity .3s;}
+.detail-modal.on{opacity:1;pointer-events:all;}
+.detail-sheet{background:var(--white);border-radius:24px 24px 0 0;width:100%;max-height:85vh;
+  overflow-y:auto;padding:24px 22px 36px;
+  transform:translateY(30px);transition:transform .4s cubic-bezier(.22,1,.36,1);}
+.detail-modal.on .detail-sheet{transform:translateY(0);}
+.detail-handle{width:40px;height:4px;border-radius:2px;background:var(--border);margin:0 auto 20px;}
+.detail-img{width:100%;height:200px;object-fit:cover;border-radius:16px;margin-bottom:18px;}
+.detail-name{font-size:20px;font-weight:800;letter-spacing:-.5px;margin-bottom:6px;}
+.detail-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);}
+.detail-row:last-of-type{border:none;}
+.dk{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+.dv{font-size:14px;font-weight:800;color:var(--text);}
+.detail-desc{font-size:13px;color:var(--muted);line-height:1.65;margin:14px 0;}
+.detail-invest-btn{
+  width:100%;padding:15px;border:none;border-radius:14px;
+  background:linear-gradient(135deg,var(--red) 0%,var(--red-dark) 100%);
+  color:#fff;font-family:'Barlow',sans-serif;font-size:15px;font-weight:800;
+  cursor:pointer;box-shadow:0 4px 20px rgba(192,57,43,0.32);
+  transition:all .25s;margin-top:6px;
+}
+.detail-invest-btn:hover{filter:brightness(1.08);transform:translateY(-2px);}
+
+/* FLOATING SUPPORT */
+.float-support{position:fixed;z-index:7000;width:52px;height:52px;border-radius:50%;
+  overflow:hidden;cursor:grab;box-shadow:0 4px 20px rgba(0,0,0,0.20);
+  border:2px solid #fff;bottom:90px;right:20px;}
+.float-support img{width:100%;height:100%;object-fit:cover;pointer-events:none;}
+
+/* Anim */
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+.fade-in{animation:fadeUp .4s ease both;}
+</style>
+</head>
+<body>
+
+<div class="spin-ov" id="spinOv"><div class="spinner"></div><div class="spin-lbl" id="spinLbl">A processar...</div></div>
+
+<!-- ALERT MODAL -->
+<div class="modal-bg" id="alertBg">
+  <div class="modal-box">
+    <div class="modal-icon" id="aIcon"></div>
+    <div class="modal-title" id="aTitle"></div>
+    <div class="modal-msg" id="aMsg"></div>
+    <div class="modal-btns" id="aBtns">
+      <button class="mbtn mbtn-blue" onclick="closeAlert()">OK</button>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL BOTTOM SHEET -->
+<div class="detail-modal" id="detailModal">
+  <div class="detail-sheet">
+    <div class="detail-handle"></div>
+    <img class="detail-img" id="dImg" src="" alt="">
+    <div class="detail-name" id="dName"></div>
+    <div class="detail-desc" id="dDesc"></div>
+    <div class="detail-row"><span class="dk">Valor do Plano</span><span class="dv" id="dPrice"></span></div>
+    <div class="detail-row"><span class="dk">Ganho Diario</span><span class="dv" id="dDaily"></span></div>
+    <div class="detail-row"><span class="dk">Rentabilidade</span><span class="dv" id="dRoi"></span></div>
+    <div class="detail-row"><span class="dk">Duracao</span><span class="dv">30 dias</span></div>
+    <button class="detail-invest-btn" id="dInvestBtn">Investir Agora</button>
+  </div>
+</div>
+
+<!-- FUNCIONALIDADES FULLSCREEN -->
+<div class="fs-modal" id="funcModal">
+  <div class="fs-header">
+    <button class="fs-back" onclick="closeFS('funcModal')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <h2>Funcionalidades</h2>
+  </div>
+  <div class="fs-body" id="funcBody"></div>
+</div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <button class="back-btn" onclick="location.href='index.html'">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <div class="topbar-title">Lacoste</div>
+</div>
+
+<!-- HEADER BANNER -->
+<div class="header-banner">
+  <img src="https://i.postimg.cc/JhPyky3Q/images.jpg" alt="Lacoste">
+  <div class="banner-overlay"></div>
+  <div class="banner-text">
+    <h1>Planos de Investimento</h1>
+    <p>Escolha o seu plano e comece a rentabilizar hoje</p>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="plan-tabs">
+  <button class="plan-tab active" onclick="showTab('investimentos',this)">Investimentos</button>
+  <button class="plan-tab" onclick="showTab('funcionalidades',this)">Funcionalidades</button>
+</div>
+
+<div class="main">
+  <div id="tab-investimentos" class="fade-in"></div>
+  <div id="tab-funcionalidades" style="display:none" class="fade-in"></div>
+</div>
+
+<!-- FLOATING SUPPORT -->
+<div class="float-support" id="floatSupport" onclick="openSupport()">
+  <img src="https://i.postimg.cc/JhKdZ3zh/images-(1).jpg" alt="Suporte">
+</div>
+
+<script>
+const lacUser = JSON.parse(localStorage.getItem('lacUser')||'null');
+if(!lacUser) location.href='auth.html';
+
+const PLANS = [
+  {id:'p1', name:'Polo Lacoste L.12.12', img:'https://i.postimg.cc/J7cbrhvh/images.jpg', price:3975, daily:257, desc:'O classico polo Lacoste em pique de algodao premium. Invista neste icone da moda e obtenha retornos diarios consistentes com baixo risco.'},
+  {id:'p2', name:'Tenis Lacoste Lerond', img:'https://i.postimg.cc/G3kZbkbT/lac.jpg', price:5322, daily:417, desc:'Calcado esportivo com design atemporal. O Lerond combina conforto e estilo num investimento seguro com rentabilidade acima da media.'},
+  {id:'p3', name:'Perfume Lacoste Blanc', img:'https://i.postimg.cc/9f5dXqmq/LAC0067-75e5ae34-62f7-4534-856d-d6091959e29e.png', price:8688, daily:689, desc:'Fragrancia masculina emblematica da maison Lacoste. Alta procura global garante estabilidade e crescimento continuo do investimento.'},
+  {id:'p4', name:'Tenis Lacoste Carnaby', img:'https://i.postimg.cc/g2vwDtp8/images-(8).jpg', price:13710, daily:912, desc:'O Carnaby e um dos tenis mais vendidos da marca. Investimento de nivel intermedio com forte potencial de valorizacao diaria.'},
+  {id:'p5', name:'Camiseta Lacoste Basica', img:'https://i.postimg.cc/hGtdtbFM/images-(9).jpg', price:17311, daily:1245, desc:'A camiseta basica Lacoste lidera as vendas globais da marca. Plano estavel com rendimento diario elevado e margem consistente.'},
+  {id:'p6', name:'Relogio Lacoste Madrid', img:'https://i.postimg.cc/kXyGR6vs/images-(10).jpg', price:25610, daily:2147, desc:'Relogio de alta relojoaria com certificacao internacional. Plano premium com rentabilidade excepcional e liquidez garantida.'},
+  {id:'p7', name:'Mochila Lacoste Neocroc', img:'https://i.postimg.cc/Ss7F18sY/images-(11).jpg', price:35700, daily:3010, desc:'Mochila de luxo com materiais de alta qualidade. Produto de edicao limitada com valorizacao exponencial no mercado global.'},
+  {id:'p8', name:'Sapato Casual Lacoste Menerva', img:'https://i.postimg.cc/vBX26vT0/images-(12).jpg', price:63180, daily:4714, desc:'Sapato casual de couro genuino, referencia no mercado de luxo acessivel. Plano de alto rendimento para investidores experientes.'},
+  {id:'p9', name:'Sueter Lacoste Live', img:'https://i.postimg.cc/wBgkcsSZ/images-(13).jpg', price:81000, daily:6579, desc:'Coleccao Lacoste Live, a linha jovem e premium da marca. Alta liquidez e rendimento diario superior para carteiras diversificadas.'},
+  {id:'p10', name:'Oculos de Sol Lacoste', img:'https://i.postimg.cc/jjx6rGQX/images-(14).jpg', price:100000, daily:8356, desc:'Oculos de sol com lentes polarizadas e armacao de titanio. O plano mais rentavel da plataforma, reservado para grandes investidores.'},
+];
+
+// ── Render plans ──────────────────────────────────────
+function renderPlans() {
+  const cont = document.getElementById('tab-investimentos');
+  cont.innerHTML = '';
+  PLANS.forEach((p, i) => {
+    const roi = ((p.daily / p.price) * 100).toFixed(2);
+    const card = document.createElement('div');
+    card.className = 'plan-card fade-in';
+    card.style.animationDelay = (i * 0.06) + 's';
+    card.innerHTML = `
+      <img class="plan-img" src="${p.img}" alt="${p.name}">
+      <div class="plan-body">
+        <div class="plan-name">${p.name}</div>
+        <div class="plan-row">
+          <div>
+            <div class="plan-price">${formatKz(p.price)}<span> / plano</span></div>
+          </div>
+          <div class="plan-daily">
+            <div class="plan-daily-val">+${formatKz(p.daily)}</div>
+            <div class="plan-daily-lbl">por dia</div>
+          </div>
+        </div>
+      </div>
+      <button class="plan-invest-btn" data-id="${p.id}">Investir Agora</button>
+    `;
+    // Card click (not invest btn) → detail sheet
+    card.addEventListener('click', e => {
+      if(e.target.classList.contains('plan-invest-btn') || e.target.closest('.plan-invest-btn')) return;
+      openDetail(p);
+    });
+    // Invest btn
+    card.querySelector('.plan-invest-btn').addEventListener('click', e => {
+      e.stopPropagation();
+      confirmInvest(p);
+    });
+    cont.appendChild(card);
+  });
+}
+
+// ── Render funcionalidades ────────────────────────────
+function renderFunc() {
+  const cont = document.getElementById('tab-funcionalidades');
+  cont.innerHTML = '';
+  PLANS.forEach((p, i) => {
+    const roi = ((p.daily / p.price) * 100).toFixed(2);
+    const bars = Array.from({length:7}, (_,j) => {
+      const h = 20 + Math.random() * 70;
+      return `<div class="chart-bar" style="--h:${h}%;height:${h}%"></div>`;
+    }).join('');
+    const card = document.createElement('div');
+    card.className = 'func-card fade-in';
+    card.style.animationDelay = (i * 0.06) + 's';
+    card.innerHTML = `
+      <div class="func-title">${p.name}</div>
+      <div class="func-desc">${p.desc}</div>
+      <div class="func-tags">
+        <span class="func-tag">ROI ${roi}% / dia</span>
+        <span class="func-tag">Duracao 30 dias</span>
+        <span class="func-tag">Baixo risco</span>
+        <span class="func-tag">Lucro diario</span>
+      </div>
+      <div class="chart-box">${bars}</div>
+    `;
+    cont.appendChild(card);
+  });
+}
+
+// ── Detail sheet ──────────────────────────────────────
+function openDetail(p) {
+  const roi = ((p.daily / p.price) * 100).toFixed(2);
+  document.getElementById('dImg').src = p.img;
+  document.getElementById('dName').textContent = p.name;
+  document.getElementById('dDesc').textContent = p.desc;
+  document.getElementById('dPrice').textContent = formatKz(p.price);
+  document.getElementById('dDaily').textContent = '+' + formatKz(p.daily) + ' / dia';
+  document.getElementById('dRoi').textContent = roi + '% ao dia';
+  document.getElementById('dInvestBtn').onclick = () => {
+    closeDetail();
+    setTimeout(() => confirmInvest(p), 300);
+  };
+  document.getElementById('detailModal').classList.add('on');
+}
+function closeDetail() { document.getElementById('detailModal').classList.remove('on'); }
+document.getElementById('detailModal').addEventListener('click', e => {
+  if(e.target === document.getElementById('detailModal')) closeDetail();
+});
+
+// ── Confirm invest ────────────────────────────────────
+function confirmInvest(p) {
+  const saldo = lacUser.saldo || 0;
+  if(saldo < p.price) {
+    return showAlert('err','Saldo Insuficiente',`O seu saldo disponivel e ${formatKz(saldo)}. Para este plano precisa de ${formatKz(p.price)}. Por favor efectue um deposito.`);
+  }
+  showAlert('confirm',
+    'Confirmar Investimento',
+    `Deseja investir ${formatKz(p.price)} no plano "${p.name}"? Recebera ${formatKz(p.daily)} por dia durante 30 dias.`,
+    () => doInvest(p)
+  );
+}
+
+// ── Do invest ─────────────────────────────────────────
+async function doInvest(p) {
+  spin('A processar o investimento...');
+  try {
+    const db = window._db;
+    const {doc, updateDoc, collection, addDoc} = window._fs;
+    const uid = localStorage.getItem('lacUID');
+    const newSaldo = (lacUser.saldo || 0) - p.price;
+    const newBloc = (lacUser.saldoBloqueado || 0) + p.price;
+    await updateDoc(doc(db,'users',uid), {
+      saldo: newSaldo,
+      saldoBloqueado: newBloc,
+      investimentoActivo: true,
+      planoActivo: p.id,
+      planoNome: p.name,
+      planoInicio: new Date().toISOString(),
+      ganhosDiarios: p.daily
+    });
+    await addDoc(collection(db,'movimentos'), {
+      userId: uid,
+      tipo: 'investimento',
+      descricao: 'Investimento: ' + p.name,
+      valor: p.price,
+      data: new Date().toLocaleDateString('pt-AO'),
+      createdAt: new Date().toISOString()
+    });
+    lacUser.saldo = newSaldo;
+    lacUser.saldoBloqueado = newBloc;
+    lacUser.investimentoActivo = true;
+    localStorage.setItem('lacUser', JSON.stringify(lacUser));
+    spin(false);
+    showAlert('ok','Investimento Activado',`Excelente escolha! O plano "${p.name}" foi activado com sucesso. Os seus ganhos de ${formatKz(p.daily)} por dia serao creditados automaticamente.`);
+  } catch(e) {
+    spin(false);
+    showAlert('err','Erro','Nao foi possivel processar o investimento. Tente novamente.');
+  }
+}
+
+// ── Tabs ──────────────────────────────────────────────
+function showTab(tab, el) {
+  document.querySelectorAll('.plan-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-investimentos').style.display = tab==='investimentos'?'block':'none';
+  document.getElementById('tab-funcionalidades').style.display = tab==='funcionalidades'?'block':'none';
+}
+
+// ── FS Modal ──────────────────────────────────────────
+function closeFS(id) { document.getElementById(id).classList.remove('open'); }
+
+// ── Alert ─────────────────────────────────────────────
+let _acb=null;
+function showAlert(type, title, msg, cb) {
+  const icon=document.getElementById('aIcon');
+  icon.className='modal-icon '+(type==='ok'?'ico-ok':type==='confirm'?'ico-info':'ico-err');
+  icon.textContent=type==='ok'?'✓':type==='confirm'?'?':'!';
+  document.getElementById('aTitle').textContent=title;
+  document.getElementById('aMsg').textContent=msg;
+  const btns=document.getElementById('aBtns');
+  if(type==='confirm') {
+    btns.innerHTML=`<button class="mbtn mbtn-outline" onclick="closeAlert()">Cancelar</button>
+                    <button class="mbtn mbtn-red" onclick="closeAlert(true)">Confirmar</button>`;
+  } else {
+    btns.innerHTML=`<button class="mbtn mbtn-blue" onclick="closeAlert()">OK</button>`;
+  }
+  _acb=cb||null;
+  document.getElementById('alertBg').classList.add('on');
+}
+function closeAlert(confirm) {
+  document.getElementById('alertBg').classList.remove('on');
+  if(confirm && _acb){_acb();_acb=null;}
+  else _acb=null;
+}
+
+// ── Spinner ───────────────────────────────────────────
+function spin(msg){
+  const o=document.getElementById('spinOv');
+  if(msg===false) o.classList.remove('on');
+  else{document.getElementById('spinLbl').textContent=msg||'A processar...';o.classList.add('on');}
+}
+function formatKz(n){return Number(n).toLocaleString('pt-AO')+' Kz';}
+
+// ── Floating support ──────────────────────────────────
+const fsEl=document.getElementById('floatSupport');
+let dragging=false,ox=0,oy=0,moved=false;
+fsEl.addEventListener('pointerdown',e=>{dragging=true;moved=false;ox=e.clientX-fsEl.getBoundingClientRect().left;oy=e.clientY-fsEl.getBoundingClientRect().top;fsEl.setPointerCapture(e.pointerId);e.preventDefault();});
+fsEl.addEventListener('pointermove',e=>{if(!dragging)return;moved=true;fsEl.style.left=Math.max(0,Math.min(window.innerWidth-56,e.clientX-ox))+'px';fsEl.style.top=Math.max(0,Math.min(window.innerHeight-56,e.clientY-oy))+'px';fsEl.style.right='auto';fsEl.style.bottom='auto';});
+fsEl.addEventListener('pointerup',()=>{dragging=false;});
+function openSupport(){if(moved){moved=false;return;}window.open('https://wa.me/244925768626','_blank');}
+
+// ── Init ──────────────────────────────────────────────
+renderPlans();
+renderFunc();
+</script>
+</body>
+</html>
