@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saudi Aramco — Inicio</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc, collection, query, where, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDp02RqKrac4ogFRGDcJjPLpA2inOV2rsk",
+    authDomain: "pro-2c872.firebaseapp.com",
+    projectId: "pro-2c872",
+    storageBucket: "pro-2c872.firebasestorage.app",
+    messagingSenderId: "778229616930",
+    appId: "1:778229616930:web:b56177b322241b103ad57b"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  window._auth = auth;
+  window._db = db;
+  window._dbFuncs = { doc, getDoc, collection, query, where, orderBy, limit, getDocs };
+  window._signOut = signOut;
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) { window.location.href = 'auth.html'; return; }
+    window._currentUser = user;
+
+    try {
+      const snap = await getDoc(doc(db, 'users', user.uid));
+      if (snap.exists()) {
+        window._userData = snap.data();
+        renderPage(snap.data());
+      }
+    } catch(e) {
+      renderPage({ name: user.displayName || 'Investidor', accountId: 'SA000000', balance: 0, phone1: '—' });
+    }
+  });
+</script>
+
+<style>
+:root {
+  --primary: #007bff;
+  --primary-t: rgba(0,123,255,0.10);
+  --primary-d: #0060d9;
+  --gold: #c8902a;
+  --gold-light: #e8b84b;
+  --dark: #0a0f1e;
+  --surface: #ffffff;
+  --surface2: #f4f6fa;
+  --border: #e2e8f0;
+  --text: #1a202c;
+  --text-muted: #64748b;
+  --success: #10b981;
+  --error: #ef4444;
+  --warning: #f59e0b;
+  --orange: #f97316;
+  --nav-h: 68px;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow: 0 2px 16px rgba(0,0,0,0.07);
+  --shadow-md: 0 4px 24px rgba(0,0,0,0.10);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'Sora', sans-serif;
+  background: #f0f3f9;
+  min-height: 100vh;
+  padding-bottom: calc(var(--nav-h) + 16px);
+  color: var(--text);
+}
+
+/* ===== NOTIFICATION POPUP ===== */
+.notif-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(10,15,30,0.55);
+  backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+@keyframes slideUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+
+.notif-card {
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.7);
+  border-radius: 22px;
+  padding: 28px 24px;
+  max-width: 360px;
+  width: 100%;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.18);
+  animation: slideUp 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  position: relative;
+}
+
+.notif-step-indicator {
+  display: flex; gap: 6px; justify-content: center; margin-bottom: 20px;
+}
+
+.notif-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--border); transition: all 0.3s;
+}
+.notif-dot.active { background: var(--primary); width: 22px; border-radius: 4px; }
+
+.notif-icon-wrap {
+  width: 56px; height: 56px;
+  background: linear-gradient(135deg, var(--primary-t), rgba(200,144,42,0.1));
+  border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 16px;
+  border: 1px solid rgba(0,123,255,0.15);
+}
+
+.notif-icon-wrap svg { width: 28px; height: 28px; color: var(--primary); }
+
+.notif-title {
+  font-size: 18px; font-weight: 700; color: var(--text);
+  text-align: center; margin-bottom: 10px; letter-spacing: -0.3px;
+}
+
+.notif-body {
+  font-size: 13px; color: var(--text-muted);
+  line-height: 1.65; text-align: center; margin-bottom: 22px;
+}
+
+.notif-body strong { color: var(--text); }
+
+.notif-tg-btn {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  background: linear-gradient(135deg, #229ed9, #1a8bbf);
+  color: white; border: none; border-radius: 12px;
+  padding: 13px; width: 100%; cursor: pointer;
+  font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 4px 16px rgba(34,158,217,0.35);
+  transition: all 0.2s; margin-bottom: 10px;
+}
+
+.notif-tg-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(34,158,217,0.45); }
+.notif-tg-btn svg { width: 20px; height: 20px; }
+
+.notif-next-btn {
+  width: 100%; padding: 13px; border: 1.5px solid var(--border);
+  border-radius: 12px; background: transparent;
+  font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 600;
+  color: var(--text-muted); cursor: pointer; transition: all 0.2s;
+}
+
+.notif-next-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-t); }
+
+/* ===== HEADER ===== */
+.header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: var(--shadow);
+}
+
+.header-inner {
+  max-width: 600px; margin: 0 auto;
+  padding: 12px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.header-brand {
+  display: flex; align-items: center; gap: 10px;
+}
+
+.header-logo-img {
+  width: 44px; height: 44px; border-radius: 10px;
+  object-fit: cover;
+  border: 1px solid var(--border);
+}
+
+.header-brand-text { }
+.header-brand-name {
+  font-size: 15px; font-weight: 700; color: var(--dark); letter-spacing: -0.3px;
+}
+.header-brand-name span { color: var(--gold); }
+.header-brand-sub {
+  font-size: 10px; color: var(--text-muted); font-weight: 500; letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.header-actions { display: flex; align-items: center; gap: 8px; }
+
+.header-icon-btn {
+  width: 38px; height: 38px; border-radius: 10px;
+  background: var(--surface2); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.2s; position: relative;
+  color: var(--text-muted);
+}
+
+.header-icon-btn:hover { background: var(--primary-t); color: var(--primary); border-color: rgba(0,123,255,0.2); }
+.header-icon-btn svg { width: 18px; height: 18px; }
+
+.notif-badge {
+  position: absolute; top: -3px; right: -3px;
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--error); color: white;
+  font-size: 8px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid var(--surface);
+}
+
+/* ===== MAIN ===== */
+.main { max-width: 600px; margin: 0 auto; padding: 0 16px; }
+
+/* ===== HERO BANNER ===== */
+.hero-banner {
+  margin: 16px 0;
+  border-radius: var(--radius);
+  overflow: hidden;
+  position: relative;
+  box-shadow: var(--shadow-md);
+}
+
+.hero-banner img {
+  width: 100%; height: 180px; object-fit: cover;
+  display: block;
+}
+
+.hero-banner-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(10,15,30,0.7) 0%, rgba(10,15,30,0.2) 60%, transparent 100%);
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 18px;
+}
+
+.hero-banner-title {
+  font-size: 20px; font-weight: 700; color: white; letter-spacing: -0.5px;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.hero-banner-title span { color: var(--gold-light); }
+
+.hero-banner-sub {
+  font-size: 11px; color: rgba(255,255,255,0.75); font-weight: 500;
+  letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 4px;
+}
+
+/* ===== QR SECTION ===== */
+.qr-section {
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+  display: flex; gap: 16px; align-items: flex-start;
+}
+
+.qr-box {
+  flex-shrink: 0;
+  width: 90px; height: 90px;
+  background: var(--surface2);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+
+#qrCanvas { width: 90px !important; height: 90px !important; }
+
+.qr-info { flex: 1; min-width: 0; }
+
+.qr-info-title {
+  font-size: 12px; font-weight: 700; color: var(--text);
+  text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px;
+}
+
+.qr-data-row {
+  display: flex; align-items: baseline; gap: 6px;
+  margin-bottom: 5px;
+}
+
+.qr-data-label {
+  font-size: 10px; font-weight: 700; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.6px; flex-shrink: 0;
+  min-width: 48px;
+}
+
+.qr-data-val {
+  font-size: 12px; font-weight: 600; color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+.qr-data-val.highlight { color: var(--primary); }
+
+/* ===== COMPANY INFO ===== */
+.company-section {
+  background: linear-gradient(135deg, #0a0f1e 0%, #1a3a6b 100%);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 16px;
+  position: relative; overflow: hidden;
+  box-shadow: 0 8px 32px rgba(10,15,30,0.25);
+}
+
+.company-section::before {
+  content: '';
+  position: absolute; top: -40px; right: -40px;
+  width: 140px; height: 140px;
+  background: radial-gradient(circle, rgba(200,144,42,0.15) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.company-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(200,144,42,0.2); border: 1px solid rgba(200,144,42,0.35);
+  border-radius: 20px; padding: 4px 12px; margin-bottom: 12px;
+  font-size: 10px; font-weight: 700; color: var(--gold-light);
+  letter-spacing: 1px; text-transform: uppercase;
+}
+
+.company-name {
+  font-size: 22px; font-weight: 700; color: white;
+  letter-spacing: -0.5px; margin-bottom: 8px;
+}
+
+.company-name span { color: var(--gold-light); }
+
+.company-desc {
+  font-size: 12px; color: rgba(255,255,255,0.65);
+  line-height: 1.65; margin-bottom: 16px;
+}
+
+.company-stats {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+}
+
+.company-stat {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px; padding: 10px;
+  text-align: center;
+}
+
+.company-stat-val {
+  font-size: 15px; font-weight: 700; color: var(--gold-light);
+  font-family: 'JetBrains Mono', monospace; margin-bottom: 2px;
+}
+
+.company-stat-label {
+  font-size: 9px; color: rgba(255,255,255,0.5);
+  font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;
+}
+
+/* ===== BALANCE CARDS ===== */
+.section-title {
+  font-size: 13px; font-weight: 700; color: var(--text);
+  text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+
+.section-title::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+
+.balance-cards { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+
+.balance-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px; padding: 14px 16px;
+  display: flex; align-items: center; gap: 14px;
+  box-shadow: var(--shadow); cursor: pointer;
+  transition: all 0.2s;
+}
+
+.balance-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: rgba(0,123,255,0.2); }
+
+.balance-card-icon {
+  width: 44px; height: 44px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.balance-card-icon.disponivel { background: rgba(0,123,255,0.1); color: var(--primary); }
+.balance-card-icon.contabil { background: rgba(200,144,42,0.1); color: var(--gold); }
+.balance-card-icon.investido { background: rgba(16,185,129,0.1); color: var(--success); }
+.balance-card-icon svg { width: 20px; height: 20px; }
+
+.balance-card-body { flex: 1; }
+.balance-card-label {
+  font-size: 11px; font-weight: 700; color: var(--orange);
+  text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 3px;
+}
+.balance-card-val {
+  font-size: 20px; font-weight: 700; color: var(--text);
+  font-family: 'JetBrains Mono', monospace; letter-spacing: -0.5px;
+}
+.balance-card-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+.balance-card-arrow { color: var(--border); }
+.balance-card-arrow svg { width: 18px; height: 18px; }
+
+/* ===== QUICK ACTIONS ===== */
+.quick-actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 16px; }
+
+.quick-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px; padding: 14px;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 8px;
+  cursor: pointer; transition: all 0.2s; text-decoration: none;
+}
+
+.quick-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+.quick-btn-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.quick-btn-icon.perfil { background: rgba(0,123,255,0.1); color: var(--primary); }
+.quick-btn-icon.compras { background: rgba(249,115,22,0.1); color: var(--orange); }
+.quick-btn-icon.dl { background: rgba(16,185,129,0.1); color: var(--success); }
+.quick-btn-icon.tarefas { background: rgba(200,144,42,0.1); color: var(--gold); }
+.quick-btn-icon svg { width: 18px; height: 18px; }
+
+.quick-btn-label { font-size: 13px; font-weight: 700; color: var(--text); }
+.quick-btn-sub { font-size: 11px; color: var(--text-muted); }
+
+/* ===== MOVEMENTS ===== */
+.movements { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 16px; box-shadow: var(--shadow); }
+
+.movements-header { padding: 14px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+
+.movements-title { font-size: 13px; font-weight: 700; color: var(--text); }
+
+.movements-link { font-size: 12px; color: var(--primary); font-weight: 600; text-decoration: none; }
+
+.movement-item {
+  padding: 12px 16px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 12px;
+  cursor: pointer; transition: background 0.15s;
+}
+
+.movement-item:last-child { border-bottom: none; }
+.movement-item:hover { background: var(--surface2); }
+
+.movement-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+
+.movement-dot.in { background: var(--success); }
+.movement-dot.out { background: var(--orange); }
+
+.movement-body { flex: 1; min-width: 0; }
+
+.movement-desc { font-size: 13px; font-weight: 600; color: var(--text); }
+.movement-meta { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+
+.movement-val {
+  font-size: 14px; font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.movement-val.in { color: var(--success); }
+.movement-val.out { color: var(--text); }
+
+.movements-empty {
+  padding: 32px 16px; text-align: center;
+  color: var(--text-muted); font-size: 13px;
+}
+
+/* ===== BOTTOM NAV ===== */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  height: var(--nav-h);
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border-top: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-around;
+  padding: 0 8px;
+  box-shadow: 0 -4px 24px rgba(0,0,0,0.07);
+  z-index: 200;
+}
+
+.nav-item {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 8px 12px; border-radius: 12px;
+  cursor: pointer; transition: all 0.2s;
+  text-decoration: none; border: none; background: none;
+  flex: 1; min-width: 0;
+}
+
+.nav-item:hover { background: var(--surface2); }
+
+.nav-item.active .nav-icon { color: var(--primary); }
+.nav-item.active .nav-label { color: var(--primary); }
+
+.nav-icon { color: var(--text-muted); display: flex; position: relative; }
+.nav-icon svg { width: 22px; height: 22px; transition: all 0.2s; }
+.nav-item.active .nav-icon svg { transform: scale(1.05); }
+
+.nav-label { font-size: 10px; font-weight: 600; color: var(--text-muted); letter-spacing: 0.3px; }
+
+.nav-active-dot {
+  width: 4px; height: 4px; border-radius: 50%;
+  background: var(--primary);
+  margin-top: 1px; opacity: 0; transition: opacity 0.2s;
+}
+
+.nav-item.active .nav-active-dot { opacity: 1; }
+
+/* ===== POPUP ===== */
+.popup-container {
+  position: fixed; top: 20px; right: 16px; left: 16px;
+  z-index: 9999; display: flex; flex-direction: column;
+  align-items: flex-end; gap: 10px; pointer-events: none;
+}
+
+@media (min-width: 480px) { .popup-container { left: auto; width: 340px; } }
+
+.popup {
+  background: rgba(255,255,255,0.88);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255,255,255,0.65);
+  border-radius: 14px; padding: 13px 15px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.14);
+  display: flex; align-items: flex-start; gap: 11px;
+  width: 100%; pointer-events: all;
+  transform: translateX(120%); opacity: 0;
+  transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s;
+}
+
+.popup.show { transform: translateX(0); opacity: 1; }
+.popup.hide { transform: translateX(120%); opacity: 0; }
+
+.popup-icon { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.popup-icon svg { width: 17px; height: 17px; }
+.popup.success .popup-icon { background: rgba(16,185,129,0.15); color: var(--success); }
+.popup.error .popup-icon { background: rgba(239,68,68,0.12); color: var(--error); }
+.popup.info .popup-icon { background: rgba(0,123,255,0.12); color: var(--primary); }
+
+.popup-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 1px; }
+.popup-msg { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
+.popup-close { background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 2px; flex-shrink: 0; }
+.popup-close svg { width: 13px; height: 13px; }
+
+/* ===== MODAL ===== */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(10,15,30,0.5);
+  backdrop-filter: blur(6px);
+  display: flex; align-items: flex-end; justify-content: center;
+  padding: 16px;
+  animation: fadeIn 0.25s ease;
+}
+
+.modal-sheet {
+  background: var(--surface);
+  border-radius: 22px 22px 16px 16px;
+  width: 100%; max-width: 500px;
+  max-height: 80vh; overflow-y: auto;
+  padding: 24px 20px;
+  box-shadow: 0 -8px 40px rgba(0,0,0,0.18);
+  animation: slideUp 0.35s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+.modal-handle {
+  width: 36px; height: 4px; border-radius: 4px;
+  background: var(--border); margin: 0 auto 20px;
+}
+
+.modal-title { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 16px; }
+
+.modal-close-btn {
+  position: absolute; top: 16px; right: 16px;
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--surface2); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--text-muted);
+}
+
+.modal-close-btn svg { width: 15px; height: 15px; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 380px) {
+  .company-stats { grid-template-columns: repeat(2, 1fr); }
+  .quick-actions { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- Popup Container -->
+<div class="popup-container" id="popupContainer"></div>
+
+<!-- ===== NOTIFICATION OVERLAY ===== -->
+<div class="notif-overlay" id="notifOverlay">
+  <div class="notif-card">
+    <div class="notif-step-indicator">
+      <div class="notif-dot active" id="nd1"></div>
+      <div class="notif-dot" id="nd2"></div>
+    </div>
+
+    <!-- Step 1 -->
+    <div id="notifStep1">
+      <div class="notif-icon-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+      </div>
+      <div class="notif-title">Bem-vindo a Saudi Aramco</div>
+      <div class="notif-body">
+        <strong>Parabens por dar o primeiro passo.</strong><br><br>
+        A Saudi Aramco e uma plataforma de investimentos em ativos petroliferos de alta rentabilidade. Os seus fundos sao geridos por especialistas do sector energetico global, garantindo retornos diarios comprovados.<br><br>
+        Leia com atencao e avance para conhecer a nossa comunidade exclusiva de investidores.
+      </div>
+      <button class="notif-next-btn" onclick="notifNext()">Continuar &rarr;</button>
+    </div>
+
+    <!-- Step 2 -->
+    <div id="notifStep2" style="display:none">
+      <div class="notif-icon-wrap" style="background:linear-gradient(135deg,rgba(34,158,217,0.15),rgba(26,139,191,0.1));border-color:rgba(34,158,217,0.2)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#229ed9" stroke-width="1.8">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+      </div>
+      <div class="notif-title">Grupo Oficial de Investidores</div>
+      <div class="notif-body">
+        Junte-se ao nosso grupo exclusivo no Telegram para receber <strong>alertas de mercado em tempo real</strong>, dicas de investimento dos nossos analistas e suporte prioritario da equipa Saudi Aramco.<br><br>
+        A comunidade tem mais de <strong>12.400 investidores ativos</strong> de lingua portuguesa.
+      </div>
+      <a href="https://t.me/+oEhRNUdgKqg0M2U0" target="_blank" class="notif-tg-btn">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 13.617l-2.96-.924c-.64-.203-.657-.64.136-.954l11.566-4.458c.537-.194 1.006.131.832.94z"/>
+        </svg>
+        Entrar no Grupo Telegram
+      </a>
+      <button class="notif-next-btn" onclick="closeNotif()">Aceder ao Painel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== HEADER ===== -->
+<header class="header">
+  <div class="header-inner">
+    <div class="header-brand">
+      <img src="https://i.postimg.cc/FH0JFhTv/images-(1).jpg" alt="Saudi Aramco" class="header-logo-img" onerror="this.style.display='none'">
+      <div class="header-brand-text">
+        <div class="header-brand-name">Saudi <span>Aramco</span></div>
+        <div class="header-brand-sub">Investimentos</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <div class="header-icon-btn" onclick="showPopup('info','Notificacoes','Sem novas notificacoes no momento.')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <div class="notif-badge">1</div>
+      </div>
+      <a href="perfil.html" class="header-icon-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </a>
+    </div>
+  </div>
+</header>
+
+<!-- ===== MAIN ===== -->
+<main class="main">
+
+  <!-- Hero Banner -->
+  <div class="hero-banner">
+    <img src="https://i.postimg.cc/FH0JFhTv/images-(1).jpg" alt="Saudi Aramco" onerror="this.src='https://via.placeholder.com/600x180/0a0f1e/ffffff?text=Saudi+Aramco'">
+    <div class="hero-banner-overlay">
+      <div class="hero-banner-sub">Plataforma Oficial</div>
+      <div class="hero-banner-title">Saudi <span>Aramco</span><br>Investimentos</div>
+    </div>
+  </div>
+
+  <!-- QR Section -->
+  <div class="qr-section">
+    <div class="qr-box">
+      <div id="qrCanvas"></div>
+    </div>
+    <div class="qr-info">
+      <div class="qr-info-title">Cartao Digital</div>
+      <div class="qr-data-row">
+        <span class="qr-data-label">Nome</span>
+        <span class="qr-data-val" id="qrName">A carregar...</span>
+      </div>
+      <div class="qr-data-row">
+        <span class="qr-data-label">ID</span>
+        <span class="qr-data-val highlight" id="qrId">—</span>
+      </div>
+      <div class="qr-data-row">
+        <span class="qr-data-label">Tel.</span>
+        <span class="qr-data-val" id="qrPhone">—</span>
+      </div>
+      <div class="qr-data-row">
+        <span class="qr-data-label">Estado</span>
+        <span class="qr-data-val" id="qrStatus">—</span>
+      </div>
+      <div class="qr-data-row">
+        <span class="qr-data-label">Membro</span>
+        <span class="qr-data-val" id="qrSince">—</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Company Info -->
+  <div class="company-section">
+    <div class="company-badge">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      Empresa Certificada
+    </div>
+    <div class="company-name">Saudi <span>Aramco</span></div>
+    <div class="company-desc">
+      A Saudi Aramco e a maior empresa petrolifera do mundo, com sede em Dhahran, Arabia Saudita. Fundada em 1933, opera nos setores de exploracao, producao, refinacao e distribuicao de petroleo e gas natural. A nossa plataforma de investimentos permite que qualquer investidor aceda aos lucros diarios gerados pelos ativos petroliferos de alta performance da empresa.
+    </div>
+    <div class="company-stats">
+      <div class="company-stat">
+        <div class="company-stat-val">+90</div>
+        <div class="company-stat-label">Anos</div>
+      </div>
+      <div class="company-stat">
+        <div class="company-stat-val">$2T</div>
+        <div class="company-stat-label">Valor</div>
+      </div>
+      <div class="company-stat">
+        <div class="company-stat-val">70+</div>
+        <div class="company-stat-label">Paises</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Saldos -->
+  <div class="section-title">Os meus ativos</div>
+  <div class="balance-cards" id="balanceCards">
+    <div class="balance-card" onclick="window.location.href='dl.html'">
+      <div class="balance-card-icon disponivel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+      </div>
+      <div class="balance-card-body">
+        <div class="balance-card-label">Disponivel</div>
+        <div class="balance-card-val" id="balDisp">0,00 Kz</div>
+        <div class="balance-card-sub">Pronto para levantar</div>
+      </div>
+      <div class="balance-card-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
+    </div>
+    <div class="balance-card" onclick="window.location.href='dl.html'">
+      <div class="balance-card-icon contabil">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      </div>
+      <div class="balance-card-body">
+        <div class="balance-card-label">Contabilistico</div>
+        <div class="balance-card-val" id="balCont">0,00 Kz</div>
+        <div class="balance-card-sub">Total acumulado</div>
+      </div>
+      <div class="balance-card-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
+    </div>
+    <div class="balance-card" onclick="window.location.href='compras.html'">
+      <div class="balance-card-icon investido">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+      </div>
+      <div class="balance-card-body">
+        <div class="balance-card-label">Plano Ativo</div>
+        <div class="balance-card-val" id="balPlan">Sem plano</div>
+        <div class="balance-card-sub" id="balPlanSub">Adquira um plano de investimento</div>
+      </div>
+      <div class="balance-card-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="section-title">Acoes rapidas</div>
+  <div class="quick-actions">
+    <a href="perfil.html" class="quick-btn">
+      <div class="quick-btn-icon perfil">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </div>
+      <div class="quick-btn-label">Perfil</div>
+      <div class="quick-btn-sub">Gerir a minha conta</div>
+    </a>
+    <a href="compras.html" class="quick-btn">
+      <div class="quick-btn-icon compras">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+      </div>
+      <div class="quick-btn-label">Compras</div>
+      <div class="quick-btn-sub">Planos de investimento</div>
+    </a>
+    <a href="dl.html" class="quick-btn">
+      <div class="quick-btn-icon dl">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      </div>
+      <div class="quick-btn-label">Deposito / Levantamento</div>
+      <div class="quick-btn-sub">Gerir fundos</div>
+    </a>
+    <a href="tarefas.html" class="quick-btn">
+      <div class="quick-btn-icon tarefas">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      </div>
+      <div class="quick-btn-label">Tarefas</div>
+      <div class="quick-btn-sub">Renda diaria</div>
+    </a>
+  </div>
+
+  <!-- Movements -->
+  <div class="section-title">Ultimos movimentos</div>
+  <div class="movements">
+    <div class="movements-header">
+      <span class="movements-title">Historico recente</span>
+      <a href="dl.html" class="movements-link">Ver todos</a>
+    </div>
+    <div id="movementsList">
+      <div class="movements-empty">Sem movimentos registados. Realize o seu primeiro deposito para comecar a investir.</div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ===== BOTTOM NAV ===== -->
+<nav class="bottom-nav">
+  <a href="index.html" class="nav-item active">
+    <div class="nav-icon">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+    </div>
+    <div class="nav-label">Inicio</div>
+    <div class="nav-active-dot"></div>
+  </a>
+  <a href="compras.html" class="nav-item">
+    <div class="nav-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+    </div>
+    <div class="nav-label">Compras</div>
+    <div class="nav-active-dot"></div>
+  </a>
+  <a href="dl.html" class="nav-item">
+    <div class="nav-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+    </div>
+    <div class="nav-label">DL</div>
+    <div class="nav-active-dot"></div>
+  </a>
+  <a href="tarefas.html" class="nav-item">
+    <div class="nav-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+    </div>
+    <div class="nav-label">Tarefas</div>
+    <div class="nav-active-dot"></div>
+  </a>
+</nav>
+
+<script>
+/* ===== NOTIF STEPS ===== */
+let notifStep = 1;
+
+function notifNext() {
+  document.getElementById('notifStep1').style.display = 'none';
+  document.getElementById('notifStep2').style.display = 'block';
+  document.getElementById('nd1').classList.remove('active');
+  document.getElementById('nd2').classList.add('active');
+  notifStep = 2;
+}
+
+function closeNotif() {
+  const overlay = document.getElementById('notifOverlay');
+  overlay.style.opacity = '0';
+  overlay.style.transition = 'opacity 0.3s';
+  setTimeout(() => overlay.remove(), 300);
+}
+
+/* ===== RENDER PAGE ===== */
+function renderPage(data) {
+  // QR Code
+  const qrData = JSON.stringify({
+    nome: data.name,
+    id: data.accountId,
+    email: data.email,
+    tel: data.phone1,
+    plataforma: 'Saudi Aramco',
+    estado: data.activeInvestment ? 'Ativo' : 'Sem plano'
+  });
+
+  try {
+    new QRCode(document.getElementById('qrCanvas'), {
+      text: qrData,
+      width: 90, height: 90,
+      colorDark: '#0a0f1e', colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.M
+    });
+  } catch(e) {}
+
+  document.getElementById('qrName').textContent = data.name || '—';
+  document.getElementById('qrId').textContent = data.accountId || '—';
+  document.getElementById('qrPhone').textContent = data.phone1 || '—';
+  document.getElementById('qrStatus').textContent = data.activeInvestment ? 'Ativo' : 'Sem plano';
+  document.getElementById('qrSince').textContent = data.createdAt
+    ? new Date(data.createdAt.seconds * 1000).toLocaleDateString('pt-AO', { month: 'short', year: 'numeric' })
+    : new Date().toLocaleDateString('pt-AO', { month: 'short', year: 'numeric' });
+
+  // Balances
+  const bal = data.balance || 0;
+  const accBal = data.accountBalance || 0;
+  document.getElementById('balDisp').textContent = formatKz(bal);
+  document.getElementById('balCont').textContent = formatKz(accBal);
+
+  if (data.activeInvestment) {
+    document.getElementById('balPlan').textContent = data.activeInvestment.name || 'Plano Ativo';
+    document.getElementById('balPlanSub').textContent = 'Renda: ' + formatKz(data.activeInvestment.dailyIncome || 0) + '/dia';
+  }
+
+  // Movements
+  const movs = data.movements || [];
+  renderMovements(movs);
+}
+
+function renderMovements(movs) {
+  const el = document.getElementById('movementsList');
+  if (!movs.length) {
+    el.innerHTML = '<div class="movements-empty">Sem movimentos registados. Realize o seu primeiro deposito para comecar a investir.</div>';
+    return;
+  }
+  el.innerHTML = movs.slice(0, 5).map(m => `
+    <div class="movement-item">
+      <div class="movement-dot ${m.type === 'deposito' || m.type === 'renda' ? 'in' : 'out'}"></div>
+      <div class="movement-body">
+        <div class="movement-desc">${m.desc || m.type}</div>
+        <div class="movement-meta">${m.date || '—'} &middot; ID: ${m.opId || '—'}</div>
+      </div>
+      <div class="movement-val ${m.type === 'deposito' || m.type === 'renda' ? 'in' : 'out'}">
+        ${m.type === 'deposito' || m.type === 'renda' ? '+' : '-'}${formatKz(m.amount || 0)}
+      </div>
+    </div>
+  `).join('');
+}
+
+function formatKz(v) {
+  return Number(v).toLocaleString('pt-AO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' Kz';
+}
+
+/* ===== POPUP ===== */
+const pIcons = {
+  success: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>',
+  error: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+  info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+};
+
+function showPopup(type, title, msg, dur=3500) {
+  const c = document.getElementById('popupContainer');
+  const p = document.createElement('div');
+  p.className = 'popup ' + type;
+  p.innerHTML = `<div class="popup-icon">${pIcons[type]||pIcons.info}</div><div style="flex:1"><div class="popup-title">${title}</div><div class="popup-msg">${msg}</div></div><button class="popup-close" onclick="this.parentElement.remove()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
+  c.appendChild(p);
+  requestAnimationFrame(() => p.classList.add('show'));
+  setTimeout(() => { p.classList.add('hide'); setTimeout(() => p.remove(), 400); }, dur);
+}
+
+window.renderPage = renderPage;
+window.showPopup = showPopup;
+</script>
+</body>
+</html>

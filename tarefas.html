@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saudi Aramco — Tarefas</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  const firebaseConfig={apiKey:"AIzaSyDp02RqKrac4ogFRGDcJjPLpA2inOV2rsk",authDomain:"pro-2c872.firebaseapp.com",projectId:"pro-2c872",storageBucket:"pro-2c872.firebasestorage.app",messagingSenderId:"778229616930",appId:"1:778229616930:web:b56177b322241b103ad57b"};
+  const app=initializeApp(firebaseConfig);
+  const auth=getAuth(app);const db=getFirestore(app);
+  window._auth=auth;window._db=db;window._dbFuncs={doc,getDoc,updateDoc,serverTimestamp};
+  onAuthStateChanged(auth,async(user)=>{
+    if(!user){window.location.href='auth.html';return;}
+    window._currentUser=user;
+    try{const snap=await getDoc(doc(db,'users',user.uid));if(snap.exists()){window._userData=snap.data();window._userBalance=snap.data().balance||0;}}catch(e){window._userData={};window._userBalance=0;}
+    initPage();
+  });
+</script>
+<style>
+:root{--primary:#007bff;--primary-t:rgba(0,123,255,0.10);--gold:#c8902a;--gold-light:#e8b84b;--surface:#ffffff;--surface2:#f4f6fa;--border:#e2e8f0;--text:#1a202c;--text-muted:#64748b;--success:#10b981;--error:#ef4444;--warning:#f59e0b;--orange:#f97316;--nav-h:68px;--radius:16px;--radius-sm:10px;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Sora',sans-serif;background:#f0f3f9;min-height:100vh;padding-bottom:calc(var(--nav-h)+16px);color:var(--text);}
+.header{background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(0,0,0,0.07);}
+.header-inner{max-width:600px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;gap:12px;}
+.back-btn{width:38px;height:38px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text);text-decoration:none;transition:all 0.2s;flex-shrink:0;}
+.back-btn:hover{background:var(--primary-t);color:var(--primary);}
+.back-btn svg{width:18px;height:18px;}
+.header-title{font-size:17px;font-weight:700;color:var(--text);flex:1;}
+.main{max-width:600px;margin:0 auto;padding:16px;}
+.section-title{font-size:13px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* CHECKING CARD */
+.check-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px;box-shadow:0 2px 12px rgba(0,0,0,0.06);text-align:center;}
+.check-spinner{width:48px;height:48px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin 0.9s linear infinite;margin:0 auto 14px;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.check-text{font-size:14px;font-weight:600;color:var(--text-muted);}
+
+/* DAILY INCOME CARD */
+.income-card{background:linear-gradient(135deg,#0a0f1e 0%,#1a3a6b 100%);border-radius:var(--radius);padding:22px;margin-bottom:16px;position:relative;overflow:hidden;box-shadow:0 8px 32px rgba(10,15,30,0.25);}
+.income-card::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;background:radial-gradient(circle,rgba(200,144,42,0.2) 0%,transparent 70%);border-radius:50%;}
+.income-card-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(200,144,42,0.2);border:1px solid rgba(200,144,42,0.3);border-radius:20px;padding:4px 12px;font-size:10px;font-weight:700;color:var(--gold-light);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;}
+.income-card-label{font-size:12px;color:rgba(255,255,255,0.6);font-weight:500;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.8px;}
+.income-card-val{font-size:32px;font-weight:700;color:white;font-family:'JetBrains Mono',monospace;letter-spacing:-1px;margin-bottom:8px;}
+.income-card-val span{font-size:16px;color:rgba(255,255,255,0.5);font-weight:400;}
+.income-card-info{font-size:12px;color:rgba(255,255,255,0.55);margin-bottom:18px;line-height:1.5;}
+.income-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--gold),var(--gold-light));color:#0a0f1e;border:none;border-radius:12px;font-family:'Sora',sans-serif;font-size:14px;font-weight:800;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 16px rgba(200,144,42,0.4);}
+.income-btn:hover{transform:translateY(-1px);box-shadow:0 6px 22px rgba(200,144,42,0.5);}
+.income-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none;}
+.income-btn svg{width:16px;height:16px;}
+.income-claimed{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);border-radius:12px;font-size:14px;font-weight:700;color:#d1fae5;}
+.income-claimed svg{width:18px;height:18px;color:#34d399;}
+.income-countdown{font-size:12px;color:rgba(255,255,255,0.5);text-align:center;margin-top:8px;}
+.income-countdown strong{color:var(--gold-light);font-family:'JetBrains Mono',monospace;}
+
+/* NO INVESTMENT */
+.no-inv-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:16px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,0.06);}
+.no-inv-icon{width:56px;height:56px;background:rgba(245,158,11,0.1);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;}
+.no-inv-icon svg{width:28px;height:28px;color:var(--warning);}
+.no-inv-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px;}
+.no-inv-sub{font-size:13px;color:var(--text-muted);line-height:1.6;margin-bottom:16px;}
+.btn-primary{width:100%;padding:13px;background:var(--primary);color:white;border:none;border-radius:var(--radius-sm);font-family:'Sora',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 14px rgba(0,123,255,0.28);text-decoration:none;}
+.btn-primary:hover{background:#0060d9;transform:translateY(-1px);}
+
+/* STATS ROW */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+.stat-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 8px;}
+.stat-icon svg{width:18px;height:18px;}
+.stat-icon.blue{background:rgba(0,123,255,0.1);color:var(--primary);}
+.stat-icon.green{background:rgba(16,185,129,0.1);color:var(--success);}
+.stat-icon.gold{background:rgba(200,144,42,0.1);color:var(--gold);}
+.stat-val{font-size:15px;font-weight:700;color:var(--text);font-family:'JetBrains Mono',monospace;margin-bottom:2px;}
+.stat-label{font-size:10px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;}
+
+/* SECURITY CARDS */
+.security-cards{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;}
+.security-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+.security-card-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.security-card-icon svg{width:18px;height:18px;}
+.security-card-icon.blue{background:rgba(0,123,255,0.1);color:var(--primary);}
+.security-card-icon.green{background:rgba(16,185,129,0.1);color:var(--success);}
+.security-card-icon.gold{background:rgba(200,144,42,0.1);color:var(--gold);}
+.security-card-icon.red{background:rgba(239,68,68,0.1);color:var(--error);}
+.security-card-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.security-card-desc{font-size:12px;color:var(--text-muted);line-height:1.55;}
+
+/* FAQ */
+.faq-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
+.faq-item{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.04);}
+.faq-question{padding:14px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;gap:10px;transition:background 0.15s;}
+.faq-question:hover{background:var(--surface2);}
+.faq-q-text{font-size:13px;font-weight:700;color:var(--text);flex:1;}
+.faq-arrow{color:var(--text-muted);flex-shrink:0;transition:transform 0.3s;}
+.faq-arrow svg{width:16px;height:16px;}
+.faq-item.open .faq-arrow{transform:rotate(180deg);}
+.faq-answer{display:none;padding:0 16px 14px;font-size:13px;color:var(--text-muted);line-height:1.65;border-top:1px solid var(--border);}
+.faq-item.open .faq-answer{display:block;}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:var(--nav-h);background:rgba(255,255,255,0.92);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-around;padding:0 8px;box-shadow:0 -4px 24px rgba(0,0,0,0.07);z-index:200;}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 12px;border-radius:12px;cursor:pointer;transition:all 0.2s;text-decoration:none;border:none;background:none;flex:1;}
+.nav-item.active .nav-icon{color:var(--primary);}
+.nav-item.active .nav-label{color:var(--primary);}
+.nav-icon{color:var(--text-muted);display:flex;}
+.nav-icon svg{width:22px;height:22px;}
+.nav-label{font-size:10px;font-weight:600;color:var(--text-muted);}
+.nav-active-dot{width:4px;height:4px;border-radius:50%;background:var(--primary);margin-top:1px;opacity:0;}
+.nav-item.active .nav-active-dot{opacity:1;}
+
+/* POPUP */
+.popup-container{position:fixed;top:20px;right:16px;left:16px;z-index:9999;display:flex;flex-direction:column;align-items:flex-end;gap:10px;pointer-events:none;}
+@media(min-width:480px){.popup-container{left:auto;width:340px;}}
+.popup{background:rgba(255,255,255,0.9);backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,0.65);border-radius:14px;padding:13px 15px;box-shadow:0 8px 32px rgba(0,0,0,0.14);display:flex;align-items:flex-start;gap:11px;width:100%;pointer-events:all;transform:translateX(120%);opacity:0;transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1),opacity 0.3s;}
+.popup.show{transform:translateX(0);opacity:1;}
+.popup.hide{transform:translateX(120%);opacity:0;}
+.popup-icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.popup-icon svg{width:17px;height:17px;}
+.popup.success .popup-icon{background:rgba(16,185,129,0.15);color:#10b981;}
+.popup.error .popup-icon{background:rgba(239,68,68,0.12);color:#ef4444;}
+.popup.info .popup-icon{background:rgba(0,123,255,0.12);color:#007bff;}
+.popup.warning .popup-icon{background:rgba(245,158,11,0.12);color:#f59e0b;}
+.popup-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:1px;}
+.popup-msg{font-size:12px;color:var(--text-muted);line-height:1.4;}
+.popup-close{background:none;border:none;cursor:pointer;color:var(--text-muted);padding:2px;flex-shrink:0;}
+.popup-close svg{width:13px;height:13px;}
+</style>
+</head>
+<body>
+<div class="popup-container" id="popupContainer"></div>
+<header class="header">
+  <div class="header-inner">
+    <a href="index.html" class="back-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></a>
+    <div class="header-title">Tarefas e Rendimentos</div>
+  </div>
+</header>
+
+<main class="main">
+
+  <!-- Checking -->
+  <div id="checkingCard" class="check-card">
+    <div class="check-spinner"></div>
+    <div class="check-text">A verificar o seu investimento...</div>
+  </div>
+
+  <!-- Daily Income Section -->
+  <div id="incomeSection" style="display:none">
+    <div class="section-title">Renda Diaria</div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg></div>
+        <div class="stat-val" id="statDaily">0</div>
+        <div class="stat-label">Renda/Dia</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+        <div class="stat-val" id="statTotal">0</div>
+        <div class="stat-label">Total Acum.</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        <div class="stat-val" id="statDays">0</div>
+        <div class="stat-label">Dias Activos</div>
+      </div>
+    </div>
+
+    <!-- Income Card -->
+    <div class="income-card">
+      <div class="income-card-badge">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="5"/></svg>
+        Rendimento Disponivel
+      </div>
+      <div class="income-card-label">Renda Diaria</div>
+      <div class="income-card-val" id="incomeVal">0,00 <span>Kz</span></div>
+      <div class="income-card-info" id="incomeInfo">
+        Plano: <strong id="incomePlanName">—</strong><br>
+        Rendimento diario garantido. Clique no botao abaixo para creditar na sua conta.<br>
+        Este valor esta disponivel <strong>uma vez por dia</strong>.
+      </div>
+      <div id="incomeClaimWrap">
+        <button class="income-btn" id="incomeBtn" onclick="claimIncome()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Recolher Renda Diaria
+        </button>
+      </div>
+      <div id="incomeCountdown" class="income-countdown" style="display:none">
+        Proxima renda disponivel em: <strong id="countdownTimer">23:59:59</strong>
+      </div>
+    </div>
+
+    <!-- Security Info -->
+    <div class="section-title">Seguranca dos Rendimentos</div>
+    <div class="security-cards">
+      <div class="security-card">
+        <div class="security-card-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <div><div class="security-card-title">Rendimentos Protegidos</div><div class="security-card-desc">Todos os rendimentos sao calculados e registados com encriptacao de grau bancario. Cada credito e auditavel e imutavel no sistema.</div></div>
+      </div>
+      <div class="security-card">
+        <div class="security-card-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+        <div><div class="security-card-title">Uma Colheita Por Dia</div><div class="security-card-desc">O sistema permite a recolha da renda uma unica vez em cada periodo de 24 horas. Isto garante a integridade do programa de rendimentos para todos os investidores.</div></div>
+      </div>
+      <div class="security-card">
+        <div class="security-card-icon gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        <div><div class="security-card-title">Credito Imediato</div><div class="security-card-desc">Apos clicar em recolher, o valor e imediatamente adicionado ao seu saldo disponivel, pronto para ser levantado ou reinvestido a qualquer momento.</div></div>
+      </div>
+      <div class="security-card">
+        <div class="security-card-icon red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+        <div><div class="security-card-title">Nao Perca os Seus Rendimentos</div><div class="security-card-desc">Os rendimentos nao recolhidos acumulam por ate 7 dias. Apos esse periodo, o valor e redistribuido pelo fundo de bonificacoes da plataforma.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- No Investment -->
+  <div id="noInvSection" style="display:none">
+    <div class="no-inv-card">
+      <div class="no-inv-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+      <div class="no-inv-title">Sem Plano de Investimento</div>
+      <div class="no-inv-sub">Ainda nao possui um plano de investimento ativo. Adquira um plano na secao de Compras para comecar a gerar rendimentos diarios automaticamente.</div>
+      <a href="compras.html" class="btn-primary">Ver Planos de Investimento</a>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="section-title">Perguntas Frequentes</div>
+  <div class="faq-list" id="faqList"></div>
+
+</main>
+
+<nav class="bottom-nav">
+  <a href="index.html" class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></div><div class="nav-label">Inicio</div><div class="nav-active-dot"></div></a>
+  <a href="compras.html" class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></div><div class="nav-label">Compras</div><div class="nav-active-dot"></div></a>
+  <a href="dl.html" class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div class="nav-label">DL</div><div class="nav-active-dot"></div></a>
+  <a href="tarefas.html" class="nav-item active"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div><div class="nav-label">Tarefas</div><div class="nav-active-dot"></div></a>
+</nav>
+
+<script>
+const FAQS=[
+  {q:'Quando recebo a minha renda diaria?',a:'A renda diaria fica disponivel todos os dias a partir das 00:00. Deve clicar no botao "Recolher Renda Diaria" para creditar o valor na sua conta. O processo e instantaneo.'},
+  {q:'O que acontece se nao recolher a renda?',a:'Os rendimentos nao recolhidos acumulam por ate 7 dias consecutivos. Apos esse periodo, o valor e redistribuido automaticamente pelo fundo de bonificacoes da plataforma. Recomendamos a recolha diaria.'},
+  {q:'Posso levantar a renda imediatamente?',a:'Sim. Apos recolher a renda diaria, o valor e adicionado ao seu saldo disponivel de imediato. Pode solicitar o levantamento a qualquer momento na secao DL, desde que o valor minimo de 100 Kz seja atingido.'},
+  {q:'O meu investimento esta seguro?',a:'Sim. Os fundos investidos sao geridos pela equipa de especialistas da Saudi Aramco e suportados pelos ativos petroliferos reais da empresa. Todos os registos sao encriptados e auditados regularmente.'},
+  {q:'Como funciona o programa de afiliados?',a:'Ao partilhar o seu link de convite, ganha 10% do valor do primeiro investimento de cada pessoa que se registar atraves do seu link. Os ganhos sao creditados automaticamente no seu saldo assim que o investimento do convidado for confirmado.'},
+  {q:'Posso ter mais de um plano de investimento?',a:'Actualmente o sistema suporta um plano de investimento activo por conta. Para fazer upgrade, contacte o suporte via WhatsApp para orientacao sobre a transicao para um plano superior.'},
+  {q:'Qual o prazo para processar um levantamento?',a:'Os levantamentos sao processados em 1 a 3 dias uteis apos a solicitacao. O valor e transferido diretamente para a conta bancaria registada na sua conta.'},
+  {q:'Como actualizo os meus dados bancarios?',a:'Por razoes de seguranca, os dados bancarios so podem ser actualizados atraves do suporte oficial. Contacte o gerente via WhatsApp com o seu ID de conta para iniciar o processo de alteracao.'},
+];
+
+function fKz(v){return Number(v).toLocaleString('pt-AO',{minimumFractionDigits:2,maximumFractionDigits:2})+' Kz';}
+
+function initPage(){
+  renderFAQ();
+  checkInvestment();
+}
+
+function renderFAQ(){
+  document.getElementById('faqList').innerHTML=FAQS.map((f,i)=>`
+    <div class="faq-item" id="faq${i}">
+      <div class="faq-question" onclick="toggleFaq(${i})">
+        <div class="faq-q-text">${f.q}</div>
+        <div class="faq-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+      </div>
+      <div class="faq-answer">${f.a}</div>
+    </div>
+  `).join('');
+}
+
+function toggleFaq(i){document.getElementById('faq'+i).classList.toggle('open');}
+
+async function checkInvestment(){
+  await delay(1400);
+  document.getElementById('checkingCard').style.display='none';
+  const d=window._userData||{};
+  const inv=d.activeInvestment;
+  if(!inv){
+    document.getElementById('noInvSection').style.display='block';
+    return;
+  }
+  document.getElementById('incomeSection').style.display='block';
+  renderIncomeSection(d,inv);
+}
+
+function renderIncomeSection(d,inv){
+  const daily=inv.dailyIncome||0;
+  const totalEarned=d.totalEarned||0;
+  const daysActive=d.daysActive||0;
+
+  document.getElementById('statDaily').textContent=fKz(daily);
+  document.getElementById('statTotal').textContent=fKz(totalEarned);
+  document.getElementById('statDays').textContent=daysActive;
+  document.getElementById('incomeVal').innerHTML=daily.toLocaleString('pt-AO',{minimumFractionDigits:2,maximumFractionDigits:2})+' <span>Kz</span>';
+  document.getElementById('incomePlanName').textContent=inv.name||'—';
+
+  // Check if already claimed today
+  const lastClaim=d.lastIncomeClaim;
+  const now=new Date();
+  const today=now.toDateString();
+  let claimed=false;
+  if(lastClaim){
+    const claimDate=new Date(lastClaim.seconds?lastClaim.seconds*1000:lastClaim).toDateString();
+    claimed=claimDate===today;
+  }
+
+  if(claimed){
+    showClaimed();
+    startCountdown();
+  }
+}
+
+function showClaimed(){
+  document.getElementById('incomeClaimWrap').innerHTML='<div class="income-claimed"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Renda ja recolhida hoje</div>';
+  document.getElementById('incomeCountdown').style.display='block';
+}
+
+function startCountdown(){
+  const now=new Date();
+  const tomorrow=new Date(now);
+  tomorrow.setDate(tomorrow.getDate()+1);
+  tomorrow.setHours(0,0,0,0);
+
+  const tick=()=>{
+    const diff=tomorrow-new Date();
+    if(diff<=0){location.reload();return;}
+    const h=Math.floor(diff/3600000).toString().padStart(2,'0');
+    const m=Math.floor((diff%3600000)/60000).toString().padStart(2,'0');
+    const s=Math.floor((diff%60000)/1000).toString().padStart(2,'0');
+    document.getElementById('countdownTimer').textContent=`${h}:${m}:${s}`;
+  };
+  tick();setInterval(tick,1000);
+}
+
+async function claimIncome(){
+  const btn=document.getElementById('incomeBtn');
+  const d=window._userData||{};
+  const inv=d.activeInvestment;
+  if(!inv)return;
+  const daily=inv.dailyIncome||0;
+
+  btn.disabled=true;
+  btn.innerHTML='<div style="width:16px;height:16px;border:2px solid rgba(10,15,30,0.3);border-top-color:#0a0f1e;border-radius:50%;animation:spin 0.7s linear infinite"></div>A processar...';
+
+  try{
+    const{doc,updateDoc,serverTimestamp}=window._dbFuncs;
+    const uid=window._currentUser.uid;
+    const newBal=(window._userBalance||0)+daily;
+    const newTotal=(d.totalEarned||0)+daily;
+    const newDays=(d.daysActive||0)+1;
+    await updateDoc(doc(window._db,'users',uid),{
+      balance:newBal,
+      totalEarned:newTotal,
+      daysActive:newDays,
+      lastIncomeClaim:serverTimestamp()
+    });
+    window._userBalance=newBal;
+    window._userData.totalEarned=newTotal;
+    window._userData.daysActive=newDays;
+    window._userData.lastIncomeClaim=new Date();
+
+    document.getElementById('statTotal').textContent=fKz(newTotal);
+    document.getElementById('statDays').textContent=newDays;
+    showPopup('success','Renda Recolhida!','+'+fKz(daily)+' adicionados ao seu saldo.',5000);
+    showClaimed();
+    startCountdown();
+  }catch(e){
+    btn.disabled=false;
+    btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Recolher Renda Diaria';
+    showPopup('error','Erro','Nao foi possivel processar. Tente novamente.');
+  }
+}
+
+function delay(ms){return new Promise(r=>setTimeout(r,ms));}
+
+const pIcons={success:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>',error:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',info:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',warning:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'};
+function showPopup(type,title,msg,dur=4000){
+  const c=document.getElementById('popupContainer');const p=document.createElement('div');p.className='popup '+type;
+  p.innerHTML=`<div class="popup-icon">${pIcons[type]||pIcons.info}</div><div style="flex:1"><div class="popup-title">${title}</div><div class="popup-msg">${msg}</div></div><button class="popup-close" onclick="this.parentElement.remove()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
+  c.appendChild(p);requestAnimationFrame(()=>p.classList.add('show'));
+  setTimeout(()=>{p.classList.add('hide');setTimeout(()=>p.remove(),400);},dur);
+}
+window.initPage=initPage;
+</script>
+</body>
+</html>
