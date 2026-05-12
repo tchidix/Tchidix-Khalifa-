@@ -24,9 +24,35 @@
   });
 </script>
 <style>
-:root{--primary:#007bff;--primary-t:rgba(0,123,255,0.10);--gold:#c8902a;--gold-light:#e8b84b;--dark:#0a0f1e;--surface:#ffffff;--surface2:#f4f6fa;--border:#e2e8f0;--text:#1a202c;--text-muted:#64748b;--success:#10b981;--error:#ef4444;--warning:#f59e0b;--orange:#f97316;--nav-h:68px;--radius:16px;}
+:root{
+  --primary:#007bff;
+  --primary-t:rgba(0,123,255,0.10);
+  --gold:#c8902a;
+  --gold-light:#e8b84b;
+  --dark:#0a0f1e;
+  --surface:#ffffff;
+  --surface2:#f4f6fa;
+  --border:#e2e8f0;
+  --text:#1a202c;
+  --text-muted:#64748b;
+  --success:#10b981;
+  --error:#ef4444;
+  --warning:#f59e0b;
+  --orange:#f97316;
+  --nav-h:68px;
+  --radius:16px;
+}
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Sora',sans-serif;background:#f0f3f9;min-height:100vh;padding-bottom:calc(var(--nav-h)+16px);color:var(--text);}
+html,body{height:100%;overflow-x:hidden;}
+body{
+  font-family:'Sora',sans-serif;
+  background:#f0f3f9;
+  min-height:100vh;
+  /* padding-bottom para a nav fixa */
+  padding-bottom:calc(var(--nav-h) + 20px);
+  color:var(--text);
+  overflow-y:auto;
+}
 
 /* NOTIF */
 .notif-overlay{position:fixed;inset:0;z-index:1000;background:rgba(10,15,30,0.55);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn 0.3s ease;}
@@ -46,7 +72,7 @@ body{font-family:'Sora',sans-serif;background:#f0f3f9;min-height:100vh;padding-b
 .notif-next-btn{width:100%;padding:13px;border:1.5px solid var(--border);border-radius:12px;background:transparent;font-family:'Sora',sans-serif;font-size:13px;font-weight:600;color:var(--text-muted);cursor:pointer;transition:all 0.2s;}
 .notif-next-btn:hover{border-color:var(--primary);color:var(--primary);}
 
-/* HEADER — azul Telegram desfocado */
+/* HEADER */
 .header{background:rgba(32,140,200,0.70);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid rgba(255,255,255,0.18);position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(34,158,217,0.20);}
 .header-inner{max-width:600px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;}
 .header-brand{display:flex;flex-direction:column;}
@@ -70,22 +96,40 @@ body{font-family:'Sora',sans-serif;background:#f0f3f9;min-height:100vh;padding-b
 .hero-banner-title{font-size:20px;font-weight:700;color:white;letter-spacing:-0.5px;}
 .hero-banner-title span{color:#fde68a;}
 
-/* INFO ABOVE CARD */
-.info-above{background:var(--surface);border:1px solid var(--border);border-radius:12px 12px 0 0;padding:12px 14px 8px;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
-.info-above-row{display:flex;align-items:baseline;gap:8px;margin-bottom:5px;}
-.info-above-label{font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.6px;min-width:52px;flex-shrink:0;}
-.info-above-val{font-size:12px;font-weight:600;color:var(--text);}
-.info-above-val.blue{color:var(--primary);}
-.info-above-val.green{color:var(--success);}
-
-/* IMAGE CARD small */
-.img-card{border-radius:0 0 12px 12px;overflow:hidden;margin-bottom:16px;box-shadow:0 4px 14px rgba(0,0,0,0.08);border:1px solid var(--border);border-top:none;}
-.img-card img{width:100%;height:110px;object-fit:cover;display:block;}
+/* INFO + IMAGE CARD — sobrepostos */
+.user-card-wrap{position:relative;margin-bottom:16px;border-radius:var(--radius);overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.12);}
+/* Imagem de fundo */
+.user-card-bg{width:100%;height:100%;position:absolute;inset:0;z-index:0;}
+.user-card-bg img{width:100%;height:100%;object-fit:cover;display:block;}
+/* Overlay escuro semi-transparente sobre a imagem */
+.user-card-bg-overlay{position:absolute;inset:0;background:rgba(10,15,30,0.62);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);z-index:1;}
+/* Conteúdo dos dados do utilizador */
+.user-card-content{position:relative;z-index:2;padding:16px 14px 14px;}
+.info-row{display:flex;align-items:baseline;gap:8px;margin-bottom:7px;}
+.info-row:last-child{margin-bottom:0;}
+.info-label{font-size:10px;font-weight:700;color:rgba(255,255,255,0.55);text-transform:uppercase;letter-spacing:0.6px;min-width:52px;flex-shrink:0;}
+.info-val{font-size:13px;font-weight:600;color:rgba(255,255,255,0.92);}
+.info-val.blue{color:#60b4ff;}
+.info-val.green{color:#34d399;}
+/* Saldo em laranja */
+.info-val.orange{color:#fb923c;font-family:'JetBrains Mono',monospace;font-size:14px;}
 
 /* COMPANY */
-.company-section{background:rgba(10,15,30,0.68);backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%);border:1px solid rgba(255,255,255,0.08);border-radius:var(--radius);padding:20px;margin-bottom:16px;position:relative;overflow:hidden;box-shadow:0 8px 32px rgba(10,15,30,0.18);}
+.company-section{
+  background:rgba(10,15,30,0.68);
+  backdrop-filter:blur(16px) saturate(140%);
+  -webkit-backdrop-filter:blur(16px) saturate(140%);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:var(--radius);
+  padding:20px;
+  margin-bottom:16px;
+  position:relative;
+  overflow:hidden;
+  box-shadow:0 8px 32px rgba(10,15,30,0.18);
+}
 .company-section::before{content:'';position:absolute;top:-40px;right:-40px;width:130px;height:130px;background:radial-gradient(circle,rgba(200,144,42,0.15) 0%,transparent 70%);border-radius:50%;}
 .company-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(200,144,42,0.2);border:1px solid rgba(200,144,42,0.35);border-radius:20px;padding:4px 12px;margin-bottom:12px;font-size:10px;font-weight:700;color:#fde68a;letter-spacing:1px;text-transform:uppercase;}
+.company-badge svg{width:10px;height:10px;}
 .company-name{font-size:20px;font-weight:700;color:white;letter-spacing:-0.5px;margin-bottom:8px;}
 .company-name span{color:#fde68a;}
 .company-desc{font-size:12px;color:rgba(255,255,255,0.62);line-height:1.65;margin-bottom:16px;}
@@ -115,7 +159,26 @@ body{font-family:'Sora',sans-serif;background:#f0f3f9;min-height:100vh;padding-b
 .movement-val{font-size:14px;font-weight:700;}
 .movement-val.in{color:var(--success);}
 .movement-val.out{color:var(--text);}
-.movements-empty{padding:28px 16px;text-align:center;color:var(--text-muted);font-size:13px;}
+/* Estado vazio com ícone */
+.movements-empty{
+  padding:32px 16px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:12px;
+  text-align:center;
+}
+.movements-empty-icon{
+  width:52px;height:52px;
+  border-radius:14px;
+  background:rgba(100,116,139,0.08);
+  border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text-muted);
+}
+.movements-empty-icon svg{width:24px;height:24px;}
+.movements-empty-title{font-size:13px;font-weight:700;color:var(--text);}
+.movements-empty-desc{font-size:12px;color:var(--text-muted);line-height:1.5;max-width:240px;}
 
 /* BOTTOM NAV */
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;height:var(--nav-h);background:rgba(255,255,255,0.92);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-around;padding:0 8px;box-shadow:0 -4px 24px rgba(0,0,0,0.07);z-index:200;}
@@ -197,7 +260,7 @@ body{font-family:'Sora',sans-serif;background:#f0f3f9;min-height:100vh;padding-b
 
 <main class="main">
 
-  <!-- Banner -->
+  <!-- Banner principal -->
   <div class="hero-banner">
     <img src="https://i.postimg.cc/FH0JFhTv/images-(1).jpg" alt="Saudi Aramco" onerror="this.src='https://via.placeholder.com/600x175/0a0f1e/ffffff?text=Saudi+Aramco'">
     <div class="hero-banner-overlay">
@@ -206,24 +269,27 @@ body{font-family:'Sora',sans-serif;background:#f0f3f9;min-height:100vh;padding-b
     </div>
   </div>
 
-  <!-- Informacoes acima do card -->
-  <div class="info-above">
-    <div class="info-above-row"><span class="info-above-label">Nome</span><span class="info-above-val" id="iaName">A carregar...</span></div>
-    <div class="info-above-row"><span class="info-above-label">ID</span><span class="info-above-val blue" id="iaId">—</span></div>
-    <div class="info-above-row"><span class="info-above-label">Plano</span><span class="info-above-val green" id="iaPlan">Sem plano</span></div>
-    <div class="info-above-row"><span class="info-above-label">Saldo</span><span class="info-above-val" id="iaBal">0.00 Kz</span></div>
-    <div class="info-above-row"><span class="info-above-label">Membro</span><span class="info-above-val" id="iaSince">—</span></div>
+  <!-- Card unificado: dados do utilizador sobre imagem de fundo -->
+  <div class="user-card-wrap">
+    <!-- Imagem de fundo -->
+    <div class="user-card-bg">
+      <img src="https://i.postimg.cc/fLQk9mNR/images-(11).jpg" alt="" onerror="this.style.background='#1a3a6b'">
+      <div class="user-card-bg-overlay"></div>
+    </div>
+    <!-- Dados -->
+    <div class="user-card-content">
+      <div class="info-row"><span class="info-label">Nome</span><span class="info-val" id="iaName">A carregar...</span></div>
+      <div class="info-row"><span class="info-label">ID</span><span class="info-val blue" id="iaId">—</span></div>
+      <div class="info-row"><span class="info-label">Plano</span><span class="info-val green" id="iaPlan">Sem plano</span></div>
+      <div class="info-row"><span class="info-label">Saldo</span><span class="info-val orange" id="iaBal">0.00 Kz</span></div>
+      <div class="info-row"><span class="info-label">Membro</span><span class="info-val" id="iaSince">—</span></div>
+    </div>
   </div>
 
-  <!-- Card imagem pequeno -->
-  <div class="img-card">
-    <img src="https://i.postimg.cc/fLQk9mNR/images-(11).jpg" alt="Saudi Aramco" onerror="this.style.minHeight='110px';this.style.background='#1a3a6b'">
-  </div>
-
-  <!-- Company Info transparente desfocada -->
+  <!-- Empresa -->
   <div class="company-section">
     <div class="company-badge">
-      <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
       Empresa Certificada
     </div>
     <div class="company-name">Saudi <span>Aramco</span></div>
@@ -242,40 +308,106 @@ body{font-family:'Sora',sans-serif;background:#f0f3f9;min-height:100vh;padding-b
       <span class="movements-title">Historico recente</span>
       <a href="dl.html" class="movements-link">Ver todos</a>
     </div>
-    <div id="movementsList">
-      <div class="movements-empty">Sem movimentos registados. Realize o seu primeiro deposito para comecar a investir.</div>
-    </div>
+    <div id="movementsList"></div>
   </div>
 
 </main>
 
 <nav class="bottom-nav">
-  <a href="index.html" class="nav-item active"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></div><div class="nav-label">Inicio</div><div class="nav-active-dot"></div></a>
-  <a href="compras.html" class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></div><div class="nav-label">Compras</div><div class="nav-active-dot"></div></a>
-  <a href="dl.html" class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div class="nav-label">DL</div><div class="nav-active-dot"></div></a>
-  <a href="tarefas.html" class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div><div class="nav-label">Tarefas</div><div class="nav-active-dot"></div></a>
+  <a href="index.html" class="nav-item active">
+    <div class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></div>
+    <div class="nav-label">Inicio</div>
+    <div class="nav-active-dot"></div>
+  </a>
+  <a href="compras.html" class="nav-item">
+    <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></div>
+    <div class="nav-label">Compras</div>
+    <div class="nav-active-dot"></div>
+  </a>
+  <a href="dl.html" class="nav-item">
+    <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+    <div class="nav-label">DL</div>
+    <div class="nav-active-dot"></div>
+  </a>
+  <a href="tarefas.html" class="nav-item">
+    <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+    <div class="nav-label">Tarefas</div>
+    <div class="nav-active-dot"></div>
+  </a>
 </nav>
 
 <script>
-function notifNext(){document.getElementById('notifStep1').style.display='none';document.getElementById('notifStep2').style.display='block';document.getElementById('nd1').classList.remove('active');document.getElementById('nd2').classList.add('active');}
-function closeNotif(){const o=document.getElementById('notifOverlay');o.style.opacity='0';o.style.transition='opacity 0.3s';setTimeout(()=>o.remove(),300);}
+function notifNext(){
+  document.getElementById('notifStep1').style.display='none';
+  document.getElementById('notifStep2').style.display='block';
+  document.getElementById('nd1').classList.remove('active');
+  document.getElementById('nd2').classList.add('active');
+}
+function closeNotif(){
+  const o=document.getElementById('notifOverlay');
+  o.style.opacity='0';o.style.transition='opacity 0.3s';
+  setTimeout(()=>o.remove(),300);
+}
 function fKz(v){return Number(v).toLocaleString('pt-AO',{minimumFractionDigits:2,maximumFractionDigits:2})+' Kz';}
+
 function renderPage(data){
   document.getElementById('iaName').textContent=data.name||'—';
   document.getElementById('iaId').textContent=data.accountId||'—';
   document.getElementById('iaPlan').textContent=data.activeInvestment?data.activeInvestment.name:'Sem plano';
   document.getElementById('iaBal').textContent=fKz(data.balance||0);
-  document.getElementById('iaSince').textContent=data.createdAt?new Date(data.createdAt.seconds*1000).toLocaleDateString('pt-AO',{month:'short',year:'numeric'}):new Date().toLocaleDateString('pt-AO',{month:'short',year:'numeric'});
+  document.getElementById('iaSince').textContent=data.createdAt
+    ?new Date(data.createdAt.seconds*1000).toLocaleDateString('pt-AO',{month:'short',year:'numeric'})
+    :new Date().toLocaleDateString('pt-AO',{month:'short',year:'numeric'});
   renderMovements(data.movements||[]);
 }
+
 function renderMovements(movs){
   const el=document.getElementById('movementsList');
-  if(!movs.length){el.innerHTML='<div class="movements-empty">Sem movimentos registados. Realize o seu primeiro deposito para comecar a investir.</div>';return;}
-  el.innerHTML=movs.slice(0,5).map(m=>`<div class="movement-item"><div class="movement-dot ${m.type==='deposito'||m.type==='renda'?'in':'out'}"></div><div class="movement-body"><div class="movement-desc">${m.desc||m.type}</div><div class="movement-meta">${m.date||'—'} &middot; ID: ${m.opId||'—'}</div></div><div class="movement-val ${m.type==='deposito'||m.type==='renda'?'in':'out'}">${m.type==='deposito'||m.type==='renda'?'+':'-'}${fKz(m.amount||0)}</div></div>`).join('');
+  if(!movs.length){
+    el.innerHTML=`
+      <div class="movements-empty">
+        <div class="movements-empty-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="2" y="5" width="20" height="14" rx="2"/>
+            <line x1="2" y1="10" x2="22" y2="10"/>
+            <line x1="6" y1="15" x2="10" y2="15"/>
+            <line x1="14" y1="15" x2="16" y2="15"/>
+          </svg>
+        </div>
+        <div class="movements-empty-title">Sem movimentos</div>
+        <div class="movements-empty-desc">Realize o seu primeiro deposito na secao DL para comecar a investir e ver o seu historico aqui.</div>
+      </div>`;
+    return;
+  }
+  el.innerHTML=movs.slice(0,5).map(m=>`
+    <div class="movement-item">
+      <div class="movement-dot ${m.type==='deposito'||m.type==='renda'?'in':'out'}"></div>
+      <div class="movement-body">
+        <div class="movement-desc">${m.desc||m.type}</div>
+        <div class="movement-meta">${m.date||'—'} &middot; ID: ${m.opId||'—'}</div>
+      </div>
+      <div class="movement-val ${m.type==='deposito'||m.type==='renda'?'in':'out'}">
+        ${m.type==='deposito'||m.type==='renda'?'+':'-'}${fKz(m.amount||0)}
+      </div>
+    </div>`).join('');
 }
-const pIcons={success:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>',error:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',info:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'};
-function showPopup(type,title,msg,dur=3500){const c=document.getElementById('popupContainer');const p=document.createElement('div');p.className='popup '+type;p.innerHTML=`<div class="popup-icon">${pIcons[type]||pIcons.info}</div><div style="flex:1"><div class="popup-title">${title}</div><div class="popup-msg">${msg}</div></div><button class="popup-close" onclick="this.parentElement.remove()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;c.appendChild(p);requestAnimationFrame(()=>p.classList.add('show'));setTimeout(()=>{p.classList.add('hide');setTimeout(()=>p.remove(),400);},dur);}
-window.renderPage=renderPage;window.showPopup=showPopup;
+
+const pIcons={
+  success:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>',
+  error:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+  info:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+};
+function showPopup(type,title,msg,dur=3500){
+  const c=document.getElementById('popupContainer');
+  const p=document.createElement('div');
+  p.className='popup '+type;
+  p.innerHTML=`<div class="popup-icon">${pIcons[type]||pIcons.info}</div><div style="flex:1"><div class="popup-title">${title}</div><div class="popup-msg">${msg}</div></div><button class="popup-close" onclick="this.parentElement.remove()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
+  c.appendChild(p);
+  requestAnimationFrame(()=>p.classList.add('show'));
+  setTimeout(()=>{p.classList.add('hide');setTimeout(()=>p.remove(),400);},dur);
+}
+window.renderPage=renderPage;
+window.showPopup=showPopup;
 </script>
 </body>
-</html>
+      </html>
